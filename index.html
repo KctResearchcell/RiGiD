@@ -1,0 +1,166 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Field Log — Team Progress Portal</title>
+<meta name="description" content="Daily work log and file-sharing portal for the team." />
+
+<!-- Fonts: Space Grotesk (display), Inter (body), JetBrains Mono (metadata/utility) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- Tailwind (CDN, zero build step) -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+<!-- Markdown render + sanitize -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+
+<link rel="stylesheet" href="styles.css" />
+
+<script>
+  // Avoid a flash of the wrong theme before app.js runs.
+  if (localStorage.getItem('logbook-theme') === 'dark' ||
+     (!localStorage.getItem('logbook-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+  }
+</script>
+</head>
+<body class="min-h-screen">
+
+  <!-- ============ HEADER ============ -->
+  <header class="header-bar">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="logo-mark" aria-hidden="true">LOG</span>
+        <div>
+          <h1 class="font-display text-lg sm:text-xl font-semibold tracking-tight leading-none">
+            Field Log <span class="text-accent">/</span> <span id="teamNameLabel">Team Progress Portal</span>
+          </h1>
+          <p class="font-mono text-[11px] uppercase tracking-widest text-soft mt-1">Daily entries — routed to shared OneDrive</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="refreshBtn" class="icon-btn" title="Refresh feed" aria-label="Refresh feed">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+        </button>
+        <button id="themeToggle" class="icon-btn" title="Toggle dark mode" aria-label="Toggle dark mode">
+          <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 hidden dark:block"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 block dark:hidden"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+        <button id="newEntryBtn" class="btn-primary">
+          <span class="hidden sm:inline">New Entry</span><span class="sm:hidden">New</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 pb-24">
+
+    <!-- ============ CONTROL STRIP ============ -->
+    <section class="control-strip" aria-label="Filter entries">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        <div class="lg:col-span-2">
+          <label class="field-label" for="searchInput">Search</label>
+          <input id="searchInput" type="text" placeholder="Search name, tag, or entry text…" class="field-input" />
+        </div>
+        <div>
+          <label class="field-label" for="memberFilter">Member</label>
+          <select id="memberFilter" class="field-input"><option value="">All members</option></select>
+        </div>
+        <div>
+          <label class="field-label" for="categoryFilter">Category</label>
+          <select id="categoryFilter" class="field-input"><option value="">All categories</option></select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="field-label" for="dateFrom">From</label>
+            <input id="dateFrom" type="date" class="field-input" />
+          </div>
+          <div>
+            <label class="field-label" for="dateTo">To</label>
+            <input id="dateTo" type="date" class="field-input" />
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center justify-between mt-3">
+        <p id="resultCount" class="font-mono text-xs text-soft"></p>
+        <button id="clearFilters" class="text-xs font-mono underline text-soft hover:text-ink">Clear filters</button>
+      </div>
+    </section>
+
+    <!-- ============ FEED ============ -->
+    <section aria-label="Team log feed" class="mt-8">
+      <div id="loadingState" class="state-block">
+        <div class="pulse-bar"></div>
+        <p class="font-mono text-xs text-soft mt-3">Loading log entries…</p>
+      </div>
+
+      <div id="errorState" class="state-block hidden">
+        <p class="font-display font-semibold">Feed unavailable</p>
+        <p class="font-mono text-xs text-soft mt-1">Could not load <code id="errorUrl">data.json</code>. Check the DATA_URL in app.js and confirm the file is published.</p>
+      </div>
+
+      <div id="emptyState" class="state-block hidden">
+        <p class="font-display font-semibold">No entries yet</p>
+        <p class="font-mono text-xs text-soft mt-1">Once the team submits their first daily update, it'll show up here.</p>
+      </div>
+
+      <div id="feedRail" class="feed-rail hidden">
+        <div id="feedList"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-token">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p class="font-mono text-[11px] text-soft">Static site · $0 hosting on GitHub Pages · Files stored in institutional OneDrive</p>
+      <p class="font-mono text-[11px] text-soft">Entry count is read-only here — submit via the New Entry form</p>
+    </div>
+  </footer>
+
+  <!-- ============ SUBMISSION MODAL (embeds the Microsoft Form) ============ -->
+  <div id="formModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-panel">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-token">
+        <div>
+          <h2 id="modalTitle" class="font-display font-semibold">Submit a daily entry</h2>
+          <p class="font-mono text-[11px] text-soft mt-0.5">Opens the Microsoft Form — your file attaches and lands in the shared OneDrive automatically</p>
+        </div>
+        <button id="closeModal" class="icon-btn" aria-label="Close">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <iframe id="formFrame" title="Daily progress submission form" src="" class="w-full h-full border-0"></iframe>
+      </div>
+      <div class="px-5 py-3 border-t border-token flex items-center justify-between">
+        <p class="font-mono text-[11px] text-soft">Submitted an entry? It appears here within a minute or two — hit Refresh.</p>
+        <a id="formNewTabLink" href="#" target="_blank" rel="noopener" class="text-xs font-mono underline text-soft hover:text-ink">Open in new tab ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ENTRY CARD TEMPLATE ============ -->
+  <template id="entryCardTemplate">
+    <article class="log-card">
+      <div class="log-card-head">
+        <span class="entry-tick font-mono"></span>
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <h3 class="entry-name font-display font-semibold"></h3>
+            <span class="stamp-tag entry-category"></span>
+          </div>
+          <p class="entry-date font-mono text-xs text-soft mt-0.5"></p>
+        </div>
+      </div>
+      <div class="entry-content prose-log"></div>
+      <div class="entry-files"></div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

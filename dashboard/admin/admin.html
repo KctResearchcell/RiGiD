@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="theme-color"
+        content="#070b13"
+    >
+
+    <title>RiGiD Workspace — Admin</title>
+
+
+    <!-- =====================================================
+         FONTS
+    ====================================================== -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         ADMIN CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="admin.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     BACKGROUND EFFECTS
+====================================================== -->
+
+<div class="background-grid"></div>
+
+<div class="background-glow glow-one"></div>
+
+<div class="background-glow glow-two"></div>
+
+<div class="background-glow glow-three"></div>
+
+
+
+<!-- =====================================================
+     HEADER
+====================================================== -->
+
+<header class="admin-header">
+
+    <div class="header-brand">
+
+        <div class="brand-symbol">
+            RiG
+        </div>
+
+
+        <div class="brand-details">
+
+            <div class="brand-title">
+                RiGiD Workspace
+            </div>
+
+
+            <div
+                id="liveClock"
+                class="live-clock"
+            >
+                00:00:00
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-actions">
+
+
+        <!-- PERSONAL WORKSPACE -->
+
+        <button
+            id="personalWorkspaceBtn"
+            class="header-btn"
+            type="button"
+        >
+
+            <span class="btn-icon">
+                ◈
+            </span>
+
+            Personal Workspace
+
+        </button>
+
+
+
+        <!-- THEME -->
+
+        <button
+            id="themeToggle"
+            class="icon-btn"
+            type="button"
+            title="Toggle theme"
+        >
+            ☼
+        </button>
+
+
+
+        <!-- TEAM SETTINGS -->
+
+        <button
+            id="teamSettingsBtn"
+            class="header-btn"
+            type="button"
+        >
+
+            ⚙
+
+            <span>
+                Team Settings
+            </span>
+
+        </button>
+
+
+
+        <!-- SIGN OUT -->
+
+        <button
+            id="signOutBtn"
+            class="signout-btn"
+            type="button"
+        >
+            Sign Out
+        </button>
+
+
+    </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     MAIN
+====================================================== -->
+
+<main class="admin-container">
+
+
+    <!-- =================================================
+         WELCOME
+    ================================================== -->
+
+    <section class="welcome-section">
+
+
+        <div class="welcome-label">
+            ADMINISTRATOR / CONTROL CENTER
+        </div>
+
+
+        <h1>
+
+            Welcome,
+
+            <span id="adminName">
+                Gentleman
+            </span>
+
+        </h1>
+
+
+        <div
+            id="adminEmail"
+            class="admin-email"
+        >
+            admin@kct.ac.in
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         WORKSPACE OVERVIEW
+    ================================================== -->
+
+    <section
+        class="workspace-overview"
+        id="workspaceOverview"
+    >
+
+
+        <!-- =================================================
+             OVERVIEW HEADER
+        ================================================== -->
+
+        <div class="overview-header">
+
+
+            <div class="overview-heading">
+
+
+                <div class="overview-eyebrow">
+                    WORKSPACE ANALYTICS
+                </div>
+
+
+                <h2>
+                    Project Overview
+                </h2>
+
+
+                <p>
+                    Track ongoing and completed
+                    design, prototype and paper work.
+                </p>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 FORUM FILTER
+            ================================================== -->
+
+            <div class="overview-filter">
+
+
+                <label
+                    for="forumFilter"
+                >
+                    VIEWING
+                </label>
+
+
+                <div class="filter-select-wrap">
+
+
+                    <select
+                        id="forumFilter"
+                        class="forum-filter"
+                    >
+
+                        <option value="all">
+                            All Forums
+                        </option>
+
+                        <option value="re">
+                            Re
+                        </option>
+
+                        <option value="iqube">
+                            iQube
+                        </option>
+
+                        <option value="garage">
+                            Garage
+                        </option>
+
+                    </select>
+
+
+                    <span class="filter-arrow">
+                        ▾
+                    </span>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             OVERVIEW METRICS
+        ================================================== -->
+
+        <div class="overview-metrics">
+
+
+            <!-- =================================================
+                 DESIGN
+            ================================================== -->
+
+            <article
+                class="overview-card overview-design"
+            >
+
+
+                <div class="overview-card-top">
+
+
+                    <div>
+
+                        <span class="overview-card-label">
+                            CATEGORY
+                        </span>
+
+
+                        <h3>
+                            Design
+                        </h3>
+
+                    </div>
+
+
+                    <div class="overview-card-icon">
+                        ◇
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="overview-status-row">
+
+
+                    <!-- ONGOING -->
+
+                    <div class="overview-status">
+
+
+                        <span class="status-indicator ongoing-dot">
+                        </span>
+
+
+                        <div>
+
+                            <span class="status-label">
+                                Ongoing
+                            </span>
+
+
+                            <strong
+                                id="designOngoing"
+                                class="status-number"
+                            >
+                                12
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- COMPLETED -->
+
+                    <div class="overview-status">
+
+
+                        <span class="status-indicator completed-dot">
+                            ✓
+                        </span>
+
+
+                        <div>
+
+                            <span class="status-label">
+                                Completed
+                            </span>
+
+
+                            <strong
+                                id="designCompleted"
+                                class="status-number"
+                            >
+                                25
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </article>
+
+
+
+            <!-- =================================================
+                 PROTOTYPE
+            ================================================== -->
+
+            <article
+                class="overview-card overview-prototype"
+            >
+
+
+                <div class="overview-card-top">
+
+
+                    <div>
+
+                        <span class="overview-card-label">
+                            CATEGORY
+                        </span>
+
+
+                        <h3>
+                            Prototype
+                        </h3>
+
+                    </div>
+
+
+                    <div class="overview-card-icon">
+                        ⬡
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="overview-status-row">
+
+
+                    <!-- ONGOING -->
+
+                    <div class="overview-status">
+
+
+                        <span class="status-indicator ongoing-dot">
+                        </span>
+
+
+                        <div>
+
+                            <span class="status-label">
+                                Ongoing
+                            </span>
+
+
+                            <strong
+                                id="prototypeOngoing"
+                                class="status-number"
+                            >
+                                8
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- COMPLETED -->
+
+                    <div class="overview-status">
+
+
+                        <span class="status-indicator completed-dot">
+                            ✓
+                        </span>
+
+
+                        <div>
+
+                            <span class="status-label">
+                                Completed
+                            </span>
+
+
+                            <strong
+                                id="prototypeCompleted"
+                                class="status-number"
+                            >
+                                14
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </article>
+
+
+
+            <!-- =================================================
+                 PAPER
+            ================================================== -->
+
+            <article
+                class="overview-card overview-paper"
+            >
+
+
+                <div class="overview-card-top">
+
+
+                    <div>
+
+                        <span class="overview-card-label">
+                            CATEGORY
+                        </span>
+
+
+                        <h3>
+                            Paper
+                        </h3>
+
+                    </div>
+
+
+                    <div class="overview-card-icon">
+                        ▤
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="overview-status-row">
+
+
+                    <!-- ONGOING -->
+
+                    <div class="overview-status">
+
+
+                        <span class="status-indicator ongoing-dot">
+                        </span>
+
+
+                        <div>
+
+                            <span class="status-label">
+                                Ongoing
+                            </span>
+
+
+                            <strong
+                                id="paperOngoing"
+                                class="status-number"
+                            >
+                                6
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- COMPLETED -->
+
+                    <div class="overview-status">
+
+
+                        <span class="status-indicator completed-dot">
+                            ✓
+                        </span>
+
+
+                        <div>
+
+                            <span class="status-label">
+                                Completed
+                            </span>
+
+
+                            <strong
+                                id="paperCompleted"
+                                class="status-number"
+                            >
+                                9
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </article>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             LEGEND
+        ================================================== -->
+
+        <div class="overview-legend">
+
+
+            <span class="legend-title">
+                LEGEND
+            </span>
+
+
+            <span class="legend-item">
+
+
+                <span class="legend-symbol legend-ongoing">
+                </span>
+
+
+                <span>
+                    Ongoing
+                </span>
+
+
+            </span>
+
+
+            <span class="legend-item">
+
+
+                <span class="legend-symbol legend-completed">
+                    ✓
+                </span>
+
+
+                <span>
+                    Completed
+                </span>
+
+
+            </span>
+
+
+            <span
+                id="overviewFilterLabel"
+                class="overview-filter-label"
+            >
+                Showing All Forums
+            </span>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         RE FORUM
+    ================================================== -->
+
+    <section
+        class="forum-section forum-re"
+    >
+
+
+        <div class="forum-heading">
+
+
+            <div class="forum-title-block">
+
+
+                <div class="forum-code">
+                    FORUM / 01
+                </div>
+
+
+                <h2>
+                    Ré
+                </h2>
+
+
+                <p>
+                    Research & Exploration
+                </p>
+
+
+            </div>
+
+
+            <div class="forum-indicator">
+                RE
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================= TEAM AREA ================= -->
+
+
+        <div class="content-heading">
+
+
+            <div class="content-title">
+
+
+                <span>
+                    Teams
+                </span>
+
+
+                <small id="reTeamCount">
+                    0
+                </small>
+
+
+            </div>
+
+
+
+            <button
+                class="add-btn"
+                data-action="add-team"
+                data-forum="re"
+                type="button"
+            >
+
+                <strong>
+                    +
+                </strong>
+
+
+                <span>
+                    Add Team
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+
+        <div
+            id="reTeams"
+            class="card-grid"
+        ></div>
+
+
+
+        <!-- ================= DOMAIN AREA ================= -->
+
+
+        <div
+            class="content-heading domain-heading"
+        >
+
+
+            <div class="content-title">
+
+
+                <span>
+                    Domains
+                </span>
+
+
+                <small id="reDomainCount">
+                    0
+                </small>
+
+
+            </div>
+
+
+
+            <button
+                class="add-btn"
+                data-action="add-domain"
+                data-forum="re"
+                type="button"
+            >
+
+                <strong>
+                    +
+                </strong>
+
+
+                <span>
+                    Add Domain
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+
+        <div
+            id="reDomains"
+            class="card-grid"
+        ></div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         IQUBE FORUM
+    ================================================== -->
+
+    <section
+        class="forum-section forum-iqube"
+    >
+
+
+        <div class="forum-heading">
+
+
+            <div class="forum-title-block">
+
+
+                <div class="forum-code">
+                    FORUM / 02
+                </div>
+
+
+                <h2>
+                    iQube
+                </h2>
+
+
+                <p>
+                    Innovation & Technology
+                </p>
+
+
+            </div>
+
+
+            <div class="forum-indicator">
+                IQ
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================= TEAM AREA ================= -->
+
+
+        <div class="content-heading">
+
+
+            <div class="content-title">
+
+
+                <span>
+                    Teams
+                </span>
+
+
+                <small id="iqubeTeamCount">
+                    0
+                </small>
+
+
+            </div>
+
+
+
+            <button
+                class="add-btn"
+                data-action="add-team"
+                data-forum="iqube"
+                type="button"
+            >
+
+                <strong>
+                    +
+                </strong>
+
+
+                <span>
+                    Add Team
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+
+        <div
+            id="iqubeTeams"
+            class="card-grid"
+        ></div>
+
+
+
+        <!-- ================= DOMAIN AREA ================= -->
+
+
+        <div
+            class="content-heading domain-heading"
+        >
+
+
+            <div class="content-title">
+
+
+                <span>
+                    Domains
+                </span>
+
+
+                <small id="iqubeDomainCount">
+                    0
+                </small>
+
+
+            </div>
+
+
+
+            <button
+                class="add-btn"
+                data-action="add-domain"
+                data-forum="iqube"
+                type="button"
+            >
+
+                <strong>
+                    +
+                </strong>
+
+
+                <span>
+                    Add Domain
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+
+        <div
+            id="iqubeDomains"
+            class="card-grid"
+        ></div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         GARAGE FORUM
+    ================================================== -->
+
+    <section
+        class="forum-section forum-garage"
+    >
+
+
+        <div class="forum-heading">
+
+
+            <div class="forum-title-block">
+
+
+                <div class="forum-code">
+                    FORUM / 03
+                </div>
+
+
+                <h2>
+                    Garage
+                </h2>
+
+
+                <p>
+                    Build • Experiment • Create
+                </p>
+
+
+            </div>
+
+
+            <div class="forum-indicator">
+                GR
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ================= TEAM AREA ================= -->
+
+
+        <div class="content-heading">
+
+
+            <div class="content-title">
+
+
+                <span>
+                    Teams
+                </span>
+
+
+                <small id="garageTeamCount">
+                    0
+                </small>
+
+
+            </div>
+
+
+
+            <button
+                class="add-btn"
+                data-action="add-team"
+                data-forum="garage"
+                type="button"
+            >
+
+                <strong>
+                    +
+                </strong>
+
+
+                <span>
+                    Add Team
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+
+        <div
+            id="garageTeams"
+            class="card-grid"
+        ></div>
+
+
+
+        <!-- ================= DOMAIN AREA ================= -->
+
+
+        <div
+            class="content-heading domain-heading"
+        >
+
+
+            <div class="content-title">
+
+
+                <span>
+                    Domains
+                </span>
+
+
+                <small id="garageDomainCount">
+                    0
+                </small>
+
+
+            </div>
+
+
+
+            <button
+                class="add-btn"
+                data-action="add-domain"
+                data-forum="garage"
+                type="button"
+            >
+
+                <strong>
+                    +
+                </strong>
+
+
+                <span>
+                    Add Domain
+                </span>
+
+            </button>
+
+
+        </div>
+
+
+
+        <div
+            id="garageDomains"
+            class="card-grid"
+        ></div>
+
+
+    </section>
+
+
+
+    <!-- =================================================
+         PENDING REQUESTS
+    ================================================== -->
+
+    <section
+        class="pending-section"
+    >
+
+
+        <div class="pending-top">
+
+
+            <div>
+
+
+                <div class="forum-code">
+                    ACCESS CONTROL
+                </div>
+
+
+                <h2>
+                    Pending Requests
+                </h2>
+
+
+                <p>
+                    Accounts waiting for administrator approval
+                </p>
+
+
+            </div>
+
+
+
+            <div
+                id="pendingBadge"
+                class="pending-badge"
+            >
+                0
+            </div>
+
+
+        </div>
+
+
+
+        <div
+            id="pendingRequests"
+            class="pending-list"
+        ></div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     ADD / EDIT MODAL
+====================================================== -->
+
+<div
+    id="itemModal"
+    class="modal hidden"
+>
+
+
+    <div class="modal-box">
+
+
+        <div class="modal-top">
+
+
+            <div>
+
+
+                <div
+                    id="modalEyebrow"
+                    class="modal-eyebrow"
+                >
+                    NEW TEAM
+                </div>
+
+
+                <h3
+                    id="modalTitle"
+                >
+                    Add Team
+                </h3>
+
+
+            </div>
+
+
+
+            <button
+                id="closeModal"
+                class="close-btn"
+                type="button"
+            >
+                ×
+            </button>
+
+
+        </div>
+
+
+
+        <form id="itemForm">
+
+
+            <!-- FORUM -->
+
+            <div class="form-group">
+
+
+                <label>
+                    Forum
+                </label>
+
+
+                <input
+                    id="modalForum"
+                    type="text"
+                    readonly
+                >
+
+
+            </div>
+
+
+
+            <!-- NAME -->
+
+            <div class="form-group">
+
+
+                <label
+                    id="nameLabel"
+                >
+                    Team Name
+                </label>
+
+
+                <input
+                    id="itemName"
+                    type="text"
+                    placeholder="Enter name"
+                    required
+                >
+
+
+            </div>
+
+
+
+            <!-- DESCRIPTION -->
+
+            <div
+                id="descriptionGroup"
+                class="form-group"
+            >
+
+
+                <label>
+                    Description
+                </label>
+
+
+                <textarea
+                    id="itemDescription"
+                    rows="4"
+                    placeholder="Enter description..."
+                ></textarea>
+
+
+            </div>
+
+
+
+            <!-- MESSAGE -->
+
+            <div
+                id="modalMessage"
+                class="modal-message hidden"
+            ></div>
+
+
+
+            <!-- ACTIONS -->
+
+            <div class="modal-actions">
+
+
+                <button
+                    id="cancelModal"
+                    type="button"
+                    class="cancel-btn"
+                >
+                    Cancel
+                </button>
+
+
+
+                <button
+                    type="submit"
+                    class="save-btn"
+                >
+                    Add
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     TEAM SETTINGS MODAL
+====================================================== -->
+
+<div
+    id="settingsModal"
+    class="modal hidden"
+>
+
+
+    <div
+        class="modal-box settings-box"
+    >
+
+
+        <div class="modal-top">
+
+
+            <div>
+
+
+                <div class="modal-eyebrow">
+                    WORKSPACE
+                </div>
+
+
+                <h3>
+                    Team Settings
+                </h3>
+
+
+            </div>
+
+
+
+            <button
+                id="closeSettings"
+                class="close-btn"
+                type="button"
+            >
+                ×
+            </button>
+
+
+        </div>
+
+
+
+        <div class="settings-list">
+
+
+            <!-- WORKSPACE SETTINGS -->
+
+            <button
+                class="settings-item"
+                type="button"
+            >
+
+
+                <div>
+
+
+                    <strong>
+                        Workspace Settings
+                    </strong>
+
+
+                    <span>
+                        Manage workspace configuration
+                    </span>
+
+
+                </div>
+
+
+                <b>
+                    →
+                </b>
+
+
+            </button>
+
+
+
+            <!-- FORUM SETTINGS -->
+
+            <button
+                class="settings-item"
+                type="button"
+            >
+
+
+                <div>
+
+
+                    <strong>
+                        Forum Settings
+                    </strong>
+
+
+                    <span>
+                        Configure forum preferences
+                    </span>
+
+
+                </div>
+
+
+                <b>
+                    →
+                </b>
+
+
+            </button>
+
+
+
+            <!-- ACCESS CONTROL -->
+
+            <button
+                class="settings-item"
+                type="button"
+            >
+
+
+                <div>
+
+
+                    <strong>
+                        Access Control
+                    </strong>
+
+
+                    <span>
+                        Manage administrator permissions
+                    </span>
+
+
+                </div>
+
+
+                <b>
+                    →
+                </b>
+
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =====================================================
+     ADMIN JAVASCRIPT
+====================================================== -->
+
+<script src="admin.js"></script>
+
+
+</body>
+
+</html>

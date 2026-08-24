@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>RiGiD — Study</title>
+
+
+    <!-- =====================================================
+         FONTS
+    ====================================================== -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="study.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         BACKGROUND
+    ====================================================== -->
+
+    <div class="study-background"></div>
+
+    <div class="study-grid"></div>
+
+    <div class="study-glow study-glow-one"></div>
+
+    <div class="study-glow study-glow-two"></div>
+
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="study-header">
+
+    <!-- LEFT -->
+    <div class="study-header-left">
+
+        <button
+            class="back-button"
+            id="backToWorkspace"
+            type="button"
+        >
+            <span class="back-icon">←</span>
+            <span>Workspace</span>
+        </button>
+
+        <div class="study-brand">
+
+            <div class="study-brand-mark">
+                R
+            </div>
+
+            <div class="study-brand-text">
+
+                <div class="study-brand-name">
+                    R<span>i</span>G<span>i</span>D
+                </div>
+
+                <div class="study-brand-section">
+                    STUDY
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- CENTER -->
+    <nav class="study-navigation">
+
+        <button
+            class="study-nav-item active"
+            data-section="learning"
+            type="button"
+        >
+            Learning
+        </button>
+
+        <button
+            class="study-nav-item"
+            data-section="concepts"
+            type="button"
+        >
+            Concepts
+        </button>
+
+        <button
+            class="study-nav-item"
+            data-section="problems"
+            type="button"
+        >
+            Problems
+        </button>
+
+        <button
+            class="study-nav-item"
+            data-section="resources"
+            type="button"
+        >
+            Resources
+        </button>
+
+        <button
+            class="study-nav-item"
+            data-section="timeline"
+            type="button"
+        >
+            Timeline
+        </button>
+
+        <button
+            class="study-nav-item"
+            data-section="uploads"
+            type="button"
+        >
+            Files
+        </button>
+
+    </nav>
+
+
+    <!-- RIGHT -->
+    <div class="study-header-right">
+
+        <div class="study-live-time">
+
+            <span
+                class="live-date"
+                id="liveDate"
+            >
+                23 AUG 2026
+            </span>
+
+            <span class="live-separator">
+                •
+            </span>
+
+            <span
+                class="live-clock"
+                id="liveClock"
+            >
+                10:42:18 AM
+            </span>
+
+        </div>
+
+
+        <button
+            class="header-icon-button"
+            id="studySettings"
+            type="button"
+            title="Settings"
+        >
+            ⚙
+        </button>
+
+    </div>
+
+</header>
+
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="study-container">
+
+
+
+        <!-- =================================================
+             COMPACT STUDY HEADER
+        ================================================== -->
+
+        <section class="study-hero">
+
+
+            <!-- LEFT -->
+
+            <div class="study-hero-main">
+
+                <div class="study-label-row">
+
+                    <span class="study-type">
+                        STUDY
+                    </span>
+
+                    <span
+                        class="study-status"
+                        id="studyStatus"
+                    >
+                        ● IN PROGRESS
+                    </span>
+
+                </div>
+
+
+                <h1 id="studyTopic">
+                    Power Electronics Fundamentals
+                </h1>
+
+
+                <p
+                    class="study-introduction"
+                    id="studyIntroduction"
+                >
+                    Understanding the fundamentals of power
+                    electronic converters, switching devices,
+                    control and energy conversion.
+                </p>
+
+
+                <div
+                    class="study-tags"
+                    id="studyTags"
+                >
+
+                    <span>
+                        POWER ELECTRONICS
+                    </span>
+
+                    <span>
+                        PMSG
+                    </span>
+
+                    <span>
+                        CONTROL
+                    </span>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- RIGHT -->
+
+            <div class="study-hero-side">
+
+
+                <div class="hero-stat">
+
+                    <span>
+                        CONFIDENCE
+                    </span>
+
+                    <strong id="confidenceValue">
+                        4 / 5
+                    </strong>
+
+                    <div class="confidence-bars">
+
+                        <span class="confidence active"></span>
+                        <span class="confidence active"></span>
+                        <span class="confidence active"></span>
+                        <span class="confidence active"></span>
+                        <span class="confidence"></span>
+
+                    </div>
+
+                    <div class="confidence-actions">
+
+                        <button data-confidence="1" type="button">
+                            1
+                        </button>
+
+                        <button data-confidence="2" type="button">
+                            2
+                        </button>
+
+                        <button data-confidence="3" type="button">
+                            3
+                        </button>
+
+                        <button data-confidence="4" type="button">
+                            4
+                        </button>
+
+                        <button data-confidence="5" type="button">
+                            5
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="hero-meta">
+
+                    <div>
+
+                        <span>
+                            OWNER
+                        </span>
+
+                        <strong id="studyOwner">
+                            You
+                        </strong>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            CREATED
+                        </span>
+
+                        <strong id="studyCreatedDate">
+                            18 Aug 2026
+                        </strong>
+
+                    </div>
+
+                    <div>
+
+                        <span>
+                            UPDATED
+                        </span>
+
+                        <strong id="studyUpdatedDate">
+                            23 Aug 2026
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             NAVIGATION
+        ================================================== -->
+
+      
+
+
+
+        <!-- =================================================
+             ROW 1
+             LEARNING + OBJECTIVE
+        ================================================== -->
+
+        <section
+            class="study-section"
+            id="learningSection"
+        >
+
+            <div class="section-heading compact-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        LEARNING
+                    </span>
+
+                    <h2>
+                        Understanding
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="learning-grid">
+
+
+                <!-- WHAT I LEARNED -->
+
+                <article class="study-card learning-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="small-label">
+                                MAIN LEARNING
+                            </span>
+
+                            <h3>
+                                What I Learned
+                            </h3>
+
+                        </div>
+
+                        <button
+                            class="small-action"
+                            id="editLearning"
+                            type="button"
+                        >
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="learning-content"
+                        id="learningContent"
+                    >
+
+                        <p>
+                            Power electronic converters control
+                            electrical energy by switching
+                            semiconductor devices at high frequency.
+                        </p>
+
+                        <p>
+                            Duty cycle affects average output voltage,
+                            while inductors and capacitors smooth
+                            the resulting waveform.
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- LEARNING OBJECTIVE -->
+
+                <article class="study-card objective-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="small-label">
+                                OBJECTIVE
+                            </span>
+
+                            <h3>
+                                What am I trying to understand?
+                            </h3>
+
+                        </div>
+
+                        <button
+                            class="small-action"
+                            id="editObjective"
+                            type="button"
+                        >
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                    <div class="objective-content">
+
+                        <div class="objective-icon">
+                            ◎
+                        </div>
+
+                        <p id="learningObjective">
+                            Understand how switching converters
+                            regulate and transfer electrical energy.
+                        </p>
+
+                    </div>
+
+
+                    <div class="objective-footer">
+
+                        <span>
+                            NEXT FOCUS
+                        </span>
+
+                        <strong>
+                            Switching losses
+                        </strong>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+
+            <!-- KNOWLEDGE -->
+
+            <article class="study-card knowledge-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <span class="small-label">
+                            KEY TAKEAWAYS
+                        </span>
+
+                        <h3>
+                            Knowledge Gained
+                        </h3>
+
+                    </div>
+
+                    <button
+                        class="add-button"
+                        id="addKnowledge"
+                        type="button"
+                    >
+                        + Add
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="knowledge-grid"
+                    id="knowledgeList"
+                >
+
+                    <!-- JavaScript -->
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+
+        <!-- =================================================
+             ROW 2
+             CONCEPTS + PROBLEMS
+        ================================================== -->
+
+        <section
+            class="study-section"
+            id="conceptsSection"
+        >
+
+            <div class="two-column-layout">
+
+
+                <!-- CONCEPTS -->
+
+                <div>
+
+                    <div class="section-heading compact-heading">
+
+                        <div>
+
+                            <span class="section-label">
+                                KNOWLEDGE MAP
+                            </span>
+
+                            <h2>
+                                Key Concepts
+                            </h2>
+
+                        </div>
+
+                        <button
+                            class="primary-study-button small-button"
+                            id="addConcept"
+                            type="button"
+                        >
+                            + Concept
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="concept-grid"
+                        id="conceptGrid"
+                    >
+
+                        <!-- JavaScript -->
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PROBLEMS -->
+
+                <div
+                    id="problemsSection"
+                    class="inner-section"
+                >
+
+                    <div class="section-heading compact-heading">
+
+                        <div>
+
+                            <span class="section-label">
+                                OPEN QUESTIONS
+                            </span>
+
+                            <h2>
+                                Problems & Doubts
+                            </h2>
+
+                        </div>
+
+                        <button
+                            class="primary-study-button small-button"
+                            id="addProblem"
+                            type="button"
+                        >
+                            + Problem
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="problems-list"
+                        id="problemsList"
+                    >
+
+                        <!-- JavaScript -->
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             ROW 3
+             RESOURCES + RELATED WORK
+        ================================================== -->
+
+        <section
+            class="study-section"
+            id="resourcesSection"
+        >
+
+            <div class="two-column-layout">
+
+
+                <!-- RESOURCES -->
+
+                <div>
+
+                    <div class="section-heading compact-heading">
+
+                        <div>
+
+                            <span class="section-label">
+                                STUDY MATERIAL
+                            </span>
+
+                            <h2>
+                                Resources
+                            </h2>
+
+                        </div>
+
+                        <button
+                            class="primary-study-button small-button"
+                            id="addResource"
+                            type="button"
+                        >
+                            + Resource
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="resources-list"
+                        id="resourcesList"
+                    >
+
+                        <!-- JavaScript -->
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- RELATED WORK -->
+
+                <div>
+
+                    <div class="section-heading compact-heading">
+
+                        <div>
+
+                            <span class="section-label">
+                                KNOWLEDGE NETWORK
+                            </span>
+
+                            <h2>
+                                Related Work
+                            </h2>
+
+                        </div>
+
+                        <button
+                            class="primary-study-button small-button"
+                            id="addRelatedWork"
+                            type="button"
+                        >
+                            + Link
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="related-work-grid"
+                        id="relatedWorkGrid"
+                    >
+
+                        <!-- JavaScript -->
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             TIMELINE / STUDY PLAN
+        ================================================== -->
+
+        <section
+            class="study-section"
+            id="timelineSection"
+        >
+
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        STUDY PLAN
+                    </span>
+
+                    <h2>
+                        Timeline & Future Work
+                    </h2>
+
+                    <p>
+                        Track what you completed and define what
+                        you need to do next.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="primary-study-button"
+                    id="addStudySession"
+                    type="button"
+                >
+                    + Add Timeline
+                </button>
+
+            </div>
+
+
+
+            <div class="timeline-layout">
+
+
+                <!-- TIMELINE -->
+
+                <div
+                    class="study-timeline"
+                    id="studyTimeline"
+                >
+
+                    <!-- JavaScript -->
+
+                </div>
+
+
+
+                <!-- NEXT WORK -->
+
+                <aside class="future-work-panel">
+
+                    <div class="future-work-header">
+
+                        <div>
+
+                            <span class="small-label">
+                                UPCOMING
+                            </span>
+
+                            <h3>
+                                What should I do next?
+                            </h3>
+
+                        </div>
+
+                        <span class="future-count">
+                            03
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="future-work-list"
+                        id="futureWorkList"
+                    >
+
+                        <div class="future-work-item">
+
+                            <div class="future-date">
+                                25 AUG
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Study switching losses
+                                </strong>
+
+                                <p>
+                                    Understand conduction and
+                                    switching loss mechanisms.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="future-work-item">
+
+                            <div class="future-date">
+                                27 AUG
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Solve converter problems
+                                </strong>
+
+                                <p>
+                                    Apply the theory to numerical
+                                    converter design problems.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="future-work-item">
+
+                            <div class="future-date">
+                                30 AUG
+                            </div>
+
+                            <div>
+
+                                <strong>
+                                    Apply knowledge to PMSG
+                                </strong>
+
+                                <p>
+                                    Connect the concepts learned
+                                    here to the active rectifier.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="future-add-button"
+                        id="addFutureWork"
+                        type="button"
+                    >
+                        + Add Future Work
+                    </button>
+
+                </aside>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             UPLOADS
+        ================================================== -->
+
+        <section
+            class="study-section"
+            id="uploadsSection"
+        >
+
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        ATTACHMENTS
+                    </span>
+
+                    <h2>
+                        Files & Links
+                    </h2>
+
+                    <p>
+                        Store anything related to this study.
+                    </p>
+
+                </div>
+
+
+                <div class="upload-actions-top">
+
+                    <button
+                        class="secondary-study-button"
+                        id="addLinkButton"
+                        type="button"
+                    >
+                        🔗 Add Link
+                    </button>
+
+
+                    <button
+                        class="primary-study-button"
+                        id="uploadButton"
+                        type="button"
+                    >
+                        ↑ Upload
+                    </button>
+
+                    <input
+                        type="file"
+                        id="studyFileInput"
+                        multiple
+                        hidden
+                    >
+
+                </div>
+
+            </div>
+
+
+
+            <!-- UPLOAD DROP ZONE -->
+
+            <div
+                class="study-upload-zone"
+                id="studyUploadZone"
+            >
+
+                <div class="upload-symbol">
+                    ↑
+                </div>
+
+                <div>
+
+                    <strong>
+                        Drop files here
+                    </strong>
+
+                    <p>
+                        Images · Videos · PDFs · Documents ·
+                        ZIP · CAD · Code · Spreadsheets · Any file
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- FILES / LINKS -->
+
+            <div
+                class="attachment-grid"
+                id="studyUploadGrid"
+            >
+
+                <!-- JavaScript -->
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             STUDY REFLECTION
+        ================================================== -->
+
+        <section class="study-section reflection-section">
+
+
+            <div class="reflection-grid">
+
+
+                <!-- CURRENT STATE -->
+
+                <div class="study-card current-state-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="small-label">
+                                CURRENT STATE
+                            </span>
+
+                            <h3>
+                                Where am I now?
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="current-state-grid">
+
+                        <div>
+
+                            <span>
+                                CONFIDENCE
+                            </span>
+
+                            <strong id="summaryConfidence">
+                                4 / 5
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                CONCEPTS
+                            </span>
+
+                            <strong id="summaryConcepts">
+                                4
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                OPEN PROBLEMS
+                            </span>
+
+                            <strong id="summaryProblems">
+                                1
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            <span>
+                                STUDY TIME
+                            </span>
+
+                            <strong id="summaryTime">
+                                3h 30m
+                            </strong>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- NEXT STEP -->
+
+                <div class="study-card reflection-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="small-label">
+                                NEXT STEP
+                            </span>
+
+                            <h3>
+                                What should I study next?
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <textarea
+                        id="nextStudy"
+                        placeholder="Write what you need to learn next..."
+                    ></textarea>
+
+
+                    <button
+                        class="primary-study-button"
+                        id="saveReflection"
+                        type="button"
+                    >
+                        Save Plan
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             BOTTOM ACTIONS
+        ================================================== -->
+
+        <div class="study-bottom-actions">
+
+            <button
+                class="secondary-study-button"
+                id="editStudy"
+                type="button"
+            >
+                ✎ Edit Study
+            </button>
+
+
+            <button
+                class="secondary-study-button danger"
+                id="archiveStudy"
+                type="button"
+            >
+                Archive Study
+            </button>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         KNOWLEDGE MODAL
+    ====================================================== -->
+
+    <div
+        class="study-modal hidden"
+        id="knowledgeModal"
+    >
+
+        <div class="study-modal-box">
+
+            <div class="modal-heading">
+
+                <div>
+
+                    <span>
+                        LEARNING
+                    </span>
+
+                    <h3>
+                        Add Knowledge
+                    </h3>
+
+                </div>
+
+                <button
+                    class="modal-close"
+                    id="closeKnowledgeModal"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <textarea
+                id="knowledgeInput"
+                placeholder="What important thing did you learn?"
+            ></textarea>
+
+
+            <div class="modal-actions">
+
+                <button
+                    class="secondary-study-button"
+                    id="cancelKnowledge"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="primary-study-button"
+                    id="saveKnowledge"
+                    type="button"
+                >
+                    Add Knowledge
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         PROBLEM MODAL
+    ====================================================== -->
+
+    <div
+        class="study-modal hidden"
+        id="problemModal"
+    >
+
+        <div class="study-modal-box">
+
+            <div class="modal-heading">
+
+                <div>
+
+                    <span>
+                        OPEN QUESTION
+                    </span>
+
+                    <h3>
+                        Add Problem
+                    </h3>
+
+                </div>
+
+                <button
+                    class="modal-close"
+                    id="closeProblemModal"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <input
+                id="problemTitleInput"
+                type="text"
+                placeholder="What problem or doubt did you find?"
+            >
+
+
+            <textarea
+                id="problemDescriptionInput"
+                placeholder="Describe the problem..."
+            ></textarea>
+
+
+            <div class="modal-actions">
+
+                <button
+                    class="secondary-study-button"
+                    id="cancelProblem"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="primary-study-button"
+                    id="saveProblem"
+                    type="button"
+                >
+                    Add Problem
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         LINK MODAL
+    ====================================================== -->
+
+    <div
+        class="study-modal hidden"
+        id="linkModal"
+    >
+
+        <div class="study-modal-box">
+
+            <div class="modal-heading">
+
+                <div>
+
+                    <span>
+                        RESOURCE
+                    </span>
+
+                    <h3>
+                        Add Link
+                    </h3>
+
+                </div>
+
+                <button
+                    class="modal-close"
+                    id="closeLinkModal"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <input
+                id="linkTitleInput"
+                type="text"
+                placeholder="Link title"
+            >
+
+
+            <input
+                id="linkURLInput"
+                type="url"
+                placeholder="https://example.com"
+            >
+
+
+            <textarea
+                id="linkDescriptionInput"
+                placeholder="What is this link useful for?"
+            ></textarea>
+
+
+            <div class="modal-actions">
+
+                <button
+                    class="secondary-study-button"
+                    id="cancelLink"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="primary-study-button"
+                    id="saveLink"
+                    type="button"
+                >
+                    Add Link
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         TIMELINE MODAL
+    ====================================================== -->
+
+    <div
+        class="study-modal hidden"
+        id="timelineModal"
+    >
+
+        <div class="study-modal-box large-modal">
+
+            <div class="modal-heading">
+
+                <div>
+
+                    <span>
+                        STUDY PLAN
+                    </span>
+
+                    <h3>
+                        Add Timeline Entry
+                    </h3>
+
+                </div>
+
+                <button
+                    class="modal-close"
+                    id="closeTimelineModal"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-field">
+
+                    <label>
+                        Date
+                    </label>
+
+                    <input
+                        id="timelineDate"
+                        type="date"
+                    >
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label>
+                        Status
+                    </label>
+
+                    <select id="timelineStatus">
+
+                        <option value="planned">
+                            Planned
+                        </option>
+
+                        <option value="ongoing">
+                            Ongoing
+                        </option>
+
+                        <option value="completed">
+                            Completed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-field full">
+
+                    <label>
+                        Title
+                    </label>
+
+                    <input
+                        id="timelineTitle"
+                        type="text"
+                        placeholder="What will you study?"
+                    >
+
+                </div>
+
+
+                <div class="form-field full">
+
+                    <label>
+                        Objective / Work to Do
+                    </label>
+
+                    <textarea
+                        id="timelineDescription"
+                        placeholder="What exactly should be achieved during this timeline entry?"
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label>
+                        Expected Time
+                    </label>
+
+                    <input
+                        id="timelineDuration"
+                        type="text"
+                        placeholder="Example: 2 hours"
+                    >
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label>
+                        Priority
+                    </label>
+
+                    <select id="timelinePriority">
+
+                        <option value="normal">
+                            Normal
+                        </option>
+
+                        <option value="high">
+                            High
+                        </option>
+
+                        <option value="low">
+                            Low
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    class="secondary-study-button"
+                    id="cancelTimeline"
+                    type="button"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    class="primary-study-button"
+                    id="saveTimeline"
+                    type="button"
+                >
+                    Add Timeline
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         TOAST
+    ====================================================== -->
+
+    <div
+        class="study-toast hidden"
+        id="studyToast"
+    >
+        Saved
+    </div>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="study.js"></script>
+
+</body>
+
+</html>

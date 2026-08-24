@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Remainder | RiGiD</title>
+
+    <link
+        rel="stylesheet"
+        href="remainder.css"
+    >
+
+</head>
+
+
+<body>
+
+<!-- =====================================================
+     REMAINDER HEADER
+===================================================== -->
+
+<header class="remainder-header">
+
+    <div class="remainder-brand">
+
+        <div class="remainder-brand-top">
+
+            <span class="remainder-badge">
+                REMAINDER
+            </span>
+
+            <span class="remainder-live-status">
+                ● LIVE
+            </span>
+
+        </div>
+
+
+        <h1>
+            Reminders
+        </h1>
+
+
+        <p>
+            Keep track of what needs to be done,
+            when it needs to be done, and what it
+            belongs to.
+        </p>
+
+    </div>
+
+
+    <div class="remainder-clock-area">
+
+        <div class="remainder-date">
+
+            <span id="remainderDate">
+                23 AUG 2026
+            </span>
+
+            <strong id="remainderClock">
+                07:00:00 PM
+            </strong>
+
+        </div>
+
+
+        <button
+            class="add-reminder-button"
+            id="openReminderModal"
+            type="button"
+        >
+            + New Reminder
+        </button>
+
+    </div>
+
+</header>
+
+
+
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
+
+<nav class="remainder-navigation">
+
+    <button
+        class="remainder-nav-item active"
+        data-filter="all"
+        type="button"
+    >
+        All
+    </button>
+
+    <button
+        class="remainder-nav-item"
+        data-filter="today"
+        type="button"
+    >
+        Today
+    </button>
+
+    <button
+        class="remainder-nav-item"
+        data-filter="upcoming"
+        type="button"
+    >
+        Upcoming
+    </button>
+
+    <button
+        class="remainder-nav-item"
+        data-filter="overdue"
+        type="button"
+    >
+        Overdue
+    </button>
+
+    <button
+        class="remainder-nav-item"
+        data-filter="completed"
+        type="button"
+    >
+        Completed
+    </button>
+
+</nav>
+
+
+
+<!-- =====================================================
+     MAIN
+===================================================== -->
+
+<main class="remainder-container">
+
+
+<!-- =====================================================
+     SUMMARY
+===================================================== -->
+
+<section class="remainder-summary">
+
+    <article class="summary-card">
+
+        <div class="summary-icon">
+            !
+        </div>
+
+        <div>
+
+            <span>
+                TODAY
+            </span>
+
+            <strong id="todayCount">
+                3
+            </strong>
+
+        </div>
+
+    </article>
+
+
+    <article class="summary-card">
+
+        <div class="summary-icon">
+            →
+        </div>
+
+        <div>
+
+            <span>
+                UPCOMING
+            </span>
+
+            <strong id="upcomingCount">
+                7
+            </strong>
+
+        </div>
+
+    </article>
+
+
+    <article class="summary-card overdue">
+
+        <div class="summary-icon">
+            !
+        </div>
+
+        <div>
+
+            <span>
+                OVERDUE
+            </span>
+
+            <strong id="overdueCount">
+                1
+            </strong>
+
+        </div>
+
+    </article>
+
+
+    <article class="summary-card completed">
+
+        <div class="summary-icon">
+            ✓
+        </div>
+
+        <div>
+
+            <span>
+                COMPLETED
+            </span>
+
+            <strong id="completedCount">
+                12
+            </strong>
+
+        </div>
+
+    </article>
+
+</section>
+
+
+
+<!-- =====================================================
+     TODAY
+===================================================== -->
+
+<section
+    class="remainder-section"
+    id="todaySection"
+>
+
+    <div class="remainder-section-header">
+
+        <div>
+
+            <span class="section-label">
+                TODAY
+            </span>
+
+            <h2>
+                What needs your attention?
+            </h2>
+
+        </div>
+
+        <span
+            class="section-date"
+            id="todaySectionDate"
+        >
+            23 AUG
+        </span>
+
+    </div>
+
+
+    <div
+        class="reminder-list"
+        id="todayReminderList"
+    >
+
+
+        <!-- STUDY -->
+
+        <article
+            class="reminder-card"
+            data-category="study"
+            data-status="upcoming"
+            data-date="2026-08-23"
+            data-time="18:30"
+        >
+
+            <div class="reminder-time">
+
+                <strong>
+                    06:30
+                </strong>
+
+                <span>
+                    PM
+                </span>
+
+            </div>
+
+
+            <div class="reminder-category study">
+
+                <span class="category-dot"></span>
+
+                STUDY
+
+            </div>
+
+
+            <div class="reminder-content">
+
+                <div class="reminder-title-row">
+
+                    <h3>
+                        Review MPPT algorithms
+                    </h3>
+
+                    <span class="priority high">
+                        HIGH
+                    </span>
+
+                </div>
+
+
+                <p>
+                    Revise Incremental Conductance,
+                    P&amp;O and Fractional Open Circuit
+                    Voltage methods.
+                </p>
+
+
+                <div class="reminder-meta">
+
+                    <span>
+                        Study → MPPT
+                    </span>
+
+                    <span>
+                        45 min
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="reminder-actions">
+
+                <button
+                    class="complete-reminder"
+                    type="button"
+                    title="Mark complete"
+                >
+                    ✓
+                </button>
+
+                <button
+                    class="edit-reminder"
+                    type="button"
+                    title="Edit"
+                >
+                    Edit
+                </button>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- PROJECT -->
+
+        <article
+            class="reminder-card"
+            data-category="project"
+            data-status="upcoming"
+            data-date="2026-08-23"
+            data-time="20:00"
+        >
+
+            <div class="reminder-time">
+
+                <strong>
+                    08:00
+                </strong>
+
+                <span>
+                    PM
+                </span>
+
+            </div>
+
+
+            <div class="reminder-category project">
+
+                <span class="category-dot"></span>
+
+                PROJECT
+
+            </div>
+
+
+            <div class="reminder-content">
+
+                <div class="reminder-title-row">
+
+                    <h3>
+                        Update testing documentation
+                    </h3>
+
+                    <span class="priority medium">
+                        MEDIUM
+                    </span>
+
+                </div>
+
+
+                <p>
+                    Add today's test results and
+                    observations to the project record.
+                </p>
+
+
+                <div class="reminder-meta">
+
+                    <span>
+                        Project → Testing
+                    </span>
+
+                    <span>
+                        30 min
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="reminder-actions">
+
+                <button
+                    class="complete-reminder"
+                    type="button"
+                    title="Mark complete"
+                >
+                    ✓
+                </button>
+
+                <button
+                    class="edit-reminder"
+                    type="button"
+                    title="Edit"
+                >
+                    Edit
+                </button>
+
+            </div>
+
+        </article>
+
+
+
+        <!-- PAPER -->
+
+        <article
+            class="reminder-card"
+            data-category="paper"
+            data-status="upcoming"
+            data-date="2026-08-23"
+            data-time="21:30"
+        >
+
+            <div class="reminder-time">
+
+                <strong>
+                    09:30
+                </strong>
+
+                <span>
+                    PM
+                </span>
+
+            </div>
+
+
+            <div class="reminder-category paper">
+
+                <span class="category-dot"></span>
+
+                PAPER
+
+            </div>
+
+
+            <div class="reminder-content">
+
+                <div class="reminder-title-row">
+
+                    <h3>
+                        Finish methodology section
+                    </h3>
+
+                    <span class="priority high">
+                        HIGH
+                    </span>
+
+                </div>
+
+
+                <p>
+                    Complete the methodology draft and
+                    add the required references.
+                </p>
+
+
+                <div class="reminder-meta">
+
+                    <span>
+                        Paper → Methodology
+                    </span>
+
+                    <span>
+                        1 hr
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="reminder-actions">
+
+                <button
+                    class="complete-reminder"
+                    type="button"
+                    title="Mark complete"
+                >
+                    ✓
+                </button>
+
+                <button
+                    class="edit-reminder"
+                    type="button"
+                    title="Edit"
+                >
+                    Edit
+                </button>
+
+            </div>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     UPCOMING TIMELINE
+===================================================== -->
+
+<section
+    class="remainder-section"
+    id="upcomingSection"
+>
+
+    <div class="remainder-section-header">
+
+        <div>
+
+            <span class="section-label">
+                UPCOMING
+            </span>
+
+            <h2>
+                Your timeline
+            </h2>
+
+        </div>
+
+        <button
+            class="small-action-button"
+            id="addTimelineReminder"
+            type="button"
+        >
+            + Add
+        </button>
+
+    </div>
+
+
+    <div
+        class="upcoming-timeline"
+        id="upcomingTimeline"
+    >
+
+
+        <!-- TOMORROW -->
+
+        <div class="timeline-day">
+
+            <div class="timeline-date">
+
+                <strong>
+                    24
+                </strong>
+
+                <span>
+                    AUG
+                </span>
+
+            </div>
+
+
+            <div class="timeline-items">
+
+
+                <article
+                    class="timeline-reminder"
+                    data-category="simulation"
+                >
+
+                    <div class="timeline-time">
+                        10:00 AM
+                    </div>
+
+                    <div
+                        class="timeline-category simulation"
+                    >
+                        <span></span>
+                        SIMULATION
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <strong>
+                            Run PMSG simulation
+                        </strong>
+
+                        <p>
+                            Test the revised FOC
+                            parameters.
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="timeline-edit"
+                        type="button"
+                    >
+                        Edit
+                    </button>
+
+                </article>
+
+
+
+                <article
+                    class="timeline-reminder"
+                    data-category="prototype"
+                >
+
+                    <div class="timeline-time">
+                        04:00 PM
+                    </div>
+
+                    <div
+                        class="timeline-category prototype"
+                    >
+                        <span></span>
+                        PROTOTYPE
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <strong>
+                            Thermal testing
+                        </strong>
+
+                        <p>
+                            Complete the next
+                            prototype test cycle.
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="timeline-edit"
+                        type="button"
+                    >
+                        Edit
+                    </button>
+
+                </article>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- 25 AUG -->
+
+        <div class="timeline-day">
+
+            <div class="timeline-date">
+
+                <strong>
+                    25
+                </strong>
+
+                <span>
+                    AUG
+                </span>
+
+            </div>
+
+
+            <div class="timeline-items">
+
+                <article
+                    class="timeline-reminder"
+                    data-category="project"
+                >
+
+                    <div class="timeline-time">
+                        11:00 AM
+                    </div>
+
+                    <div
+                        class="timeline-category project"
+                    >
+                        <span></span>
+                        PROJECT
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <strong>
+                            Team progress review
+                        </strong>
+
+                        <p>
+                            Review current milestones
+                            and pending tasks.
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="timeline-edit"
+                        type="button"
+                    >
+                        Edit
+                    </button>
+
+                </article>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- 27 AUG -->
+
+        <div class="timeline-day">
+
+            <div class="timeline-date">
+
+                <strong>
+                    27
+                </strong>
+
+                <span>
+                    AUG
+                </span>
+
+            </div>
+
+
+            <div class="timeline-items">
+
+                <article
+                    class="timeline-reminder"
+                    data-category="paper"
+                >
+
+                    <div class="timeline-time">
+                        05:30 PM
+                    </div>
+
+                    <div
+                        class="timeline-category paper"
+                    >
+                        <span></span>
+                        PAPER
+                    </div>
+
+                    <div class="timeline-content">
+
+                        <strong>
+                            Review complete paper
+                        </strong>
+
+                        <p>
+                            Check references,
+                            formatting and figures.
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="timeline-edit"
+                        type="button"
+                    >
+                        Edit
+                    </button>
+
+                </article>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     OVERDUE
+===================================================== -->
+
+<section
+    class="remainder-section overdue-section"
+    id="overdueSection"
+>
+
+    <div class="remainder-section-header">
+
+        <div>
+
+            <span class="section-label">
+                NEEDS ATTENTION
+            </span>
+
+            <h2>
+                Overdue
+            </h2>
+
+        </div>
+
+        <span class="overdue-count">
+            1 overdue
+        </span>
+
+    </div>
+
+
+    <div
+        class="reminder-list"
+        id="overdueReminderList"
+    >
+
+        <article
+            class="reminder-card overdue-card"
+            data-category="study"
+            data-status="overdue"
+        >
+
+            <div class="reminder-time overdue-time">
+
+                <strong>
+                    22
+                </strong>
+
+                <span>
+                    AUG
+                </span>
+
+            </div>
+
+
+            <div class="reminder-category study">
+
+                <span class="category-dot"></span>
+
+                STUDY
+
+            </div>
+
+
+            <div class="reminder-content">
+
+                <div class="reminder-title-row">
+
+                    <h3>
+                        Revise control systems notes
+                    </h3>
+
+                    <span class="priority urgent">
+                        URGENT
+                    </span>
+
+                </div>
+
+
+                <p>
+                    This reminder was due yesterday.
+                    Reschedule or complete it.
+                </p>
+
+
+                <div class="reminder-meta">
+
+                    <span>
+                        Study → Control Systems
+                    </span>
+
+                    <span>
+                        Due 22 AUG
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="reminder-actions">
+
+                <button
+                    class="complete-reminder"
+                    type="button"
+                    title="Mark complete"
+                >
+                    ✓
+                </button>
+
+                <button
+                    class="snooze-reminder"
+                    type="button"
+                >
+                    Snooze
+                </button>
+
+            </div>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     COMPLETED
+===================================================== -->
+
+<section
+    class="remainder-section"
+    id="completedSection"
+>
+
+    <div class="remainder-section-header">
+
+        <div>
+
+            <span class="section-label">
+                COMPLETED
+            </span>
+
+            <h2>
+                Recently completed
+            </h2>
+
+        </div>
+
+        <button
+            class="small-action-button"
+            id="clearCompleted"
+            type="button"
+        >
+            Clear
+        </button>
+
+    </div>
+
+
+    <div
+        class="completed-list"
+        id="completedReminderList"
+    >
+
+        <article
+            class="completed-reminder"
+            data-category="prototype"
+        >
+
+            <div class="completed-check">
+                ✓
+            </div>
+
+            <div class="completed-content">
+
+                <strong>
+                    Update prototype BOM
+                </strong>
+
+                <span>
+                    PROTOTYPE · Completed today
+                </span>
+
+            </div>
+
+        </article>
+
+
+        <article
+            class="completed-reminder"
+            data-category="project"
+        >
+
+            <div class="completed-check">
+                ✓
+            </div>
+
+            <div class="completed-content">
+
+                <strong>
+                    Upload testing report
+                </strong>
+
+                <span>
+                    PROJECT · Completed yesterday
+                </span>
+
+            </div>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     QUICK REMINDER
+===================================================== -->
+
+<section class="quick-reminder-section">
+
+    <div class="quick-reminder-content">
+
+        <div>
+
+            <span class="section-label">
+                QUICK REMINDER
+            </span>
+
+            <h2>
+                Don't lose the small things.
+            </h2>
+
+            <p>
+                Add something quickly and organize
+                it properly later.
+            </p>
+
+        </div>
+
+
+        <button
+            class="quick-add-button"
+            id="quickReminderButton"
+            type="button"
+        >
+            + Quick Reminder
+        </button>
+
+    </div>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     NEW REMINDER MODAL
+===================================================== -->
+
+<div
+    class="remainder-modal hidden"
+    id="reminderModal"
+>
+
+    <div class="remainder-modal-panel">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="section-label">
+                    NEW REMINDER
+                </span>
+
+                <h2>
+                    Create reminder
+                </h2>
+
+            </div>
+
+
+            <button
+                class="modal-close"
+                id="closeReminderModal"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+
+        <div class="reminder-form">
+
+
+            <!-- TITLE -->
+
+            <label class="form-full">
+
+                Reminder title
+
+                <input
+                    type="text"
+                    id="reminderTitle"
+                    placeholder="What needs to be done?"
+                >
+
+            </label>
+
+
+
+            <!-- CATEGORY -->
+
+            <label>
+
+                Related to
+
+                <select id="reminderCategory">
+
+                    <option value="general">
+                        General
+                    </option>
+
+                    <option value="study">
+                        Study
+                    </option>
+
+                    <option value="paper">
+                        Paper
+                    </option>
+
+                    <option value="simulation">
+                        Simulation
+                    </option>
+
+                    <option value="project">
+                        Project
+                    </option>
+
+                    <option value="prototype">
+                        Prototype
+                    </option>
+
+                    <option value="task">
+                        Task
+                    </option>
+
+                    <option value="meeting">
+                        Meeting
+                    </option>
+
+                </select>
+
+            </label>
+
+
+
+            <!-- RELATED ITEM -->
+
+            <label>
+
+                Related item
+
+                <select id="relatedItem">
+
+                    <option value="">
+                        None
+                    </option>
+
+                    <option>
+                        Select from existing items
+                    </option>
+
+                </select>
+
+            </label>
+
+
+
+            <!-- DATE -->
+
+            <label>
+
+                Date
+
+                <input
+                    type="date"
+                    id="reminderDate"
+                >
+
+            </label>
+
+
+
+            <!-- TIME -->
+
+            <label>
+
+                Time
+
+                <input
+                    type="time"
+                    id="reminderTime"
+                >
+
+            </label>
+
+
+
+            <!-- REPEAT -->
+
+            <label>
+
+                Repeat
+
+                <select id="reminderRepeat">
+
+                    <option value="once">
+                        Once
+                    </option>
+
+                    <option value="daily">
+                        Daily
+                    </option>
+
+                    <option value="weekly">
+                        Weekly
+                    </option>
+
+                    <option value="monthly">
+                        Monthly
+                    </option>
+
+                    <option value="custom">
+                        Custom
+                    </option>
+
+                </select>
+
+            </label>
+
+
+
+            <!-- PRIORITY -->
+
+            <label>
+
+                Priority
+
+                <select id="reminderPriority">
+
+                    <option value="low">
+                        Low
+                    </option>
+
+                    <option
+                        value="medium"
+                        selected
+                    >
+                        Medium
+                    </option>
+
+                    <option value="high">
+                        High
+                    </option>
+
+                    <option value="urgent">
+                        Urgent
+                    </option>
+
+                </select>
+
+            </label>
+
+
+
+            <!-- DESCRIPTION -->
+
+            <label class="form-full">
+
+                Notes / Description
+
+                <textarea
+                    id="reminderDescription"
+                    placeholder="Add additional details..."
+                ></textarea>
+
+            </label>
+
+
+
+            <!-- NOTIFICATION -->
+
+            <div class="notification-options form-full">
+
+                <div>
+
+                    <strong>
+                        Notification
+                    </strong>
+
+                    <span>
+                        Remind me before the deadline
+                    </span>
+
+                </div>
+
+
+                <select id="notificationBefore">
+
+                    <option value="0">
+                        At time
+                    </option>
+
+                    <option value="5">
+                        5 minutes before
+                    </option>
+
+                    <option value="15">
+                        15 minutes before
+                    </option>
+
+                    <option value="30">
+                        30 minutes before
+                    </option>
+
+                    <option value="60">
+                        1 hour before
+                    </option>
+
+                    <option value="1440">
+                        1 day before
+                    </option>
+
+                </select>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="modal-actions">
+
+            <button
+                class="modal-secondary-button"
+                id="cancelReminder"
+                type="button"
+            >
+                Cancel
+            </button>
+
+
+            <button
+                class="modal-primary-button"
+                id="saveReminder"
+                type="button"
+            >
+                Create Reminder
+            </button>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     QUICK REMINDER MODAL
+===================================================== -->
+
+<div
+    class="remainder-modal hidden"
+    id="quickReminderModal"
+>
+
+    <div class="remainder-modal-panel quick-modal-panel">
+
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="section-label">
+                    QUICK REMINDER
+                </span>
+
+                <h2>
+                    Add something quickly
+                </h2>
+
+            </div>
+
+
+            <button
+                class="modal-close"
+                id="closeQuickReminderModal"
+                type="button"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <label>
+
+            Reminder
+
+            <input
+                type="text"
+                id="quickReminderTitle"
+                placeholder="Remember to..."
+            >
+
+        </label>
+
+
+        <div class="quick-time-row">
+
+            <label>
+
+                Date
+
+                <input
+                    type="date"
+                    id="quickReminderDate"
+                >
+
+            </label>
+
+
+            <label>
+
+                Time
+
+                <input
+                    type="time"
+                    id="quickReminderTime"
+                >
+
+            </label>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="modal-secondary-button"
+                id="cancelQuickReminder"
+                type="button"
+            >
+                Cancel
+            </button>
+
+
+            <button
+                class="modal-primary-button"
+                id="saveQuickReminder"
+                type="button"
+            >
+                Add Reminder
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     TOAST
+===================================================== -->
+
+<div
+    class="remainder-toast hidden"
+    id="remainderToast"
+></div>
+
+
+
+<script
+    src="remainder.js"
+></script>
+
+</body>
+
+</html>

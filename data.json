@@ -1,0 +1,37 @@
+[
+  {
+    "id": "demo-1",
+    "email": "aditi.24ei@kct.ac.in",
+    "name": "Aditi Rao",
+    "date": "2026-08-04",
+    "category": "Firmware",
+    "content": "Finished the **MQTT reconnect handler** for the ESP32 node — it now backs off exponentially instead of hammering the broker.\n\n- Verified against local Mosquitto broker\n- Added auth token refresh\n- Next: wire into the dashboard's live status tile",
+    "files": [
+      { "name": "mqtt-reconnect-log.pdf", "url": "https://your-tenant-my.sharepoint.com/:b:/g/personal/REPLACE/EXXXXXX" }
+    ],
+    "timestamp": "2026-08-04T18:20:00"
+  },
+  {
+    "id": "demo-2",
+    "email": "karthik.24ei@kct.ac.in",
+    "name": "Karthik Iyer",
+    "date": "2026-08-05",
+    "category": "PCB Design",
+    "content": "Routed the copper pours for the rectifier board and re-checked trace ampacity for the 20A rail. DRC is clean.\n\n> Still need to confirm thermal clearance around the Schottky array before sending to fab.",
+    "files": [
+      { "name": "rectifier-rev3.kicad_pcb", "url": "https://your-tenant-my.sharepoint.com/:u:/g/personal/REPLACE/EXXXXXX" },
+      { "name": "drc-report.pdf", "url": "https://your-tenant-my.sharepoint.com/:b:/g/personal/REPLACE/EXXXXXX" }
+    ],
+    "timestamp": "2026-08-05T21:05:00"
+  },
+  {
+    "id": "demo-3",
+    "email": "priya.24ei@kct.ac.in",
+    "name": "Priya Menon",
+    "date": "2026-08-06",
+    "category": "Testing",
+    "content": "Ran the bench test for the buck-boost converter across the full duty cycle sweep. Efficiency holds above 92% from 20%-80% load.\n\n```\nD=0.35  Vin=48V  Vout=60V  Eff=93.1%\nD=0.50  Vin=48V  Vout=60V  Eff=94.4%\n```",
+    "files": [],
+    "timestamp": "2026-08-06T09:40:00"
+  }
+]

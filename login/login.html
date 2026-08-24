@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>RiGiD — Sign In</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <!-- YOUR EXISTING GLOBAL CSS -->
+  <link rel="stylesheet" href="../styles.css">
+
+  <!-- LOGIN ONLY CSS -->
+  <link rel="stylesheet" href="login.css">
+
+  <!-- Theme -->
+  <script>
+    if (
+      localStorage.getItem("logbook-theme") === "dark" ||
+      (
+        !localStorage.getItem("logbook-theme") &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+      )
+    ) {
+      document.documentElement.classList.add("dark");
+    }
+  </script>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+</head>
+
+
+<body class="min-h-screen flex flex-col login-bg">
+
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
+
+  <header class="header-bar">
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4
+                flex items-center justify-between">
+
+      <div class="flex items-center gap-3">
+
+        <span class="logo-mark">
+          RiG
+        </span>
+
+        <div>
+
+          <h1 class="font-display text-lg sm:text-xl
+                     font-semibold tracking-tight">
+
+            RiGiD
+            <span class="text-accent">/</span>
+            Team Progress Portal
+
+          </h1>
+
+          <p id="liveClock" class="font-mono text-[11px]
+                   uppercase tracking-widest
+                   text-soft mt-1"></p>
+
+        </div>
+
+      </div>
+
+
+      <!-- Theme -->
+
+      <button id="themeToggle" class="icon-btn" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">
+
+        <span id="themeIcon">☾</span>
+
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- =====================================================
+       MAIN
+       ===================================================== -->
+
+  <main class="flex-1 flex flex-col
+           items-center justify-center
+           px-4 py-10">
+
+    <!-- Brand -->
+
+    <div class="brand-hero">
+
+      <h2 class="brand-wordmark">
+        R<span class="wordmark-i">i</span>G<span class="wordmark-i">i</span>D
+      </h2>
+
+      <p class="brand-tagline">
+        "And miles to go sleep before we sleep"
+      </p>
+
+    </div>
+
+
+    <!-- ===================================================
+         AUTH CARD
+         =================================================== -->
+
+    <div class="auth-card">
+
+
+      <!-- =================================================
+           TABS
+           ================================================= -->
+
+      <div class="auth-tabs">
+
+        <button id="tabLogin" class="auth-tab is-active" type="button">
+          Log In
+        </button>
+
+        <button id="tabSignup" class="auth-tab" type="button">
+          Sign Up
+        </button>
+
+      </div>
+
+
+      <!-- =================================================
+           MESSAGE
+           ================================================= -->
+
+      <div id="authMessage" class="auth-message hidden" role="alert"></div>
+
+
+      <!-- =================================================
+           LOGIN FORM
+           ================================================= -->
+
+      <form id="loginForm" class="auth-form">
+
+        <div>
+
+          <label class="field-label" for="loginEmail">
+            Username
+          </label>
+
+          <input id="loginEmail" type="email" class="field-input" placeholder="you@kct.ac.in" autocomplete="username"
+            required>
+
+        </div>
+
+
+        <div>
+
+          <label class="field-label" for="loginPassword">
+            Password
+          </label>
+
+          <input id="loginPassword" type="password" class="field-input" autocomplete="current-password" required>
+
+        </div>
+
+
+        <button type="submit" class="btn-primary w-full justify-center">
+          Log In
+        </button>
+
+      </form>
+
+
+      <!-- =================================================
+           SIGNUP FORM
+           ================================================= -->
+
+      <form id="signupForm" class="auth-form hidden">
+
+        <!-- =================================================
+             KCT EMAIL SIGNUP FIELDS
+             (hidden while a Google account flow is active)
+             ================================================= -->
+
+        <div id="emailSignupFields">
+
+          <!-- EMAIL -->
+
+          <div>
+
+            <label class="field-label" for="signupEmail">
+              KCT Email
+            </label>
+
+            <input id="signupEmail" type="email" class="field-input" placeholder="you@kct.ac.in" autocomplete="email"
+              required>
+
+          </div>
+
+
+          <!-- TEAM -->
+
+          <div>
+
+            <label class="field-label" for="signupTeam">
+              Team
+            </label>
+
+            <select id="signupTeam" class="field-input" required>
+
+              <option value="" selected disabled>
+                Select your team
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- PASSWORD -->
+
+          <div>
+
+            <label class="field-label" for="signupPassword">
+              Create Password
+            </label>
+
+            <input id="signupPassword" type="password" class="field-input" minlength="8" autocomplete="new-password"
+              required>
+
+          </div>
+
+
+          <!-- CONFIRM PASSWORD -->
+
+          <div>
+
+            <label class="field-label" for="signupPassword2">
+              Confirm Password
+            </label>
+
+            <input id="signupPassword2" type="password" class="field-input" minlength="8" autocomplete="new-password"
+              required>
+
+          </div>
+
+
+          <!-- =================================================
+             VERIFICATION
+             ================================================= -->
+
+          <button id="sendVerificationBtn" type="button" class="btn-secondary w-full justify-center">
+            Send Verification Link
+          </button>
+
+          <div id="resendVerificationBox" class="resend-verification-box hidden">
+
+            <button type="button" id="resendVerificationBtn" class="resend-link">
+              Resend verification link
+            </button>
+
+          </div>
+
+
+          <p id="verificationStatus" class="field-hint hidden"></p>
+
+        </div>
+        <!-- /emailSignupFields -->
+
+        <div class="auth-divider" id="googleDivider">
+          <span>OR</span>
+        </div>
+
+        <button id="googleSignupBtn" type="button" class="google-btn">
+          <span class="google-icon">G</span>
+          Continue with Google
+        </button>
+
+        <div id="googleProfileSetup" class="google-profile-setup hidden">
+
+          <div class="google-user-info">
+
+            <div id="googleUserName" class="google-user-name"></div>
+
+            <div id="googleUserEmail" class="google-user-email"></div>
+
+          </div>
+
+
+          <div>
+
+            <label class="field-label" for="googleTeam">
+              Select your team
+            </label>
+
+            <select id="googleTeam" class="field-input" required>
+
+              <option value="" selected disabled>
+                Select your team
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div id="googlePasswordBox">
+
+            <div>
+
+              <label class="field-label" for="googlePassword">
+                Create Password
+              </label>
+
+              <input id="googlePassword" type="password" class="field-input" minlength="8" autocomplete="new-password"
+                required>
+
+            </div>
+
+
+            <div>
+
+              <label class="field-label" for="googlePassword2">
+                Confirm Password
+              </label>
+
+              <input id="googlePassword2" type="password" class="field-input" minlength="8" autocomplete="new-password"
+                required>
+
+            </div>
+
+
+            <p class="field-hint">
+
+
+            </p>
+
+          </div>
+
+
+          <button id="googleRequestAccessBtn" type="button" class="btn-primary w-full justify-center">
+            Request Access
+          </button>
+
+
+          <div class="resend-verification-box">
+            <button id="googleUseDifferentAccountBtn" type="button" class="resend-link">
+              Not you? Use a different Google account
+            </button>
+          </div>
+
+        </div>
+
+        <!-- =================================================
+             REQUEST ACCESS
+             ================================================= -->
+
+        <button id="requestAccessBtn" type="submit" class="btn-primary w-full justify-center" disabled>
+          Request Access
+        </button>
+
+
+        <p class="field-hint">
+
+
+
+        </p>
+
+      </form>
+
+    </div>
+
+  </main>
+
+
+  <!-- =====================================================
+       FOOTER
+       ===================================================== -->
+
+  <footer class="border-t border-token">
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-center">
+
+      <p class="font-mono text-[11px] text-soft">
+        RiGiD · Team Progress Portal
+      </p>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =====================================================
+       SUPABASE CLIENT
+       ===================================================== -->
+
+  <script src="../supabase-client.js"></script>
+
+  <!-- LOGIN LOGIC -->
+
+  <script src="login.js"></script>
+
+</body>
+
+</html>

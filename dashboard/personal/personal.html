@@ -1,0 +1,2343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RiGiD — Personal Workspace</title>
+
+    <!-- =====================================================
+         FONTS
+    ====================================================== -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- =====================================================
+         PERSONAL DASHBOARD CSS
+    ====================================================== -->
+
+    <link rel="stylesheet" href="personal.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         BACKGROUND
+    ====================================================== -->
+
+    <div class="background-grid"></div>
+
+    <div class="background-glow glow-one"></div>
+
+    <div class="background-glow glow-two"></div>
+
+    <div class="background-glow glow-three"></div>
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="personal-header">
+
+        <div class="header-brand">
+
+            <div class="brand-symbol">
+                RiG
+            </div>
+
+            <div>
+
+                <div class="brand-title">
+                    R<span class="brand-orange-i">i</span>G<span class="brand-orange-i">i</span>D Workspace
+                </div>
+
+                <div class="live-clock" id="liveClock">
+                    Loading...
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             NAVIGATION
+        ================================================== -->
+
+        <nav class="main-navigation">
+
+            <a href="#profileSection" class="nav-item active">
+
+                <span class="nav-icon">
+                    ◉
+                </span>
+
+                <span>
+                    Profile
+                </span>
+
+            </a>
+
+
+            <a href="#workSection" class="nav-item">
+
+                <span class="nav-icon">
+                    ◈
+                </span>
+
+                <span>
+                    Work
+                </span>
+
+            </a>
+
+
+            <a href="#journeySection" class="nav-item">
+
+                <span class="nav-icon">
+                    ⌁
+                </span>
+
+                <span>
+                    Journey
+                </span>
+
+            </a>
+
+
+            <a href="#calendarSection" class="nav-item">
+
+                <span class="nav-icon">
+                    ▦
+                </span>
+
+                <span>
+                    Calendar
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <!-- =================================================
+             HEADER ACTIONS
+        ================================================== -->
+
+        <div class="header-actions">
+
+            <button class="header-btn active" id="personalWorkspaceBtn" type="button">
+
+                <span class="btn-icon">
+                    ⌂
+                </span>
+
+                <span>
+                    Personal Workspace
+                </span>
+
+            </button>
+
+
+            <button class="icon-btn" id="themeToggle" type="button" title="Change theme">
+                ◐
+            </button>
+
+
+            <button class="icon-btn" id="settingsBtn" type="button" title="Settings">
+                ⚙
+            </button>
+
+
+            <button class="signout-btn" id="signOutBtn" type="button">
+                Sign Out
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         MAIN CONTAINER
+    ====================================================== -->
+
+    <main class="personal-container">
+
+
+        <!-- =================================================
+             PROFILE SECTION
+        ================================================== -->
+
+        <section class="profile-section" id="profileSection">
+
+
+            <!-- =================================================
+                 PROFILE PHOTO
+            ================================================== -->
+
+            <div class="profile-photo-wrapper">
+
+                <div class="profile-photo" id="profilePhoto">
+
+                    <span class="profile-placeholder" id="profilePlaceholder">
+                        NT
+                    </span>
+
+                    <img id="profileImage" class="profile-image hidden" src="" alt="Profile photo">
+
+                </div>
+
+
+                <button class="profile-upload-btn" id="profileUploadBtn" type="button" title="Change profile photo">
+                    +
+                </button>
+
+
+                <input type="file" id="profilePhotoInput" accept="image/*" hidden>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 PROFILE INFORMATION
+            ================================================== -->
+
+            <div class="profile-information">
+
+                <div class="profile-eyebrow">
+                    PERSONAL PROFILE
+                </div>
+
+
+                <div class="profile-name-row">
+
+                    <h1 id="profileName">
+                        Navin TK
+                    </h1>
+
+                    <button class="edit-profile-field" type="button" title="Edit profile">
+                        ✎
+                    </button>
+
+                </div>
+
+
+                <div class="profile-email" id="profileEmail">
+                    navin@kct.ac.in
+                </div>
+
+
+                <!-- =================================================
+                     PROFILE DETAILS
+                ================================================== -->
+
+                <div class="profile-details" id="profileDetails">
+
+                    <!-- Generated by JavaScript -->
+
+                </div>
+
+
+                <!-- =================================================
+                     ACCOUNT EMAIL
+                ================================================== -->
+
+                <div class="profile-email-locked">
+
+                    <span class="detail-lock">
+                        🔒
+                    </span>
+
+                    <span>
+                        Account email:
+                    </span>
+
+                    <strong id="lockedProfileEmail">
+                        navin@kct.ac.in
+                    </strong>
+
+                    <small>
+                        Email cannot be changed here
+                    </small>
+
+                </div>
+
+
+                <!-- =================================================
+                     SOCIAL LINKS
+                ================================================== -->
+
+                <div class="social-profile-links">
+                    <!-- GitHub -->
+                    <button type="button" id="githubLink" class="social-profile-link">
+                        <span class="social-icon">
+                            GH
+                        </span>
+
+                        <span>
+                            <small id="githubUsername">GITHUB</small>
+                        </span>
+                    </button>
+
+
+                    <!-- LinkedIn -->
+                    <button type="button" id="linkedinLink" class="social-profile-link">
+                        <span class="social-icon">
+                            IN
+                        </span>
+
+                        <span>
+                            <small id="linkedinUsername">LINKEDIN</small>
+                        </span>
+                    </button>
+
+
+                    <!-- Accolades -->
+                    <button type="button" class="social-profile-link accolades-link" id="accoladesBtn">
+                        <span class="social-icon accolades-icon">
+                            ★
+                        </span>
+
+                        <span>
+                            <small>ACCOLADES</small>
+                        </span>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             WORK + JOURNAL ROW
+        ====================================================== -->
+
+        <div class="work-journal-row">
+
+
+            <!-- =================================================
+                 WORK STATISTICS
+            ================================================== -->
+
+            <section class="profile-stats-section" id="workSection">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <div class="section-eyebrow">
+                            WORK OVERVIEW
+                        </div>
+
+                        <h2>
+                            STATUS
+                        </h2>
+
+                        <p>
+                            Click Completed or Ongoing to view the corresponding work.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="profile-stats-grid">
+
+
+                    <!-- PROJECT -->
+
+                    <article class="profile-stat-card stat-project" data-stat-type="project">
+
+                        <div class="stat-card-top">
+
+                            <div>
+
+                                <span class="stat-label">
+                                    CATEGORY 01
+                                </span>
+
+                                <h3>
+                                    Projects
+                                </h3>
+
+                            </div>
+
+                            <div class="stat-icon">
+                                ◈
+                            </div>
+
+                        </div>
+
+
+                        <div class="stat-status-row">
+
+                            <button class="stat-status completed stat-filter-btn" data-filter-type="project"
+                                data-filter-status="completed" type="button">
+
+                                <span>
+                                    Completed
+                                </span>
+
+                                <strong id="projectsCompleted">
+                                    0
+                                </strong>
+
+                            </button>
+
+
+                            <button class="stat-status ongoing stat-filter-btn" data-filter-type="project"
+                                data-filter-status="ongoing" type="button">
+
+                                <span>
+                                    Ongoing
+                                </span>
+
+                                <strong id="projectsOngoing">
+                                    0
+                                </strong>
+
+                            </button>
+
+                        </div>
+
+                    </article>
+
+
+
+                    <!-- PROTOTYPE -->
+
+                    <article class="profile-stat-card stat-prototype" data-stat-type="prototype">
+
+                        <div class="stat-card-top">
+
+                            <div>
+
+                                <span class="stat-label">
+                                    CATEGORY 03
+                                </span>
+
+                                <h3>
+                                    Prototypes
+                                </h3>
+
+                            </div>
+
+                            <div class="stat-icon">
+                                ⬡
+                            </div>
+
+                        </div>
+
+
+                        <div class="stat-status-row">
+
+                            <button class="stat-status completed stat-filter-btn" data-filter-type="prototype"
+                                data-filter-status="completed" type="button">
+
+                                <span>
+                                    Completed
+                                </span>
+
+                                <strong id="prototypesCompleted">
+                                    0
+                                </strong>
+
+                            </button>
+
+
+                            <button class="stat-status ongoing stat-filter-btn" data-filter-type="prototype"
+                                data-filter-status="ongoing" type="button">
+
+                                <span>
+                                    Ongoing
+                                </span>
+
+                                <strong id="prototypesOngoing">
+                                    0
+                                </strong>
+
+                            </button>
+
+                        </div>
+
+                    </article>
+
+
+
+                    <!-- DESIGN -->
+
+                    <article class="profile-stat-card stat-design" data-stat-type="design">
+
+                        <div class="stat-card-top">
+
+                            <div>
+
+                                <span class="stat-label">
+                                    CATEGORY 02
+                                </span>
+
+                                <h3>
+                                    Designs
+                                </h3>
+
+                            </div>
+
+                            <div class="stat-icon">
+                                ◐
+                            </div>
+
+                        </div>
+
+
+                        <div class="stat-status-row">
+
+                            <button class="stat-status completed stat-filter-btn" data-filter-type="design"
+                                data-filter-status="completed" type="button">
+
+                                <span>
+                                    Completed
+                                </span>
+
+                                <strong id="designsCompleted">
+                                    0
+                                </strong>
+
+                            </button>
+
+
+                            <button class="stat-status ongoing stat-filter-btn" data-filter-type="design"
+                                data-filter-status="ongoing" type="button">
+
+                                <span>
+                                    Ongoing
+                                </span>
+
+                                <strong id="designsOngoing">
+                                    0
+                                </strong>
+
+                            </button>
+
+                        </div>
+
+                    </article>
+
+
+
+                    <!-- PAPER -->
+
+                    <article class="profile-stat-card stat-paper" data-stat-type="paper">
+
+                        <div class="stat-card-top">
+
+                            <div>
+
+                                <span class="stat-label">
+                                    CATEGORY 04
+                                </span>
+
+                                <h3>
+                                    Papers
+                                </h3>
+
+                            </div>
+
+                            <div class="stat-icon">
+                                ▤
+                            </div>
+
+                        </div>
+
+
+                        <div class="stat-status-row">
+
+                            <button class="stat-status completed stat-filter-btn" data-filter-type="paper"
+                                data-filter-status="completed" type="button">
+
+                                <span>
+                                    Completed
+                                </span>
+
+                                <strong id="papersCompleted">
+                                    0
+                                </strong>
+
+                            </button>
+
+
+                            <button class="stat-status ongoing stat-filter-btn" data-filter-type="paper"
+                                data-filter-status="ongoing" type="button">
+
+                                <span>
+                                    Ongoing
+                                </span>
+
+                                <strong id="papersOngoing">
+                                    0
+                                </strong>
+
+                            </button>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+
+
+                <!-- CREATE BUTTON -->
+
+                <section class="work-create-trigger" id="createSection">
+
+                    <button class="quick-create-main-btn" id="quickCreateBtn" type="button" aria-expanded="false">
+                        Create +
+                    </button>
+
+                </section>
+
+            </section>
+
+
+
+            <!-- =================================================
+                 CALENDAR + SELECTED DATE
+            ================================================== -->
+
+            <section class="journal-section" id="calendarSection">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <div class="section-eyebrow">
+                            DAILY WORKSPACE
+                        </div>
+
+                        <h2>
+                            JOURNAL
+                        </h2>
+
+                        <p>
+                            Select a date to view or record your activity.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="journal-layout">
+
+
+                    <!-- CALENDAR -->
+
+                    <div class="calendar-panel">
+
+                        <div class="calendar-header">
+
+                            <button class="calendar-nav" id="previousMonth" type="button" aria-label="Previous month">
+                                ‹
+                            </button>
+
+
+                            <div>
+
+                                <div class="calendar-month" id="calendarMonth">
+                                    August
+                                </div>
+
+                                <div class="calendar-year" id="calendarYear">
+                                    2026
+                                </div>
+
+                            </div>
+
+
+                            <button class="calendar-nav" id="nextMonth" type="button" aria-label="Next month">
+                                ›
+                            </button>
+
+                        </div>
+
+
+
+                        <div class="calendar-weekdays">
+
+                            <span>MON</span>
+                            <span>TUE</span>
+                            <span>WED</span>
+                            <span>THU</span>
+                            <span>FRI</span>
+                            <span>SAT</span>
+                            <span>SUN</span>
+
+                        </div>
+
+
+
+                        <div class="calendar-days" id="calendarDays">
+
+                            <!-- Generated by JavaScript -->
+
+                        </div>
+
+
+
+                        <div class="calendar-legend">
+
+                            <span>
+
+                                <i class="calendar-dot blog-day"></i>
+
+                                Activity
+
+                            </span>
+
+
+                            <span>
+
+                                <i class="calendar-dot selected-day"></i>
+
+                                Selected
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- SELECTED DATE -->
+
+                    <div class="daily-record-panel">
+
+                        <div class="blog-header">
+
+                            <div>
+
+                                <span class="blog-eyebrow">
+                                    SELECTED DATE
+                                </span>
+
+                                <h3 id="selectedDate">
+                                    16 August 2026
+                                </h3>
+
+                            </div>
+
+
+                            <span class="blog-status" id="dayActivityCount">
+                                0 ACTIVITIES
+                            </span>
+
+                        </div>
+
+
+
+                        <!-- DAILY BLOG -->
+
+                        <div class="daily-blog-record">
+
+                            <div class="record-title">
+
+                                <div class="record-icon">
+                                    ✎
+                                </div>
+
+                                <div>
+
+                                    <strong>
+                                        Daily Blog
+                                    </strong>
+
+                                    <small>
+                                        Record what you worked on today
+                                    </small>
+
+                                </div>
+
+                            </div>
+
+
+                            <textarea class="daily-blog-input" id="dailyBlog"
+                                placeholder="Write your daily work, progress, thoughts or achievements..."></textarea>
+
+
+                            <div class="blog-footer">
+
+                                <span class="blog-save-status" id="blogSaveStatus">
+                                    No changes
+                                </span>
+
+
+                                <button class="save-blog-btn" id="saveBlogBtn" type="button">
+                                    Save Blog
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- DATE ACTIVITIES -->
+
+                        <div class="date-activities">
+
+                            <div class="date-activities-header">
+
+                                <span class="subsection-label">
+                                    ACTIVITY ON THIS DATE
+                                </span>
+
+                                <p>
+                                    Projects, papers, designs, uploads and reminders.
+                                </p>
+
+                            </div>
+
+
+                            <div class="date-activity-list" id="dateActivityList">
+
+                                <!-- Generated by JavaScript -->
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             QUICK CREATE MENU
+        ====================================================== -->
+
+        <section class="quick-create-menu-section hidden" id="quickCreateMenuSection">
+
+            <div class="quick-create-menu" id="quickCreateMenu">
+
+
+                <button class="quick-create-option create-study" data-create="study" type="button">
+
+                    <span class="create-option-icon">
+                        ⌕
+                    </span>
+
+                    <span>
+                        Study
+                    </span>
+
+                </button>
+
+
+                <button class="quick-create-option create-paper" data-create="paper" type="button">
+
+                    <span class="create-option-icon">
+                        ▤
+                    </span>
+
+                    <span>
+                        Paper
+                    </span>
+
+                </button>
+
+
+                <button class="quick-create-option create-simulation" data-create="simulation" type="button">
+
+                    <span class="create-option-icon">
+                        ⌁
+                    </span>
+
+                    <span>
+                        Simulation
+                    </span>
+
+                </button>
+
+
+                <button class="quick-create-option create-project" data-create="project" type="button">
+
+                    <span class="create-option-icon">
+                        ◈
+                    </span>
+
+                    <span>
+                        Project
+                    </span>
+
+                </button>
+
+
+                <button class="quick-create-option create-design" data-create="design" type="button">
+
+                    <span class="create-option-icon">
+                        ◐
+                    </span>
+
+                    <span>
+                        Design
+                    </span>
+
+                </button>
+
+
+                <button class="quick-create-option create-prototype" data-create="prototype" type="button">
+
+                    <span class="create-option-icon">
+                        ⬡
+                    </span>
+
+                    <span>
+                        Prototype
+                    </span>
+
+                </button>
+
+
+                <button class="quick-create-option create-reminder" data-create="reminder" type="button">
+
+                    <span class="create-option-icon">
+                        ◷
+                    </span>
+
+                    <span>
+                        Reminder
+                    </span>
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             WORK CATEGORY COLUMNS
+        ====================================================== -->
+
+        <section class="work-category-section" id="workCategorySection">
+
+            <div class="work-category-grid">
+
+
+                <!-- STUDY -->
+
+                <div class="work-category-column study-column">
+
+                    <div class="work-category-header">
+
+                        <span class="work-category-title">
+                            STUDY
+                        </span>
+
+                        <span class="work-category-count" id="studyCategoryCount">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="work-category-items" id="studyCategoryItems">
+                        <!-- Generated by JavaScript -->
+                    </div>
+
+                </div>
+
+
+
+                <!-- PAPER -->
+
+                <div class="work-category-column paper-column">
+
+                    <div class="work-category-header">
+
+                        <span class="work-category-title">
+                            PAPER
+                        </span>
+
+                        <span class="work-category-count" id="paperCategoryCount">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="work-category-items" id="paperCategoryItems">
+                        <!-- Generated by JavaScript -->
+                    </div>
+
+                </div>
+
+
+
+                <!-- SIMULATION -->
+
+                <div class="work-category-column simulation-column">
+
+                    <div class="work-category-header">
+
+                        <span class="work-category-title">
+                            SIMULATION
+                        </span>
+
+                        <span class="work-category-count" id="simulationCategoryCount">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="work-category-items" id="simulationCategoryItems">
+                        <!-- Generated by JavaScript -->
+                    </div>
+
+                </div>
+
+
+
+                <!-- PROJECT -->
+
+                <div class="work-category-column project-column">
+
+                    <div class="work-category-header">
+
+                        <span class="work-category-title">
+                            PROJECT
+                        </span>
+
+                        <span class="work-category-count" id="projectCategoryCount">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="work-category-items" id="projectCategoryItems">
+                        <!-- Generated by JavaScript -->
+                    </div>
+
+                </div>
+
+
+
+                <!-- DESIGN -->
+
+                <div class="work-category-column design-column">
+
+                    <div class="work-category-header">
+
+                        <span class="work-category-title">
+                            DESIGN
+                        </span>
+
+                        <span class="work-category-count" id="designCategoryCount">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="work-category-items" id="designCategoryItems">
+                        <!-- Generated by JavaScript -->
+                    </div>
+
+                </div>
+
+
+
+                <!-- PROTOTYPE -->
+
+                <div class="work-category-column prototype-column">
+
+                    <div class="work-category-header">
+
+                        <span class="work-category-title">
+                            PROTOTYPE
+                        </span>
+
+                        <span class="work-category-count" id="prototypeCategoryCount">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="work-category-items" id="prototypeCategoryItems">
+                        <!-- Generated by JavaScript -->
+                    </div>
+
+                </div>
+
+
+
+                <!-- REMINDER -->
+
+                <div class="work-category-column reminder-column">
+
+                    <div class="work-category-header">
+
+                        <span class="work-category-title">
+                            REMINDER
+                        </span>
+
+                        <span class="work-category-count" id="reminderCategoryCount">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="work-category-items" id="reminderCategoryItems">
+                        <!-- Generated by JavaScript -->
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             MAIN TIMELINE
+        ====================================================== -->
+
+        <section class="timeline-section" id="journeySection">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <div class="section-eyebrow">
+                        ACTIVITY TIMELINE
+                    </div>
+
+                    <h2>
+                        JOURNEY
+                    </h2>
+
+                    <p>
+                        Recent Activities
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="timeline-graph" id="timelineGraph">
+                <!-- Generated by JavaScript -->
+            </div>
+
+
+            <div class="timeline-legend">
+
+                <span>
+                    <i class="legend-dot project-dot"></i>
+                    Project
+                </span>
+
+
+                <span>
+                    <i class="legend-dot design-dot"></i>
+                    Design
+                </span>
+
+
+                <span>
+                    <i class="legend-dot prototype-dot"></i>
+                    Prototype
+                </span>
+
+
+                <span>
+                    <i class="legend-dot paper-dot"></i>
+                    Paper
+                </span>
+
+
+                <span>
+                    <i class="legend-dot simulation-dot"></i>
+                    Simulation
+                </span>
+
+
+                <span>
+                    <i class="legend-dot reminder-dot"></i>
+                    Reminder
+                </span>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             ADMIN / ISSUE / SUGGESTION
+        ====================================================== -->
+
+        <section class="admin-support-section">
+
+            <div class="admin-support-info">
+
+                <span class="admin-support-label">
+                    ADMIN
+                </span>
+
+                <span class="admin-support-email">
+                    navin.24ei@kct.ac.in
+                </span>
+
+            </div>
+
+
+            <div class="support-feedback">
+
+                <input type="text" id="feedbackInput" class="feedback-input"
+                    placeholder="Report an issue or share a suggestion...">
+
+                <button type="button" class="feedback-submit-btn" onclick="submitFeedback()">
+                    Send
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             PROJECT TIMELINE
+        ====================================================== -->
+
+        <section class="category-timeline-section project-timeline-section">
+
+            <div class="category-timeline-heading">
+
+                <div>
+
+                    <span class="category-timeline-label">
+                        PROJECTS
+                    </span>
+
+                    <h2>
+                        Project Timeline
+                    </h2>
+
+                </div>
+
+
+                <span class="category-count">
+
+                    <span id="projectTimelineCount">
+                        0
+                    </span>
+
+                    items
+
+                </span>
+
+            </div>
+
+
+            <div class="category-timeline" id="projectTimeline">
+                <!-- Generated by JavaScript -->
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             DESIGN TIMELINE
+        ====================================================== -->
+
+        <section class="category-timeline-section design-timeline-section">
+
+            <div class="category-timeline-heading">
+
+                <div>
+
+                    <span class="category-timeline-label">
+                        DESIGNS
+                    </span>
+
+                    <h2>
+                        Design Timeline
+                    </h2>
+
+                </div>
+
+
+                <span class="category-count">
+
+                    <span id="designTimelineCount">
+                        0
+                    </span>
+
+                    items
+
+                </span>
+
+            </div>
+
+
+            <div class="category-timeline" id="designTimeline">
+                <!-- Generated by JavaScript -->
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             PROTOTYPE TIMELINE
+        ====================================================== -->
+
+        <section class="category-timeline-section prototype-timeline-section">
+
+            <div class="category-timeline-heading">
+
+                <div>
+
+                    <span class="category-timeline-label">
+                        PROTOTYPES
+                    </span>
+
+                    <h2>
+                        Prototype Timeline
+                    </h2>
+
+                </div>
+
+
+                <span class="category-count">
+
+                    <span id="prototypeTimelineCount">
+                        0
+                    </span>
+
+                    items
+
+                </span>
+
+            </div>
+
+
+            <div class="category-timeline" id="prototypeTimeline">
+                <!-- Generated by JavaScript -->
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             PAPER TIMELINE
+        ====================================================== -->
+
+        <section class="category-timeline-section paper-timeline-section">
+
+            <div class="category-timeline-heading">
+
+                <div>
+
+                    <span class="category-timeline-label">
+                        PAPERS
+                    </span>
+
+                    <h2>
+                        Paper Timeline
+                    </h2>
+
+                </div>
+
+
+                <span class="category-count">
+
+                    <span id="paperTimelineCount">
+                        0
+                    </span>
+
+                    items
+
+                </span>
+
+            </div>
+
+
+            <div class="category-timeline" id="paperTimeline">
+                <!-- Generated by JavaScript -->
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+             PROFILE EDIT MODAL
+        ====================================================== -->
+
+        <div class="personal-modal hidden" id="profileEditModal">
+
+            <div class="personal-modal-box">
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <span class="modal-eyebrow">
+                            PROFILE
+                        </span>
+
+                        <h3>
+                            Edit Profile
+                        </h3>
+
+                    </div>
+
+
+                    <button class="modal-close" id="closeProfileEditModal" type="button">
+                        ×
+                    </button>
+
+                </div>
+
+
+                <form id="profileEditForm">
+
+
+                    <!-- NAME -->
+
+                    <div class="form-group">
+
+                        <label for="editProfileName">
+                            Name
+                        </label>
+
+                        <input id="editProfileName" type="text" required>
+
+                    </div>
+
+
+                    <!-- ACCOUNT EMAIL -->
+
+                    <div class="form-group locked-email-field">
+
+                        <label>
+                            Account Email
+                        </label>
+
+                        <div class="email-readonly" id="editProfileEmail">
+                            navin@kct.ac.in
+                        </div>
+
+                        <small>
+                            🔒 Email cannot be changed.
+                        </small>
+
+                    </div>
+
+
+                    <!-- DEPARTMENT -->
+
+                    <div class="form-group">
+
+                        <label for="editProfileDepartment">
+                            Department
+                        </label>
+
+                        <input id="editProfileDepartment" type="text">
+
+                    </div>
+
+
+                    <!-- FORUM -->
+
+                    <div class="form-group">
+
+                        <label for="editProfileForum">
+                            Forum
+                        </label>
+
+                        <input id="editProfileForum" type="text">
+
+                    </div>
+
+
+                    <!-- TEAM -->
+
+                    <div class="form-group">
+
+                        <label for="editProfileTeam">
+                            Team
+                        </label>
+
+                        <input id="editProfileTeam" type="text">
+
+                    </div>
+
+
+                    <!-- DOMAIN -->
+
+                    <div class="form-group">
+
+                        <label for="editProfileDomain">
+                            Domain
+                        </label>
+
+                        <input id="editProfileDomain" type="text">
+
+                    </div>
+
+
+                    <!-- GITHUB -->
+
+                    <div class="form-group">
+
+                        <label for="editGithubUsername">
+                            GitHub Username
+                        </label>
+
+                        <input id="editGithubUsername" type="text" placeholder="yourusername">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="editGithubUrl">
+                            GitHub URL
+                        </label>
+
+                        <input id="editGithubUrl" type="url" placeholder="https://github.com/yourusername">
+
+                    </div>
+
+
+                    <!-- LINKEDIN -->
+
+                    <div class="form-group">
+
+                        <label for="editLinkedinUsername">
+                            LinkedIn Name
+                        </label>
+
+                        <input id="editLinkedinUsername" type="text" placeholder="Your Name">
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="editLinkedinUrl">
+                            LinkedIn URL
+                        </label>
+
+                        <input id="editLinkedinUrl" type="url" placeholder="https://www.linkedin.com/in/yourusername">
+
+                    </div>
+
+
+                    <!-- SAVE / CANCEL -->
+
+                    <div class="modal-actions">
+
+                        <button class="modal-cancel" id="cancelProfileEditModal" type="button">
+                            Cancel
+                        </button>
+
+
+                        <button class="modal-save" type="submit">
+                            Save Changes
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             ADD PROFILE DETAIL MODAL
+        ====================================================== -->
+
+        <div class="personal-modal hidden" id="addProfileDetailModal">
+
+            <div class="personal-modal-box">
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <span class="modal-eyebrow">
+                            PROFILE
+                        </span>
+
+                        <h3>
+                            Add Profile Detail
+                        </h3>
+
+                    </div>
+
+
+                    <button class="modal-close" id="closeAddProfileDetailModal" type="button">
+                        ×
+                    </button>
+
+                </div>
+
+
+                <form id="addProfileDetailForm">
+
+                    <div class="form-group">
+
+                        <label>
+                            Detail Name
+                        </label>
+
+                        <input id="newDetailName" type="text" placeholder="Example: Year, Role, Location..." required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Detail Value
+                        </label>
+
+                        <input id="newDetailValue" type="text" placeholder="Enter value" required>
+
+                    </div>
+
+
+                    <div class="modal-actions">
+
+                        <button class="modal-cancel" id="cancelAddProfileDetailModal" type="button">
+                            Cancel
+                        </button>
+
+
+                        <button class="modal-save" type="submit">
+                            Add Detail
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             CREATE WORK MODAL
+        ====================================================== -->
+
+        <div class="personal-modal hidden" id="createModal">
+
+            <div class="personal-modal-box">
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <span class="modal-eyebrow" id="createModalEyebrow">
+                            NEW PROJECT
+                        </span>
+
+                        <h3 id="createModalTitle">
+                            Create New Project
+                        </h3>
+
+                    </div>
+
+
+                    <button class="modal-close" id="closeCreateModal" type="button">
+                        ×
+                    </button>
+
+                </div>
+
+
+                <form id="createForm">
+
+                    <div class="form-group">
+
+                        <label id="createNameLabel">
+                            Project Name
+                        </label>
+
+                        <input id="createName" type="text" placeholder="Enter name" required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Description
+                        </label>
+
+                        <textarea id="createDescription" placeholder="Describe your work..."></textarea>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Start Date
+                        </label>
+
+                        <input id="createDate" type="date" required>
+
+                    </div>
+
+
+                    <div class="modal-actions">
+
+                        <button class="modal-cancel" id="cancelCreateModal" type="button">
+                            Cancel
+                        </button>
+
+
+                        <button class="modal-save" type="submit">
+                            Create
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             REMINDER MODAL
+        ====================================================== -->
+
+        <div class="personal-modal hidden" id="reminderModal">
+
+            <div class="personal-modal-box">
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <span class="modal-eyebrow">
+                            REMINDER
+                        </span>
+
+                        <h3>
+                            Set Reminder
+                        </h3>
+
+                    </div>
+
+
+                    <button class="modal-close" id="closeReminderModal" type="button">
+                        ×
+                    </button>
+
+                </div>
+
+
+                <form id="reminderForm">
+
+                    <div class="form-group">
+
+                        <label>
+                            Reminder
+                        </label>
+
+                        <input id="reminderTitle" type="text" placeholder="What should you remember?" required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Date
+                        </label>
+
+                        <input id="reminderDate" type="date" required>
+
+                    </div>
+
+
+                    <div class="reminder-date-time">
+
+                        <div class="form-group">
+
+                            <label>
+                                Hour
+                            </label>
+
+                            <select id="reminderHour">
+
+                                <option value="">
+                                    Hour
+                                </option>
+
+                                <option value="00">00</option>
+                                <option value="01">01</option>
+                                <option value="02">02</option>
+                                <option value="03">03</option>
+                                <option value="04">04</option>
+                                <option value="05">05</option>
+                                <option value="06">06</option>
+                                <option value="07">07</option>
+                                <option value="08">08</option>
+                                <option value="09">09</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label>
+                                Minute
+                            </label>
+
+                            <select id="reminderMinute">
+
+                                <option value="">
+                                    Min
+                                </option>
+
+                                <option value="00">00</option>
+                                <option value="05">05</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="25">25</option>
+                                <option value="30">30</option>
+                                <option value="35">35</option>
+                                <option value="40">40</option>
+                                <option value="45">45</option>
+                                <option value="50">50</option>
+                                <option value="55">55</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Note
+                        </label>
+
+                        <textarea id="reminderDescription" placeholder="Additional note..."></textarea>
+
+                    </div>
+
+
+                    <div class="modal-actions">
+
+                        <button class="modal-cancel" id="cancelReminderModal" type="button">
+                            Cancel
+                        </button>
+
+
+                        <button class="modal-save" type="submit">
+                            Set Reminder
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             LINK MODAL
+        ====================================================== -->
+
+        <div class="personal-modal hidden" id="linkModal">
+
+            <div class="personal-modal-box">
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <span class="modal-eyebrow">
+                            EXTERNAL LINK
+                        </span>
+
+                        <h3>
+                            Add Link
+                        </h3>
+
+                    </div>
+
+
+                    <button class="modal-close" id="closeLinkModal" type="button">
+                        ×
+                    </button>
+
+                </div>
+
+
+                <form id="linkForm">
+
+                    <div class="form-group">
+
+                        <label>
+                            Title
+                        </label>
+
+                        <input id="linkTitle" type="text" placeholder="Example: GitHub Repository" required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            URL
+                        </label>
+
+                        <input id="linkURL" type="url" placeholder="https://..." required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label>
+                            Description
+                        </label>
+
+                        <textarea id="linkDescription" placeholder="What is this link?"></textarea>
+
+                    </div>
+
+
+                    <div class="modal-actions">
+
+                        <button class="modal-cancel" id="cancelLinkModal" type="button">
+                            Cancel
+                        </button>
+
+
+                        <button class="modal-save" type="submit">
+                            Add Link
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             SETTINGS MODAL
+        ====================================================== -->
+
+        <div class="personal-modal hidden" id="settingsModal">
+
+            <div class="personal-modal-box">
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <span class="modal-eyebrow">
+                            WORKSPACE
+                        </span>
+
+                        <h3>
+                            Settings
+                        </h3>
+
+                    </div>
+
+
+                    <button class="modal-close" id="closeSettings" type="button">
+                        ×
+                    </button>
+
+                </div>
+
+
+                <div class="settings-list">
+
+                    <button class="settings-item" id="editProfileBtn" type="button">
+
+                        <span>
+
+                            <strong>
+                                Edit Profile
+                            </strong>
+
+                            <small>
+                                Change your personal information
+                            </small>
+
+                        </span>
+
+                        <b>
+                            →
+                        </b>
+
+                    </button>
+
+
+                    <button class="settings-item" id="accountSettingsBtn" type="button">
+
+                        <span>
+
+                            <strong>
+                                Account
+                            </strong>
+
+                            <small>
+                                Account-related settings
+                            </small>
+
+                        </span>
+
+                        <b>
+                            →
+                        </b>
+
+                    </button>
+
+
+                    <button class="settings-item" id="privacySettingsBtn" type="button">
+
+                        <span>
+
+                            <strong>
+                                Privacy
+                            </strong>
+
+                            <small>
+                                Manage workspace privacy
+                            </small>
+
+                        </span>
+
+                        <b>
+                            →
+                        </b>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             ACCOLADES MODAL
+        ====================================================== -->
+
+        <div class="personal-modal hidden" id="accoladesModal">
+
+            <div class="personal-modal-box accolades-modal-box">
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <span class="modal-eyebrow">
+                            PROFILE
+                        </span>
+
+                        <h3>
+                            Accolades
+                        </h3>
+
+                    </div>
+
+
+                    <button type="button" class="modal-close" id="closeAccoladesModal">
+                        ×
+                    </button>
+
+                </div>
+
+
+                <!-- Existing accolades -->
+
+                <div class="accolades-list-section">
+
+                    <div class="accolades-list-header">
+
+                        <span class="subsection-label">
+                            ACHIEVEMENTS
+                        </span>
+
+                        <span class="accolades-count" id="accoladesCount">
+                            0
+                        </span>
+
+                    </div>
+
+
+                    <div class="accolades-list" id="accoladesList">
+                        <!-- Generated by JavaScript -->
+                    </div>
+
+                </div>
+
+
+                <!-- Add new accolade -->
+
+                <div class="add-accolade-section">
+
+                    <div class="accolades-list-header">
+
+                        <span class="subsection-label">
+                            ADD NEW
+                        </span>
+
+                    </div>
+
+
+                    <form id="addAccoladeForm">
+
+                        <div class="form-group">
+
+                            <label for="accoladeTitle">
+                                Title
+                            </label>
+
+                            <input type="text" id="accoladeTitle" placeholder="e.g. Visvesvaraya Award" required>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="accoladeDate">
+                                Date
+                            </label>
+
+                            <input type="date" id="accoladeDate" required>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="accoladeDescription">
+                                Description
+                            </label>
+
+                            <textarea id="accoladeDescription"
+                                placeholder="Briefly describe the achievement..."></textarea>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="accoladeUrl">
+                                URL / LINK
+                            </label>
+
+                            <input type="url" id="accoladeUrl" placeholder="https://...">
+
+                            <small>
+                                Add a link to the certificate, award, publication, post, or related page.
+                            </small>
+
+                        </div>
+
+
+                        <div class="modal-actions">
+
+                            <button type="button" class="modal-cancel" id="cancelAccolade">
+                                Cancel
+                            </button>
+
+
+                            <button type="submit" class="modal-save">
+                                Add Accolade
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             SOCIAL PROFILE URL MODAL
+        ====================================================== -->
+
+        <div class="personal-modal hidden" id="socialUrlModal">
+
+            <div class="personal-modal-box">
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <span class="modal-eyebrow" id="socialUrlEyebrow">
+                            SOCIAL PROFILE
+                        </span>
+
+                        <h3 id="socialUrlTitle">
+                            GitHub Profile
+                        </h3>
+
+                    </div>
+
+
+                    <button type="button" class="modal-close" id="closeSocialUrlModal">
+                        ×
+                    </button>
+
+                </div>
+
+
+                <form id="socialUrlForm">
+
+                    <div class="form-group">
+
+                        <label for="socialProfileUrl">
+                            PROFILE URL
+                        </label>
+
+                        <input type="url" id="socialProfileUrl" placeholder="https://github.com/yourusername" required>
+
+                        <small>
+                            Enter your complete profile URL.
+                        </small>
+
+                    </div>
+
+
+                    <div class="modal-actions">
+
+                        <button type="button" class="modal-cancel" id="cancelSocialUrl">
+                            Cancel
+                        </button>
+
+
+                        <button type="submit" class="modal-save">
+                            Save Profile
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             TOAST
+        ====================================================== -->
+
+        <div class="personal-toast hidden" id="personalToast">
+
+            <span id="toastMessage">
+                Done
+            </span>
+
+        </div>
+
+
+    </main>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="personal.js"></script>
+
+
+</body>
+
+</html>

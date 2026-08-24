@@ -1,0 +1,540 @@
+/* =========================================================================
+   RiGiD LOGIN PAGE
+   login.css
+
+   Contains ONLY styles specific to:
+   - Login page
+   - Signup page
+   - Authentication card
+   - Login background
+   - Auth tabs
+   - Auth messages
+   ========================================================================= */
+
+
+/* =========================================================================
+   LOGIN BACKGROUND
+   ========================================================================= */
+
+.login-bg {
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(11, 19, 34, 0.68) 0%,
+      rgba(11, 19, 34, 0.82) 55%,
+      rgba(11, 19, 34, 0.93) 100%
+    ),
+    url(
+      'https://portal.kct.ac.in/uploads/Alumni/cmsgallery/1/gallery_1_6a34fb2b3c50a2.41963046.jpg'
+    );
+
+  background-size: cover;
+  background-position: center 30%;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+
+/* =========================================================================
+   LOGIN HEADER
+   ========================================================================= */
+
+.login-bg .header-bar {
+  background-color: rgba(11, 19, 34, 0.35);
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.login-bg .header-bar .text-soft,
+.login-bg .header-bar h1 {
+  color: #F1F1EA;
+}
+
+.login-bg .icon-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #F1F1EA;
+}
+
+.login-bg .icon-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.login-bg footer {
+  border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+.login-bg footer p {
+  color: rgba(241, 241, 234, 0.65);
+}
+
+
+/* =========================================================================
+   BRAND / HERO
+   ========================================================================= */
+
+.brand-hero {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.brand-wordmark {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.75rem, 9vw, 4.75rem);
+  letter-spacing: -0.02em;
+  color: #F7F7F2;
+  text-shadow: 0 4px 28px rgba(0, 0, 0, 0.5);
+  line-height: 1;
+}
+
+.wordmark-i {
+  color: var(--accent);
+}
+
+.brand-tagline {
+  font-family: 'JetBrains Mono', monospace;
+  font-style: italic;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  color: rgba(247, 247, 242, 0.78);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+  margin-top: 10px;
+}
+
+
+/* =========================================================================
+   AUTH CARD
+   ========================================================================= */
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+
+  border-radius: 14px;
+  padding: 22px;
+
+  box-shadow: 0 1px 2px rgba(20, 33, 61, 0.05);
+}
+
+
+/* =========================================================================
+   LOGIN / SIGNUP TABS
+   ========================================================================= */
+
+.auth-tabs {
+  display: flex;
+  gap: 4px;
+
+  margin-bottom: 18px;
+
+  background: var(--bg-alt);
+  border-radius: 9px;
+
+  padding: 4px;
+}
+
+.auth-tab {
+  flex: 1;
+
+  padding: 8px 0;
+
+  border-radius: 6px;
+
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+
+  color: var(--soft);
+
+  transition:
+    background-color 0.12s ease,
+    color 0.12s ease;
+}
+
+.auth-tab.is-active {
+  background: var(--card);
+  color: var(--ink);
+}
+
+
+/* =========================================================================
+   AUTH FORMS
+   ========================================================================= */
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+
+  opacity: 1;
+  transform: translateY(0);
+
+  transition:
+    opacity 0.25s ease-in-out,
+    transform 0.25s ease-in-out;
+}
+
+.auth-form .field-label {
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+
+/* =========================================================================
+   AUTH MESSAGE
+   ========================================================================= */
+
+.auth-message {
+  font-size: 13px;
+
+  padding: 10px 12px;
+
+  border-radius: 8px;
+
+  margin-bottom: 14px;
+}
+
+.auth-message-error {
+  background:
+    color-mix(
+      in srgb,
+      var(--danger) 12%,
+      transparent
+    );
+
+  color: var(--danger);
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--danger) 35%,
+      transparent
+    );
+}
+
+.auth-message-ok {
+  background:
+    color-mix(
+      in srgb,
+      var(--accent-2) 12%,
+      transparent
+    );
+
+  color: var(--accent-2);
+
+  border:
+    1px solid
+    color-mix(
+      in srgb,
+      var(--accent-2) 35%,
+      transparent
+    );
+}
+
+
+/* =========================================================================
+   FORM HINT
+   ========================================================================= */
+
+.field-hint {
+  font-family: 'JetBrains Mono', monospace;
+
+  font-size: 10.5px;
+
+  color: var(--soft);
+
+  margin-top: 4px;
+}
+
+
+/* =========================================================================
+   AUTH FORM TRANSITION
+   ========================================================================= */
+
+.auth-form.is-hidden {
+  display: none;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+
+/* =========================================================================
+   OPTIONAL AUTH POPUP ANIMATION
+   Kept because it already exists in the original auth.css.
+   ========================================================================= */
+
+.popup-celebration {
+  animation:
+    popIn 0.35s
+    cubic-bezier(
+      0.175,
+      0.885,
+      0.32,
+      1.275
+    )
+    forwards;
+}
+
+@keyframes popIn {
+
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+}
+/* =========================================================================
+   LOGIN SECONDARY BUTTON
+   ========================================================================= */
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 9px 14px;
+
+  border-radius: 8px;
+
+  background: var(--bg-alt);
+  color: var(--ink);
+
+  border: 1px solid var(--border);
+
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--card);
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================================
+   DISABLED BUTTONS
+   ========================================================================= */
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+
+/* =========================================================================
+   VERIFICATION STATUS
+   ========================================================================= */
+
+#verificationStatus {
+  margin-top: -4px;
+}
+
+.verification-status-ok {
+  color: var(--accent-2);
+}
+
+.verification-status-error {
+  color: var(--danger);
+}
+
+
+/* =========================================================================
+   VERIFIED BUTTON
+   ========================================================================= */
+
+.verification-complete {
+  border-color: var(--accent-2);
+  color: var(--accent-2);
+  background: color-mix(
+    in srgb,
+    var(--accent-2) 8%,
+    transparent
+  );
+}
+/* =========================================================================
+   GOOGLE SIGN-IN
+   ========================================================================= */
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 1px 0;
+    color: var(--text-soft, #888);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.google-btn {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 10px 14px;
+
+    border-radius: 8px;
+
+    background: #fff;
+    color: #222;
+
+    border: 1px solid #d8d8d8;
+
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
+}
+
+.google-btn:hover {
+    background: #f7f7f7;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.google-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: Arial, sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+
+    color: #4285f4;
+}
+/* =========================================================================
+   GOOGLE PROFILE SETUP
+   ========================================================================= */
+
+.google-profile-setup {
+    margin-top: 16px;
+
+    padding: 16px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    background: var(--bg-alt);
+}
+
+
+.google-user-info {
+    margin-bottom: 16px;
+}
+
+
+.google-user-name {
+    font-family: 'Space Grotesk', sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    color: var(--ink);
+}
+
+
+#googlePasswordBox {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+
+    margin-top: 16px;
+}
+
+.google-user-email {
+    margin-top: 3px;
+
+    font-family: 'JetBrains Mono', monospace;
+
+    font-size: 11px;
+
+    color: var(--text-soft, #888);
+}
+
+/* =========================================================================
+   RESEND VERIFICATION LINK
+   ========================================================================= */
+
+.resend-verification-box {
+    margin-top: 2px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.resend-link {
+    border: none;
+    padding: 0;
+    background: transparent;
+
+    color: var(--accent);
+
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+
+    text-decoration: underline;
+    text-underline-offset: 3px;
+
+    cursor: pointer;
+}
+
+.resend-link:hover {
+    opacity: 0.75;
+}
+
+.resend-link:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#sendVerificationBtn {
+  margin-top: 16px;
+}

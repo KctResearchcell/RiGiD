@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Simulation | RiGiD</title>
+
+    <link
+        rel="stylesheet"
+        href="simulation.css"
+    >
+
+</head>
+
+
+<body>
+
+<!-- =====================================================
+     TOP SIMULATION HEADER
+===================================================== -->
+
+<header class="simulation-header">
+
+    <div class="simulation-brand">
+
+        <div class="simulation-brand-left">
+
+            <div class="simulation-badge">
+                SIMULATION
+            </div>
+
+            <div
+                class="simulation-status"
+                id="simulationStatus"
+            >
+                ● IN PROGRESS
+            </div>
+
+        </div>
+
+
+        <h1 id="simulationTitle">
+            PMSG FOC Simulation
+        </h1>
+
+
+        <p
+            class="simulation-description"
+            id="simulationDescription"
+        >
+            Simulation and analysis of a permanent magnet
+            synchronous generator using field-oriented control.
+        </p>
+
+
+        <div
+            class="simulation-tags"
+            id="simulationTags"
+        >
+
+            <span>MATLAB</span>
+            <span>SIMULINK</span>
+            <span>PMSG</span>
+            <span>FOC</span>
+
+        </div>
+
+    </div>
+
+
+    <!-- LIVE INFORMATION -->
+
+    <div class="simulation-live">
+
+        <div class="live-date">
+            <span id="liveDate">
+                23 AUG 2026
+            </span>
+
+            <strong id="liveClock">
+                05:30:00 PM
+            </strong>
+        </div>
+
+
+        <div class="simulation-meta">
+
+            <div>
+
+                <label>
+                    OWNER
+                </label>
+
+                <strong>
+                    You
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    CREATED
+                </label>
+
+                <strong>
+                    23 Aug 2026
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <label>
+                    UPDATED
+                </label>
+
+                <strong id="simulationUpdated">
+                    23 Aug 2026
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =====================================================
+     SIMULATION NAVIGATION
+===================================================== -->
+
+<nav class="simulation-navigation">
+
+    <button
+        class="simulation-nav-item active"
+        data-section="overviewSection"
+    >
+        Overview
+    </button>
+
+
+    <button
+        class="simulation-nav-item"
+        data-section="theorySection"
+    >
+        Theory
+    </button>
+
+
+    <button
+        class="simulation-nav-item"
+        data-section="parametersSection"
+    >
+        Parameters
+    </button>
+
+
+    <button
+        class="simulation-nav-item"
+        data-section="resultsSection"
+    >
+        Results
+    </button>
+
+
+    <button
+        class="simulation-nav-item"
+        data-section="timelineSection"
+    >
+        Timeline
+    </button>
+
+
+    <button
+        class="simulation-nav-item"
+        data-section="filesSection"
+    >
+        Files
+    </button>
+
+</nav>
+
+
+<main class="simulation-container">
+
+
+<!-- =====================================================
+     OVERVIEW
+===================================================== -->
+
+<section
+    id="overviewSection"
+    class="simulation-section"
+>
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-label">
+                SIMULATION OVERVIEW
+            </span>
+
+            <h2>
+                What are you simulating?
+            </h2>
+
+        </div>
+
+        <button
+            class="outline-button"
+            id="editSimulation"
+        >
+            Edit
+        </button>
+
+    </div>
+
+
+    <div class="overview-grid">
+
+
+        <!-- DESCRIPTION -->
+
+        <article class="simulation-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="card-label">
+                        DESCRIPTION
+                    </span>
+
+                    <h3>
+                        Simulation Objective
+                    </h3>
+
+                </div>
+
+                <button
+                    class="text-button"
+                    id="editDescription"
+                >
+                    Edit
+                </button>
+
+            </div>
+
+
+            <div
+                class="card-content"
+                id="descriptionContent"
+            >
+
+                <p>
+                    Model and analyse the behaviour of a
+                    PMSG-based wind energy conversion system
+                    using field-oriented control.
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <!-- SOFTWARE -->
+
+        <article class="simulation-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="card-label">
+                        SOFTWARE
+                    </span>
+
+                    <h3>
+                        Tools Used
+                    </h3>
+
+                </div>
+
+                <button
+                    class="text-button"
+                    id="editSoftware"
+                >
+                    Edit
+                </button>
+
+            </div>
+
+
+            <div
+                class="software-list"
+                id="softwareList"
+            >
+
+                <span>
+                    MATLAB
+                </span>
+
+                <span>
+                    Simulink
+                </span>
+
+                <span>
+                    Simscape
+                </span>
+
+            </div>
+
+        </article>
+
+
+        <!-- STATUS -->
+
+        <article class="simulation-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="card-label">
+                        STATUS
+                    </span>
+
+                    <h3>
+                        Simulation State
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div class="simulation-state">
+
+                <div class="state-value">
+                    IN PROGRESS
+                </div>
+
+                <div class="state-bar">
+
+                    <span
+                        id="simulationProgressBar"
+                        style="width:62%"
+                    ></span>
+
+                </div>
+
+                <div class="state-footer">
+
+                    <span>
+                        Progress
+                    </span>
+
+                    <strong id="simulationProgress">
+                        62%
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     THEORY
+===================================================== -->
+
+<section
+    id="theorySection"
+    class="simulation-section"
+>
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-label">
+                THEORY
+            </span>
+
+            <h2>
+                Concept & Theory
+            </h2>
+
+        </div>
+
+        <button
+            class="outline-button"
+            id="editTheory"
+        >
+            Edit
+        </button>
+
+    </div>
+
+
+    <div class="theory-grid">
+
+
+        <!-- THEORY -->
+
+        <article class="simulation-card theory-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="card-label">
+                        CONCEPT
+                    </span>
+
+                    <h3>
+                        What should happen?
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="editable-content"
+                id="theoryContent"
+            >
+
+                <p>
+                    The theoretical behaviour expected from
+                    the system before running the simulation.
+                </p>
+
+                <p>
+                    Explain the governing equations,
+                    assumptions, control strategy and
+                    expected response.
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <!-- EQUATIONS -->
+
+        <article class="simulation-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="card-label">
+                        EQUATIONS
+                    </span>
+
+                    <h3>
+                        Governing Equations
+                    </h3>
+
+                </div>
+
+                <button
+                    class="text-button"
+                    id="addEquation"
+                >
+                    + Add
+                </button>
+
+            </div>
+
+
+            <div
+                class="equation-list"
+                id="equationList"
+            >
+
+                <div class="equation-item">
+
+                    <code>
+                        V = L(di/dt) + Ri + e
+                    </code>
+
+                </div>
+
+                <div class="equation-item">
+
+                    <code>
+                        P = T × ω
+                    </code>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     PARAMETERS
+===================================================== -->
+
+<section
+    id="parametersSection"
+    class="simulation-section"
+>
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-label">
+                INPUT PARAMETERS
+            </span>
+
+            <h2>
+                Simulation Parameters
+            </h2>
+
+        </div>
+
+        <button
+            class="outline-button"
+            id="addParameter"
+        >
+            + Parameter
+        </button>
+
+    </div>
+
+
+    <div
+        class="parameter-grid"
+        id="parameterGrid"
+    >
+
+        <div class="parameter-card">
+
+            <span>
+                WIND SPEED
+            </span>
+
+            <strong>
+                8 m/s
+            </strong>
+
+        </div>
+
+
+        <div class="parameter-card">
+
+            <span>
+                RATED POWER
+            </span>
+
+            <strong>
+                1.2 kW
+            </strong>
+
+        </div>
+
+
+        <div class="parameter-card">
+
+            <span>
+                GENERATOR SPEED
+            </span>
+
+            <strong>
+                850 RPM
+            </strong>
+
+        </div>
+
+
+        <div class="parameter-card">
+
+            <span>
+                DC LINK
+            </span>
+
+            <strong>
+                56 V
+            </strong>
+
+        </div>
+
+
+        <div class="parameter-card">
+
+            <span>
+                SWITCHING FREQUENCY
+            </span>
+
+            <strong>
+                20 kHz
+            </strong>
+
+        </div>
+
+
+        <div class="parameter-card">
+
+            <span>
+                SIMULATION TIME
+            </span>
+
+            <strong>
+                5 s
+            </strong>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     SIMULATION MODEL / IMAGE
+===================================================== -->
+
+<section class="simulation-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-label">
+                MODEL
+            </span>
+
+            <h2>
+                Simulation Model
+            </h2>
+
+        </div>
+
+        <button
+            class="outline-button"
+            id="uploadModelImage"
+        >
+            + Add Image
+        </button>
+
+    </div>
+
+
+    <div class="model-layout">
+
+
+        <!-- IMAGE -->
+
+        <article class="simulation-card model-preview-card">
+
+            <div
+                class="model-preview"
+                id="modelPreview"
+            >
+
+                <div class="empty-preview">
+
+                    <span>
+                        ◇
+                    </span>
+
+                    <strong>
+                        Simulation Model Preview
+                    </strong>
+
+                    <p>
+                        Upload a screenshot of your
+                        Simulink / simulation model.
+                    </p>
+
+                    <button
+                        id="modelImageButton"
+                        class="outline-button"
+                    >
+                        Upload Image
+                    </button>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+        <!-- MODEL DESCRIPTION -->
+
+        <article class="simulation-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="card-label">
+                        MODEL NOTES
+                    </span>
+
+                    <h3>
+                        Architecture
+                    </h3>
+
+                </div>
+
+                <button
+                    class="text-button"
+                    id="editModelNotes"
+                >
+                    Edit
+                </button>
+
+            </div>
+
+
+            <div
+                class="editable-content"
+                id="modelNotes"
+            >
+
+                <p>
+                    Describe the major blocks, signal flow,
+                    controller structure, power stage and
+                    measurement system used in the model.
+                </p>
+
+            </div>
+
+        </article>
+
+
+    </div>
+
+
+    <input
+        type="file"
+        id="modelImageInput"
+        accept="image/*"
+        hidden
+    >
+
+</section>
+
+
+
+<!-- =====================================================
+     RESULTS
+===================================================== -->
+
+<section
+    id="resultsSection"
+    class="simulation-section"
+>
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-label">
+                RESULTS
+            </span>
+
+            <h2>
+                What happened?
+            </h2>
+
+        </div>
+
+        <button
+            class="outline-button"
+            id="editResults"
+        >
+            Edit
+        </button>
+
+    </div>
+
+
+    <div class="results-grid">
+
+
+        <!-- RESULTS SUMMARY -->
+
+        <article class="simulation-card results-summary">
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="card-label">
+                        RESULT SUMMARY
+                    </span>
+
+                    <h3>
+                        Observations
+                    </h3>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="resultsContent"
+                class="editable-content"
+            >
+
+                <p>
+                    Record what happened during the simulation,
+                    whether the output matched the expected
+                    theoretical behaviour and the major observations.
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <!-- OUTPUT VALUES -->
+
+        <article class="simulation-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="card-label">
+                        OUTPUT
+                    </span>
+
+                    <h3>
+                        Key Results
+                    </h3>
+
+                </div>
+
+                <button
+                    class="text-button"
+                    id="addResult"
+                >
+                    + Add
+                </button>
+
+            </div>
+
+
+            <div
+                class="result-list"
+                id="resultList"
+            >
+
+                <div class="result-item">
+
+                    <span>
+                        Output Power
+                    </span>
+
+                    <strong>
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="result-item">
+
+                    <span>
+                        Efficiency
+                    </span>
+
+                    <strong>
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="result-item">
+
+                    <span>
+                        DC Voltage
+                    </span>
+
+                    <strong>
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="result-item">
+
+                    <span>
+                        Peak Current
+                    </span>
+
+                    <strong>
+                        —
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+        <!-- PROBLEMS -->
+
+        <article class="simulation-card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <span class="card-label">
+                        DEBUGGING
+                    </span>
+
+                    <h3>
+                        Problems Found
+                    </h3>
+
+                </div>
+
+                <button
+                    class="text-button"
+                    id="addProblem"
+                >
+                    + Problem
+                </button>
+
+            </div>
+
+
+            <div
+                class="problem-list"
+                id="problemList"
+            >
+
+                <div class="problem-item">
+
+                    <span class="problem-dot"></span>
+
+                    <div>
+
+                        <strong>
+                            No problems recorded
+                        </strong>
+
+                        <p>
+                            Add simulation errors,
+                            unexpected behaviour or
+                            convergence issues here.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </article>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     CONCLUSION
+===================================================== -->
+
+<section class="simulation-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-label">
+                CONCLUSION
+            </span>
+
+            <h2>
+                Simulation Conclusion
+            </h2>
+
+        </div>
+
+        <button
+            class="text-button"
+            id="editConclusion"
+        >
+            Edit
+        </button>
+
+    </div>
+
+
+    <article class="simulation-card conclusion-card">
+
+        <textarea
+            id="conclusionText"
+            placeholder="What did this simulation prove? What did you learn? What should be changed in the next run?"
+        >Write the final interpretation of the simulation here.</textarea>
+
+        <div class="card-footer">
+
+            <span>
+                Keep this focused on what the simulation actually demonstrated.
+            </span>
+
+            <button
+                class="primary-button"
+                id="saveConclusion"
+            >
+                Save Conclusion
+            </button>
+
+        </div>
+
+    </article>
+
+</section>
+
+
+
+<!-- =====================================================
+     TIMELINE
+===================================================== -->
+
+<section
+    id="timelineSection"
+    class="simulation-section"
+>
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-label">
+                WORK PLAN
+            </span>
+
+            <h2>
+                Simulation Timeline
+            </h2>
+
+        </div>
+
+        <button
+            class="outline-button"
+            id="addTimeline"
+        >
+            + Timeline
+        </button>
+
+    </div>
+
+
+    <div
+        class="simulation-timeline"
+        id="simulationTimeline"
+    >
+
+        <article class="timeline-item">
+
+            <div class="timeline-date">
+                23 AUG
+            </div>
+
+            <div class="timeline-point"></div>
+
+            <div class="timeline-card">
+
+                <div class="timeline-top">
+
+                    <span class="timeline-status completed">
+                        COMPLETED
+                    </span>
+
+                    <button
+                        class="timeline-edit"
+                    >
+                        ✎
+                    </button>
+
+                </div>
+
+                <h3>
+                    Build initial model
+                </h3>
+
+                <p>
+                    Create the basic simulation architecture
+                    and connect the main system blocks.
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="timeline-item">
+
+            <div class="timeline-date">
+                26 AUG
+            </div>
+
+            <div class="timeline-point"></div>
+
+            <div class="timeline-card">
+
+                <div class="timeline-top">
+
+                    <span class="timeline-status ongoing">
+                        ONGOING
+                    </span>
+
+                    <button
+                        class="timeline-edit"
+                    >
+                        ✎
+                    </button>
+
+                </div>
+
+                <h3>
+                    Tune controller
+                </h3>
+
+                <p>
+                    Tune FOC parameters and verify the
+                    controller response.
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="timeline-item">
+
+            <div class="timeline-date">
+                30 AUG
+            </div>
+
+            <div class="timeline-point"></div>
+
+            <div class="timeline-card">
+
+                <div class="timeline-top">
+
+                    <span class="timeline-status planned">
+                        PLANNED
+                    </span>
+
+                    <button
+                        class="timeline-edit"
+                    >
+                        ✎
+                    </button>
+
+                </div>
+
+                <h3>
+                    Compare results
+                </h3>
+
+                <p>
+                    Compare simulated output against
+                    theoretical calculations and expected values.
+                </p>
+
+            </div>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     FUTURE WORK
+===================================================== -->
+
+<section class="simulation-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-label">
+                NEXT STEPS
+            </span>
+
+            <h2>
+                Future Work
+            </h2>
+
+        </div>
+
+        <button
+            class="outline-button"
+            id="addFutureWork"
+        >
+            + Add
+        </button>
+
+    </div>
+
+
+    <div
+        class="future-work-grid"
+        id="futureWorkList"
+    >
+
+        <article class="future-work-card">
+
+            <div class="future-work-date">
+                30 AUG 2026
+            </div>
+
+            <h3>
+                Run parameter sweep
+            </h3>
+
+            <p>
+                Evaluate system behaviour over multiple
+                operating conditions.
+            </p>
+
+        </article>
+
+
+        <article class="future-work-card">
+
+            <div class="future-work-date">
+                03 SEP 2026
+            </div>
+
+            <h3>
+                Validate experimental results
+            </h3>
+
+            <p>
+                Compare the simulation output with
+                measured hardware results.
+            </p>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     UPLOADS
+===================================================== -->
+
+<section
+    id="filesSection"
+    class="simulation-section"
+>
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-label">
+                RESOURCES
+            </span>
+
+            <h2>
+                Files & Links
+            </h2>
+
+        </div>
+
+        <div class="heading-actions">
+
+            <button
+                class="outline-button"
+                id="addSimulationLink"
+            >
+                + Link
+            </button>
+
+            <button
+                class="primary-button"
+                id="uploadSimulationFile"
+            >
+                + Upload
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div
+        class="simulation-upload-zone"
+        id="simulationUploadZone"
+    >
+
+        <div>
+
+            <strong>
+                Upload simulation resources
+            </strong>
+
+            <p>
+                Images, videos, PDFs, documents,
+                MATLAB files, Simulink models, datasets,
+                ZIP files or any other file.
+            </p>
+
+            <span>
+                Drag & drop or click to browse
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <input
+        type="file"
+        id="simulationFileInput"
+        multiple
+        hidden
+    >
+
+
+    <div
+        class="attachment-grid"
+        id="simulationAttachmentGrid"
+    >
+
+        <article class="attachment-card">
+
+            <div class="attachment-icon">
+                MAT
+            </div>
+
+            <div class="attachment-info">
+
+                <strong>
+                    PMSG_model.slx
+                </strong>
+
+                <span>
+                    Simulink Model · 2.4 MB
+                </span>
+
+                <small>
+                    Main simulation model
+                </small>
+
+            </div>
+
+            <button>
+                Open
+            </button>
+
+        </article>
+
+
+        <article class="attachment-card">
+
+            <div class="attachment-icon">
+                PDF
+            </div>
+
+            <div class="attachment-info">
+
+                <strong>
+                    Theory_Reference.pdf
+                </strong>
+
+                <span>
+                    PDF · 1.8 MB
+                </span>
+
+                <small>
+                    Reference used for the model
+                </small>
+
+            </div>
+
+            <button>
+                Open
+            </button>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     NOTES
+===================================================== -->
+
+<section class="simulation-section">
+
+    <div class="section-heading">
+
+        <div>
+
+            <span class="section-label">
+                NOTES
+            </span>
+
+            <h2>
+                Simulation Notes
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <article class="simulation-card notes-card">
+
+        <textarea
+            id="simulationNotes"
+            placeholder="Record observations, debugging notes, changes made between runs, solver issues, unexpected behaviour, etc."
+        ></textarea>
+
+
+        <div class="card-footer">
+
+            <span>
+                These notes are for your future self.
+            </span>
+
+            <button
+                class="primary-button"
+                id="saveSimulationNotes"
+            >
+                Save Notes
+            </button>
+
+        </div>
+
+    </article>
+
+</section>
+
+
+</main>
+
+
+
+<!-- =====================================================
+     TIMELINE MODAL
+===================================================== -->
+
+<div
+    class="simulation-modal hidden"
+    id="simulationTimelineModal"
+>
+
+    <div class="modal-panel">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="section-label">
+                    WORK PLAN
+                </span>
+
+                <h2>
+                    Timeline Entry
+                </h2>
+
+            </div>
+
+            <button
+                id="closeSimulationTimelineModal"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="modal-grid">
+
+            <label>
+
+                Date
+
+                <input
+                    type="date"
+                    id="simulationTimelineDate"
+                >
+
+            </label>
+
+
+            <label>
+
+                Status
+
+                <select
+                    id="simulationTimelineStatus"
+                >
+
+                    <option value="planned">
+                        Planned
+                    </option>
+
+                    <option value="ongoing">
+                        Ongoing
+                    </option>
+
+                    <option value="completed">
+                        Completed
+                    </option>
+
+                </select>
+
+            </label>
+
+
+            <label class="full">
+
+                Task
+
+                <input
+                    type="text"
+                    id="simulationTimelineTitle"
+                    placeholder="What needs to be done?"
+                >
+
+            </label>
+
+
+            <label class="full">
+
+                Description
+
+                <textarea
+                    id="simulationTimelineDescription"
+                    placeholder="What should be achieved on this date?"
+                ></textarea>
+
+            </label>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="outline-button"
+                id="cancelSimulationTimeline"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="primary-button"
+                id="saveSimulationTimeline"
+            >
+                Save
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     LINK MODAL
+===================================================== -->
+
+<div
+    class="simulation-modal hidden"
+    id="simulationLinkModal"
+>
+
+    <div class="modal-panel">
+
+        <div class="modal-header">
+
+            <div>
+
+                <span class="section-label">
+                    RESOURCE
+                </span>
+
+                <h2>
+                    Add Link
+                </h2>
+
+            </div>
+
+            <button
+                id="closeSimulationLinkModal"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <div class="modal-grid">
+
+            <label class="full">
+
+                Title
+
+                <input
+                    type="text"
+                    id="simulationLinkTitle"
+                    placeholder="Resource title"
+                >
+
+            </label>
+
+
+            <label class="full">
+
+                URL
+
+                <input
+                    type="url"
+                    id="simulationLinkURL"
+                    placeholder="https://..."
+                >
+
+            </label>
+
+
+            <label class="full">
+
+                Description
+
+                <textarea
+                    id="simulationLinkDescription"
+                    placeholder="Why is this resource useful?"
+                ></textarea>
+
+            </label>
+
+        </div>
+
+
+        <div class="modal-actions">
+
+            <button
+                class="outline-button"
+                id="cancelSimulationLink"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="primary-button"
+                id="saveSimulationLink"
+            >
+                Add Link
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     TOAST
+===================================================== -->
+
+<div
+    class="simulation-toast hidden"
+    id="simulationToast"
+></div>
+
+
+
+<script
+    src="simulation.js"
+></script>
+
+</body>
+
+</html>

@@ -1,437 +1,64 @@
 /* =========================================================
    RiGiD ADMIN WORKSPACE
-   FRONTEND / MOCK DATA VERSION
+   SUPABASE BACKEND VERSION
 
-   Includes:
-   - Re / iQube / Garage
-   - Teams
-   - Domains
-   - Team add/edit/delete
-   - Domain add/edit/delete
-   - Pending requests
-   - Workspace overview
-   - Design / Prototype / Paper statistics
-   - Forum filter
+   Connected to:
+
+   - Supabase Auth
+   - public.profiles
+   - public.teams
+
+   Features:
+
+   - Authentication check
+   - Approved admin verification
+   - Real logged-in name/email
+   - Real teams from Supabase
+   - Add team
+   - Edit team
+   - Delete team
+   - Real pending requests
+   - Approve users
+   - Reject users
+   - Sign out
    - Live clock
-   - Header controls
+   - Team/forum filter
+   - Existing UI controls
+
+   NOTE:
+   Domains / Design / Prototype / Paper statistics
+   are NOT fabricated here because no corresponding
+   backend tables were provided yet.
 ========================================================= */
 
 
 /* =========================================================
-   ADMIN DATA
+   GLOBAL STATE
 ========================================================= */
 
-const adminData = {
+let currentUser = null;
 
-    name:
-        "Gentleman",
+let currentProfile = null;
 
-    email:
-        "admin@kct.ac.in"
+let currentTeam = null;
 
-};
+let teams = [];
 
+let domains = [];
 
-/* =========================================================
-   FORUM DATA
-========================================================= */
+let forums = [];
 
-const forums = {
+let pendingRequests = [];
 
+let selectedForum = "all";
 
-    /* =====================================================
-       RE
-    ====================================================== */
+let editingTeamId = null;
 
-    re: {
+let modalForum = null;
 
-        name:
-            "Re",
+let modalForumId = null;
 
-        teams: [
-
-            {
-                id:
-                    1,
-
-                name:
-                    "Sulal",
-
-                description:
-                    "Renewable energy and sustainable technology team."
-            },
-
-            {
-                id:
-                    2,
-
-                name:
-                    "Team Alpha",
-
-                description:
-                    "Advanced engineering research and development."
-            }
-
-        ],
-
-
-        domains: [
-
-            {
-                id:
-                    101,
-
-                name:
-                    "Renewable Energy",
-
-                description:
-                    "Development of renewable energy technologies and sustainable power systems."
-            },
-
-            {
-                id:
-                    102,
-
-                name:
-                    "Automotive Research",
-
-                description:
-                    "Research and development in automotive systems, mobility and vehicle technology."
-            },
-
-            {
-                id:
-                    103,
-
-                name:
-                    "Power Systems",
-
-                description:
-                    "Research involving electrical power generation, transmission, distribution and grid systems."
-            }
-
-        ]
-
-    },
-
-
-    /* =====================================================
-       IQUBE
-    ====================================================== */
-
-    iqube: {
-
-        name:
-            "iQube",
-
-        teams: [
-
-            {
-                id:
-                    3,
-
-                name:
-                    "Aerial Robotics",
-
-                description:
-                    "Autonomous aerial systems and robotics."
-            },
-
-            {
-                id:
-                    4,
-
-                name:
-                    "Team Vision",
-
-                description:
-                    "Technology innovation and intelligent systems."
-            }
-
-        ],
-
-
-        domains: [
-
-            {
-                id:
-                    104,
-
-                name:
-                    "Mechanical",
-
-                description:
-                    "Mechanical design, manufacturing, mechanisms and engineering systems."
-            },
-
-            {
-                id:
-                    105,
-
-                name:
-                    "Robotics",
-
-                description:
-                    "Robotic systems, automation, control and intelligent machines."
-            },
-
-            {
-                id:
-                    106,
-
-                name:
-                    "Artificial Intelligence",
-
-                description:
-                    "AI, machine learning, intelligent systems and data-driven technologies."
-            }
-
-        ]
-
-    },
-
-
-    /* =====================================================
-       GARAGE
-    ====================================================== */
-
-    garage: {
-
-        name:
-            "Garage",
-
-        teams: [
-
-            {
-                id:
-                    5,
-
-                name:
-                    "Sea Sakthi",
-
-                description:
-                    "Marine engineering and sustainable ocean technology."
-            },
-
-            {
-                id:
-                    6,
-
-                name:
-                    "Incraft",
-
-                description:
-                    "Creative engineering and prototype development."
-            },
-
-            {
-                id:
-                    7,
-
-                name:
-                    "Renew",
-
-                description:
-                    "Sustainable products and renewable technology."
-            }
-
-        ],
-
-
-        domains: [
-
-            {
-                id:
-                    107,
-
-                name:
-                    "Mechanical",
-
-                description:
-                    "Mechanical design, manufacturing, mechanisms and engineering systems."
-            },
-
-            {
-                id:
-                    108,
-
-                name:
-                    "Robotics",
-
-                description:
-                    "Robotic systems, automation, control and intelligent machines."
-            },
-
-            {
-                id:
-                    109,
-
-                name:
-                    "Artificial Intelligence",
-
-                description:
-                    "AI, machine learning, intelligent systems and data-driven technologies."
-            }
-
-        ]
-
-    }
-
-};
-
-
-/* =========================================================
-   PENDING REQUESTS
-========================================================= */
-
-let pendingRequests = [
-
-    {
-        id:
-            1,
-
-        email:
-            "student1@kct.ac.in",
-
-        forum:
-            "Re",
-
-        team:
-            "Sulal",
-
-        date:
-            "16 Aug 2026"
-
-    },
-
-    {
-        id:
-            2,
-
-        email:
-            "student2@kct.ac.in",
-
-        forum:
-            "iQube",
-
-        team:
-            "Aerial Robotics",
-
-        date:
-            "16 Aug 2026"
-
-    },
-
-    {
-        id:
-            3,
-
-        email:
-            "student3@kct.ac.in",
-
-        forum:
-            "Garage",
-
-        team:
-            "Incraft",
-
-        date:
-            "15 Aug 2026"
-
-    }
-
-];
-
-
-/* =========================================================
-   WORKSPACE OVERVIEW DATA
-   ---------------------------------------------------------
-   Temporary frontend values.
-   Backend will replace these later.
-========================================================= */
-
-const overviewStats = {
-
-    re: {
-
-        design: {
-            ongoing: 4,
-            completed: 8
-        },
-
-        prototype: {
-            ongoing: 5,
-            completed: 11
-        },
-
-        paper: {
-            ongoing: 3,
-            completed: 7
-        }
-
-    },
-
-
-    iqube: {
-
-        design: {
-            ongoing: 6,
-            completed: 12
-        },
-
-        prototype: {
-            ongoing: 4,
-            completed: 9
-        },
-
-        paper: {
-            ongoing: 5,
-            completed: 10
-        }
-
-    },
-
-
-    garage: {
-
-        design: {
-            ongoing: 3,
-            completed: 6
-        },
-
-        prototype: {
-            ongoing: 7,
-            completed: 13
-        },
-
-        paper: {
-            ongoing: 2,
-            completed: 5
-        }
-
-    }
-
-};
-
-
-/* =========================================================
-   MODAL STATE
-========================================================= */
-
-let modalMode =
-    "team";
-
-
-let modalForum =
-    null;
-
-
-let editingDomainId =
-    null;
-
-
-let editingTeamId =
-    null;
+let editingForumId = null;
 
 
 /* =========================================================
@@ -440,9 +67,7 @@ let editingTeamId =
 
 function el(id) {
 
-    return document.getElementById(
-        id
-    );
+    return document.getElementById(id);
 
 }
 
@@ -451,21 +76,52 @@ function el(id) {
    HTML ESCAPE
 ========================================================= */
 
-function escapeHTML(
-    value
-) {
+function escapeHTML(value) {
 
     const div =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     div.textContent =
         value ?? "";
 
-
     return div.innerHTML;
+
+}
+
+
+/* =========================================================
+   DATE FORMATTER
+========================================================= */
+
+function formatDate(value) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+    const date =
+        new Date(value);
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+
+    }
+
+    return date.toLocaleDateString(
+        undefined,
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }
+    );
 
 }
 
@@ -477,10 +133,7 @@ function escapeHTML(
 function startClock() {
 
     const clock =
-        el(
-            "liveClock"
-        );
-
+        el("liveClock");
 
     if (!clock) {
 
@@ -499,17 +152,10 @@ function startClock() {
             now.toLocaleDateString(
                 undefined,
                 {
-                    weekday:
-                        "short",
-
-                    day:
-                        "2-digit",
-
-                    month:
-                        "short",
-
-                    year:
-                        "numeric"
+                    weekday: "short",
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
                 }
             );
 
@@ -519,7 +165,7 @@ function startClock() {
 
 
         clock.textContent =
-            `${date}  /  ${time}`;
+            `${date} / ${time}`;
 
     }
 
@@ -536,861 +182,545 @@ function startClock() {
 
 
 /* =========================================================
-   ADMIN INFO
+   SUPABASE CHECK
 ========================================================= */
 
-function loadAdminInfo() {
-
-    const nameElement =
-        el(
-            "adminName"
-        );
-
-
-    const emailElement =
-        el(
-            "adminEmail"
-        );
-
-
-    if (nameElement) {
-
-        nameElement.textContent =
-            adminData.name;
-
-    }
-
-
-    if (emailElement) {
-
-        emailElement.textContent =
-            adminData.email;
-
-    }
-
-}
-
-
-/* =========================================================
-   RENDER ALL FORUMS
-========================================================= */
-
-function renderForums() {
-
-    renderForum(
-        "re",
-        "reTeams",
-        "reDomains",
-        "reTeamCount",
-        "reDomainCount"
-    );
-
-
-    renderForum(
-        "iqube",
-        "iqubeTeams",
-        "iqubeDomains",
-        "iqubeTeamCount",
-        "iqubeDomainCount"
-    );
-
-
-    renderForum(
-        "garage",
-        "garageTeams",
-        "garageDomains",
-        "garageTeamCount",
-        "garageDomainCount"
-    );
-
-}
-
-
-/* =========================================================
-   RENDER ONE FORUM
-========================================================= */
-
-function renderForum(
-    forumId,
-    teamContainerId,
-    domainContainerId,
-    teamCountId,
-    domainCountId
-) {
-
-    const forum =
-        forums[
-            forumId
-        ];
-
-
-    if (!forum) {
-
-        return;
-
-    }
-
-
-    const teamContainer =
-        el(
-            teamContainerId
-        );
-
-
-    const domainContainer =
-        el(
-            domainContainerId
-        );
-
+function checkSupabaseClient() {
 
     if (
-        !teamContainer ||
-        !domainContainer
+        typeof sb ===
+        "undefined"
     ) {
 
-        return;
-
-    }
-
-
-    teamContainer.innerHTML =
-        "";
-
-
-    domainContainer.innerHTML =
-        "";
-
-
-    /* =====================================================
-       COUNTS
-    ====================================================== */
-
-    const teamCount =
-        el(
-            teamCountId
+        console.error(
+            "Supabase client 'sb' is not available."
         );
 
 
-    const domainCount =
-        el(
-            domainCountId
+        alert(
+            "Supabase is not connected.\n\n" +
+            "Check supabase-client.js and the script order in admin.html."
         );
 
 
-    if (teamCount) {
-
-        teamCount.textContent =
-            forum.teams.length;
+        return false;
 
     }
 
 
-    if (domainCount) {
+    return true;
 
-        domainCount.textContent =
-            forum.domains.length;
+}
+
+
+/* =========================================================
+   REDIRECT TO LOGIN
+========================================================= */
+
+function redirectToLogin() {
+
+    /*
+       admin.html
+       ↓
+       ../login/login.html
+
+       dashboard/admin/
+       dashboard/login/
+    */
+
+    window.location.replace(
+        "../../login/login.html"
+    );
+
+}
+
+
+/* =========================================================
+   AUTHENTICATION
+========================================================= */
+
+async function checkAuthentication() {
+
+    if (
+        !checkSupabaseClient()
+    ) {
+
+        return false;
 
     }
 
 
-    /* =====================================================
-       TEAMS
-    ====================================================== */
+    try {
 
-    forum.teams.forEach(
-        (
-            team,
-            index
-        ) => {
-
-            const card =
-                document.createElement(
-                    "article"
-                );
+        const {
+            data,
+            error
+        } =
+            await sb.auth.getSession();
 
 
-            card.className =
-                "team-card";
+        if (error) {
+
+            console.error(
+                "Supabase session error:",
+                error
+            );
 
 
-            card.dataset.id =
-                team.id;
+            redirectToLogin();
+
+            return false;
+
+        }
 
 
-            card.dataset.forum =
-                forumId;
+        if (
+            !data ||
+            !data.session
+        ) {
+
+            console.warn(
+                "No active Supabase session."
+            );
 
 
-            card.innerHTML = `
+            redirectToLogin();
 
-                <div>
+            return false;
 
-                    <div class="team-card-top">
-
-                        <span class="team-index">
-
-                            TEAM
-                            ${String(
-                                index + 1
-                            ).padStart(
-                                2,
-                                "0"
-                            )}
-
-                        </span>
+        }
 
 
-                        <div class="team-actions">
-
-                            <button
-                                class="team-action edit-team"
-                                title="Edit team"
-                                type="button"
-                            >
-                                ✎
-                            </button>
+        currentUser =
+            data.session.user;
 
 
-                            <button
-                                class="team-action delete-team"
-                                title="Delete team"
-                                type="button"
-                            >
-                                ×
-                            </button>
-
-                        </div>
-
-                    </div>
+        console.log(
+            "Authenticated user:",
+            currentUser
+        );
 
 
-                    <h3>
+        return true;
 
-                        ${escapeHTML(
-                            team.name
-                        )}
+    }
 
-                    </h3>
+    catch (error) {
 
-
-                    <p>
-
-                        ${escapeHTML(
-                            team.description ||
-                            "No description provided."
-                        )}
-
-                    </p>
-
-                </div>
+        console.error(
+            "Authentication exception:",
+            error
+        );
 
 
-                <div class="team-footer">
+        redirectToLogin();
 
-                    <span>
-                        Team Workspace
-                    </span>
+        return false;
 
+    }
 
-                    <span class="open-team">
-                        Open →
-                    </span>
-
-                </div>
-
-            `;
+}
 
 
-            /* =================================================
-               EDIT TEAM
-            ================================================== */
+/* =========================================================
+   LOAD CURRENT USER PROFILE
+========================================================= */
 
-            const editButton =
-                card.querySelector(
-                    ".edit-team"
-                );
+async function loadAdminProfile() {
 
+    if (!currentUser) {
 
-            if (editButton) {
+        return false;
 
-                editButton.addEventListener(
-                    "click",
-                    event => {
-
-                        event.stopPropagation();
+    }
 
 
-                        openEditTeam(
-                            forumId,
-                            team.id
-                        );
+    try {
 
-                    }
-                );
+        const {
+            data,
+            error
+        } =
+            await sb
+                .from("profiles")
+                .select(`
+                    id,
+                    email,
+                    full_name,
+                    role,
+                    status,
+                    team_id,
+                    created_at,
+                    updated_at,
+                    teams (
+                        id,
+                        name,
+                        forum
+                    )
+                `)
+                .eq(
+                    "id",
+                    currentUser.id
+                )
+                .maybeSingle();
 
+
+        if (error) {
+
+            console.error(
+                "Profile loading error:",
+                error
+            );
+
+
+            alert(
+                "Unable to load your profile.\n\n" +
+                error.message
+            );
+
+
+            return false;
+
+        }
+
+
+        if (!data) {
+
+            console.error(
+                "No profile found for:",
+                currentUser.id
+            );
+
+
+            alert(
+                "Your RiGiD profile could not be found."
+            );
+
+
+            await sb.auth.signOut();
+
+            redirectToLogin();
+
+            return false;
+
+        }
+
+
+        currentProfile =
+            data;
+
+
+        currentTeam =
+            data.teams;
+
+
+        console.log(
+            "Current profile:",
+            data
+        );
+
+
+        /* =================================================
+           ADMIN SECURITY CHECK
+        ================================================== */
+
+        if (
+            data.role !==
+            "admin"
+        ) {
+
+            alert(
+                "Access denied.\n\n" +
+                "This account is not an administrator."
+            );
+
+
+            await sb.auth.signOut();
+
+            redirectToLogin();
+
+            return false;
+
+        }
+
+
+        if (
+            data.status !==
+            "approved"
+        ) {
+
+            alert(
+                "Your administrator account is not approved."
+            );
+
+
+            await sb.auth.signOut();
+
+            redirectToLogin();
+
+            return false;
+
+        }
+
+
+        /* =================================================
+           REAL EMAIL
+        ================================================== */
+
+        const email =
+            data.email ||
+            currentUser.email ||
+            "Unknown";
+
+
+        /* =================================================
+           REAL NAME
+
+           Priority:
+
+           1. profiles.full_name
+           2. Supabase Auth full_name
+           3. email username
+           4. Administrator
+        ================================================== */
+
+        const metadataName =
+            currentUser
+                ?.user_metadata
+                ?.full_name;
+
+
+        const name = "Gentlemen";
+
+
+        /* =================================================
+           UPDATE HEADER
+        ================================================== */
+
+        const nameElement =
+            el("adminName");
+
+
+        const emailElement =
+            el("adminEmail");
+
+
+        if (nameElement) {
+
+            nameElement.textContent =
+                name;
+
+        }
+
+
+        if (emailElement) {
+
+            emailElement.textContent =
+                email;
+
+        }
+
+
+        console.log(
+            "Admin identity:",
+            {
+                name,
+                email,
+                role: data.role,
+                status: data.status,
+                team: currentTeam?.name || null
             }
+        );
 
 
-            /* =================================================
-               DELETE TEAM
-            ================================================== */
+        return true;
 
-            const deleteButton =
-                card.querySelector(
-                    ".delete-team"
-                );
+    }
 
+    catch (error) {
 
-            if (deleteButton) {
-
-                deleteButton.addEventListener(
-                    "click",
-                    event => {
-
-                        event.stopPropagation();
+        console.error(
+            "Unexpected profile error:",
+            error
+        );
 
 
-                        deleteTeam(
-                            forumId,
-                            team.id
-                        );
-
-                    }
-                );
-
-            }
+        alert(
+            "Unexpected error while loading your profile."
+        );
 
 
-            /* =================================================
-               OPEN TEAM
-            ================================================== */
+        return false;
 
-            card.addEventListener(
-                "click",
-                event => {
+    }
 
-                    if (
-                        event.target.closest(
-                            ".team-actions"
-                        )
-                    ) {
+}
 
-                        return;
+/* =========================================================
+   LOAD FORUMS FROM DATABASE
+========================================================= */
 
-                    }
+async function loadForums() {
 
+    try {
 
-                    openTeam(
-                        forumId,
-                        team.id
-                    );
-
+        const {
+            data,
+            error
+        } = await sb
+            .from("forums")
+            .select(`
+                id,
+                name,
+                created_at
+            `)
+            .order(
+                "created_at",
+                {
+                    ascending: true
                 }
             );
 
 
-            teamContainer.appendChild(
-                card
+        if (error) {
+
+            console.error(
+                "Forums loading error:",
+                error
             );
 
+            alert(
+                "Unable to load forums.\n\n" +
+                error.message
+            );
+
+            return;
+
         }
-    );
 
 
-    /* =====================================================
-       DOMAINS
-    ====================================================== */
+        forums =
+            data || [];
 
-    forum.domains.forEach(
-        domain => {
 
-            const card =
+        console.log(
+            "Forums loaded:",
+            forums
+        );
+
+
+        renderForumFilter();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected forum loading error:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================================
+   RENDER FORUM FILTER
+========================================================= */
+
+function renderForumFilter() {
+
+    const filter =
+        el("forumFilter");
+
+
+    if (!filter) {
+
+        return;
+
+    }
+
+
+    filter.innerHTML = `
+
+        <option value="all">
+            All Forums
+        </option>
+
+    `;
+
+
+    forums.forEach(
+        forum => {
+
+            const option =
                 document.createElement(
-                    "article"
+                    "option"
                 );
 
 
-            card.className =
-                "domain-card";
+            option.value =
+                forum.id;
 
 
-            card.dataset.id =
-                domain.id;
+            option.textContent =
+                forum.name;
 
 
-            card.dataset.forum =
-                forumId;
-
-
-            card.innerHTML = `
-
-                <div>
-
-                    <div class="domain-main">
-
-                        <span class="domain-dot">
-                        </span>
-
-
-                        <span class="domain-name">
-
-                            ${escapeHTML(
-                                domain.name
-                            )}
-
-                        </span>
-
-                    </div>
-
-
-                    <p class="domain-description">
-
-                        ${escapeHTML(
-                            domain.description ||
-                            "No description provided."
-                        )}
-
-                    </p>
-
-
-                    <div class="domain-label">
-                        DOMAIN
-                    </div>
-
-                </div>
-
-
-                <div class="domain-actions">
-
-                    <button
-                        class="domain-action edit-domain"
-                        title="Edit domain"
-                        type="button"
-                    >
-                        ✎
-                    </button>
-
-
-                    <button
-                        class="domain-action delete-domain"
-                        title="Delete domain"
-                        type="button"
-                    >
-                        ×
-                    </button>
-
-                </div>
-
-            `;
-
-
-            /* =================================================
-               EDIT DOMAIN
-            ================================================== */
-
-            card
-                .querySelector(
-                    ".edit-domain"
-                )
-                .addEventListener(
-                    "click",
-                    event => {
-
-                        event.stopPropagation();
-
-
-                        openEditDomain(
-                            forumId,
-                            domain.id
-                        );
-
-                    }
-                );
-
-
-            /* =================================================
-               DELETE DOMAIN
-            ================================================== */
-
-            card
-                .querySelector(
-                    ".delete-domain"
-                )
-                .addEventListener(
-                    "click",
-                    event => {
-
-                        event.stopPropagation();
-
-
-                        deleteDomain(
-                            forumId,
-                            domain.id
-                        );
-
-                    }
-                );
-
-
-            domainContainer.appendChild(
-                card
+            filter.appendChild(
+                option
             );
 
         }
     );
-
-}
-
-
-/* =========================================================
-   OPEN TEAM
-========================================================= */
-
-function openTeam(
-    forumId,
-    teamId
-) {
-
-    const forum =
-        forums[
-            forumId
-        ];
-
-
-    if (!forum) {
-
-        return;
-
-    }
-
-
-    const team =
-        forum.teams.find(
-            item =>
-                item.id ===
-                teamId
-        );
-
-
-    if (!team) {
-
-        return;
-
-    }
-
-
-    alert(
-        `Opening ${team.name} workspace`
-    );
-
-}
-
-
-/* =========================================================
-   ADD BUTTONS
-========================================================= */
-
-function initAddButtons() {
-
-    document
-        .querySelectorAll(
-            ".add-btn"
-        )
-        .forEach(
-            button => {
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        const action =
-                            button.dataset.action;
-
-
-                        const forum =
-                            button.dataset.forum;
-
-
-                        openItemModal(
-                            action,
-                            forum
-                        );
-
-                    }
-                );
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   OPEN ADD MODAL
-========================================================= */
-
-function openItemModal(
-    type,
-    forumId
-) {
-
-    modalMode =
-        type ===
-        "add-domain"
-            ?
-            "domain"
-            :
-            "team";
-
-
-    modalForum =
-        forumId;
-
-
-    editingDomainId =
-        null;
-
-
-    editingTeamId =
-        null;
-
-
-    const forum =
-        forums[
-            forumId
-        ];
-
-
-    if (!forum) {
-
-        return;
-
-    }
-
-
-    el(
-        "modalForum"
-    ).value =
-        forum.name;
-
-
-    el(
-        "itemName"
-    ).value =
-        "";
-
-
-    el(
-        "itemDescription"
-    ).value =
-        "";
-
-
-    el(
-        "modalMessage"
-    )
-        .classList
-        .add(
-            "hidden"
-        );
 
 
     if (
-        modalMode ===
-        "team"
+        selectedForum !== "all" &&
+        forums.some(
+            forum =>
+                forum.id ===
+                selectedForum
+        )
     ) {
 
-        el(
-            "modalEyebrow"
-        ).textContent =
-            "NEW TEAM";
-
-
-        el(
-            "modalTitle"
-        ).textContent =
-            "Add Team";
-
-
-        el(
-            "nameLabel"
-        ).textContent =
-            "Team Name";
-
-
-        el(
-            "itemName"
-        ).placeholder =
-            "Enter team name";
-
-
-        el(
-            "itemDescription"
-        ).placeholder =
-            "Describe this team...";
-
-
-        el(
-            "descriptionGroup"
-        )
-            .classList
-            .remove(
-                "hidden"
-            );
-
-
-        document
-            .querySelector(
-                ".save-btn"
-            )
-            .textContent =
-            "Add Team";
+        filter.value =
+            selectedForum;
 
     }
-
 
     else {
 
-        el(
-            "modalEyebrow"
-        ).textContent =
-            "NEW DOMAIN";
+        selectedForum =
+            "all";
 
-
-        el(
-            "modalTitle"
-        ).textContent =
-            "Add Domain";
-
-
-        el(
-            "nameLabel"
-        ).textContent =
-            "Domain Name";
-
-
-        el(
-            "itemName"
-        ).placeholder =
-            "Enter domain name";
-
-
-        el(
-            "itemDescription"
-        ).placeholder =
-            "Describe this domain...";
-
-
-        el(
-            "descriptionGroup"
-        )
-            .classList
-            .remove(
-                "hidden"
-            );
-
-
-        document
-            .querySelector(
-                ".save-btn"
-            )
-            .textContent =
-            "Add Domain";
+        filter.value =
+            "all";
 
     }
 
-
-    el(
-        "itemModal"
-    )
-        .classList
-        .remove(
-            "hidden"
-        );
-
-
-    el(
-        "itemName"
-    ).focus();
-
 }
 
-
 /* =========================================================
-   CLOSE ITEM MODAL
+   CREATE FORUM
 ========================================================= */
 
-function closeItemModal() {
+async function createForum() {
 
-    const modal =
-        el(
-            "itemModal"
-        );
-
-
-    if (!modal) {
-
-        return;
-
-    }
-
-
-    modal
-        .classList
-        .add(
-            "hidden"
-        );
-
-
-    modalMode =
-        "team";
-
-
-    modalForum =
-        null;
-
-
-    editingDomainId =
-        null;
-
-
-    editingTeamId =
-        null;
-
-}
-
-
-/* =========================================================
-   SAVE TEAM / DOMAIN
-========================================================= */
-
-function saveItem(
-    event
-) {
-
-    event.preventDefault();
+    const input =
+        el("forumName");
 
 
     const name =
-        el(
-            "itemName"
-        )
-            .value
-            .trim();
-
-
-    const description =
-        el(
-            "itemDescription"
-        )
-            .value
+        input
+            ?.value
             .trim();
 
 
     if (!name) {
 
-        showModalMessage(
-            "Please enter a name."
+        showForumMessage(
+            "Please enter a forum name."
         );
 
         return;
@@ -1398,183 +728,200 @@ function saveItem(
     }
 
 
-    if (!modalForum) {
+    try {
 
-        showModalMessage(
-            "Forum information is missing."
-        );
-
-        return;
-
-    }
-
-
-    const forum =
-        forums[
-            modalForum
-        ];
-
-
-    if (!forum) {
-
-        showModalMessage(
-            "Forum not found."
-        );
-
-        return;
-
-    }
+        const {
+            data,
+            error
+        } = await sb
+            .from("forums")
+            .insert({
+                name: name
+            })
+            .select(`
+                id,
+                name,
+                created_at
+            `)
+            .single();
 
 
-    /* =====================================================
-       EDIT DOMAIN
-    ====================================================== */
+        if (error) {
 
-    if (
-        editingDomainId !==
-        null
-    ) {
-
-        const domain =
-            forum.domains.find(
-                item =>
-                    item.id ===
-                    editingDomainId
+            console.error(
+                "Create forum error:",
+                error
             );
 
 
-        if (domain) {
+            showForumMessage(
+                error.message
+            );
 
-            domain.name =
-                name;
 
-
-            domain.description =
-                description ||
-                "No description provided.";
+            return;
 
         }
 
 
-        closeItemModal();
-
-        renderForums();
-
-        return;
-
-    }
+        console.log(
+            "Forum created:",
+            data
+        );
 
 
-    /* =====================================================
-       EDIT TEAM
-    ====================================================== */
-
-    if (
-        editingTeamId !==
-        null
-    ) {
-
-        const team =
-            forum.teams.find(
-                item =>
-                    item.id ===
-                    editingTeamId
-            );
+        forums.push(
+            data
+        );
 
 
-        if (team) {
-
-            team.name =
-                name;
+        closeForumModal();
 
 
-            team.description =
-                description ||
-                "No description provided.";
+        renderForumFilter();
+
+
+        /* Select newly created forum */
+
+        selectedForum =
+            data.id;
+
+
+        const filter =
+            el("forumFilter");
+
+
+        if (filter) {
+
+            filter.value =
+                data.id;
 
         }
 
 
-        closeItemModal();
+        updateOverview();
 
-        renderForums();
 
-        return;
+        alert(
+            `Forum "${data.name}" created successfully.`
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected create forum error:",
+            error
+        );
+
+
+        showForumMessage(
+            "Unable to create forum."
+        );
+
+    }
+
+}
+
+/* =========================================================
+   FORUM MODAL
+========================================================= */
+
+function openCreateForumModal() {
+
+    editingForumId =
+        null;
+
+
+    const modal =
+        el("forumModal");
+
+
+    const input =
+        el("forumName");
+
+
+    const message =
+        el("forumMessage");
+
+
+    if (input) {
+
+        input.value =
+            "";
 
     }
 
 
-    /* =====================================================
-       ADD TEAM
-    ====================================================== */
+    if (message) {
 
-    if (
-        modalMode ===
-        "team"
-    ) {
+        message.textContent =
+            "";
 
-        forum.teams.push({
-
-            id:
-                Date.now(),
-
-            name:
-                name,
-
-            description:
-                description ||
-                "No description provided."
-
-        });
+        message.classList.add(
+            "hidden"
+        );
 
     }
 
 
-    /* =====================================================
-       ADD DOMAIN
-    ====================================================== */
+    if (modal) {
 
-    else {
-
-        forum.domains.push({
-
-            id:
-                Date.now(),
-
-            name:
-                name,
-
-            description:
-                description ||
-                "No description provided."
-
-        });
+        modal.classList.remove(
+            "hidden"
+        );
 
     }
 
 
-    closeItemModal();
-
-    renderForums();
+    input?.focus();
 
 }
 
 
 /* =========================================================
-   MODAL MESSAGE
+   CLOSE FORUM MODAL
 ========================================================= */
 
-function showModalMessage(
+function closeForumModal() {
+
+    const modal =
+        el("forumModal");
+
+
+    if (modal) {
+
+        modal.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    editingForumId =
+        null;
+
+}
+
+
+/* =========================================================
+   FORUM MODAL MESSAGE
+========================================================= */
+
+function showForumMessage(
     message
 ) {
 
     const box =
-        el(
-            "modalMessage"
-        );
+        el("forumMessage");
 
 
     if (!box) {
+
+        alert(
+            message
+        );
 
         return;
 
@@ -1585,203 +932,992 @@ function showModalMessage(
         message;
 
 
-    box.classList
-        .remove(
-            "hidden"
+    box.classList.remove(
+        "hidden"
+    );
+
+}
+
+/* =========================================================
+   LOAD TEAMS FROM DATABASE
+========================================================= */
+
+/* =========================================================
+   LOAD TEAMS FROM DATABASE
+========================================================= */
+
+async function loadTeams() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await sb
+            .from("teams")
+            .select(`
+                id,
+                name,
+                forum,
+                forum_id,
+                created_at,
+                forums (
+                    id,
+                    name
+                )
+            `)
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Teams loading error:",
+                error
+            );
+
+
+            alert(
+                "Unable to load teams.\n\n" +
+                error.message
+            );
+
+
+            return;
+
+        }
+
+
+        teams =
+            data || [];
+
+
+        console.log(
+            "Teams loaded:",
+            teams
         );
+
+
+        renderTeams();
+
+
+        updateOverview();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected team loading error:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================================
+   LOAD DOMAINS FROM DATABASE
+========================================================= */
+
+async function loadDomains() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await sb
+            .from("domains")
+            .select(`
+                id,
+                name,
+                forum_id,
+                created_at,
+                forums (
+                    id,
+                    name
+                )
+            `)
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Domains loading error:",
+                error
+            );
+
+            alert(
+                "Unable to load domains.\n\n" +
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        domains =
+            data || [];
+
+
+        console.log(
+            "Domains loaded:",
+            domains
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected domain loading error:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================================
+   RENDER DOMAINS
+========================================================= */
+
+
+/* =========================================================
+   GET TEAMS FOR FORUM
+========================================================= */
+
+function getForumTeams(
+    forum
+) {
+
+    return teams.filter(
+        team =>
+            team.forum ===
+            forum
+    );
 
 }
 
 
 /* =========================================================
-   EDIT DOMAIN
+   RENDER TEAMS
 ========================================================= */
 
-function openEditDomain(
-    forumId,
-    domainId
+/* =========================================================
+   RENDER FORUMS
+   Forum → Teams + Domains
+========================================================= */
+
+function renderTeams() {
+
+    const container =
+        el("forumsContainer");
+
+
+    if (!container) {
+
+        console.error(
+            "forumsContainer not found."
+        );
+
+        return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    forums.forEach(
+        forum => {
+
+            const forumSection =
+                document.createElement(
+                    "section"
+                );
+
+
+            forumSection.className =
+                "forum-section";
+
+
+            forumSection.dataset.forumId =
+                forum.id;
+
+
+            const forumTeams =
+                teams.filter(
+                    team =>
+                        team.forum_id ===
+                        forum.id
+                );
+
+
+            const forumDomains =
+                domains.filter(
+                    domain =>
+                        domain.forum_id ===
+                        forum.id
+                );
+
+
+            forumSection.innerHTML = `
+
+                <div class="forum-header">
+
+                    <div>
+
+                        <div class="forum-eyebrow">
+                            FORUM
+                        </div>
+
+                        <h2>
+                            ${escapeHTML(
+                                forum.name
+                            )}
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <div class="forum-content">
+
+                    <!-- =========================
+                         TEAMS
+                    ========================== -->
+
+                    <div class="forum-column">
+
+                        <div class="column-header">
+
+                            <div>
+
+                                <span class="column-label">
+                                    TEAMS
+                                </span>
+
+                                <span
+                                    class="column-count"
+                                >
+                                    ${forumTeams.length}
+                                </span>
+
+                            </div>
+
+
+                            <button
+                                class="add-btn add-team-btn"
+                                type="button"
+                                data-forum-id="${forum.id}"
+                            >
+                                <strong>+</strong>
+                                <span>Add Team</span>
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            class="team-list"
+                            data-team-container="${forum.id}"
+                        >
+
+                            ${
+                                forumTeams.length
+                                    ? forumTeams
+                                        .map(
+                                            team =>
+                                                renderTeamCard(
+                                                    team
+                                                )
+                                        )
+                                        .join("")
+                                    : `
+                                        <div class="empty-state">
+                                            No teams yet.
+                                        </div>
+                                    `
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =========================
+                         DOMAINS
+                    ========================== -->
+
+                    <div class="forum-column">
+
+                        <div class="column-header">
+
+                            <div>
+
+                                <span class="column-label">
+                                    DOMAINS
+                                </span>
+
+                                <span
+                                    class="column-count"
+                                >
+                                    ${forumDomains.length}
+                                </span>
+
+                            </div>
+
+
+                            <button
+                                class="add-btn add-domain-btn"
+                                type="button"
+                                data-forum-id="${forum.id}"
+                            >
+                                <strong>+</strong>
+                                <span>Add Domain</span>
+                            </button>
+
+                        </div>
+
+
+                        <div
+                            class="team-list domain-list"
+                            data-domain-container="${forum.id}"
+                        >
+
+                            ${
+                                forumDomains.length
+                                    ? forumDomains
+                                        .map(
+                                            domain =>
+                                                renderDomainCard(
+                                                    domain
+                                                )
+                                        )
+                                        .join("")
+                                    : `
+                                        <div class="empty-state">
+                                            No domains yet.
+                                        </div>
+                                    `
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                forumSection
+            );
+
+        }
+    );
+
+
+    /*
+       Attach Add Team / Add Domain buttons
+    */
+
+    container
+        .querySelectorAll(
+            ".add-team-btn"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        openAddTeamDynamic(
+                            button.dataset.forumId
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    container
+        .querySelectorAll(
+            ".add-domain-btn"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        openAddDomainDynamic(
+                            button.dataset.forumId
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    applyForumFilter();
+
+}
+
+/* =========================================================
+   RENDER TEAM CARD
+========================================================= */
+
+function renderTeamCard(
+    team
+) {
+
+    return `
+
+        <article
+            class="team-card"
+            data-id="${team.id}"
+        >
+
+            <div>
+
+                <div class="team-card-top">
+
+                    <span class="team-index">
+                        TEAM
+                    </span>
+
+                </div>
+
+
+                <h3>
+                    ${escapeHTML(
+                        team.name
+                    )}
+                </h3>
+
+
+                <p>
+                    ${escapeHTML(
+                        team.forums?.name ||
+                        team.forum ||
+                        ""
+                    )}
+                </p>
+
+            </div>
+
+
+            <div class="team-footer">
+
+                <span>
+                    Created
+                    ${escapeHTML(
+                        formatDate(
+                            team.created_at
+                        )
+                    )}
+                </span>
+
+            </div>
+
+        </article>
+
+    `;
+
+}
+
+/* =========================================================
+   RENDER DOMAIN CARD
+========================================================= */
+
+function renderDomainCard(
+    domain
+) {
+
+    return `
+
+        <article
+            class="team-card"
+            data-id="${domain.id}"
+        >
+
+            <div>
+
+                <div class="team-card-top">
+
+                    <span class="team-index">
+                        DOMAIN
+                    </span>
+
+                </div>
+
+
+                <h3>
+                    ${escapeHTML(
+                        domain.name
+                    )}
+                </h3>
+
+
+                <p>
+                    ${escapeHTML(
+                        domain.forums?.name ||
+                        ""
+                    )}
+                </p>
+
+            </div>
+
+
+            <div class="team-footer">
+
+                <span>
+                    Created
+                    ${escapeHTML(
+                        formatDate(
+                            domain.created_at
+                        )
+                    )}
+                </span>
+
+            </div>
+
+        </article>
+
+    `;
+
+}
+
+/* =========================================================
+   DYNAMIC ADD TEAM
+========================================================= */
+
+function openAddTeamDynamic(
+    forumId
 ) {
 
     const forum =
-        forums[
-            forumId
-        ];
+        forums.find(
+            item =>
+                item.id ===
+                forumId
+        );
 
 
     if (!forum) {
 
-        return;
-
-    }
-
-
-    const domain =
-        forum.domains.find(
-            item =>
-                item.id ===
-                domainId
+        alert(
+            "Forum not found."
         );
 
-
-    if (!domain) {
-
         return;
 
     }
-
-
-    modalMode =
-        "domain";
 
 
     modalForum =
-        forumId;
-
-
-    editingDomainId =
-        domainId;
-
-
-    editingTeamId =
-        null;
-
-
-    el(
-        "modalEyebrow"
-    ).textContent =
-        "EDIT DOMAIN";
-
-
-    el(
-        "modalTitle"
-    ).textContent =
-        "Edit Domain";
-
-
-    el(
-        "nameLabel"
-    ).textContent =
-        "Domain Name";
-
-
-    el(
-        "modalForum"
-    ).value =
         forum.name;
 
 
-    el(
-        "itemName"
-    ).value =
-        domain.name;
+    modalForumId =
+        forum.id;
 
 
-    el(
-        "itemDescription"
-    ).value =
-        domain.description ||
+    editingTeamId =
+        null;
+
+
+    const modal =
+        el("itemModal");
+
+
+    el("modalEyebrow").textContent =
+        "NEW TEAM";
+
+
+    el("modalTitle").textContent =
+        "Add Team";
+
+
+    el("nameLabel").textContent =
+        "Team Name";
+
+
+    el("modalForum").value =
+        forum.name;
+
+
+    el("itemName").value =
         "";
 
 
-    el(
-        "itemDescription"
-    ).placeholder =
+    el("itemDescription").value =
+        "";
+
+
+    el("itemDescription").placeholder =
+        "Describe this team...";
+
+
+    el("descriptionGroup")
+        ?.classList
+        .remove("hidden");
+
+
+    el("modalMessage")
+        ?.classList
+        .add("hidden");
+
+
+    const saveButton =
+        document.querySelector(
+            ".save-btn"
+        );
+
+
+    if (saveButton) {
+
+        saveButton.textContent =
+            "Add Team";
+
+    }
+
+
+    if (modal) {
+
+        modal.dataset.mode =
+            "team";
+
+        modal.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    el("itemName")?.focus();
+
+}
+
+/* =========================================================
+   DYNAMIC ADD DOMAIN
+========================================================= */
+
+function openAddDomainDynamic(
+    forumId
+) {
+
+    const forum =
+        forums.find(
+            item =>
+                item.id ===
+                forumId
+        );
+
+
+    if (!forum) {
+
+        alert(
+            "Forum not found."
+        );
+
+        return;
+
+    }
+
+
+    modalForum =
+        forum.name;
+
+
+    modalForumId =
+        forum.id;
+
+
+    const modal =
+        el("itemModal");
+
+
+    el("modalEyebrow").textContent =
+        "NEW DOMAIN";
+
+
+    el("modalTitle").textContent =
+        "Add Domain";
+
+
+    el("nameLabel").textContent =
+        "Domain Name";
+
+
+    el("modalForum").value =
+        forum.name;
+
+
+    el("itemName").value =
+        "";
+
+
+    el("itemDescription").value =
+        "";
+
+
+    el("itemDescription").placeholder =
         "Describe this domain...";
 
 
-    el(
-        "descriptionGroup"
-    )
-        .classList
-        .remove(
-            "hidden"
-        );
+    el("descriptionGroup")
+        ?.classList
+        .remove("hidden");
 
 
-    el(
-        "modalMessage"
-    )
-        .classList
-        .add(
-            "hidden"
-        );
+    el("modalMessage")
+        ?.classList
+        .add("hidden");
 
 
-    document
-        .querySelector(
+    const saveButton =
+        document.querySelector(
             ".save-btn"
-        )
-        .textContent =
-        "Save Changes";
-
-
-    el(
-        "itemModal"
-    )
-        .classList
-        .remove(
-            "hidden"
         );
 
 
-    el(
-        "itemName"
-    ).focus();
+    if (saveButton) {
+
+        saveButton.textContent =
+            "Add Domain";
+
+    }
+
+
+    if (modal) {
+
+        modal.dataset.mode =
+            "domain";
+
+        modal.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    el("itemName")?.focus();
 
 }
 
 
 /* =========================================================
-   EDIT TEAM
+   OPEN TEAM
 ========================================================= */
 
-function openEditTeam(
-    forumId,
-    teamId
+function openTeam(
+    team
 ) {
 
-    const forum =
-        forums[
-            forumId
-        ];
+    console.log(
+        "Selected team:",
+        team
+    );
 
 
-    if (!forum) {
+    /*
+       The team workspace pages can be connected
+       later when their backend structure is ready.
+    */
+
+    alert(
+        `Team selected: ${team.name}`
+    );
+
+}
+
+
+/* =========================================================
+   OPEN ADD TEAM MODAL
+========================================================= */
+
+/* =========================================================
+   OPEN ADD TEAM MODAL
+========================================================= */
+
+
+
+/* =========================================================
+   CREATE TEAM
+========================================================= */
+
+/* =========================================================
+   CREATE TEAM
+========================================================= */
+
+async function createTeam() {
+
+    const name =
+        el(
+            "itemName"
+        )
+            ?.value
+            .trim();
+
+
+    if (!name) {
+
+        showModalMessage(
+            "Please enter a team name."
+        );
 
         return;
 
     }
 
 
-    const team =
-        forum.teams.find(
-            item =>
-                item.id ===
-                teamId
+    if (!modalForumId) {
+
+        showModalMessage(
+            "Forum information is missing."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await sb
+                .from("teams")
+                .insert({
+
+                    name: name,
+
+                    /*
+                       Keep the old forum column for
+                       compatibility for now.
+                    */
+
+                    forum: modalForum,
+
+                    /*
+                       New proper relationship.
+                    */
+
+                    forum_id:
+                        modalForumId
+
+                })
+                .select(`
+                    id,
+                    name,
+                    forum,
+                    forum_id,
+                    created_at,
+                    forums (
+                        id,
+                        name
+                    )
+                `)
+                .single();
+
+
+        if (error) {
+
+            console.error(
+                "Create team error:",
+                error
+            );
+
+
+            showModalMessage(
+                error.message
+            );
+
+
+            return;
+
+        }
+
+
+        console.log(
+            "Team created:",
+            data
         );
 
 
-    if (!team) {
+        teams.push(
+            data
+        );
 
-        return;
+
+        closeItemModal();
+
+
+        renderTeams();
+
+
+        updateOverview();
+
 
     }
 
+    catch (error) {
 
-    modalMode =
-        "team";
+        console.error(
+            "Unexpected create team error:",
+            error
+        );
+
+
+        showModalMessage(
+            "Unable to create team."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   OPEN EDIT TEAM
+========================================================= */
+
+function openEditTeam(
+    team
+) {
+
+    editingTeamId =
+        team.id;
 
 
     modalForum =
-        forumId;
-
-
-    editingDomainId =
-        null;
-
-
-    editingTeamId =
-        teamId;
+        team.forum;
 
 
     el(
@@ -1805,7 +1941,7 @@ function openEditTeam(
     el(
         "modalForum"
     ).value =
-        forum.name;
+        team.forum;
 
 
     el(
@@ -1817,20 +1953,19 @@ function openEditTeam(
     el(
         "itemDescription"
     ).value =
-        team.description ||
         "";
 
 
     el(
         "itemDescription"
     ).placeholder =
-        "Describe this team...";
+        "Team description is not stored in the current database schema.";
 
 
     el(
         "descriptionGroup"
     )
-        .classList
+        ?.classList
         .remove(
             "hidden"
         );
@@ -1839,24 +1974,30 @@ function openEditTeam(
     el(
         "modalMessage"
     )
-        .classList
+        ?.classList
         .add(
             "hidden"
         );
 
 
-    document
-        .querySelector(
+    const saveButton =
+        document.querySelector(
             ".save-btn"
-        )
-        .textContent =
-        "Save Changes";
+        );
+
+
+    if (saveButton) {
+
+        saveButton.textContent =
+            "Save Changes";
+
+    }
 
 
     el(
         "itemModal"
     )
-        .classList
+        ?.classList
         .remove(
             "hidden"
         );
@@ -1864,70 +2005,123 @@ function openEditTeam(
 
     el(
         "itemName"
-    ).focus();
+    )?.focus();
 
 }
 
 
 /* =========================================================
-   DELETE DOMAIN
+   UPDATE TEAM
 ========================================================= */
 
-function deleteDomain(
-    forumId,
-    domainId
-) {
+async function updateTeam() {
 
-    const forum =
-        forums[
-            forumId
-        ];
+    const name =
+        el(
+            "itemName"
+        )
+            ?.value
+            .trim();
 
 
-    if (!forum) {
+    if (!name) {
+
+        showModalMessage(
+            "Please enter a team name."
+        );
 
         return;
 
     }
 
 
-    const domain =
-        forum.domains.find(
-            item =>
-                item.id ===
-                domainId
+    if (!editingTeamId) {
+
+        showModalMessage(
+            "No team selected."
         );
-
-
-    if (!domain) {
 
         return;
 
     }
 
 
-    const confirmed =
-        confirm(
-            `Delete domain "${domain.name}"?`
-        );
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await sb
+                .from("teams")
+                .update({
+                    name: name
+                })
+                .eq(
+                    "id",
+                    editingTeamId
+                )
+                .select(`
+                    id,
+                    name,
+                    forum,
+                    created_at
+                `)
+                .single();
 
 
-    if (!confirmed) {
+        if (error) {
 
-        return;
+            console.error(
+                "Update team error:",
+                error
+            );
+
+
+            showModalMessage(
+                error.message
+            );
+
+
+            return;
+
+        }
+
+
+        teams =
+            teams.map(
+                team =>
+                    team.id ===
+                        editingTeamId
+                        ? data
+                        : team
+            );
+
+
+        closeItemModal();
+
+
+        renderTeams();
+
+
+        updateOverview();
+
 
     }
 
+    catch (error) {
 
-    forum.domains =
-        forum.domains.filter(
-            item =>
-                item.id !==
-                domainId
+        console.error(
+            "Unexpected update team error:",
+            error
         );
 
 
-    renderForums();
+        showModalMessage(
+            "Unable to update team."
+        );
+
+    }
 
 }
 
@@ -1936,38 +2130,9 @@ function deleteDomain(
    DELETE TEAM
 ========================================================= */
 
-function deleteTeam(
-    forumId,
-    teamId
+async function deleteTeam(
+    team
 ) {
-
-    const forum =
-        forums[
-            forumId
-        ];
-
-
-    if (!forum) {
-
-        return;
-
-    }
-
-
-    const team =
-        forum.teams.find(
-            item =>
-                item.id ===
-                teamId
-        );
-
-
-    if (!team) {
-
-        return;
-
-    }
-
 
     const confirmed =
         confirm(
@@ -1982,21 +2147,159 @@ function deleteTeam(
     }
 
 
-    forum.teams =
-        forum.teams.filter(
-            item =>
-                item.id !==
-                teamId
+    try {
+
+        const {
+            error
+        } =
+            await sb
+                .from("teams")
+                .delete()
+                .eq(
+                    "id",
+                    team.id
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Delete team error:",
+                error
+            );
+
+
+            alert(
+                "Unable to delete team.\n\n" +
+                error.message
+            );
+
+
+            return;
+
+        }
+
+
+        teams =
+            teams.filter(
+                item =>
+                    item.id !==
+                    team.id
+            );
+
+
+        renderTeams();
+
+
+        updateOverview();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected delete team error:",
+            error
         );
 
 
-    renderForums();
+        alert(
+            "Unable to delete team."
+        );
+
+    }
 
 }
 
 
 /* =========================================================
-   PENDING REQUESTS
+   LOAD PENDING REQUESTS
+========================================================= */
+
+async function loadPendingRequests() {
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await sb
+                .from("profiles")
+                .select(`
+                    id,
+                    email,
+                    full_name,
+                    status,
+                    role,
+                    team_id,
+                    created_at,
+                    teams (
+                        id,
+                        name,
+                        forum
+                    )
+                `)
+                .eq(
+                    "status",
+                    "pending"
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Pending request error:",
+                error
+            );
+
+
+            alert(
+                "Unable to load pending requests.\n\n" +
+                error.message
+            );
+
+
+            return;
+
+        }
+
+
+        pendingRequests =
+            data || [];
+
+
+        console.log(
+            "Pending requests:",
+            pendingRequests
+        );
+
+
+        renderPendingRequests();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected pending request error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   RENDER PENDING REQUESTS
 ========================================================= */
 
 function renderPendingRequests() {
@@ -2069,6 +2372,25 @@ function renderPendingRequests() {
                 "pending-item";
 
 
+            const displayName =
+                request.full_name?.trim() ||
+                request.email;
+
+
+            const forum =
+                request
+                    .teams
+                    ?.forum ||
+                "No Forum";
+
+
+            const team =
+                request
+                    .teams
+                    ?.name ||
+                "No Team";
+
+
             item.innerHTML = `
 
                 <div>
@@ -2076,8 +2398,17 @@ function renderPendingRequests() {
                     <div class="pending-email">
 
                         ${escapeHTML(
-                            request.email
-                        )}
+                displayName
+            )}
+
+                    </div>
+
+
+                    <div class="pending-meta">
+
+                        ${escapeHTML(
+                request.email
+            )}
 
                     </div>
 
@@ -2089,22 +2420,26 @@ function renderPendingRequests() {
                     <span class="pending-forum">
 
                         ${escapeHTML(
-                            request.forum
-                        )}
+                forum
+            )}
 
                     </span>
 
                     /
 
                     ${escapeHTML(
-                        request.team
-                    )}
+                team
+            )}
 
                     <br>
 
+                    Applied:
+
                     ${escapeHTML(
-                        request.date
-                    )}
+                formatDate(
+                    request.created_at
+                )
+            )}
 
                 </div>
 
@@ -2131,36 +2466,42 @@ function renderPendingRequests() {
             `;
 
 
-            item
-                .querySelector(
+            const approveButton =
+                item.querySelector(
                     ".approve-btn"
-                )
-                .addEventListener(
-                    "click",
-                    () => {
-
-                        approveRequest(
-                            request.id
-                        );
-
-                    }
                 );
 
 
-            item
-                .querySelector(
+            const rejectButton =
+                item.querySelector(
                     ".reject-btn"
-                )
-                .addEventListener(
-                    "click",
-                    () => {
-
-                        rejectRequest(
-                            request.id
-                        );
-
-                    }
                 );
+
+
+            approveButton?.addEventListener(
+                "click",
+                () => {
+
+                    updateUserStatus(
+                        request.id,
+                        "approved"
+                    );
+
+                }
+            );
+
+
+            rejectButton?.addEventListener(
+                "click",
+                () => {
+
+                    updateUserStatus(
+                        request.id,
+                        "rejected"
+                    );
+
+                }
+            );
 
 
             container.appendChild(
@@ -2174,31 +2515,31 @@ function renderPendingRequests() {
 
 
 /* =========================================================
-   APPROVE REQUEST
+   UPDATE USER STATUS
 ========================================================= */
 
-function approveRequest(
-    requestId
+async function updateUserStatus(
+    userId,
+    status
 ) {
 
-    const request =
-        pendingRequests.find(
-            item =>
-                item.id ===
-                requestId
-        );
-
-
-    if (!request) {
+    if (!userId) {
 
         return;
 
     }
 
 
+    const action =
+        status ===
+            "approved"
+            ? "approve"
+            : "reject";
+
+
     const confirmed =
         confirm(
-            `Approve ${request.email}?`
+            `Are you sure you want to ${action} this account?`
         );
 
 
@@ -2209,78 +2550,249 @@ function approveRequest(
     }
 
 
-    pendingRequests =
-        pendingRequests.filter(
-            item =>
-                item.id !==
-                requestId
+    try {
+
+        const updateData = {
+
+            status: status
+
+        };
+
+
+        if (
+            status ===
+            "approved"
+        ) {
+
+            updateData.approved_at =
+                new Date().toISOString();
+
+
+            updateData.approved_by =
+                currentUser.id;
+
+        }
+
+
+        else {
+
+            updateData.approved_at =
+                null;
+
+
+            updateData.approved_by =
+                null;
+
+        }
+
+
+        const {
+            error
+        } =
+            await sb
+                .from("profiles")
+                .update(
+                    updateData
+                )
+                .eq(
+                    "id",
+                    userId
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Profile status update error:",
+                error
+            );
+
+
+            alert(
+                "Unable to update account.\n\n" +
+                error.message
+            );
+
+
+            return;
+
+        }
+
+
+        await loadPendingRequests();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected status update error:",
+            error
         );
 
 
-    renderPendingRequests();
+        alert(
+            "Unable to update account."
+        );
+
+    }
+
+}
 
 
-    alert(
-        `${request.email} approved.`
+/* =========================================================
+   OVERVIEW
+   ---------------------------------------------------------
+   Since the current backend schema only contains
+   teams and profiles, real Design / Prototype / Paper
+   statistics cannot be calculated yet.
+
+   Therefore this function does NOT use fake numbers.
+========================================================= */
+
+function updateOverview() {
+
+    const selected =
+        selectedForum ||
+        "all";
+
+
+    const stats = {
+
+        design: {
+            ongoing: 0,
+            completed: 0
+        },
+
+        prototype: {
+            ongoing: 0,
+            completed: 0
+        },
+
+        paper: {
+            ongoing: 0,
+            completed: 0
+        }
+
+    };
+
+
+    /*
+       These values intentionally remain zero until
+       the project/work-item backend tables exist.
+    */
+
+
+    updateNumber(
+        "designOngoing",
+        stats.design.ongoing
     );
 
+
+    updateNumber(
+        "designCompleted",
+        stats.design.completed
+    );
+
+
+    updateNumber(
+        "prototypeOngoing",
+        stats.prototype.ongoing
+    );
+
+
+    updateNumber(
+        "prototypeCompleted",
+        stats.prototype.completed
+    );
+
+
+    updateNumber(
+        "paperOngoing",
+        stats.paper.ongoing
+    );
+
+
+    updateNumber(
+        "paperCompleted",
+        stats.paper.completed
+    );
+
+
+    const selectedForumData =
+        forums.find(
+            forum =>
+                forum.id ===
+                selected
+        );
+
+
+    const label =
+        el(
+            "overviewFilterLabel"
+        );
+
+
+    if (label) {
+
+        if (
+            selected === "all"
+        ) {
+
+            label.textContent =
+                "Showing All Forums";
+
+        }
+
+        else if (
+            selectedForumData
+        ) {
+
+            label.textContent =
+                `Showing ${selectedForumData.name}`;
+
+        }
+
+        else {
+
+            label.textContent =
+                "Showing All Forums";
+
+        }
+
+    }
+
 }
 
 
 /* =========================================================
-   REJECT REQUEST
+   UPDATE NUMBER
 ========================================================= */
 
-function rejectRequest(
-    requestId
+function updateNumber(
+    id,
+    value
 ) {
 
-    const request =
-        pendingRequests.find(
-            item =>
-                item.id ===
-                requestId
-        );
+    const element =
+        el(id);
 
 
-    if (!request) {
+    if (element) {
 
-        return;
+        element.textContent =
+            value;
 
     }
-
-
-    const confirmed =
-        confirm(
-            `Reject ${request.email}?`
-        );
-
-
-    if (!confirmed) {
-
-        return;
-
-    }
-
-
-    pendingRequests =
-        pendingRequests.filter(
-            item =>
-                item.id !==
-                requestId
-        );
-
-
-    renderPendingRequests();
 
 }
 
 
 /* =========================================================
-   WORKSPACE OVERVIEW
+   FORUM FILTER
 ========================================================= */
 
-function initOverview() {
+function initOverviewFilter() {
 
     const filter =
         el(
@@ -2299,421 +2811,349 @@ function initOverview() {
         "change",
         () => {
 
-            updateOverview(
-                filter.value
-            );
+            selectedForum =
+                filter.value ||
+                "all";
+
+
+            applyForumFilter();
+
+            updateOverview();
 
         }
     );
 
 
-    updateOverview(
+    selectedForum =
         filter.value ||
-        "all"
-    );
+        "all";
+
+
+    applyForumFilter();
+
+    updateOverview();
 
 }
 
 
 /* =========================================================
-   UPDATE OVERVIEW
+   APPLY FORUM FILTER
 ========================================================= */
 
-function updateOverview(
-    selectedForum
-) {
+/* =========================================================
+   APPLY FORUM FILTER
+========================================================= */
 
-    let data;
+function applyForumFilter() {
 
-
-    /* =====================================================
-       ALL FORUMS
-    ====================================================== */
-
-    if (
-        selectedForum ===
-        "all"
-    ) {
-
-        data =
-            combineOverviewStats();
-
-    }
+    const container =
+        el("forumsContainer");
 
 
-    /* =====================================================
-       SINGLE FORUM
-    ====================================================== */
-
-    else {
-
-        data =
-            overviewStats[
-                selectedForum
-            ];
-
-    }
-
-
-    if (!data) {
+    if (!container) {
 
         return;
 
     }
 
 
-    updateOverviewNumber(
-        "designOngoing",
-        data.design.ongoing
-    );
-
-
-    updateOverviewNumber(
-        "designCompleted",
-        data.design.completed
-    );
-
-
-    updateOverviewNumber(
-        "prototypeOngoing",
-        data.prototype.ongoing
-    );
-
-
-    updateOverviewNumber(
-        "prototypeCompleted",
-        data.prototype.completed
-    );
-
-
-    updateOverviewNumber(
-        "paperOngoing",
-        data.paper.ongoing
-    );
-
-
-    updateOverviewNumber(
-        "paperCompleted",
-        data.paper.completed
-    );
-
-
-    /* =====================================================
-       FILTER LABEL
-    ====================================================== */
-
-    const labels = {
-
-        all:
-            "Showing All Forums",
-
-        re:
-            "Showing Re",
-
-        iqube:
-            "Showing iQube",
-
-        garage:
-            "Showing Garage"
-
-    };
-
-
-    const label =
-        labels[
-            selectedForum
-        ] ||
-        labels.all;
-
-
-    const labelElement =
-        el(
-            "overviewFilterLabel"
+    const sections =
+        container.querySelectorAll(
+            ".forum-section"
         );
 
 
-    if (labelElement) {
+    sections.forEach(
+        section => {
 
-        labelElement.textContent =
-            label;
-
-    }
-
-}
+            const forumId =
+                section.dataset.forumId;
 
 
-/* =========================================================
-   UPDATE OVERVIEW NUMBER
-========================================================= */
+            if (
+                selectedForum === "all"
+            ) {
 
-function updateOverviewNumber(
-    id,
-    value
-) {
+                section.style.display =
+                    "";
 
-    const element =
-        el(
-            id
-        );
+                return;
+
+            }
 
 
-    if (element) {
-
-        element.textContent =
-            value;
-
-    }
-
-}
-
-
-/* =========================================================
-   COMBINE ALL FORUM STATS
-========================================================= */
-
-function combineOverviewStats() {
-
-    return {
-
-        design: {
-
-            ongoing:
-                overviewStats.re.design.ongoing
-                +
-                overviewStats.iqube.design.ongoing
-                +
-                overviewStats.garage.design.ongoing,
-
-            completed:
-                overviewStats.re.design.completed
-                +
-                overviewStats.iqube.design.completed
-                +
-                overviewStats.garage.design.completed
-
-        },
-
-
-        prototype: {
-
-            ongoing:
-                overviewStats.re.prototype.ongoing
-                +
-                overviewStats.iqube.prototype.ongoing
-                +
-                overviewStats.garage.prototype.ongoing,
-
-            completed:
-                overviewStats.re.prototype.completed
-                +
-                overviewStats.iqube.prototype.completed
-                +
-                overviewStats.garage.prototype.completed
-
-        },
-
-
-        paper: {
-
-            ongoing:
-                overviewStats.re.paper.ongoing
-                +
-                overviewStats.iqube.paper.ongoing
-                +
-                overviewStats.garage.paper.ongoing,
-
-            completed:
-                overviewStats.re.paper.completed
-                +
-                overviewStats.iqube.paper.completed
-                +
-                overviewStats.garage.paper.completed
+            section.style.display =
+                forumId === selectedForum
+                    ? ""
+                    : "none";
 
         }
-
-    };
+    );
 
 }
 
-
 /* =========================================================
-   THEME
+   OPEN ADD DOMAIN
 ========================================================= */
 
-function initTheme() {
 
-    const themeButton =
-        el(
-            "themeToggle"
+
+/* =========================================================
+   CREATE DOMAIN
+========================================================= */
+
+async function createDomain() {
+
+    const name =
+        el("itemName")
+            ?.value
+            .trim();
+
+
+    if (!name) {
+
+        showModalMessage(
+            "Please enter a domain name."
         );
-
-
-    if (!themeButton) {
 
         return;
 
     }
 
 
-    themeButton.addEventListener(
-        "click",
-        () => {
+    const forum =
+        forums.find(
+            item =>
+                item.name ===
+                modalForum
+        );
 
-            document.body.classList.toggle(
-                "theme-dim"
+
+    if (!forum) {
+
+        showModalMessage(
+            "Forum could not be found."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await sb
+            .from("domains")
+            .insert({
+                name: name,
+                forum_id: forum.id
+            })
+            .select(`
+                id,
+                name,
+                forum_id,
+                created_at,
+                forums (
+                    id,
+                    name
+                )
+            `)
+            .single();
+
+
+        if (error) {
+
+            console.error(
+                "Create domain error:",
+                error
             );
 
+            showModalMessage(
+                error.message
+            );
+
+            return;
+
         }
-    );
+
+
+        domains.push(
+    data
+);
+
+closeItemModal();
+
+renderTeams();
+
+updateOverview();
+
+
+        alert(
+            `Domain "${data.name}" created successfully.`
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected create domain error:",
+            error
+        );
+
+        showModalMessage(
+            "Unable to create domain."
+        );
+
+    }
 
 }
 
-
 /* =========================================================
-   HEADER
+   ADD BUTTONS
 ========================================================= */
 
-function initHeader() {
+function initAddButtons() {
+
+    document
+        .querySelectorAll(
+            ".add-btn"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const action =
+                            button.dataset.action;
 
 
-    /* =====================================================
-       PERSONAL WORKSPACE
-    ====================================================== */
-
-    const personalButton =
-        el(
-            "personalWorkspaceBtn"
-        );
+                        const forum =
+                            button.dataset.forum;
 
 
-    if (personalButton) {
+                        if (
+                            action ===
+                            "add-team"
+                        ) {
 
-        personalButton.addEventListener(
-            "click",
-            () => {
+                            openAddTeam(
+                                forum
+                            );
 
-                window.location.href =
-                "../personal/personal.html";
+                            return;
 
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       TEAM SETTINGS
-    ====================================================== */
-
-    const settingsButton =
-        el(
-            "teamSettingsBtn"
-        );
+                        }
 
 
-    const settingsModal =
-        el(
-            "settingsModal"
-        );
+                        /*
+                           Domains are not connected because
+                           no domains table was included in the
+                           backend schema yet.
+                        */
 
+                        if (
+                            action ===
+                            "add-domain"
+                        ) {
 
-    const closeSettings =
-        el(
-            "closeSettings"
-        );
+                            openAddDomain(
+                                forum
+                            );
 
+                        }
 
-    if (
-        settingsButton &&
-        settingsModal
-    ) {
-
-        settingsButton.addEventListener(
-            "click",
-            () => {
-
-                settingsModal
-                    .classList
-                    .remove(
-                        "hidden"
-                    );
-
-            }
-        );
-
-    }
-
-
-    if (
-        closeSettings &&
-        settingsModal
-    ) {
-
-        closeSettings.addEventListener(
-            "click",
-            () => {
-
-                settingsModal
-                    .classList
-                    .add(
-                        "hidden"
-                    );
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       SIGN OUT
-    ====================================================== */
-
-    const signOutButton =
-        el(
-            "signOutBtn"
-        );
-
-
-    if (signOutButton) {
-
-        signOutButton.addEventListener(
-            "click",
-            () => {
-
-                const confirmed =
-                    confirm(
-                        "Are you sure you want to sign out?"
-                    );
-
-
-                if (!confirmed) {
-
-                    return;
-
-                }
-
-
-                /*
-                   Supabase sign-out will be
-                   connected later.
-                */
-
-                alert(
-                    "Sign out will be connected to Supabase later."
+                    }
                 );
 
             }
         );
 
-    }
-
 }
 
 
 /* =========================================================
-   MODAL INITIALIZATION
+   MODAL
 ========================================================= */
+
+/* =========================================================
+   FORUM BUTTON
+========================================================= */
+
+function initForumControls() {
+
+    const createButton =
+        el("createForumBtn");
+
+
+    const closeButton =
+        el("closeForumModal");
+
+
+    const cancelButton =
+        el("cancelForumModal");
+
+
+    const modal =
+        el("forumModal");
+
+
+    const form =
+        el("forumForm");
+
+
+    createButton?.addEventListener(
+        "click",
+        openCreateForumModal
+    );
+
+
+    closeButton?.addEventListener(
+        "click",
+        closeForumModal
+    );
+
+
+    cancelButton?.addEventListener(
+        "click",
+        closeForumModal
+    );
+
+
+    form?.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+            await createForum();
+
+        }
+    );
+
+
+    modal?.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target ===
+                modal
+            ) {
+
+                closeForumModal();
+
+            }
+
+        }
+    );
+
+}
 
 function initModal() {
 
@@ -2741,16 +3181,6 @@ function initModal() {
         );
 
 
-    const settingsModal =
-        el(
-            "settingsModal"
-        );
-
-
-    /* =====================================================
-       CLOSE
-    ====================================================== */
-
     if (closeButton) {
 
         closeButton.addEventListener(
@@ -2771,23 +3201,43 @@ function initModal() {
     }
 
 
-    /* =====================================================
-       FORM
-    ====================================================== */
-
     if (form) {
 
         form.addEventListener(
             "submit",
-            saveItem
+            async event => {
+
+                event.preventDefault();
+
+
+                if (
+                    itemModal.dataset.mode ===
+                    "domain"
+                ) {
+
+                    await createDomain();
+
+                }
+
+                else if (
+                    editingTeamId
+                ) {
+
+                    await updateTeam();
+
+                }
+
+                else {
+
+                    await createTeam();
+
+                }
+
+            }
         );
 
     }
 
-
-    /* =====================================================
-       OUTSIDE CLICK
-    ====================================================== */
 
     if (itemModal) {
 
@@ -2810,18 +3260,275 @@ function initModal() {
     }
 
 
-    if (settingsModal) {
+    document.addEventListener(
+        "keydown",
+        event => {
 
-        settingsModal.addEventListener(
+            if (
+                event.key ===
+                "Escape"
+            ) {
+
+                closeItemModal();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
+
+function closeItemModal() {
+
+    const modal =
+        el(
+            "itemModal"
+        );
+
+
+    if (modal) {
+
+        modal.dataset.mode =
+            "";
+
+        modal.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    editingTeamId =
+        null;
+
+
+    modalForum =
+        null;
+
+
+    modalForumId =
+        null;
+
+
+    const message =
+        el(
+            "modalMessage"
+        );
+
+
+    if (message) {
+
+        message.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   MODAL MESSAGE
+========================================================= */
+
+function showModalMessage(
+    message
+) {
+
+    const box =
+        el(
+            "modalMessage"
+        );
+
+
+    if (!box) {
+
+        alert(
+            message
+        );
+
+        return;
+
+    }
+
+
+    box.textContent =
+        message;
+
+
+    box.classList
+        .remove(
+            "hidden"
+        );
+
+}
+
+
+/* =========================================================
+   THEME TOGGLE
+========================================================= */
+
+function initTheme() {
+
+    const button =
+        el("themeToggle");
+
+    if (!button) {
+        return;
+    }
+
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            document.body.classList.toggle(
+                "light-theme"
+            );
+
+
+            const isLight =
+                document.body.classList.contains(
+                    "light-theme"
+                );
+
+
+            /* Change icon */
+
+            button.textContent =
+                isLight
+                    ? "☾"
+                    : "☼";
+
+
+            /* Change tooltip */
+
+            button.title =
+                isLight
+                    ? "Switch to dark theme"
+                    : "Switch to light theme";
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   PERSONAL WORKSPACE
+========================================================= */
+
+function initPersonalWorkspace() {
+
+    const button =
+        el(
+            "personalWorkspaceBtn"
+        );
+
+
+    if (!button) {
+
+        return;
+
+    }
+
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            window.location.href =
+                "../personal/personal.html";
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   TEAM SETTINGS
+========================================================= */
+
+function initSettings() {
+
+    const openButton =
+        el(
+            "teamSettingsBtn"
+        );
+
+
+    const modal =
+        el(
+            "settingsModal"
+        );
+
+
+    const closeButton =
+        el(
+            "closeSettings"
+        );
+
+
+    if (
+        openButton &&
+        modal
+    ) {
+
+        openButton.addEventListener(
+            "click",
+            () => {
+
+                modal
+                    .classList
+                    .remove(
+                        "hidden"
+                    );
+
+            }
+        );
+
+    }
+
+
+    if (
+        closeButton &&
+        modal
+    ) {
+
+        closeButton.addEventListener(
+            "click",
+            () => {
+
+                modal
+                    .classList
+                    .add(
+                        "hidden"
+                    );
+
+            }
+        );
+
+    }
+
+
+    if (modal) {
+
+        modal.addEventListener(
             "click",
             event => {
 
                 if (
                     event.target ===
-                    settingsModal
+                    modal
                 ) {
 
-                    settingsModal
+                    modal
                         .classList
                         .add(
                             "hidden"
@@ -2834,30 +3541,165 @@ function initModal() {
 
     }
 
+}
 
-    /* =====================================================
-       ESCAPE
-    ====================================================== */
 
-    document.addEventListener(
-        "keydown",
-        event => {
+/* =========================================================
+   SIGN OUT
+========================================================= */
+
+async function signOut() {
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to sign out?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await sb.auth.signOut();
+
+
+        if (error) {
+
+            console.error(
+                "Sign out error:",
+                error
+            );
+
+
+            alert(
+                "Unable to sign out.\n\n" +
+                error.message
+            );
+
+
+            return;
+
+        }
+
+
+        /*
+           IMPORTANT:
+
+           admin.html
+           ↓
+           ../login/login.html
+
+           Because:
+
+           dashboard/admin/
+           dashboard/login/
+        */
+
+        window.location.replace(
+            "../../login/login.html"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected sign out error:",
+            error
+        );
+
+
+        alert(
+            "Something went wrong while signing out."
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SIGN OUT BUTTON
+========================================================= */
+
+function initSignOut() {
+
+    const button =
+        el(
+            "signOutBtn"
+        );
+
+
+    if (!button) {
+
+        return;
+
+    }
+
+
+    button.addEventListener(
+        "click",
+        signOut
+    );
+
+}
+
+
+/* =========================================================
+   AUTH STATE LISTENER
+========================================================= */
+
+function initAuthListener() {
+
+    if (
+        typeof sb ===
+        "undefined"
+    ) {
+
+        return;
+
+    }
+
+
+    sb.auth.onAuthStateChange(
+        (
+            event,
+            session
+        ) => {
+
+            console.log(
+                "Auth event:",
+                event
+            );
+
 
             if (
-                event.key ===
-                "Escape"
+                event ===
+                "SIGNED_OUT" ||
+                !session
             ) {
 
-                closeItemModal();
+                /*
+                   Avoid repeatedly redirecting during
+                   initial page loading.
+                */
 
+                if (
+                    window.location.pathname
+                        .includes(
+                            "/admin/"
+                        )
+                ) {
 
-                if (settingsModal) {
-
-                    settingsModal
-                        .classList
-                        .add(
-                            "hidden"
-                        );
+                    redirectToLogin();
 
                 }
 
@@ -2873,25 +3715,132 @@ function initModal() {
    INITIALIZE ADMIN
 ========================================================= */
 
-function initAdmin() {
+async function initAdmin() {
+
+    console.log(
+        "RiGiD Admin Workspace starting..."
+    );
+
+
+    /* =====================================================
+       BASIC UI
+    ====================================================== */
 
     startClock();
 
-    loadAdminInfo();
+    initTheme();
 
-    renderForums();
+    initPersonalWorkspace();
 
-    renderPendingRequests();
+    initSettings();
+
+    initSignOut();
 
     initAddButtons();
 
+    initForumControls();
+
     initModal();
 
-    initTheme();
+    initOverviewFilter();
 
-    initHeader();
 
-    initOverview();
+    /* =====================================================
+       SUPABASE
+    ====================================================== */
+
+    if (
+        !checkSupabaseClient()
+    ) {
+
+        return;
+
+    }
+
+
+    initAuthListener();
+
+
+    /* =====================================================
+       CHECK LOGIN
+    ====================================================== */
+
+    const authenticated =
+        await checkAuthentication();
+
+
+    if (!authenticated) {
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       LOAD ADMIN
+    ====================================================== */
+
+    const adminLoaded =
+        await loadAdminProfile();
+
+
+    if (!adminLoaded) {
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       LOAD REAL DATABASE DATA
+    ====================================================== */
+
+    await loadForums();
+
+    await loadTeams();
+
+    await loadDomains();
+
+    await loadPendingRequests();
+
+
+    console.log(
+        "===================================="
+    );
+
+    console.log(
+        "RiGiD Admin Workspace connected."
+    );
+
+    console.log(
+        "User:",
+        currentUser.email
+    );
+
+    console.log(
+        "Role:",
+        currentProfile.role
+    );
+
+    console.log(
+        "Status:",
+        currentProfile.status
+    );
+
+    console.log(
+        "Teams:",
+        teams.length
+    );
+
+    console.log(
+        "Pending:",
+        pendingRequests.length
+    );
+
+    console.log(
+        "===================================="
+
+    );
 
 }
 

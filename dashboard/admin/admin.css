@@ -1909,12 +1909,11 @@ button {
 
 }
 
-
 /* =========================================================
-   RE
+   DYNAMIC FORUM COLORS
 ========================================================= */
 
-.forum-re {
+.forum-section {
 
     --forum-color:
         #1d9bf0;
@@ -1948,10 +1947,43 @@ button {
 
 
 /* =========================================================
-   IQUBE
+   FORUM COLOR VARIATIONS
 ========================================================= */
 
-.forum-iqube {
+.forum-section:nth-child(4n + 1) {
+
+    --forum-color:
+        #1d9bf0;
+
+    --forum-background:
+        linear-gradient(
+            145deg,
+            rgba(
+                9,
+                36,
+                59,
+                .82
+            ),
+            rgba(
+                7,
+                16,
+                29,
+                .92
+            )
+        );
+
+    --forum-border:
+        rgba(
+            29,
+            155,
+            240,
+            .28
+        );
+
+}
+
+
+.forum-section:nth-child(4n + 2) {
 
     --forum-color:
         #9b6cff;
@@ -1984,11 +2016,7 @@ button {
 }
 
 
-/* =========================================================
-   GARAGE
-========================================================= */
-
-.forum-garage {
+.forum-section:nth-child(4n + 3) {
 
     --forum-color:
         #28c79a;
@@ -2021,6 +2049,37 @@ button {
 }
 
 
+.forum-section:nth-child(4n + 4) {
+
+    --forum-color:
+        #ff9f43;
+
+    --forum-background:
+        linear-gradient(
+            145deg,
+            rgba(
+                61,
+                36,
+                15,
+                .82
+            ),
+            rgba(
+                25,
+                14,
+                7,
+                .94
+            )
+        );
+
+    --forum-border:
+        rgba(
+            255,
+            159,
+            67,
+            .28
+        );
+
+}
 /* =========================================================
    FORUM HEADER
 ========================================================= */
@@ -3950,6 +4009,16 @@ button {
 
     }
 
+    .forum-content {
+
+    grid-template-columns:
+        1fr;
+
+    gap:
+        30px;
+
+}
+
 }
 
 
@@ -4021,5 +4090,541 @@ button {
             12px;
 
     }
+
+}
+
+/* =========================================================
+   SIMULATION
+========================================================= */
+
+.overview-simulation {
+
+    --overview-color:
+        #3702f8;
+
+    border-color:
+        rgba(
+            255,
+            159,
+            67,
+            .20
+        );
+
+}
+
+
+/* =========================================================
+   PROJECT
+========================================================= */
+
+.overview-project {
+
+    --overview-color:
+        #ffb84d;
+
+    border-color:
+        rgba(
+            255,
+            184,
+            77,
+            .20
+        );
+
+}
+
+
+/* =========================================================
+   STUDY
+========================================================= */
+
+/* =========================================================
+   STUDY — CYAN / TEAL
+========================================================= */
+
+.overview-study {
+
+    --overview-color:
+        #f60bfe;
+
+    border-color:
+        rgba(
+            34,
+            211,
+            197,
+            .20
+        );
+
+}
+
+.brand-orange {
+    color: #ff9f43;
+}
+
+/* =========================================================
+   LIGHT GREY THEME
+========================================================= */
+
+body.light-theme {
+    background: #dfe2e6;
+    color: #202328;
+}
+
+
+/* =========================================================
+   MAIN PAGE
+========================================================= */
+
+body.light-theme .admin-page,
+body.light-theme .workspace,
+body.light-theme main {
+    background: #dfe2e6;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+body.light-theme .topbar {
+    background: #cfd3d8;
+    border-color: #b9bec5;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+body.light-theme .brand-title {
+    color: #202328;
+}
+
+
+/* Keep your orange branding */
+
+body.light-theme .brand-orange {
+    color: #ff9f43;
+}
+
+
+/* =========================================================
+   HEADINGS
+========================================================= */
+
+body.light-theme h1,
+body.light-theme h2,
+body.light-theme h3,
+body.light-theme .section-title {
+    color: #202328;
+}
+
+
+/* =========================================================
+   SECONDARY TEXT
+========================================================= */
+
+body.light-theme .subtext,
+body.light-theme .admin-email,
+body.light-theme .muted,
+body.light-theme .overview-card-label,
+body.light-theme .status-label {
+    color: #626970;
+}
+
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+body.light-theme .overview-card,
+body.light-theme .team-card,
+body.light-theme .panel,
+body.light-theme .workspace-card {
+    background: #e8eaed;
+    border-color: #c4c8cd;
+}
+
+
+/* =========================================================
+   CARD HOVER
+========================================================= */
+
+body.light-theme .overview-card:hover,
+body.light-theme .team-card:hover {
+    background: #eceef0;
+    border-color: #aeb4bb;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+body.light-theme .icon-btn {
+    background: #d4d7db;
+    color: #292d32;
+    border-color: #b9bec4;
+}
+
+
+body.light-theme .icon-btn:hover {
+    background: #c7cbd0;
+}
+
+
+/* =========================================================
+   INPUTS / SELECTS
+========================================================= */
+
+body.light-theme input,
+body.light-theme select,
+body.light-theme textarea {
+    background: #d8dbdf;
+    color: #202328;
+    border-color: #b8bdc4;
+}
+
+
+body.light-theme input::placeholder,
+body.light-theme textarea::placeholder {
+    color: #737a82;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+body.light-theme .modal,
+body.light-theme .modal-content {
+    background: #d9dce0;
+    color: #202328;
+    border-color: #b9bec5;
+}
+
+
+/* =========================================================
+   PENDING REQUESTS
+========================================================= */
+
+body.light-theme .pending-item {
+    background: #e7e9ec;
+    border-color: #c4c8cd;
+}
+
+
+/* =========================================================
+   TEAM CARD TEXT
+========================================================= */
+
+body.light-theme .team-card h3 {
+    color: #202328;
+}
+
+
+body.light-theme .team-card p {
+    color: #646b73;
+}
+
+
+/* =========================================================
+   DIVIDERS
+========================================================= */
+
+body.light-theme hr {
+    border-color: #c1c5ca;
+}
+
+
+/* =========================================================
+   FOOTER / SMALL TEXT
+========================================================= */
+
+body.light-theme .team-footer,
+body.light-theme .team-index {
+    color: #697078;
+}
+
+/* =========================================================
+   DYNAMIC FORUM HEADER
+========================================================= */
+
+.forum-header {
+
+    position:
+        relative;
+
+    z-index:
+        1;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    padding-bottom:
+        22px;
+
+    margin-bottom:
+        0;
+
+    border-bottom:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .08
+        );
+
+}
+
+
+.forum-header h2 {
+
+    margin:
+        8px 0 3px;
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size:
+        34px;
+
+    line-height:
+        1;
+
+}
+
+
+.forum-eyebrow {
+
+    color:
+        var(
+            --forum-color,
+            #8997aa
+        );
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        .15em;
+
+}
+
+/* =========================================================
+   FORUM CONTENT
+========================================================= */
+
+.forum-content {
+
+    position:
+        relative;
+
+    z-index:
+        1;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        28px;
+
+    margin-top:
+        27px;
+
+}
+
+
+.forum-column {
+
+    min-width:
+        0;
+
+}
+
+
+.column-header {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        15px;
+
+    margin-bottom:
+        15px;
+
+}
+
+
+.column-header > div {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        9px;
+
+}
+
+
+.column-label {
+
+    color:
+        #aab6c7;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        10px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        .14em;
+
+}
+
+
+.column-count {
+
+    min-width:
+        24px;
+
+    height:
+        24px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--forum-color) 30%,
+            transparent
+        );
+
+    border-radius:
+        50%;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--forum-color) 7%,
+            transparent
+        );
+
+    color:
+        var(--forum-color);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        9px;
+
+    font-weight:
+        700;
+
+}
+
+
+.team-list {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(
+                200px,
+                1fr
+            )
+        );
+
+    gap:
+        12px;
+
+}
+
+
+.empty-state {
+
+    min-height:
+        120px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        20px;
+
+    border:
+        1px dashed
+        color-mix(
+            in srgb,
+            var(--forum-color) 20%,
+            transparent
+        );
+
+    border-radius:
+        10px;
+
+    color:
+        #718096;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        10px;
+
+    text-align:
+        center;
 
 }

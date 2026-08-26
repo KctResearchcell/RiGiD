@@ -190,34 +190,34 @@ async function checkAuthentication() {
 
 }
 
-
-
 /* =========================================================
-   LOAD USER PROFILE
+   LOAD REAL USER PROFILE FROM SUPABASE
 ========================================================= */
 
 async function loadProfile() {
 
-    if (!currentUser)
+    if (!currentUser) {
         return;
+    }
 
+    try {
 
-    const {
-        data,
-        error
-    } =
-        await sb
+        const {
+            data,
+            error
+        } = await sb
             .from("profiles")
             .select(`
                 id,
                 email,
-                name,
+                full_name,
                 status,
                 role,
                 team_id,
                 teams (
                     id,
-                    name
+                    name,
+                    forum
                 )
             `)
             .eq(
@@ -227,108 +227,164 @@ async function loadProfile() {
             .maybeSingle();
 
 
-    if (error) {
+        if (error) {
+
+            console.error(
+                "Profile loading error:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        if (!data) {
+
+            console.error(
+                "No profile found for:",
+                currentUser.id
+            );
+
+            return;
+
+        }
+
+
+        currentProfile =
+            data;
+
+
+        currentTeam =
+            data.teams;
+
+
+        /* =================================================
+           REAL USER EMAIL
+        ================================================= */
+
+        const email =
+            data.email ||
+            currentUser.email ||
+            "Unknown user";
+
+
+        /* =================================================
+           REAL USER NAME
+
+           Priority:
+           1. profiles.full_name
+           2. Supabase Auth metadata
+           3. email username
+           4. fallback
+        ================================================= */
+
+        const name =
+            data.full_name?.trim() ||
+            currentUser.user_metadata?.full_name?.trim() ||
+            email.split("@")[0] ||
+            "User";
+
+
+        /* =================================================
+           UPDATE DASHBOARD
+        ================================================= */
+
+        const userName =
+            el("userName");
+
+        const userEmail =
+            el("userEmail");
+
+        const teamName =
+            el("teamName");
+
+
+        if (userName) {
+
+            userName.textContent =
+                name;
+
+        }
+
+
+        if (userEmail) {
+
+            userEmail.textContent =
+                email;
+
+        }
+
+
+        if (teamName) {
+
+            teamName.textContent =
+                currentTeam?.name ||
+                "No Team";
+
+        }
+
+
+        /* =================================================
+           ACCOUNT APPROVAL CHECK
+        ================================================= */
+
+        if (
+            data.status !== "approved"
+        ) {
+
+            alert(
+                `Your account status is "${data.status}".`
+            );
+
+            await sb.auth.signOut();
+
+            window.location.replace(
+                "../login/login.html"
+            );
+
+            return;
+
+        }
+
+
+        /* =================================================
+           ADMIN ACCESS
+        ================================================= */
+
+        if (
+            data.role === "admin"
+        ) {
+
+            el("adminSection")
+                ?.classList
+                .remove("hidden");
+
+            await loadPending();
+
+        }
+
+
+        console.log(
+            "Logged-in user:",
+            {
+                id: currentUser.id,
+                name,
+                email,
+                team: currentTeam?.name,
+                role: data.role,
+                status: data.status
+            }
+        );
+
+    }
+
+    catch (error) {
 
         console.error(
-            "Profile loading error:",
+            "Unexpected profile error:",
             error
         );
-
-        return;
-
-    }
-
-
-    currentProfile =
-        data;
-
-
-    if (!data)
-        return;
-
-
-    currentTeam =
-        data.teams;
-
-
-    const email =
-        data.email ||
-        currentUser.email ||
-        "";
-
-
-    const name =
-        data.name ||
-        currentUser.user_metadata?.full_name ||
-        email.split("@")[0] ||
-        "User";
-
-
-    const userName =
-        el("userName");
-
-    const userEmail =
-        el("userEmail");
-
-    const teamName =
-        el("teamName");
-
-
-    if (userName)
-        userName.textContent =
-            name;
-
-
-    if (userEmail)
-        userEmail.textContent =
-            email;
-
-
-    if (teamName)
-        teamName.textContent =
-            currentTeam?.name ||
-            "No Team";
-
-
-    /*
-       If the account isn't approved,
-       don't allow dashboard access.
-    */
-
-    if (
-        data.status &&
-        data.status !== "approved"
-    ) {
-
-        alert(
-            `Your account status is "${data.status}".`
-        );
-
-        await sb.auth.signOut();
-
-        window.location.href =
-            "../login/login.html";
-
-        return;
-
-    }
-
-
-    /*
-       Show admin section if role
-       indicates administrator.
-    */
-
-    if (
-        data.role === "admin" ||
-        data.role === "administrator"
-    ) {
-
-        el("adminSection")
-            ?.classList
-            .remove("hidden");
-
-        loadPending();
 
     }
 
@@ -421,25 +477,63 @@ function initNavigation() {
 
 async function signOut() {
 
+    const button = el("signOutBtn");
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Signing Out...";
+    }
+
     try {
 
-        await sb.auth.signOut();
+        const { error } =
+            await sb.auth.signOut();
+
+        if (error) {
+
+            console.error(
+                "Sign out error:",
+                error
+            );
+
+            alert(
+                "Unable to sign out. Please try again."
+            );
+
+            if (button) {
+                button.disabled = false;
+                button.textContent = "Sign Out";
+            }
+
+            return;
+        }
+
+        /*
+           Supabase session has been cleared.
+           Now return to the login page.
+        */
+
+        window.location.replace(
+            "../login/login.html"
+        );
 
     }
 
     catch (error) {
 
         console.error(
-            "Sign out error:",
+            "Unexpected sign out error:",
             error
         );
 
-    }
+        alert(
+            "Something went wrong while signing out."
+        );
 
-    finally {
-
-        window.location.href =
-            "../login/login.html";
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Sign Out";
+        }
 
     }
 

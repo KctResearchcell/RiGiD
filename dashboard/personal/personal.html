@@ -280,6 +280,9 @@
                 <!-- =================================================
                      SOCIAL LINKS
                 ================================================== -->
+                <!-- =================================================
+     JOIN FORUM
+================================================== -->
 
                 <div class="social-profile-links">
                     <!-- GitHub -->
@@ -315,6 +318,16 @@
                         <span>
                             <small>ACCOLADES</small>
                         </span>
+                    </button>
+
+                    <!-- DIVIDER -->
+                    <span class="profile-action-divider"></span>
+
+
+                    <!-- JOIN FORUM -->
+                    <button type="button" class="join-forum-btn" id="joinForumBtn">
+                        <span class="join-forum-icon">+</span>
+                        <span>JOIN FORUM</span>
                     </button>
 
                 </div>
@@ -1405,7 +1418,176 @@
         </section>
 
 
+        <!-- =====================================================
+     JOIN FORUM MODAL
+====================================================== -->
 
+        <div class="personal-modal hidden" id="joinForumModal">
+
+            <div class="personal-modal-box join-forum-modal-box">
+
+                <div class="modal-header">
+
+                    <div>
+
+                        <span class="modal-eyebrow">
+                            MEMBERSHIP
+                        </span>
+
+                        <h3>
+                            Join Forum
+                        </h3>
+
+                        <small>
+                            Join an additional team or domain
+                            under a forum.
+                        </small>
+
+                    </div>
+
+                    <button class="modal-close" id="closeJoinForumModal" type="button">
+                        ×
+                    </button>
+
+                </div>
+
+
+                <form id="joinForumForm">
+
+
+                    <!-- =================================================
+                 FORUM
+            ================================================== -->
+
+                    <div class="form-group">
+
+                        <label for="joinForumSelect">
+                            Forum
+                        </label>
+
+                        <select id="joinForumSelect" required>
+
+                            <option value="">
+                                Select Forum
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =================================================
+                 MEMBERSHIP TYPE
+            ================================================== -->
+
+                    <div class="form-group">
+
+                        <label>
+                            Join as
+                        </label>
+
+                        <div class="join-forum-type-options">
+
+                            <label class="join-forum-type-option">
+
+                                <input type="radio" name="joinMembershipType" value="team" id="joinTeamRadio">
+
+                                <span>
+                                    Team
+                                </span>
+
+                            </label>
+
+
+                            <label class="join-forum-type-option">
+
+                                <input type="radio" name="joinMembershipType" value="domain" id="joinDomainRadio">
+
+                                <span>
+                                    Domain
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- =================================================
+                 TEAM
+            ================================================== -->
+
+                    <div class="form-group hidden" id="joinTeamGroup">
+
+                        <label for="joinTeamSelect">
+                            Team
+                        </label>
+
+                        <select id="joinTeamSelect">
+
+                            <option value="">
+                                Select Team
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =================================================
+                 DOMAIN
+            ================================================== -->
+
+                    <div class="form-group hidden" id="joinDomainGroup">
+
+                        <label for="joinDomainSelect">
+                            Domain
+                        </label>
+
+                        <select id="joinDomainSelect">
+
+                            <option value="">
+                                Select Domain
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- =================================================
+                 INFORMATION
+            ================================================== -->
+
+                    <div class="join-forum-info hidden" id="joinForumInfo">
+                        Select a forum and then choose
+                        a team or domain.
+                    </div>
+
+
+                    <!-- =================================================
+                 ACTIONS
+            ================================================== -->
+
+                    <div class="modal-actions">
+
+                        <button class="modal-cancel" id="cancelJoinForumModal" type="button">
+                            Cancel
+                        </button>
+
+
+                        <button class="modal-save" id="submitJoinForum" type="submit">
+                            Join Forum
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
         <!-- =====================================================
              PROFILE EDIT MODAL
         ====================================================== -->
@@ -2335,6 +2517,8 @@
          JAVASCRIPT
     ====================================================== -->
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../supabase-client.js"></script>
     <script src="personal.js"></script>
 
 

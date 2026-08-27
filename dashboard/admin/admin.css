@@ -4628,3 +4628,1283 @@ body.light-theme .team-index {
         center;
 
 }
+
+@media (max-width: 650px) {
+
+    .forum-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+}
+
+/* =========================================================
+   RiGiD DYNAMIC ADMIN UI
+   MEMBERS / TASK DETAILS / MANAGEMENT
+========================================================= */
+
+
+/* =========================================================
+   DYNAMIC MODAL
+========================================================= */
+
+.rigid-modal {
+
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(0, 0, 0, .78);
+
+    backdrop-filter:
+        blur(10px);
+
+}
+
+
+.rigid-modal-box {
+
+    width:
+        min(620px, 100%);
+
+    max-height:
+        88vh;
+
+    overflow-y:
+        auto;
+
+    padding:
+        26px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .12);
+
+    border-radius:
+        14px;
+
+    background:
+        #0b121d;
+
+    box-shadow:
+        0 30px 90px
+        rgba(0, 0, 0, .55);
+
+}
+
+
+.rigid-modal-header {
+
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+    margin-bottom:
+        22px;
+
+    padding-bottom:
+        16px;
+
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, .07);
+
+}
+
+
+.rigid-modal-eyebrow {
+
+    color:
+        var(--accent);
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        9px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        .14em;
+
+}
+
+
+.rigid-modal-title {
+
+    margin:
+        7px 0 0;
+
+    color:
+        var(--text);
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size:
+        24px;
+
+}
+
+
+.rigid-modal-close {
+
+    width:
+        34px;
+
+    height:
+        34px;
+
+    flex-shrink:
+        0;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        7px;
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    color:
+        #9aa7b8;
+
+    font-size:
+        18px;
+
+    transition:
+        .18s ease;
+
+}
+
+
+.rigid-modal-close:hover {
+
+    border-color:
+        var(--accent);
+
+    color:
+        var(--accent);
+
+    background:
+        rgba(244, 185, 66, .07);
+
+}
+
+
+/* =========================================================
+   DETAIL CARDS
+========================================================= */
+
+.rigid-detail-card {
+
+    margin-bottom:
+        12px;
+
+    padding:
+        17px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .07);
+
+    border-radius:
+        10px;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+}
+
+
+.rigid-detail-card h4 {
+
+    margin:
+        0 0 9px;
+
+    color:
+        #7f8da0;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        9px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        .12em;
+
+    text-transform:
+        uppercase;
+
+}
+
+
+.rigid-detail-card p {
+
+    margin:
+        0;
+
+    color:
+        #d8e0eb;
+
+    font-size:
+        12px;
+
+    line-height:
+        1.6;
+
+}
+
+
+/* =========================================================
+   MEMBER LIST
+========================================================= */
+
+.rigid-member-list {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        7px;
+
+}
+
+
+.rigid-member-row {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        15px;
+
+    padding:
+        11px 12px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .06);
+
+    border-radius:
+        8px;
+
+    background:
+        rgba(0, 0, 0, .18);
+
+    transition:
+        .18s ease;
+
+}
+
+
+.rigid-member-row:hover {
+
+    border-color:
+        rgba(244, 185, 66, .22);
+
+    background:
+        rgba(244, 185, 66, .035);
+
+}
+
+
+.rigid-member-main {
+
+    min-width:
+        0;
+
+}
+
+
+.rigid-member-name {
+
+    color:
+        #edf3fb;
+
+    font-size:
+        12px;
+
+    font-weight:
+        600;
+
+}
+
+
+.rigid-member-email {
+
+    margin-top:
+        3px;
+
+    overflow:
+        hidden;
+
+    color:
+        #758398;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        9px;
+
+    text-overflow:
+        ellipsis;
+
+    white-space:
+        nowrap;
+
+}
+
+
+.rigid-empty {
+
+    padding:
+        22px;
+
+    border:
+        1px dashed
+        rgba(255, 255, 255, .09);
+
+    border-radius:
+        8px;
+
+    color:
+        #69778a;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        9px;
+
+    text-align:
+        center;
+
+}
+
+
+/* =========================================================
+   MINI BUTTONS
+========================================================= */
+
+.rigid-mini-button {
+
+    min-height:
+        31px;
+
+    padding:
+        0 10px;
+
+    flex-shrink:
+        0;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .10);
+
+    border-radius:
+        6px;
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    color:
+        #b9c5d4;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        9px;
+
+    font-weight:
+        600;
+
+    transition:
+        .18s ease;
+
+}
+
+
+.rigid-mini-button:hover {
+
+    border-color:
+        var(--accent);
+
+    background:
+        rgba(244, 185, 66, .07);
+
+    color:
+        var(--accent);
+
+    transform:
+        translateY(-1px);
+
+}
+
+
+.rigid-delete-button {
+
+    color:
+        #c97878;
+
+}
+
+
+.rigid-delete-button:hover {
+
+    border-color:
+        rgba(255, 104, 104, .40);
+
+    background:
+        rgba(255, 80, 80, .07);
+
+    color:
+        #ff7777;
+
+}
+
+
+/* =========================================================
+   ADMIN ACTION ROW
+========================================================= */
+
+.rigid-admin-actions {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        flex-end;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        7px;
+
+    margin-top:
+        18px;
+
+    padding-top:
+        16px;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, .07);
+
+}
+
+
+/* =========================================================
+   MANAGEMENT LIST
+========================================================= */
+
+.rigid-management-list {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        8px;
+
+}
+
+
+.rigid-management-item {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        15px;
+
+    padding:
+        13px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .07);
+
+    border-radius:
+        8px;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+}
+
+
+.rigid-management-item:hover {
+
+    border-color:
+        color-mix(
+            in srgb,
+            var(--accent) 30%,
+            transparent
+        );
+
+}
+
+
+.rigid-management-info {
+
+    min-width:
+        0;
+
+}
+
+
+.rigid-management-name {
+
+    color:
+        #edf3fb;
+
+    font-family:
+        "Space Grotesk",
+        sans-serif;
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+
+}
+
+
+.rigid-management-meta {
+
+    margin-top:
+        4px;
+
+    color:
+        #758398;
+
+    font-size:
+        10px;
+
+}
+
+
+.rigid-management-actions {
+
+    display:
+        flex;
+
+    gap:
+        5px;
+
+    flex-shrink:
+        0;
+
+}
+
+
+/* =========================================================
+   FORM CONTROLS CREATED BY JS
+========================================================= */
+
+.rigid-form {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        15px;
+
+}
+
+
+.rigid-form-group {
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        7px;
+
+}
+
+
+.rigid-form-group label {
+
+    color:
+        #8998ac;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        9px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        .10em;
+
+    text-transform:
+        uppercase;
+
+}
+
+
+.rigid-form-group input,
+.rigid-form-group textarea,
+.rigid-form-group select {
+
+    width:
+        100%;
+
+    padding:
+        11px 12px;
+
+    outline:
+        none;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .09);
+
+    border-radius:
+        7px;
+
+    background:
+        #080e18;
+
+    color:
+        var(--text);
+
+    font-size:
+        12px;
+
+    transition:
+        .18s ease;
+
+}
+
+
+.rigid-form-group textarea {
+
+    min-height:
+        100px;
+
+    resize:
+        vertical;
+
+}
+
+
+.rigid-form-group input:focus,
+.rigid-form-group textarea:focus,
+.rigid-form-group select:focus {
+
+    border-color:
+        var(--accent);
+
+    box-shadow:
+        0 0 0 2px
+        rgba(244, 185, 66, .06);
+
+}
+
+
+.rigid-form-actions {
+
+    display:
+        flex;
+
+    justify-content:
+        flex-end;
+
+    gap:
+        7px;
+
+    margin-top:
+        5px;
+
+}
+
+
+/* =========================================================
+   TASK STATUS BADGES
+========================================================= */
+
+.rigid-status {
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    min-height:
+        23px;
+
+    padding:
+        0 8px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, .09);
+
+    border-radius:
+        999px;
+
+    font-family:
+        "JetBrains Mono",
+        monospace;
+
+    font-size:
+        8px;
+
+    font-weight:
+        700;
+
+    text-transform:
+        uppercase;
+
+}
+
+
+.rigid-status-ongoing {
+
+    border-color:
+        rgba(244, 185, 66, .28);
+
+    background:
+        rgba(244, 185, 66, .08);
+
+    color:
+        var(--accent);
+
+}
+
+
+.rigid-status-completed {
+
+    border-color:
+        rgba(59, 214, 163, .28);
+
+    background:
+        rgba(59, 214, 163, .08);
+
+    color:
+        var(--green);
+
+}
+
+
+/* =========================================================
+   RESPONSIVE DYNAMIC UI
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .rigid-modal {
+
+        padding:
+            10px;
+
+        align-items:
+            flex-end;
+
+    }
+
+
+    .rigid-modal-box {
+
+        max-height:
+            92vh;
+
+        padding:
+            20px;
+
+        border-radius:
+            13px 13px 0 0;
+
+    }
+
+
+    .rigid-member-row {
+
+        align-items:
+            flex-start;
+
+    }
+
+
+    .rigid-admin-actions {
+
+        justify-content:
+            stretch;
+
+    }
+
+
+    .rigid-admin-actions
+    .rigid-mini-button {
+
+        flex:
+            1;
+
+    }
+
+}
+
+/* =========================================================
+   FIXED FORUM HEIGHT
+========================================================= */
+
+.forum-section {
+
+    position:
+        relative;
+
+    height:
+        420px;
+
+    min-height:
+        420px;
+
+    max-height:
+        420px;
+
+    overflow:
+        hidden;
+
+    margin-bottom:
+        65px;
+
+    padding:
+        28px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    border:
+        1px solid
+        var(--forum-border);
+
+    border-radius:
+        16px;
+
+    background:
+        var(--forum-background);
+
+    box-shadow:
+        inset 0 1px
+        rgba(
+            255,
+            255,
+            255,
+            .025
+        );
+
+}
+
+/* =========================================================
+   FIXED FORUM CONTENT AREA
+========================================================= */
+
+.forum-content {
+
+    position:
+        relative;
+
+    z-index:
+        1;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        28px;
+
+    margin-top:
+        27px;
+
+    flex:
+        1;
+
+    min-height:
+        0;
+
+    overflow:
+        hidden;
+
+}
+
+/* =========================================================
+   FORUM COLUMNS
+========================================================= */
+
+.forum-column {
+
+    min-width:
+        0;
+
+    min-height:
+        0;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+}
+
+/* =========================================================
+   FIXED TEAM / DOMAIN LIST AREA
+========================================================= */
+
+.team-list {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(
+                200px,
+                1fr
+            )
+        );
+
+    gap:
+        12px;
+
+    min-height:
+        0;
+
+    max-height:
+        190px;
+
+    overflow-y:
+        auto;
+
+    overflow-x:
+        hidden;
+
+    padding-right:
+        4px;
+
+}
+
+/* =========================================================
+   DOMAIN LIST
+========================================================= */
+
+.domain-list {
+
+    min-height:
+        0;
+
+    max-height:
+        190px;
+
+    overflow-y:
+        auto;
+
+    overflow-x:
+        hidden;
+
+    padding-right:
+        4px;
+
+}
+
+/* =========================================================
+   INTERNAL SCROLLBARS
+========================================================= */
+
+.team-list::-webkit-scrollbar,
+.domain-list::-webkit-scrollbar {
+
+    width:
+        4px;
+
+}
+
+
+.team-list::-webkit-scrollbar-track,
+.domain-list::-webkit-scrollbar-track {
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .025
+        );
+
+    border-radius:
+        10px;
+
+}
+
+
+.team-list::-webkit-scrollbar-thumb,
+.domain-list::-webkit-scrollbar-thumb {
+
+    background:
+        color-mix(
+            in srgb,
+            var(--forum-color) 55%,
+            transparent
+        );
+
+    border-radius:
+        10px;
+
+}
+
+@media (max-width: 650px) {
+
+    .forum-section {
+
+        height:
+            500px;
+
+        min-height:
+            500px;
+
+        max-height:
+            500px;
+
+        padding:
+            21px;
+
+        margin-bottom:
+            35px;
+
+    }
+
+}   
+
+.forum-section {
+
+    position: relative;
+
+    height: 390px;
+    min-height: 390px;
+    max-height: 390px;
+
+    overflow: hidden;
+
+    margin-bottom: 45px;
+
+    padding: 22px 28px;
+
+    display: flex;
+    flex-direction: column;
+
+    border: 1px solid var(--forum-border);
+    border-radius: 16px;
+
+    background: var(--forum-background);
+
+    box-shadow:
+        inset 0 1px
+        rgba(255, 255, 255, .025);
+}
+
+.forum-content {
+
+    position: relative;
+    z-index: 1;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+
+    margin-top: 18px;
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow: visible;
+}
+
+.team-list {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(180px, 1fr)
+        );
+
+    gap: 10px;
+
+    min-height: 0;
+
+    max-height: 165px;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    padding-right: 4px;
+}
+
+.domain-list {
+
+    min-height: 0;
+
+    max-height: 165px;
+
+    overflow-y: auto;
+
+    overflow-x: hidden;
+
+    padding-right: 4px;
+}
+
+.team-card {
+
+    min-height: 145px;
+
+    box-sizing: border-box;
+}
+
+@media (max-width: 650px) {
+
+    .forum-section {
+
+        height: 420px;
+        min-height: 420px;
+        max-height: 420px;
+
+        padding: 18px 20px;
+
+        margin-bottom: 30px;
+    }
+
+}
+
+/* =========================================================
+   COMPACT FORUM VERTICAL SPACING
+========================================================= */
+
+/* Reduce space below the forum header */
+.forum-header {
+    padding-bottom: 10px !important;
+}
+
+
+/* Reduce the gap around Edit / Delete buttons */
+.forum-actions {
+    margin-top: 10px !important;
+    margin-bottom: 8px !important;
+
+    min-height: 0 !important;
+}
+
+
+/* Bring Teams / Domains closer to the action row */
+.forum-content {
+    margin-top: 8px !important;
+}
+
+
+/* Keep the forum compact but large enough for cards */
+.forum-section {
+    height: 350px !important;
+    min-height: 350px !important;
+    max-height: 350px !important;
+
+    padding-top: 20px !important;
+    padding-bottom: 18px !important;
+}
+
+
+/* Reduce unnecessary spacing inside the columns */
+.forum-column {
+    gap: 8px !important;
+}
+
+
+/* Team/domain headings */
+.forum-column-header {
+    margin-bottom: 8px !important;
+}
+
+.forum-header {
+    margin-bottom: 8px;
+}
+
+.forum-content {
+    margin-top: 8px;
+}

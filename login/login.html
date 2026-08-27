@@ -2,415 +2,789 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>RiGiD — Sign In</title>
+    <meta charset="UTF-8">
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
-    rel="stylesheet">
+    <title>RiGiD — Sign In</title>
 
-  <!-- Tailwind -->
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
-  <!-- YOUR EXISTING GLOBAL CSS -->
-  <link rel="stylesheet" href="../styles.css">
+    <!-- =====================================================
+         FONTS
+         ===================================================== -->
 
-  <!-- LOGIN ONLY CSS -->
-  <link rel="stylesheet" href="login.css">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
 
-  <!-- Theme -->
-  <script>
-    if (
-      localStorage.getItem("logbook-theme") === "dark" ||
-      (
-        !localStorage.getItem("logbook-theme") &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-      )
-    ) {
-      document.documentElement.classList.add("dark");
-    }
-  </script>
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         TAILWIND
+         ===================================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"
+    ></script>
+
+
+    <!-- =====================================================
+         GLOBAL CSS
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="../styles.css"
+    >
+
+
+    <!-- =====================================================
+         LOGIN CSS
+         ===================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="login.css"
+    >
+
+
+    <!-- =====================================================
+         THEME
+         ===================================================== -->
+
+    <script>
+
+        if (
+            localStorage.getItem("logbook-theme") === "dark" ||
+            (
+                !localStorage.getItem("logbook-theme") &&
+                window.matchMedia(
+                    "(prefers-color-scheme: dark)"
+                ).matches
+            )
+        ) {
+
+            document.documentElement.classList.add(
+                "dark"
+            );
+
+        }
+
+    </script>
+
+
+    <!-- =====================================================
+         SUPABASE
+         ===================================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"
+    ></script>
 
 </head>
 
 
 <body class="min-h-screen flex flex-col login-bg">
 
-  <!-- =====================================================
-       HEADER
-       ===================================================== -->
 
-  <header class="header-bar">
+    <!-- =====================================================
+         HEADER
+         ===================================================== -->
 
-    <div class="w-full px-4 sm:px-6 py-4
-                flex items-center justify-between">
+    <header class="header-bar">
 
-      <div class="flex items-center gap-3">
+        <div
+            class="w-full px-4 sm:px-6 py-4 flex items-center justify-between"
+        >
 
-        <span class="logo-mark">
-          RiG
-        </span>
+            <!-- BRAND -->
 
-        <div>
+            <div class="flex items-center gap-3">
 
-          <h1 class="font-display text-lg sm:text-xl
-                     font-semibold tracking-tight">
+                <span class="logo-mark">
+                    RiG
+                </span>
 
-            RiGiD
-            <span class="text-accent"></span>
-            
 
-          </h1>
+                <div>
 
-          <p id="liveClock" class="font-mono text-[11px]
-                   uppercase tracking-widest
-                   text-soft mt-1"></p>
+                    <h1
+                        class="font-display text-lg sm:text-xl font-semibold tracking-tight"
+                    >
+                        RiGiD
+                    </h1>
 
-        </div>
 
-      </div>
+                    <p
+                        id="liveClock"
+                        class="font-mono text-[11px] uppercase tracking-widest text-soft mt-1"
+                    ></p>
 
+                </div>
 
-      <!-- Theme -->
+            </div>
 
-      <button id="themeToggle" class="icon-btn" type="button" title="Toggle dark mode" aria-label="Toggle dark mode">
 
-        <span id="themeIcon">☾</span>
+            <!-- THEME -->
 
-      </button>
+            <button
+                id="themeToggle"
+                class="icon-btn"
+                type="button"
+                title="Toggle dark mode"
+                aria-label="Toggle dark mode"
+            >
 
-    </div>
+                <span id="themeIcon">
+                    ☾
+                </span>
 
-  </header>
-
-
-  <!-- =====================================================
-       MAIN
-       ===================================================== -->
-
-  <main class="flex-1 flex flex-col
-           items-center justify-center
-           px-4 py-10">
-
-    <!-- Brand -->
-
-    <div class="brand-hero">
-
-      <h2 class="brand-wordmark">
-        R<span class="wordmark-i">i</span>G<span class="wordmark-i">i</span>D
-      </h2>
-
-      <p class="brand-tagline">
-        "And miles to go sleep before we sleep"
-      </p>
-
-    </div>
-
-
-    <!-- ===================================================
-         AUTH CARD
-         =================================================== -->
-
-    <div class="auth-card">
-
-
-      <!-- =================================================
-           TABS
-           ================================================= -->
-
-      <div class="auth-tabs">
-
-        <button id="tabLogin" class="auth-tab is-active" type="button">
-          Log In
-        </button>
-
-        <button id="tabSignup" class="auth-tab" type="button">
-          Sign Up
-        </button>
-
-      </div>
-
-
-      <!-- =================================================
-           MESSAGE
-           ================================================= -->
-
-      <div id="authMessage" class="auth-message hidden" role="alert"></div>
-
-
-      <!-- =================================================
-           LOGIN FORM
-           ================================================= -->
-
-      <form id="loginForm" class="auth-form">
-
-        <div>
-
-          <label class="field-label" for="loginEmail">
-            Username
-          </label>
-
-          <input id="loginEmail" type="email" class="field-input" placeholder="you@kct.ac.in" autocomplete="username"
-            required>
-
-        </div>
-
-
-        <div>
-
-          <label class="field-label" for="loginPassword">
-            Password
-          </label>
-
-          <input id="loginPassword" type="password" class="field-input" autocomplete="current-password" required>
-
-        </div>
-
-
-        <button type="submit" class="btn-primary w-full justify-center">
-          Log In
-        </button>
-
-      </form>
-
-
-      <!-- =================================================
-           SIGNUP FORM
-           ================================================= -->
-
-      <form id="signupForm" class="auth-form hidden">
-
-        <!-- =================================================
-             KCT EMAIL SIGNUP FIELDS
-             (hidden while a Google account flow is active)
-             ================================================= -->
-
-        <div id="emailSignupFields">
-
-          <!-- EMAIL -->
-
-          <div>
-
-            <label class="field-label" for="signupEmail">
-              KCT Email
-            </label>
-
-            <input id="signupEmail" type="email" class="field-input" placeholder="you@kct.ac.in" autocomplete="email"
-              required>
-
-          </div>
-
-
-          <!-- TEAM -->
-
-          <div>
-
-            <label class="field-label" for="signupTeam">
-              Team
-            </label>
-
-            <select id="signupTeam" class="field-input" required>
-
-              <option value="" selected disabled>
-                Select your forum
-              </option>
-
-            </select>
-
-          </div>
-
-
-          <!-- PASSWORD -->
-
-          <div>
-
-            <label class="field-label" for="signupPassword">
-              Create Password
-            </label>
-
-            <input id="signupPassword" type="password" class="field-input" minlength="8" autocomplete="new-password"
-              required>
-
-          </div>
-
-
-          <!-- CONFIRM PASSWORD -->
-
-          <div>
-
-            <label class="field-label" for="signupPassword2">
-              Confirm Password
-            </label>
-
-            <input id="signupPassword2" type="password" class="field-input" minlength="8" autocomplete="new-password"
-              required>
-
-          </div>
-
-
-          <!-- =================================================
-             VERIFICATION
-             ================================================= -->
-
-          <button id="sendVerificationBtn" type="button" class="btn-secondary w-full justify-center">
-            Send Verification Link
-          </button>
-
-          <div id="resendVerificationBox" class="resend-verification-box hidden">
-
-            <button type="button" id="resendVerificationBtn" class="resend-link">
-              Resend verification link
             </button>
 
-          </div>
-
-
-          <p id="verificationStatus" class="field-hint hidden"></p>
-
-        </div>
-        <!-- /emailSignupFields -->
-
-        <div class="auth-divider" id="googleDivider">
-          <span>OR</span>
         </div>
 
-        <button id="googleSignupBtn" type="button" class="google-btn">
-          <span class="google-icon">G</span>
-          Continue with Google
-        </button>
-
-        <div id="googleProfileSetup" class="google-profile-setup hidden">
-
-          <div class="google-user-info">
-
-            <div id="googleUserName" class="google-user-name"></div>
-
-            <div id="googleUserEmail" class="google-user-email"></div>
-
-          </div>
+    </header>
 
 
-          <div>
 
-            <label class="field-label" for="googleTeam">
-              Select your team
-            </label>
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
 
-            <select id="googleTeam" class="field-input" required>
-
-              <option value="" selected disabled>
-                Select your team
-              </option>
-
-            </select>
-
-          </div>
+    <main
+        class="flex-1 flex flex-col items-center justify-center px-4 py-10"
+    >
 
 
-          <div id="googlePasswordBox">
+        <!-- =================================================
+             BRAND HERO
+             ================================================= -->
 
-            <div>
+        <div class="brand-hero">
 
-              <label class="field-label" for="googlePassword">
-                Create Password
-              </label>
+            <h2 class="brand-wordmark">
 
-              <input id="googlePassword" type="password" class="field-input" minlength="8" autocomplete="new-password"
-                required>
+                R<span class="wordmark-i">i</span>G<span class="wordmark-i">i</span>D
 
-            </div>
-
-
-            <div>
-
-              <label class="field-label" for="googlePassword2">
-                Confirm Password
-              </label>
-
-              <input id="googlePassword2" type="password" class="field-input" minlength="8" autocomplete="new-password"
-                required>
-
-            </div>
+            </h2>
 
 
-            <p class="field-hint">
-
-
+            <p class="brand-tagline">
+                "And miles to go sleep before we sleep"
             </p>
 
-          </div>
+        </div>
 
 
-          <button id="googleRequestAccessBtn" type="button" class="btn-primary w-full justify-center">
-            Request Access
-          </button>
+
+        <!-- =================================================
+             AUTH CARD
+             ================================================= -->
+
+        <div class="auth-card">
 
 
-          <div class="resend-verification-box">
-            <button id="googleUseDifferentAccountBtn" type="button" class="resend-link">
-              Not you? Use a different Google account
-            </button>
-          </div>
+            <!-- =================================================
+                 TABS
+                 ================================================= -->
+
+            <div class="auth-tabs">
+
+                <button
+                    id="tabLogin"
+                    class="auth-tab is-active"
+                    type="button"
+                >
+                    Log In
+                </button>
+
+
+                <button
+                    id="tabSignup"
+                    class="auth-tab"
+                    type="button"
+                >
+                    Sign Up
+                </button>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 GLOBAL MESSAGE
+                 ================================================= -->
+
+            <div
+                id="authMessage"
+                class="auth-message hidden"
+                role="alert"
+            ></div>
+
+
+
+            <!-- =================================================
+                 LOGIN FORM
+                 ================================================= -->
+
+            <form
+                id="loginForm"
+                class="auth-form"
+            >
+
+
+                <!-- EMAIL -->
+
+                <div>
+
+                    <label
+                        class="field-label"
+                        for="loginEmail"
+                    >
+                        Username
+                    </label>
+
+
+                    <input
+                        id="loginEmail"
+                        type="email"
+                        class="field-input"
+                        placeholder="you@kct.ac.in"
+                        autocomplete="username"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- PASSWORD -->
+
+                <div>
+
+                    <label
+                        class="field-label"
+                        for="loginPassword"
+                    >
+                        Password
+                    </label>
+
+
+                    <input
+                        id="loginPassword"
+                        type="password"
+                        class="field-input"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- LOGIN -->
+
+                <button
+                    type="submit"
+                    class="btn-primary w-full justify-center"
+                >
+                    Log In
+                </button>
+
+            </form>
+
+
+
+            <!-- =================================================
+                 SIGNUP FORM
+                 ================================================= -->
+
+            <form
+                id="signupForm"
+                class="auth-form hidden"
+            >
+
+
+                <!-- =================================================
+                     NORMAL EMAIL SIGNUP
+                     ================================================= -->
+
+                <div id="emailSignupFields">
+
+
+                    <!-- =================================================
+                         EMAIL
+                         ================================================= -->
+
+                    <div>
+
+                        <label
+                            class="field-label"
+                            for="signupEmail"
+                        >
+                            KCT Email
+                        </label>
+
+
+                        <input
+                            id="signupEmail"
+                            type="email"
+                            class="field-input"
+                            placeholder="you@kct.ac.in"
+                            autocomplete="email"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         FORUM
+                         ================================================= -->
+
+                    <div>
+
+                        <label
+                            class="field-label"
+                            for="signupForum"
+                        >
+                            Forum
+                            <span class="required-mark">
+                                *
+                            </span>
+                        </label>
+
+
+                        <select
+                            id="signupForum"
+                            class="field-input"
+                        >
+
+                            <option
+                                value=""
+                                selected
+                                disabled
+                            >
+                                Select your forum
+                            </option>
+
+                        </select>
+
+
+                        <p class="field-hint">
+                            Select at least one forum.
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         SELECTED FORUMS
+                         ================================================= -->
+
+                    <div
+                        id="selectedForumsContainer"
+                        class="selected-forums-container"
+                    ></div>
+
+
+
+                    <!-- =================================================
+                         PASSWORD
+                         ================================================= -->
+
+                    <div>
+
+                        <label
+                            class="field-label"
+                            for="signupPassword"
+                        >
+                            Create Password
+                        </label>
+
+
+                        <input
+                            id="signupPassword"
+                            type="password"
+                            class="field-input"
+                            minlength="8"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         CONFIRM PASSWORD
+                         ================================================= -->
+
+                    <div>
+
+                        <label
+                            class="field-label"
+                            for="signupPassword2"
+                        >
+                            Confirm Password
+                        </label>
+
+
+                        <input
+                            id="signupPassword2"
+                            type="password"
+                            class="field-input"
+                            minlength="8"
+                            autocomplete="new-password"
+                            required
+                        >
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         SEND VERIFICATION
+                         ================================================= -->
+
+                    <button
+                        id="sendVerificationBtn"
+                        type="button"
+                        class="btn-secondary w-full justify-center"
+                    >
+                        Send Verification Link
+                    </button>
+
+
+
+                    <!-- =================================================
+                         RESEND VERIFICATION
+                         ================================================= -->
+
+                    <div
+                        id="resendVerificationBox"
+                        class="resend-verification-box hidden"
+                    >
+
+                        <button
+                            id="resendVerificationBtn"
+                            type="button"
+                            class="resend-link"
+                        >
+                            Resend verification link
+                        </button>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         VERIFICATION STATUS
+                         ================================================= -->
+
+                    <p
+                        id="verificationStatus"
+                        class="field-hint hidden"
+                    ></p>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     GOOGLE DIVIDER
+                     ================================================= -->
+
+                <div
+                    class="auth-divider"
+                    id="googleDivider"
+                >
+
+                    <span>
+                        OR
+                    </span>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     GOOGLE SIGNUP BUTTON
+                     ================================================= -->
+
+                <button
+                    id="googleSignupBtn"
+                    type="button"
+                    class="google-btn"
+                >
+
+                    <span class="google-icon">
+                        G
+                    </span>
+
+                    Continue with Google
+
+                </button>
+
+
+
+                <!-- =================================================
+                     GOOGLE PROFILE SETUP
+                     ================================================= -->
+
+                <div
+                    id="googleProfileSetup"
+                    class="google-profile-setup hidden"
+                >
+
+
+                    <!-- =================================================
+                         GOOGLE USER INFORMATION
+                         ================================================= -->
+
+                    <div class="google-user-info">
+
+                        <div
+                            id="googleUserName"
+                            class="google-user-name"
+                        ></div>
+
+
+                        <div
+                            id="googleUserEmail"
+                            class="google-user-email"
+                        ></div>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         GOOGLE FORUM
+                         ================================================= -->
+
+                    <div>
+
+                        <label
+                            class="field-label"
+                            for="googleForum"
+                        >
+                            Forum
+                            <span class="required-mark">
+                                *
+                            </span>
+                        </label>
+
+
+                        <select
+                            id="googleForum"
+                            class="field-input"
+                        >
+
+                            <option
+                                value=""
+                                selected
+                                disabled
+                            >
+                                Select your forum
+                            </option>
+
+                        </select>
+
+
+                        <p class="field-hint">
+                            Select at least one forum.
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         GOOGLE SELECTED FORUMS
+                         ================================================= -->
+
+                    <div
+                        id="googleSelectedForumsContainer"
+                        class="selected-forums-container"
+                    ></div>
+
+
+
+                    <!-- =================================================
+                         GOOGLE PASSWORD
+                         ================================================= -->
+
+                    <div id="googlePasswordBox">
+
+
+                        <!-- PASSWORD -->
+
+                        <div>
+
+                            <label
+                                class="field-label"
+                                for="googlePassword"
+                            >
+                                Create Password
+                            </label>
+
+
+                            <input
+                                id="googlePassword"
+                                type="password"
+                                class="field-input"
+                                minlength="8"
+                                autocomplete="new-password"
+                            >
+
+                        </div>
+
+
+
+                        <!-- CONFIRM PASSWORD -->
+
+                        <div>
+
+                            <label
+                                class="field-label"
+                                for="googlePassword2"
+                            >
+                                Confirm Password
+                            </label>
+
+
+                            <input
+                                id="googlePassword2"
+                                type="password"
+                                class="field-input"
+                                minlength="8"
+                                autocomplete="new-password"
+                            >
+
+                        </div>
+
+
+                        <p class="field-hint">
+                            Create a password so you can also log in using your email.
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- =================================================
+                         GOOGLE REQUEST ACCESS
+                         ================================================= -->
+
+                    <button
+                        id="googleRequestAccessBtn"
+                        type="button"
+                        class="btn-primary w-full justify-center"
+                    >
+                        Request Access
+                    </button>
+
+
+
+                    <!-- =================================================
+                         DIFFERENT GOOGLE ACCOUNT
+                         ================================================= -->
+
+                    <div class="resend-verification-box">
+
+                        <button
+                            id="googleUseDifferentAccountBtn"
+                            type="button"
+                            class="resend-link"
+                        >
+                            Not you? Use a different Google account
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     NORMAL REQUEST ACCESS
+                     ================================================= -->
+
+                <button
+                    id="requestAccessBtn"
+                    type="submit"
+                    class="btn-primary w-full justify-center"
+                    disabled
+                >
+                    Request Access
+                </button>
+
+
+            </form>
 
         </div>
 
-        <!-- =================================================
-             REQUEST ACCESS
-             ================================================= -->
-
-        <button id="requestAccessBtn" type="submit" class="btn-primary w-full justify-center" disabled>
-          Request Access
-        </button>
-
-
-        <p class="field-hint">
+    </main>
 
 
 
-        </p>
+    <!-- =====================================================
+         FOOTER
+         ===================================================== -->
 
-      </form>
+    <footer class="border-t border-token">
 
-    </div>
+        <div
+            class="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-center"
+        >
 
-  </main>
+            <p
+                class="font-mono text-[11px] text-soft"
+            >
+                RiGiD · Team Progress Portal
+            </p>
 
+        </div>
 
-  <!-- =====================================================
-       FOOTER
-       ===================================================== -->
-
-  <footer class="border-t border-token">
-
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-center">
-
-      <p class="font-mono text-[11px] text-soft">
-        RiGiD · Team Progress Portal
-      </p>
-
-    </div>
-
-  </footer>
+    </footer>
 
 
-  <!-- =====================================================
-       SUPABASE CLIENT
-       ===================================================== -->
 
-  <script src="../supabase-client.js"></script>
+    <!-- =====================================================
+         SUPABASE CLIENT
+         ===================================================== -->
 
-  <!-- LOGIN LOGIC -->
+    <script
+        src="../supabase-client.js"
+    ></script>
 
-  <script src="login.js"></script>
+
+
+    <!-- =====================================================
+         LOGIN LOGIC
+         ===================================================== -->
+
+    <script
+        src="login.js"
+    ></script>
 
 </body>
 

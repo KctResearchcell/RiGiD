@@ -9,47 +9,32 @@
 
 /* =========================================================
    1. USER PROFILE
+   REAL SUPABASE PROFILE
 ========================================================= */
 
 const personalUser = {
 
-    name: "Navin TK",
+    id: "",
 
-    email: "navin@kct.ac.in",
+    name: "",
+
+    email: "",
 
     profileImage: "",
 
-    details: [
+    role: "",
 
-        {
-            id: "department",
-            label: "Department",
-            value: "Electronics & Instrumentation Engineering",
-            icon: "◉"
-        },
+    status: "",
 
-        {
-            id: "forum",
-            label: "Forum",
-            value: "Re",
-            icon: "◈"
-        },
+    bio: "",
 
-        {
-            id: "team",
-            label: "Team",
-            value: "Team Sulal",
-            icon: "◆"
-        },
+    details: [],
 
-        {
-            id: "domain",
-            label: "Domain",
-            value: "Renewable Energy",
-            icon: "◎"
-        }
+    forums: [],
 
-    ]
+    teams: [],
+
+    domains: []
 
 };
 
@@ -431,57 +416,385 @@ function isValidURL(value) {
    11. PROFILE
 ========================================================= */
 
-function loadProfile() {
+/* =========================================================
+   11. PROFILE
+   LOAD REAL DATA FROM SUPABASE
+========================================================= */
 
-    /* =================================================
-       BASIC PROFILE
-    ================================================== */
+async function loadProfile() {
 
-    setText(
-        "profileName",
-        personalUser.name
-    );
+    try {
 
+        /* =================================================
+           CURRENT AUTH USER
+        ================================================== */
 
-    setText(
-        "profileEmail",
-        personalUser.email
-    );
-
-
-    setText(
-        "lockedProfileEmail",
-        personalUser.email
-    );
+        const {
+            data: {
+                user
+            },
+            error: authError
+        } = await sb.auth.getUser();
 
 
-    setText(
-        "editProfileEmail",
-        personalUser.email
-    );
+        if (authError) {
+
+            console.error(
+                "Unable to get authenticated user:",
+                authError
+            );
+
+            return;
+
+        }
 
 
-    /* =================================================
-       PROFILE DETAILS
-    ================================================== */
+        if (!user) {
 
-    renderProfileDetails();
+            console.error(
+                "No authenticated user found."
+            );
 
+            return;
 
-    /* =================================================
-       SOCIAL PROFILES
-    ================================================== */
-
-    updateSocialDisplay("github");
-
-    updateSocialDisplay("linkedin");
+        }
 
 
-    /* =================================================
-       PROFILE PHOTO
-    ================================================== */
+        /* =================================================
+           PROFILE
+        ================================================== */
 
-    if (personalUser.profileImage) {
+        const {
+            data: profileData,
+            error: profileError
+        } = await sb
+            .from("profiles")
+            .select(`
+                id,
+                full_name,
+                email,
+                role,
+                status,
+                bio,
+                avatar_url
+            `)
+            .eq("id", user.id)
+            .single();
+
+
+        if (profileError) {
+
+            console.error(
+                "Failed to load profile:",
+                profileError
+            );
+
+            return;
+
+        }
+
+
+        /* =================================================
+           STORE PROFILE
+        ================================================== */
+
+        personalUser.id =
+            profileData.id;
+
+        personalUser.name =
+            profileData.full_name ||
+            user.user_metadata?.full_name ||
+            user.email?.split("@")[0] ||
+            "User";
+
+        personalUser.email =
+            profileData.email ||
+            user.email ||
+            "";
+
+        personalUser.role =
+            profileData.role ||
+            "";
+
+        personalUser.status =
+            profileData.status ||
+            "";
+
+        personalUser.bio =
+            profileData.bio ||
+            "";
+
+        personalUser.profileImage =
+            profileData.avatar_url ||
+            "";
+
+
+        /* =================================================
+           FORUM MEMBERSHIPS
+        ================================================== */
+
+        const {
+            data: forumMemberships,
+            error: forumError
+        } = await sb
+            .from("forum_members")
+            .select(`
+                forum_id,
+                forums (
+                    id,
+                    name,
+                    description
+                )
+            `)
+            .eq("profile_id", user.id);
+
+
+        if (forumError) {
+
+            console.error(
+                "Failed to load forum memberships:",
+                forumError
+            );
+
+        }
+
+
+        personalUser.forums =
+            (forumMemberships || [])
+                .map(member => member.forums)
+                .filter(Boolean);
+
+
+        /* =================================================
+           TEAM MEMBERSHIPS
+        ================================================== */
+
+        const {
+            data: teamMemberships,
+            error: teamError
+        } = await sb
+            .from("team_members")
+            .select(`
+                team_id,
+                teams (
+                    id,
+                    name,
+                    description,
+                    forum_id
+                )
+            `)
+            .eq("profile_id", user.id);
+
+
+        if (teamError) {
+
+            console.error(
+                "Failed to load team memberships:",
+                teamError
+            );
+
+        }
+
+
+        personalUser.teams =
+            (teamMemberships || [])
+                .map(member => member.teams)
+                .filter(Boolean);
+
+
+        /* =================================================
+           DOMAIN MEMBERSHIPS
+        ================================================== */
+
+        const {
+            data: domainMemberships,
+            error: domainError
+        } = await sb
+            .from("domain_members")
+            .select(`
+                domain_id,
+                domains (
+                    id,
+                    name,
+                    description,
+                    forum_id
+                )
+            `)
+            .eq("profile_id", user.id);
+
+
+        if (domainError) {
+
+            console.error(
+                "Failed to load domain memberships:",
+                domainError
+            );
+
+        }
+
+
+        personalUser.domains =
+            (domainMemberships || [])
+                .map(member => member.domains)
+                .filter(Boolean);
+
+
+        /* =================================================
+           BUILD PROFILE DETAILS
+        ================================================== */
+
+        personalUser.details = [];
+
+
+        /*
+         * Role
+         */
+
+        if (personalUser.role) {
+
+            personalUser.details.push({
+
+                id: "role",
+
+                label: "Role",
+
+                value:
+                    capitalize(
+                        personalUser.role
+                    ),
+
+                icon: "◉"
+
+            });
+
+        }
+
+
+        /*
+         * Forum
+         *
+         * Multiple forums are supported.
+         */
+
+        if (personalUser.forums.length) {
+
+            personalUser.details.push({
+
+                id: "forum",
+
+                label: "Forum",
+
+                value:
+                    personalUser.forums
+                        .map(forum => forum.name)
+                        .join(", "),
+
+                icon: "◈"
+
+            });
+
+        }
+
+
+        /*
+         * Team
+         *
+         * Multiple teams are supported.
+         */
+
+        if (personalUser.teams.length) {
+
+            personalUser.details.push({
+
+                id: "team",
+
+                label: "Team",
+
+                value:
+                    personalUser.teams
+                        .map(team => team.name)
+                        .join(", "),
+
+                icon: "◆"
+
+            });
+
+        }
+
+
+        /*
+         * Domain
+         *
+         * Multiple domains are supported.
+         */
+
+        if (personalUser.domains.length) {
+
+            personalUser.details.push({
+
+                id: "domain",
+
+                label: "Domain",
+
+                value:
+                    personalUser.domains
+                        .map(domain => domain.name)
+                        .join(", "),
+
+                icon: "◎"
+
+            });
+
+        }
+
+
+        /* =================================================
+           UPDATE BASIC PROFILE UI
+        ================================================== */
+
+        setText(
+            "profileName",
+            personalUser.name
+        );
+
+
+        setText(
+            "profileEmail",
+            personalUser.email
+        );
+
+
+        setText(
+            "lockedProfileEmail",
+            personalUser.email
+        );
+
+
+        setText(
+            "editProfileEmail",
+            personalUser.email
+        );
+
+
+        /* =================================================
+           PROFILE DETAILS
+        ================================================== */
+
+        renderProfileDetails();
+
+
+        /* =================================================
+           SOCIAL PROFILES
+        ================================================== */
+
+        updateSocialDisplay("github");
+
+        updateSocialDisplay("linkedin");
+
+
+        /* =================================================
+           PROFILE PHOTO
+        ================================================== */
 
         const image =
             getElement("profileImage");
@@ -490,21 +803,63 @@ function loadProfile() {
             getElement("profilePlaceholder");
 
 
-        if (image) {
+        if (
+            personalUser.profileImage
+        ) {
 
-            image.src =
-                personalUser.profileImage;
+            if (image) {
 
-            image.classList.remove("hidden");
+                image.src =
+                    personalUser.profileImage;
+
+                image.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+            if (placeholder) {
+
+                placeholder.classList.add(
+                    "hidden"
+                );
+
+            }
+
+        } else {
+
+            if (image) {
+
+                image.classList.add(
+                    "hidden"
+                );
+
+            }
+
+            if (placeholder) {
+
+                placeholder.classList.remove(
+                    "hidden"
+                );
+
+            }
 
         }
 
 
-        if (placeholder) {
+        console.log(
+            "Real profile loaded:",
+            personalUser
+        );
 
-            placeholder.classList.add("hidden");
+    }
 
-        }
+    catch (error) {
+
+        console.error(
+            "Unexpected profile loading error:",
+            error
+        );
 
     }
 
@@ -5020,7 +5375,6 @@ function initializeHeader() {
     const workspace =
         getElement("personalWorkspaceBtn");
 
-
     if (workspace) {
 
         workspace.addEventListener(
@@ -5040,31 +5394,93 @@ function initializeHeader() {
     const signout =
         getElement("signOutBtn");
 
+    if (!signout) {
 
-    if (signout) {
+        console.error(
+            "Sign Out button not found: #signOutBtn"
+        );
 
-        signout.addEventListener(
-            "click",
-            () => {
+        return;
 
-                const confirmed =
-                    window.confirm(
-                        "Are you sure you want to sign out?"
+    }
+
+
+    signout.addEventListener(
+        "click",
+        async () => {
+
+            const confirmed =
+                window.confirm(
+                    "Are you sure you want to sign out?"
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            console.log(
+                "Sign out button clicked."
+            );
+
+
+            try {
+
+                /*
+                 * Sign out from Supabase
+                 */
+
+                const {
+                    error
+                } = await sb.auth.signOut();
+
+
+                if (error) {
+
+                    console.error(
+                        "Supabase sign out failed:",
+                        error
                     );
 
-
-                if (confirmed) {
-
-                    showToast(
-                        "Supabase sign out will be connected later."
+                    alert(
+                        "Sign out failed: " +
+                        error.message
                     );
+
+                    return;
 
                 }
 
-            }
-        );
 
-    }
+                console.log(
+                    "Supabase sign out successful."
+                );
+
+
+                /*
+                 * Go directly to login page
+                 */
+
+                window.location.href =
+                    "../../login/login.html";
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Sign out error:",
+                    error
+                );
+
+                alert(
+                    "Unable to sign out."
+                );
+
+            }
+
+        }
+    );
 
 }
 
@@ -5908,3 +6324,611 @@ function submitFeedback() {
     );
 
 }
+
+/* =========================================================
+   JOIN FORUM
+   STEP 10B — SUPABASE DATA
+========================================================= */
+
+(function initJoinForum() {
+
+    const joinBtn = document.getElementById("joinForumBtn");
+    const modal = document.getElementById("joinForumModal");
+    const closeBtn = document.getElementById("closeJoinForumModal");
+    const cancelBtn = document.getElementById("cancelJoinForumModal");
+
+    const forumSelect = document.getElementById("joinForumSelect");
+
+    const teamRadio = document.getElementById("joinTeamRadio");
+    const domainRadio = document.getElementById("joinDomainRadio");
+
+    const teamGroup = document.getElementById("joinTeamGroup");
+    const domainGroup = document.getElementById("joinDomainGroup");
+
+    const teamSelect = document.getElementById("joinTeamSelect");
+    const domainSelect = document.getElementById("joinDomainSelect");
+
+    const infoBox = document.getElementById("joinForumInfo");
+
+
+    /* -------------------------------------------------------
+       Safety check
+    ------------------------------------------------------- */
+
+    if (
+        !joinBtn ||
+        !modal ||
+        !forumSelect ||
+        !teamSelect ||
+        !domainSelect
+    ) {
+        console.warn("Join Forum elements not found.");
+        return;
+    }
+
+
+    /* =======================================================
+       OPEN MODAL
+    ======================================================= */
+
+    joinBtn.addEventListener("click", async () => {
+
+        modal.classList.remove("hidden");
+
+        resetJoinForumForm();
+
+        await loadJoinForums();
+
+    });
+
+
+    /* =======================================================
+       CLOSE MODAL
+    ======================================================= */
+
+    function closeModal() {
+
+        modal.classList.add("hidden");
+
+        resetJoinForumForm();
+
+    }
+
+
+    closeBtn?.addEventListener("click", closeModal);
+
+    cancelBtn?.addEventListener("click", closeModal);
+
+
+    /* =======================================================
+       RESET FORM
+    ======================================================= */
+
+    function resetJoinForumForm() {
+
+        forumSelect.value = "";
+
+        teamSelect.innerHTML = `
+            <option value="">
+                Select Team
+            </option>
+        `;
+
+        domainSelect.innerHTML = `
+            <option value="">
+                Select Domain
+            </option>
+        `;
+
+        teamGroup.classList.add("hidden");
+        domainGroup.classList.add("hidden");
+
+        teamRadio.checked = false;
+        domainRadio.checked = false;
+
+        infoBox.classList.add("hidden");
+
+    }
+
+
+    /* =======================================================
+       LOAD FORUMS
+    ======================================================= */
+
+    async function loadJoinForums() {
+
+        forumSelect.innerHTML = `
+            <option value="">
+                Loading forums...
+            </option>
+        `;
+
+        forumSelect.disabled = true;
+
+
+        const { data, error } = await sb
+            .from("forums")
+            .select("id, name, description")
+            .order("name", { ascending: true });
+
+
+        if (error) {
+
+            console.error(
+                "Failed to load forums:",
+                error
+            );
+
+            forumSelect.innerHTML = `
+                <option value="">
+                    Unable to load forums
+                </option>
+            `;
+
+            return;
+
+        }
+
+
+        forumSelect.innerHTML = `
+            <option value="">
+                Select Forum
+            </option>
+        `;
+
+
+        data.forEach(forum => {
+
+            const option = document.createElement("option");
+
+            option.value = forum.id;
+
+            option.textContent = forum.name;
+
+            forumSelect.appendChild(option);
+
+        });
+
+
+        forumSelect.disabled = false;
+
+    }
+
+
+    /* =======================================================
+       FORUM SELECTED
+    ======================================================= */
+
+    forumSelect.addEventListener("change", async () => {
+
+        const forumId = forumSelect.value;
+
+
+        /* Reset */
+
+        teamSelect.innerHTML = `
+            <option value="">
+                Select Team
+            </option>
+        `;
+
+        domainSelect.innerHTML = `
+            <option value="">
+                Select Domain
+            </option>
+        `;
+
+
+        teamGroup.classList.add("hidden");
+        domainGroup.classList.add("hidden");
+
+
+        if (!forumId) {
+
+            teamRadio.checked = false;
+            domainRadio.checked = false;
+
+            infoBox.classList.add("hidden");
+
+            return;
+
+        }
+
+
+        infoBox.textContent =
+            "Choose a team or domain under this forum.";
+
+        infoBox.classList.remove("hidden");
+
+
+        await loadForumOptions(forumId);
+
+    });
+
+
+    /* =======================================================
+       LOAD TEAMS + DOMAINS FOR SELECTED FORUM
+    ======================================================= */
+
+    async function loadForumOptions(forumId) {
+
+        teamSelect.disabled = true;
+        domainSelect.disabled = true;
+
+
+        const [
+            teamsResult,
+            domainsResult
+        ] = await Promise.all([
+
+            sb
+                .from("teams")
+                .select("id, name, description")
+                .eq("forum_id", forumId)
+                .order("name", { ascending: true }),
+
+            sb
+                .from("domains")
+                .select("id, name, description")
+                .eq("forum_id", forumId)
+                .order("name", { ascending: true })
+
+        ]);
+
+
+        if (teamsResult.error) {
+
+            console.error(
+                "Failed to load teams:",
+                teamsResult.error
+            );
+
+        }
+
+
+        if (domainsResult.error) {
+
+            console.error(
+                "Failed to load domains:",
+                domainsResult.error
+            );
+
+        }
+
+
+        /* ---------------------------------------------------
+           TEAMS
+        --------------------------------------------------- */
+
+        teamSelect.innerHTML = `
+            <option value="">
+                Select Team
+            </option>
+        `;
+
+
+        (teamsResult.data || []).forEach(team => {
+
+            const option = document.createElement("option");
+
+            option.value = team.id;
+
+            option.textContent = team.name;
+
+            teamSelect.appendChild(option);
+
+        });
+
+
+        /* ---------------------------------------------------
+           DOMAINS
+        --------------------------------------------------- */
+
+        domainSelect.innerHTML = `
+            <option value="">
+                Select Domain
+            </option>
+        `;
+
+
+        (domainsResult.data || []).forEach(domain => {
+
+            const option = document.createElement("option");
+
+            option.value = domain.id;
+
+            option.textContent = domain.name;
+
+            domainSelect.appendChild(option);
+
+        });
+
+
+        teamSelect.disabled = false;
+        domainSelect.disabled = false;
+
+
+        /* ---------------------------------------------------
+           Show available choices
+        --------------------------------------------------- */
+
+        const hasTeams =
+            (teamsResult.data || []).length > 0;
+
+        const hasDomains =
+            (domainsResult.data || []).length > 0;
+
+
+        if (!hasTeams && !hasDomains) {
+
+            infoBox.textContent =
+                "This forum currently has no teams or domains.";
+
+        }
+
+    }
+
+
+    /* =======================================================
+       TEAM / DOMAIN RADIO
+    ======================================================= */
+
+    teamRadio?.addEventListener("change", () => {
+
+        if (!teamRadio.checked) return;
+
+        teamGroup.classList.remove("hidden");
+
+        domainGroup.classList.add("hidden");
+
+        domainSelect.value = "";
+
+    });
+
+
+    domainRadio?.addEventListener("change", () => {
+
+        if (!domainRadio.checked) return;
+
+        domainGroup.classList.remove("hidden");
+
+        teamGroup.classList.add("hidden");
+
+        teamSelect.value = "";
+
+    });
+
+
+    /* =======================================================
+       TEAM SELECTION
+    ======================================================= */
+
+    teamSelect.addEventListener("change", () => {
+
+        if (teamSelect.value) {
+
+            domainSelect.value = "";
+
+        }
+
+    });
+
+    
+
+
+    /* =======================================================
+       DOMAIN SELECTION
+    ======================================================= */
+
+    domainSelect.addEventListener("change", () => {
+
+        if (domainSelect.value) {
+
+            teamSelect.value = "";
+
+        }
+
+    });
+
+    /* =======================================================
+   SUBMIT JOIN FORUM
+======================================================= */
+
+const joinForm = document.getElementById("joinForumForm");
+const submitJoinForum = document.getElementById("submitJoinForum");
+
+joinForm?.addEventListener("submit", async (event) => {
+
+    event.preventDefault();
+
+    const forumId = forumSelect.value;
+
+    const selectedType =
+        document.querySelector(
+            'input[name="joinMembershipType"]:checked'
+        )?.value;
+
+    const teamId =
+        selectedType === "team"
+            ? teamSelect.value
+            : null;
+
+    const domainId =
+        selectedType === "domain"
+            ? domainSelect.value
+            : null;
+
+
+    /* ---------------------------------------------------
+       VALIDATION
+    --------------------------------------------------- */
+
+    if (!forumId) {
+
+        infoBox.textContent =
+            "Please select a forum.";
+
+        infoBox.classList.remove("hidden");
+
+        return;
+    }
+
+
+    if (!selectedType) {
+
+        infoBox.textContent =
+            "Please choose Team or Domain.";
+
+        infoBox.classList.remove("hidden");
+
+        return;
+    }
+
+
+    if (selectedType === "team" && !teamId) {
+
+        infoBox.textContent =
+            "Please select a team.";
+
+        infoBox.classList.remove("hidden");
+
+        return;
+    }
+
+
+    if (selectedType === "domain" && !domainId) {
+
+        infoBox.textContent =
+            "Please select a domain.";
+
+        infoBox.classList.remove("hidden");
+
+        return;
+    }
+
+
+    /* ---------------------------------------------------
+       CURRENT USER
+    --------------------------------------------------- */
+
+    const {
+        data: {
+            user
+        },
+        error: userError
+    } = await sb.auth.getUser();
+
+
+    if (userError || !user) {
+
+        console.error(
+            "Unable to identify current user:",
+            userError
+        );
+
+        infoBox.textContent =
+            "Your session has expired. Please log in again.";
+
+        infoBox.classList.remove("hidden");
+
+        return;
+    }
+
+
+    /* ---------------------------------------------------
+       SUBMIT
+    --------------------------------------------------- */
+
+    submitJoinForum.disabled = true;
+
+    submitJoinForum.textContent =
+        "Joining...";
+
+
+    try {
+
+        const { data, error } = await sb.rpc(
+            "join_forum_workspace",
+            {
+                p_forum_id: forumId,
+                p_team_id: teamId,
+                p_domain_id: domainId
+            }
+        );
+
+
+        if (error) {
+
+            console.error(
+                "Join forum error:",
+                error
+            );
+
+            throw error;
+        }
+
+
+        /* ------------------------------------------------
+           SUCCESS
+        ------------------------------------------------ */
+
+        console.log(
+            "Successfully joined:",
+            data
+        );
+
+
+        modal.classList.add("hidden");
+
+
+        /* Existing toast if available */
+
+        if (typeof showToast === "function") {
+
+            showToast(
+                "Successfully joined the forum."
+            );
+
+        } else {
+
+            alert(
+                "Successfully joined the forum."
+            );
+
+        }
+
+
+        /* Refresh profile/membership data */
+
+        if (
+            typeof loadPersonalData === "function"
+        ) {
+
+            await loadPersonalData();
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        infoBox.textContent =
+            error.message ||
+            "Unable to join this forum.";
+
+        infoBox.classList.remove("hidden");
+
+    } finally {
+
+        submitJoinForum.disabled = false;
+
+        submitJoinForum.textContent =
+            "Join Forum";
+
+    }
+
+});
+
+
+})();

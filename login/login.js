@@ -1,18 +1,44 @@
 /* =========================================================================
-   RiGiD LOGIN
-   login.js
+   RiGiD LOGIN.JS
+   =========================================================================
 
-   Responsibilities:
-   - Login
-   - Signup
-   - Team loading
+   Supports:
+
+   - Email/password login
+   - Email signup
    - Email verification
+   - Google OAuth signup
+   - Google profile setup
+   - Multiple forum selection
+   - Multiple team selection
+   - Multiple domain selection
    - Access request
-   - Approval status
-   - Theme
-   - Clock
+   - Admin pending/approved/rejected states
+   - Google password creation
+   - Theme toggle
+   - Live clock
+   - Google Drive connection test
 
-   Does NOT contain dashboard logic.
+   Database membership model:
+
+       profiles
+           |
+           +---- forum_members
+           |
+           +---- team_members
+           |
+           +---- domain_members
+
+   Profile creation:
+       auth.users
+            ↓
+       handle_new_user()
+            ↓
+       public.profiles
+
+   Missing profile recovery:
+       ensure_my_profile()
+
    ========================================================================= */
 
 
@@ -22,20 +48,79 @@
 
 const LOGIN_CONFIG = {
 
-  ALLOWED_EMAIL_DOMAIN: "@kct.ac.in",
+  ALLOWED_EMAIL_DOMAIN:
+    "@kct.ac.in",
 
-  DASHBOARD_URL:
-    "../dashboard/admin/admin.html"
+  ADMIN_DASHBOARD_URL:
+    "../dashboard/admin/admin.html",
+
+  PERSONAL_DASHBOARD_URL:
+    "../dashboard/personal/personal.html",
+
+  LOGIN_REDIRECT_URL:
+    `${window.location.origin}/login/login.html`,
+
+  ACCESS_REQUEST_RPC:
+    "submit_access_request"
 
 };
 
 
 /* =========================================================================
-   HELPERS
+   SUPABASE CHECK
+   ========================================================================= */
+
+if (
+  typeof sb === "undefined" ||
+  !sb
+) {
+
+  console.error(
+    "RiGiD: Supabase client 'sb' was not found."
+  );
+
+}
+
+
+/* =========================================================================
+   GLOBAL DATA
+   ========================================================================= */
+
+let forums = [];
+let teams = [];
+let domains = [];
+
+let selectedForums = new Set();
+let googleSelectedForums = new Set();
+
+let resendCountdownTimer = null;
+let verificationTimer = null;
+
+
+/* =========================================================================
+   HELPER
    ========================================================================= */
 
 function el(id) {
+
   return document.getElementById(id);
+
+}
+
+
+/* =========================================================================
+   HTML ESCAPE
+   ========================================================================= */
+
+function escapeHTML(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
 }
 
 
@@ -45,21 +130,28 @@ function el(id) {
 
 function startClock() {
 
-  const clock = el("liveClock");
+  const clock =
+    el("liveClock");
 
-  if (!clock) return;
+  if (!clock) {
+    return;
+  }
 
   function updateClock() {
 
-    const now = new Date();
+    const now =
+      new Date();
 
     clock.textContent =
-      now.toLocaleDateString(undefined, {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-      }) +
+      now.toLocaleDateString(
+        undefined,
+        {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        }
+      ) +
       " — " +
       now.toLocaleTimeString();
 
@@ -67,7 +159,11 @@ function startClock() {
 
   updateClock();
 
-  setInterval(updateClock, 1000);
+  setInterval(
+    updateClock,
+    1000
+  );
+
 }
 
 
@@ -77,35 +173,47 @@ function startClock() {
 
 function initTheme() {
 
-  const button = el("themeToggle");
+  const button =
+    el("themeToggle");
 
-  if (!button) return;
+  if (!button) {
+    return;
+  }
 
-  button.addEventListener("click", () => {
+  button.addEventListener(
+    "click",
+    () => {
 
-    const dark =
-      document.documentElement
-        .classList
-        .toggle("dark");
+      const isDark =
+        document.documentElement
+          .classList
+          .toggle("dark");
 
-    localStorage.setItem(
-      "logbook-theme",
-      dark ? "dark" : "light"
-    );
+      localStorage.setItem(
+        "logbook-theme",
+        isDark
+          ? "dark"
+          : "light"
+      );
 
-    updateThemeIcon();
+      updateThemeIcon();
 
-  });
+    }
+  );
 
   updateThemeIcon();
+
 }
 
 
 function updateThemeIcon() {
 
-  const icon = el("themeIcon");
+  const icon =
+    el("themeIcon");
 
-  if (!icon) return;
+  if (!icon) {
+    return;
+  }
 
   const isDark =
     document.documentElement
@@ -113,21 +221,35 @@ function updateThemeIcon() {
       .contains("dark");
 
   icon.textContent =
-    isDark ? "☀" : "☾";
+    isDark
+      ? "☀"
+      : "☾";
+
 }
 
 
 /* =========================================================================
-   AUTH MESSAGE
+   MESSAGE
    ========================================================================= */
 
-function showMessage(message, type = "error") {
+function showMessage(
+  message,
+  type = "error"
+) {
 
-  const box = el("authMessage");
+  const box =
+    el("authMessage");
 
-  if (!box) return;
+  if (!box) {
 
-  box.textContent = message;
+    console.error(message);
+
+    return;
+
+  }
+
+  box.textContent =
+    message;
 
   box.classList.remove(
     "hidden",
@@ -146,11 +268,19 @@ function showMessage(message, type = "error") {
 
 function clearMessage() {
 
-  const box = el("authMessage");
+  const box =
+    el("authMessage");
 
-  if (!box) return;
+  if (!box) {
+    return;
+  }
 
-  box.classList.add("hidden");
+  box.textContent =
+    "";
+
+  box.classList.add(
+    "hidden"
+  );
 
 }
 
@@ -164,11 +294,15 @@ function setVerificationStatus(
   type = "ok"
 ) {
 
-  const status = el("verificationStatus");
+  const status =
+    el("verificationStatus");
 
-  if (!status) return;
+  if (!status) {
+    return;
+  }
 
-  status.textContent = message;
+  status.textContent =
+    message;
 
   status.classList.remove(
     "hidden",
@@ -186,99 +320,818 @@ function setVerificationStatus(
 
 
 /* =========================================================================
-   LOAD TEAMS
+   LOAD FORUMS / TEAMS / DOMAINS
    ========================================================================= */
 
-async function loadTeams() {
+async function loadForumData() {
 
-  const select = el("signupTeam");
+  try {
 
-  if (!select) return;
+    const [
+      forumsResult,
+      teamsResult,
+      domainsResult
+    ] =
+      await Promise.all([
+
+        sb
+          .from("forums")
+          .select("id, name")
+          .order("name"),
+
+        sb
+          .from("teams")
+          .select(`
+            id,
+            name,
+            forum_id
+          `)
+          .order("name"),
+
+        sb
+          .from("domains")
+          .select(`
+            id,
+            name,
+            forum_id
+          `)
+          .order("name")
+
+      ]);
 
 
-  const {
-    data,
-    error
-  } = await sb
-    .from("teams")
-    .select("id, name")
-    .order("name");
+    if (forumsResult.error) {
+
+      console.error(
+        "Forums error:",
+        forumsResult.error
+      );
+
+      showMessage(
+        "Unable to load forums."
+      );
+
+      return false;
+
+    }
 
 
-  if (error) {
+    if (teamsResult.error) {
+
+      console.error(
+        "Teams error:",
+        teamsResult.error
+      );
+
+      showMessage(
+        "Unable to load teams."
+      );
+
+      return false;
+
+    }
+
+
+    if (domainsResult.error) {
+
+      console.error(
+        "Domains error:",
+        domainsResult.error
+      );
+
+      showMessage(
+        "Unable to load domains."
+      );
+
+      return false;
+
+    }
+
+
+    forums =
+      forumsResult.data || [];
+
+    teams =
+      teamsResult.data || [];
+
+    domains =
+      domainsResult.data || [];
+
+
+    console.log(
+      "Forums:",
+      forums
+    );
+
+    console.log(
+      "Teams:",
+      teams
+    );
+
+    console.log(
+      "Domains:",
+      domains
+    );
+
+
+    populateForumSelect(
+      "signupForum"
+    );
+
+    populateForumSelect(
+      "googleForum"
+    );
+
+
+    return true;
+
+  }
+
+  catch (error) {
 
     console.error(
-      "Team loading error:",
+      "loadForumData() failed:",
       error
     );
 
-    select.innerHTML = `
-      <option value="" disabled selected>
-        Unable to load teams
-      </option>
-    `;
+    showMessage(
+      "Unable to load forum information."
+    );
 
-    return;
+    return false;
+
   }
-
-
-  if (!data || data.length === 0) {
-
-    select.innerHTML = `
-      <option value="" disabled selected>
-        No teams available
-      </option>
-    `;
-
-    return;
-  }
-
-
-  select.innerHTML = `
-    <option value="" disabled selected>
-      Select your team
-    </option>
-  `;
-
-
-  data.forEach(team => {
-
-    const option =
-      document.createElement("option");
-
-    option.value = team.id;
-
-    option.textContent = team.name;
-
-    select.appendChild(option);
-
-  });
 
 }
 
 
 /* =========================================================================
-   TAB SWITCHING
+   POPULATE FORUM SELECT
+   ========================================================================= */
+
+function populateForumSelect(
+  selectId
+) {
+
+  const select =
+    el(selectId);
+
+  if (!select) {
+
+    console.warn(
+      `Element #${selectId} not found.`
+    );
+
+    return;
+
+  }
+
+
+  select.innerHTML = `
+    <option
+      value=""
+      selected
+      disabled
+    >
+      Select your forum
+    </option>
+  `;
+
+
+  forums.forEach(
+    forum => {
+
+      const option =
+        document.createElement(
+          "option"
+        );
+
+      option.value =
+        forum.id;
+
+      option.textContent =
+        forum.name;
+
+      select.appendChild(
+        option
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================================
+   FORUM SELECTION
+   ========================================================================= */
+
+function initForumSelection() {
+
+  const signupForum =
+    el("signupForum");
+
+  const googleForum =
+    el("googleForum");
+
+
+  /* ---------------------------------------------------------
+     NORMAL SIGNUP
+     --------------------------------------------------------- */
+
+  signupForum?.addEventListener(
+    "change",
+    () => {
+
+      const forumId =
+        signupForum.value;
+
+      if (!forumId) {
+        return;
+      }
+
+
+      selectedForums.add(
+        String(forumId)
+      );
+
+
+      signupForum.value =
+        "";
+
+
+      renderSelectedForums(
+        selectedForums,
+        "selectedForumsContainer",
+        "selectedTeams",
+        "selectedDomains"
+      );
+
+    }
+  );
+
+
+  /* ---------------------------------------------------------
+     GOOGLE SIGNUP
+     --------------------------------------------------------- */
+
+  googleForum?.addEventListener(
+    "change",
+    () => {
+
+      const forumId =
+        googleForum.value;
+
+      if (!forumId) {
+        return;
+      }
+
+
+      googleSelectedForums.add(
+        String(forumId)
+      );
+
+
+      googleForum.value =
+        "";
+
+
+      renderSelectedForums(
+        googleSelectedForums,
+        "googleSelectedForumsContainer",
+        "googleSelectedTeams",
+        "googleSelectedDomains"
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================================
+   RENDER SELECTED FORUMS
+   ========================================================================= */
+
+function renderSelectedForums(
+  selectedSet,
+  containerId,
+  teamInputName,
+  domainInputName
+) {
+
+  const container =
+    el(containerId);
+
+  if (!container) {
+    return;
+  }
+
+
+  container.innerHTML =
+    "";
+
+
+  selectedSet.forEach(
+    forumId => {
+
+      const forum =
+        forums.find(
+          forumItem =>
+            String(
+              forumItem.id
+            ) ===
+            String(
+              forumId
+            )
+        );
+
+
+      if (!forum) {
+        return;
+      }
+
+
+      const forumTeams =
+        teams.filter(
+          team =>
+            String(
+              team.forum_id
+            ) ===
+            String(
+              forum.id
+            )
+        );
+
+
+      const forumDomains =
+        domains.filter(
+          domain =>
+            String(
+              domain.forum_id
+            ) ===
+            String(
+              forum.id
+            )
+        );
+
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "selected-forum-card";
+
+
+      card.dataset.forumId =
+        forum.id;
+
+
+      card.innerHTML = `
+
+        <div class="selected-forum-header">
+
+          <div>
+
+            <span class="selected-forum-label">
+              FORUM
+            </span>
+
+            <h3>
+              ${escapeHTML(
+                forum.name
+              )}
+            </h3>
+
+          </div>
+
+          <button
+            type="button"
+            class="remove-forum-btn"
+            data-forum-id="${escapeHTML(
+              forum.id
+            )}"
+          >
+            ×
+          </button>
+
+        </div>
+
+
+        <div class="forum-selection-group">
+
+          <label>
+            Teams
+            <span>
+              Select any
+            </span>
+          </label>
+
+          ${
+            forumTeams.length > 0
+
+              ? forumTeams
+                .map(
+                  team => `
+
+                    <label
+                      class="selection-option"
+                    >
+
+                      <input
+                        type="checkbox"
+                        name="${escapeHTML(
+                          teamInputName
+                        )}"
+                        value="${escapeHTML(
+                          team.id
+                        )}"
+                        data-forum-id="${escapeHTML(
+                          forum.id
+                        )}"
+                      >
+
+                      <span>
+                        ${escapeHTML(
+                          team.name
+                        )}
+                      </span>
+
+                    </label>
+
+                  `
+                )
+                .join("")
+
+              : `
+                <p class="selection-empty">
+                  No teams available.
+                </p>
+              `
+          }
+
+        </div>
+
+
+        <div class="forum-selection-group">
+
+          <label>
+            Domains
+            <span>
+              Select any
+            </span>
+          </label>
+
+          ${
+            forumDomains.length > 0
+
+              ? forumDomains
+                .map(
+                  domain => `
+
+                    <label
+                      class="selection-option"
+                    >
+
+                      <input
+                        type="checkbox"
+                        name="${escapeHTML(
+                          domainInputName
+                        )}"
+                        value="${escapeHTML(
+                          domain.id
+                        )}"
+                        data-forum-id="${escapeHTML(
+                          forum.id
+                        )}"
+                      >
+
+                      <span>
+                        ${escapeHTML(
+                          domain.name
+                        )}
+                      </span>
+
+                    </label>
+
+                  `
+                )
+                .join("")
+
+              : `
+                <p class="selection-empty">
+                  No domains available.
+                </p>
+              `
+          }
+
+        </div>
+
+      `;
+
+
+      container.appendChild(
+        card
+      );
+
+    }
+  );
+
+
+  /* ---------------------------------------------------------
+     REMOVE FORUM
+     --------------------------------------------------------- */
+
+  container
+    .querySelectorAll(
+      ".remove-forum-btn"
+    )
+    .forEach(
+      button => {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            const forumId =
+              String(
+                button.dataset.forumId
+              );
+
+
+            selectedSet.delete(
+              forumId
+            );
+
+
+            renderSelectedForums(
+              selectedSet,
+              containerId,
+              teamInputName,
+              domainInputName
+            );
+
+          }
+        );
+
+      }
+    );
+
+}
+
+
+/* =========================================================================
+   COLLECT SELECTED MEMBERSHIPS
+   ========================================================================= */
+
+function collectSelections(
+  selectedSet,
+  containerId,
+  teamInputName,
+  domainInputName
+) {
+
+  const container =
+    el(containerId);
+
+
+  const forumIds =
+    Array.from(
+      selectedSet
+    );
+
+
+  const teamIds =
+    container
+
+      ? Array.from(
+          container.querySelectorAll(
+            `input[name="${teamInputName}"]:checked`
+          )
+        ).map(
+          input =>
+            input.value
+        )
+
+      : [];
+
+
+  const domainIds =
+    container
+
+      ? Array.from(
+          container.querySelectorAll(
+            `input[name="${domainInputName}"]:checked`
+          )
+        ).map(
+          input =>
+            input.value
+        )
+
+      : [];
+
+
+  return {
+
+    forumIds,
+
+    teamIds,
+
+    domainIds
+
+  };
+
+}
+
+
+/* =========================================================================
+   VALIDATE FORUMS
+   ========================================================================= */
+
+function validateForumSelection(
+  selectedSet
+) {
+
+  if (
+    !selectedSet ||
+    selectedSet.size === 0
+  ) {
+
+    showMessage(
+      "Please select at least one forum."
+    );
+
+    return false;
+
+  }
+
+  return true;
+
+}
+
+
+/* =========================================================================
+   VALIDATE MEMBERSHIP RELATIONSHIPS
+   ========================================================================= */
+
+function validateSelections(
+  forumIds,
+  teamIds,
+  domainIds
+) {
+
+  /* ---------------------------------------------------------
+     Teams must belong to selected forums
+     --------------------------------------------------------- */
+
+  for (
+    const teamId of teamIds
+  ) {
+
+    const team =
+      teams.find(
+        item =>
+          String(item.id) ===
+          String(teamId)
+      );
+
+
+    if (!team) {
+
+      showMessage(
+        "One of the selected teams is invalid."
+      );
+
+      return false;
+
+    }
+
+
+    if (
+      !forumIds.includes(
+        String(team.forum_id)
+      )
+    ) {
+
+      showMessage(
+        "A selected team does not belong to one of your selected forums."
+      );
+
+      return false;
+
+    }
+
+  }
+
+
+  /* ---------------------------------------------------------
+     Domains must belong to selected forums
+     --------------------------------------------------------- */
+
+  for (
+    const domainId of domainIds
+  ) {
+
+    const domain =
+      domains.find(
+        item =>
+          String(item.id) ===
+          String(domainId)
+      );
+
+
+    if (!domain) {
+
+      showMessage(
+        "One of the selected domains is invalid."
+      );
+
+      return false;
+
+    }
+
+
+    if (
+      !forumIds.includes(
+        String(domain.forum_id)
+      )
+    ) {
+
+      showMessage(
+        "A selected domain does not belong to one of your selected forums."
+      );
+
+      return false;
+
+    }
+
+  }
+
+
+  return true;
+
+}
+
+
+/* =========================================================================
+   TABS
    ========================================================================= */
 
 function initTabs() {
 
-  const loginTab = el("tabLogin");
-  const signupTab = el("tabSignup");
+  const loginTab =
+    el("tabLogin");
 
-  const loginForm = el("loginForm");
-  const signupForm = el("signupForm");
+  const signupTab =
+    el("tabSignup");
+
+  const loginForm =
+    el("loginForm");
+
+  const signupForm =
+    el("signupForm");
+
+
+  if (
+    !loginTab ||
+    !signupTab ||
+    !loginForm ||
+    !signupForm
+  ) {
+
+    console.error(
+      "Login tabs/forms not found."
+    );
+
+    return;
+
+  }
 
 
   loginTab.addEventListener(
     "click",
     () => {
 
-      loginTab.classList.add("is-active");
-      signupTab.classList.remove("is-active");
+      loginTab.classList.add(
+        "is-active"
+      );
 
-      loginForm.classList.remove("hidden");
-      signupForm.classList.add("hidden");
+      signupTab.classList.remove(
+        "is-active"
+      );
+
+
+      loginForm.classList.remove(
+        "hidden"
+      );
+
+      signupForm.classList.add(
+        "hidden"
+      );
+
 
       clearMessage();
 
@@ -290,11 +1143,23 @@ function initTabs() {
     "click",
     () => {
 
-      signupTab.classList.add("is-active");
-      loginTab.classList.remove("is-active");
+      signupTab.classList.add(
+        "is-active"
+      );
 
-      signupForm.classList.remove("hidden");
-      loginForm.classList.add("hidden");
+      loginTab.classList.remove(
+        "is-active"
+      );
+
+
+      signupForm.classList.remove(
+        "hidden"
+      );
+
+      loginForm.classList.add(
+        "hidden"
+      );
+
 
       clearMessage();
 
@@ -305,7 +1170,7 @@ function initTabs() {
 
 
 /* =========================================================================
-   SEND VERIFICATION LINK
+   EMAIL SIGNUP — SEND VERIFICATION
    ========================================================================= */
 
 async function sendVerificationLink() {
@@ -313,25 +1178,59 @@ async function sendVerificationLink() {
   clearMessage();
 
 
+  const emailInput =
+    el("signupEmail");
+
+  const passwordInput =
+    el("signupPassword");
+
+  const password2Input =
+    el("signupPassword2");
+
+  const button =
+    el("sendVerificationBtn");
+
+
+  if (
+    !emailInput ||
+    !passwordInput ||
+    !password2Input ||
+    !button
+  ) {
+
+    showMessage(
+      "Signup form is incomplete."
+    );
+
+    return;
+
+  }
+
+
   const email =
-    el("signupEmail")
-      .value
+    emailInput.value
       .trim()
       .toLowerCase();
 
-  const teamId =
-    el("signupTeam").value;
 
   const password =
-    el("signupPassword").value;
+    passwordInput.value;
+
 
   const password2 =
-    el("signupPassword2").value;
+    password2Input.value;
 
 
-  /* ---------------------------------------------------------
-     Validate KCT email
-     --------------------------------------------------------- */
+  if (
+    !validateForumSelection(
+      selectedForums
+    )
+  ) {
+
+    return;
+
+  }
+
 
   if (
     !email.endsWith(
@@ -348,26 +1247,9 @@ async function sendVerificationLink() {
   }
 
 
-  /* ---------------------------------------------------------
-     Validate team
-     --------------------------------------------------------- */
-
-  if (!teamId) {
-
-    showMessage(
-      "Please select your team."
-    );
-
-    return;
-
-  }
-
-
-  /* ---------------------------------------------------------
-     Validate password
-     --------------------------------------------------------- */
-
-  if (password.length < 8) {
+  if (
+    password.length < 8
+  ) {
 
     showMessage(
       "Password must contain at least 8 characters."
@@ -378,7 +1260,9 @@ async function sendVerificationLink() {
   }
 
 
-  if (password !== password2) {
+  if (
+    password !== password2
+  ) {
 
     showMessage(
       "Passwords do not match."
@@ -389,11 +1273,8 @@ async function sendVerificationLink() {
   }
 
 
-  const button =
-    el("sendVerificationBtn");
-
-
-  button.disabled = true;
+  button.disabled =
+    true;
 
   button.textContent =
     "Sending…";
@@ -401,137 +1282,99 @@ async function sendVerificationLink() {
 
   try {
 
-    /* -------------------------------------------------------
-       Check whether the user is already signed in
-       ------------------------------------------------------- */
-
-    const {
-      data: {
-        session
-      }
-    } = await sb.auth.getSession();
-
-
-    if (session) {
-
-      showMessage(
-        "You are already signed in. Please use your existing account instead of creating a new account."
-      );
-
-      return;
-    }
-
-
-    /* -------------------------------------------------------
-       Check whether this email already exists in profiles
-       
-       IMPORTANT:
-       We compare ONLY the email.
-       Password and team are ignored.
-       ------------------------------------------------------- */
+    /* -----------------------------------------------------
+       Existing account check
+       ----------------------------------------------------- */
 
     const {
       data: signupStatus,
       error: statusError
-    } = await sb.rpc(
-      "check_signup_email",
-      {
-        check_email: email
-      }
-    );
+    } =
+      await sb.rpc(
+        "check_signup_email",
+        {
+          check_email:
+            email
+        }
+      );
 
 
     if (statusError) {
 
       console.error(
-        "Signup email status error:",
+        "check_signup_email:",
         statusError
       );
 
       showMessage(
-        "Unable to check your account status. Please try again."
+        statusError.message ||
+        "Unable to check your account."
       );
 
       return;
+
     }
 
 
-    /* -------------------------------------------------------
-       Existing pending account
-       ------------------------------------------------------- */
-
-    if (signupStatus === "pending") {
+    if (
+      signupStatus === "approved"
+    ) {
 
       showMessage(
-        "Your access request is already pending. Please wait for an administrator to approve your account.",
+        "This account is already approved. Please log in.",
         "ok"
       );
 
       return;
+
     }
 
 
-    /* -------------------------------------------------------
-       Existing approved account
-       ------------------------------------------------------- */
-
-    if (signupStatus === "approved") {
+    if (
+      signupStatus === "pending"
+    ) {
 
       showMessage(
-        "This account is already approved. Please log in instead of signing up.",
+        "Your access request is already pending.",
         "ok"
       );
 
       return;
+
     }
 
 
-    /* -------------------------------------------------------
-       Existing rejected account
-       ------------------------------------------------------- */
-
-    if (signupStatus === "rejected") {
+    if (
+      signupStatus === "rejected"
+    ) {
 
       showMessage(
         "Your previous access request was rejected. Please contact an administrator."
       );
 
       return;
+
     }
 
 
-    /* -------------------------------------------------------
-       Only NEW email reaches signUp()
-       ------------------------------------------------------- */
+    /* -----------------------------------------------------
+       Create auth user
+       ----------------------------------------------------- */
 
-    if (signupStatus !== "not_found") {
-
-      showMessage(
-        "This account already exists. Please log in or contact an administrator."
-      );
-
-      return;
-    }
-
-
-    /* -------------------------------------------------------
-       Create NEW Supabase account
-       ------------------------------------------------------- */
-
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await sb.auth.signUp({
 
         email,
+
         password,
 
         options: {
 
           emailRedirectTo:
-            `${window.location.origin}/login/login.html`,
-
-          data: {
-            team_id: teamId
-          }
+            LOGIN_CONFIG.LOGIN_REDIRECT_URL
 
         }
 
@@ -551,46 +1394,40 @@ async function sendVerificationLink() {
       );
 
       return;
+
     }
 
 
     if (!data.user) {
 
       showMessage(
-        "Unable to create the account. Please try again."
+        "Unable to create your account."
       );
 
       return;
+
     }
 
 
-    /* -------------------------------------------------------
-       Display success
-       ------------------------------------------------------- */
-
     setVerificationStatus(
-      "✓ Verification link sent. Check your KCT email and click the link.",
+      "✓ Verification link sent. Check your KCT email.",
       "ok"
     );
 
 
-    const resendBox =
-      el("resendVerificationBox");
-
-    if (resendBox) {
-
-      resendBox.classList.remove(
+    el("resendVerificationBox")
+      ?.classList.remove(
         "hidden"
       );
-
-    }
 
 
     startResendCooldown();
 
+    startVerificationWatcher();
+
 
     showMessage(
-      "Verification email sent. Check your inbox.",
+      "Verification email sent successfully.",
       "ok"
     );
 
@@ -598,33 +1435,31 @@ async function sendVerificationLink() {
     button.textContent =
       "Verification Link Sent";
 
+  }
 
-    /* -------------------------------------------------------
-       Check verification periodically
-       ------------------------------------------------------- */
-
-    startVerificationWatcher();
-
-
-  } catch (error) {
+  catch (error) {
 
     console.error(
-      "Verification error:",
+      "Verification signup error:",
       error
     );
 
     showMessage(
-      "Something went wrong. Please try again."
+      error.message ||
+      "Something went wrong."
     );
 
-  } finally {
+  }
 
-    button.disabled = false;
+  finally {
 
     if (
       button.textContent !==
       "Verification Link Sent"
     ) {
+
+      button.disabled =
+        false;
 
       button.textContent =
         "Send Verification Link";
@@ -634,31 +1469,23 @@ async function sendVerificationLink() {
   }
 
 }
+
+
+/* =========================================================================
+   RESEND VERIFICATION
+   ========================================================================= */
+
 async function resendVerificationLink() {
 
   clearMessage();
-  /* ---------------------------------------------------------
-   Check whether the user is already signed in
-   --------------------------------------------------------- */
 
-  const {
-    data: {
-      session
-    }
-  } = await sb.auth.getSession();
-
-
-  if (session) {
-
-    showMessage(
-      "You are already signed in. Please use your existing account instead of creating a new account."
-    );
-
-    return;
-  }
 
   const email =
-    el("signupEmail").value.trim().toLowerCase();
+    el("signupEmail")
+      ?.value
+      .trim()
+      .toLowerCase();
+
 
   if (!email) {
 
@@ -667,16 +1494,7 @@ async function resendVerificationLink() {
     );
 
     return;
-  }
 
-
-  if (!email.endsWith("@kct.ac.in")) {
-
-    showMessage(
-      "Please use your @kct.ac.in email address."
-    );
-
-    return;
   }
 
 
@@ -689,23 +1507,32 @@ async function resendVerificationLink() {
   }
 
 
-  button.disabled = true;
+  button.disabled =
+    true;
 
   button.textContent =
-    "Sending...";
+    "Sending…";
 
 
   try {
 
-    const { error } =
+    const {
+      error
+    } =
       await sb.auth.resend({
-        type: "signup",
-        email: email,
+
+        type:
+          "signup",
+
+        email,
 
         options: {
+
           emailRedirectTo:
-            `${window.location.origin}/login/login.html`
+            LOGIN_CONFIG.LOGIN_REDIRECT_URL
+
         }
+
       });
 
 
@@ -720,20 +1547,16 @@ async function resendVerificationLink() {
     );
 
 
-    /* -----------------------------------------------------
-       Start 60-second cooldown
-       ----------------------------------------------------- */
-
     startResendCooldown();
 
+  }
 
-  } catch (error) {
+  catch (error) {
 
     console.error(
-      "Resend verification error:",
+      "Resend error:",
       error
     );
-
 
     showMessage(
       error.message ||
@@ -741,20 +1564,20 @@ async function resendVerificationLink() {
     );
 
 
-    button.disabled = false;
+    button.disabled =
+      false;
 
     button.textContent =
       "Resend verification link";
+
   }
 
 }
 
-/* =============================================================
-   RESEND VERIFICATION COUNTDOWN
-   ============================================================= */
 
-let resendCountdownTimer = null;
-
+/* =========================================================================
+   RESEND COOLDOWN
+   ========================================================================= */
 
 function startResendCooldown() {
 
@@ -767,71 +1590,71 @@ function startResendCooldown() {
   }
 
 
-  /* ---------------------------------------------------------
-     Clear an existing timer
-     --------------------------------------------------------- */
-
   if (resendCountdownTimer) {
 
     clearInterval(
       resendCountdownTimer
     );
 
-    resendCountdownTimer = null;
   }
 
 
-  let seconds = 60;
+  let seconds =
+    60;
 
 
-  /* ---------------------------------------------------------
-     Disable resend button
-     --------------------------------------------------------- */
+  button.disabled =
+    true;
 
-  button.disabled = true;
 
   button.textContent =
     `Resend in ${seconds}s`;
 
 
-  /* ---------------------------------------------------------
-     Start countdown
-     --------------------------------------------------------- */
-
   resendCountdownTimer =
-    setInterval(() => {
+    setInterval(
+      () => {
 
-      seconds--;
-
-
-      if (seconds <= 0) {
-
-        clearInterval(
-          resendCountdownTimer
-        );
-
-        resendCountdownTimer = null;
+        seconds--;
 
 
-        button.disabled = false;
+        if (
+          seconds <= 0
+        ) {
+
+          clearInterval(
+            resendCountdownTimer
+          );
+
+          resendCountdownTimer =
+            null;
+
+
+          button.disabled =
+            false;
+
+
+          button.textContent =
+            "Resend verification link";
+
+
+          return;
+
+        }
+
 
         button.textContent =
-          "Resend verification link";
+          `Resend in ${seconds}s`;
 
-        return;
-      }
-
-
-      button.textContent =
-        `Resend in ${seconds}s`;
-
-    }, 1000);
+      },
+      1000
+    );
 
 }
 
 
 /* =========================================================================
-   VERIFY CURRENT USER
+   CHECK EMAIL VERIFICATION
    ========================================================================= */
 
 async function checkEmailVerification() {
@@ -842,15 +1665,14 @@ async function checkEmailVerification() {
       data: {
         user
       }
-    } = await sb.auth.getUser();
+    } =
+      await sb.auth.getUser();
 
 
-    if (!user) {
-      return false;
-    }
-
-
-    if (user.email_confirmed_at) {
+    if (
+      user &&
+      user.email_confirmed_at
+    ) {
 
       markEmailVerified();
 
@@ -858,11 +1680,12 @@ async function checkEmailVerification() {
 
     }
 
+  }
 
-  } catch (error) {
+  catch (error) {
 
     console.error(
-      "Verification check failed:",
+      "Verification check:",
       error
     );
 
@@ -870,15 +1693,13 @@ async function checkEmailVerification() {
 
 
   return false;
+
 }
 
 
 /* =========================================================================
    VERIFICATION WATCHER
    ========================================================================= */
-
-let verificationTimer = null;
-
 
 function startVerificationWatcher() {
 
@@ -905,7 +1726,8 @@ function startVerificationWatcher() {
             verificationTimer
           );
 
-          verificationTimer = null;
+          verificationTimer =
+            null;
 
         }
 
@@ -937,21 +1759,19 @@ function markEmailVerified() {
 
   if (button) {
 
+    button.disabled =
+      true;
+
     button.textContent =
       "✓ Email Verified";
-
-    button.disabled = true;
-
-    button.classList.add(
-      "verification-complete"
-    );
 
   }
 
 
   if (requestButton) {
 
-    requestButton.disabled = false;
+    requestButton.disabled =
+      false;
 
   }
 
@@ -959,7 +1779,152 @@ function markEmailVerified() {
 
 
 /* =========================================================================
-   REQUEST ACCESS
+   SUBMIT ACCESS REQUEST
+   ========================================================================= */
+
+async function submitAccessRequest(
+  selections
+) {
+
+  const {
+    forumIds,
+    teamIds,
+    domainIds
+  } =
+    selections;
+
+
+  if (
+    !forumIds ||
+    forumIds.length === 0
+  ) {
+
+    return {
+
+      success: false,
+
+      error:
+        "Please select at least one forum."
+
+    };
+
+  }
+
+
+  if (
+    !validateSelections(
+      forumIds,
+      teamIds,
+      domainIds
+    )
+  ) {
+
+    return {
+
+      success: false,
+
+      error:
+        "Invalid forum, team, or domain selection."
+
+    };
+
+  }
+
+
+  try {
+
+    console.log(
+      "Submitting access request:",
+      {
+        forum_ids:
+          forumIds,
+
+        team_ids:
+          teamIds,
+
+        domain_ids:
+          domainIds
+      }
+    );
+
+
+    const {
+      data,
+      error
+    } =
+      await sb.rpc(
+        LOGIN_CONFIG.ACCESS_REQUEST_RPC,
+        {
+
+          forum_ids:
+            forumIds,
+
+          team_ids:
+            teamIds,
+
+          domain_ids:
+            domainIds
+
+        }
+      );
+
+
+    if (error) {
+
+      console.error(
+        "submit_access_request error:",
+        error
+      );
+
+
+      return {
+
+        success: false,
+
+        error:
+          error.message ||
+          "Unable to submit access request."
+
+      };
+
+    }
+
+
+    return {
+
+      success: true,
+
+      data
+
+    };
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "submitAccessRequest:",
+      error
+    );
+
+
+    return {
+
+      success: false,
+
+      error:
+        error.message ||
+        "Unable to submit access request."
+
+    };
+
+  }
+
+}
+
+
+/* =========================================================================
+   NORMAL EMAIL ACCESS REQUEST
    ========================================================================= */
 
 async function requestAccess(event) {
@@ -969,175 +1934,318 @@ async function requestAccess(event) {
   clearMessage();
 
 
-  const requestButton =
+  const button =
     el("requestAccessBtn");
 
 
-  /* ---------------------------------------------------------
-     Confirm email verification
-     --------------------------------------------------------- */
+  const selections =
+    collectSelections(
+      selectedForums,
+      "selectedForumsContainer",
+      "selectedTeams",
+      "selectedDomains"
+    );
 
-  const {
-    data: {
-      user
+
+  if (
+    !validateForumSelection(
+      selectedForums
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "Submitting…";
+
+
+  try {
+
+    const {
+      data: {
+        user
+      },
+      error
+    } =
+      await sb.auth.getUser();
+
+
+    if (error) {
+      throw error;
     }
-  } = await sb.auth.getUser();
 
 
-  i/* ---------------------------------------------------------
-   User is already signed in
-   --------------------------------------------------------- */
+    if (!user) {
 
-  if (user) {
+      showMessage(
+        "Please verify your email before requesting access."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !user.email_confirmed_at
+    ) {
+
+      showMessage(
+        "Please click the verification link sent to your email first."
+      );
+
+      return;
+
+    }
+
+
+    /* -----------------------------------------------------
+       Check profile
+       ----------------------------------------------------- */
+
+    let {
+      data: profile,
+      error: profileError
+    } =
+      await sb
+        .from("profiles")
+        .select(`
+          id,
+          email,
+          full_name,
+          role,
+          status
+        `)
+        .eq(
+          "id",
+          user.id
+        )
+        .maybeSingle();
+
+
+    if (profileError) {
+
+      console.error(
+        "Profile lookup:",
+        profileError
+      );
+
+      showMessage(
+        profileError.message ||
+        "Unable to check your profile."
+      );
+
+      return;
+
+    }
+
+
+    if (!profile) {
+
+      console.log(
+        "Profile missing. Calling ensure_my_profile()..."
+      );
+
+
+      const {
+        data: ensuredProfile,
+        error: ensureError
+      } =
+        await sb.rpc(
+          "ensure_my_profile"
+        );
+
+
+      if (
+        ensureError ||
+        !ensuredProfile
+      ) {
+
+        console.error(
+          "ensure_my_profile failed:",
+          ensureError
+        );
+
+        showMessage(
+          ensureError?.message ||
+          "Unable to create your RiGiD profile. Please contact an administrator."
+        );
+
+        return;
+
+      }
+
+
+      profile =
+        ensuredProfile;
+
+    }
+
+
+    if (
+      profile.status === "approved"
+    ) {
+
+      await sb.auth.signOut();
+
+      showMessage(
+        "Your account is already approved. Please log in.",
+        "ok"
+      );
+
+      return;
+
+    }
+
+
+    if (
+      profile.status === "rejected"
+    ) {
+
+      await sb.auth.signOut();
+
+      showMessage(
+        "Your previous access request was rejected."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      profile.status !== "pending"
+    ) {
+
+      showMessage(
+        "Your account is not currently eligible for an access request."
+      );
+
+      return;
+
+    }
+
+
+    /* -----------------------------------------------------
+       Submit
+       ----------------------------------------------------- */
+
+    const result =
+      await submitAccessRequest(
+        selections
+      );
+
+
+    if (!result.success) {
+
+      showMessage(
+        result.error
+      );
+
+      return;
+
+    }
+
+
+    await sb.auth.signOut();
+
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "Request Submitted";
+
 
     showMessage(
-      "You are already signed in. Please use your existing account instead of creating a new account."
+      "Access request submitted successfully. An administrator must approve your account.",
+      "ok"
     );
-
-    requestButton.disabled = true;
-
-    requestButton.textContent =
-      "Already Signed In";
-
-    return;
-  }
-
-
-  if (!user.email_confirmed_at) {
-
-    showMessage(
-      "Please click the verification link sent to your email first."
-    );
-
-    return;
 
   }
 
-
-  /* ---------------------------------------------------------
-     Get profile
-     --------------------------------------------------------- */
-
-  const {
-    data: profile,
-    error
-  } = await sb
-    .from("profiles")
-    .select("status")
-    .eq("id", user.id)
-    .single();
-
-
-  if (error || !profile) {
+  catch (error) {
 
     console.error(
-      "Profile lookup error:",
+      "requestAccess:",
       error
     );
 
     showMessage(
-      "Your profile could not be found. Please contact an administrator."
+      error.message ||
+      "Unable to submit your access request."
     );
-
-    return;
 
   }
 
+  finally {
 
-  /* ---------------------------------------------------------
-     Already approved
-     --------------------------------------------------------- */
+    if (
+      button.textContent !==
+      "Request Submitted"
+    ) {
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        "Request Access";
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================================
+   ROUTE APPROVED USER
+   ========================================================================= */
+
+function routeApprovedUser(
+  profile
+) {
+
+  if (!profile) {
+    return false;
+  }
+
 
   if (
-    profile.status === "approved"
+    profile.status !==
+    "approved"
   ) {
 
-    showMessage(
-      "Your account is already approved. You can log in.",
-      "ok"
-    );
-
-    await sb.auth.signOut();
-
-    return;
+    return false;
 
   }
 
-
-  /* ---------------------------------------------------------
-     Already pending
-     --------------------------------------------------------- */
-  const justVerified =
-    Boolean(user.email_confirmed_at);
-  if (
-    profile.status === "pending"
-  ) {
-
-    showMessage(
-      "Your access request has already been submitted and is waiting for admin approval.",
-      "ok"
-    );
-
-    await sb.auth.signOut();
-
-    return;
-
-  }
-
-
-  /* ---------------------------------------------------------
-     Rejected
-     --------------------------------------------------------- */
 
   if (
-    profile.status === "rejected"
+    profile.role ===
+    "admin"
   ) {
 
-    showMessage(
-      "Your previous access request was rejected. Please contact an administrator."
-    );
+    window.location.href =
+      LOGIN_CONFIG.ADMIN_DASHBOARD_URL;
 
-    await sb.auth.signOut();
+  }
 
-    return;
+  else {
+
+    window.location.href =
+      LOGIN_CONFIG.PERSONAL_DASHBOARD_URL;
 
   }
 
 
-  /* ---------------------------------------------------------
-     Submit request
-     --------------------------------------------------------- */
-
-  requestButton.disabled = true;
-
-  requestButton.textContent =
-    "Submitting…";
-
-
-  /*
-     The trigger already created the profile with:
-
-     role   = member
-     status = pending
-
-     Therefore we don't need to update the profile here.
-
-     This is safer because normal users should not have
-     permission to change their own status.
-  */
-
-
-  await sb.auth.signOut();
-
-
-  requestButton.textContent =
-    "Request Submitted";
-
-
-  showMessage(
-    "Access request submitted successfully. An administrator must approve your account before you can log in.",
-    "ok"
-  );
+  return true;
 
 }
 
@@ -1155,26 +2263,46 @@ async function loginUser(event) {
 
   const email =
     el("loginEmail")
-      .value
+      ?.value
       .trim()
       .toLowerCase();
 
+
   const password =
     el("loginPassword")
-      .value;
+      ?.value;
 
 
   const button =
     el("loginForm")
-      .querySelector(
+      ?.querySelector(
         "button[type='submit']"
       );
 
 
-  button.disabled = true;
+  if (
+    !email ||
+    !password
+  ) {
 
-  button.textContent =
-    "Logging in…";
+    showMessage(
+      "Please enter your email and password."
+    );
+
+    return;
+
+  }
+
+
+  if (button) {
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "Logging in…";
+
+  }
 
 
   try {
@@ -1182,12 +2310,14 @@ async function loginUser(event) {
     const {
       data,
       error
-    } = await sb.auth.signInWithPassword({
+    } =
+      await sb.auth.signInWithPassword({
 
-      email,
-      password
+        email,
 
-    });
+        password
+
+      });
 
 
     if (error) {
@@ -1206,11 +2336,20 @@ async function loginUser(event) {
       data.user;
 
 
-    /* -------------------------------------------------------
-       Check email verification
-       ------------------------------------------------------- */
+    if (!user) {
 
-    if (!user.email_confirmed_at) {
+      showMessage(
+        "Unable to retrieve your account."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !user.email_confirmed_at
+    ) {
 
       await sb.auth.signOut();
 
@@ -1223,39 +2362,42 @@ async function loginUser(event) {
     }
 
 
-    /* -------------------------------------------------------
-       Load profile
-       ------------------------------------------------------- */
+    /* -----------------------------------------------------
+       Profile
+       ----------------------------------------------------- */
 
-    const {
+    let {
       data: profile,
       error: profileError
-    } = await sb
-      .from("profiles")
-      .select(
-        "id, email, role, status, team_id"
-      )
-      .eq(
-        "id",
-        user.id
-      )
-      .single();
+    } =
+      await sb
+        .from("profiles")
+        .select(`
+          id,
+          email,
+          full_name,
+          role,
+          status
+        `)
+        .eq(
+          "id",
+          user.id
+        )
+        .maybeSingle();
 
 
-    if (
-      profileError ||
-      !profile
-    ) {
-
-      await sb.auth.signOut();
+    if (profileError) {
 
       console.error(
-        "Profile error:",
+        "Login profile error:",
         profileError
       );
 
+      await sb.auth.signOut();
+
       showMessage(
-        "Your account profile could not be found."
+        profileError.message ||
+        "Unable to load your profile."
       );
 
       return;
@@ -1263,9 +2405,57 @@ async function loginUser(event) {
     }
 
 
-    /* -------------------------------------------------------
+    /* -----------------------------------------------------
+       Recover missing profile
+       ----------------------------------------------------- */
+
+    if (!profile) {
+
+      console.log(
+        "Login profile missing. Calling ensure_my_profile()..."
+      );
+
+
+      const {
+        data: ensuredProfile,
+        error: ensureError
+      } =
+        await sb.rpc(
+          "ensure_my_profile"
+        );
+
+
+      if (
+        ensureError ||
+        !ensuredProfile
+      ) {
+
+        console.error(
+          "ensure_my_profile failed:",
+          ensureError
+        );
+
+        await sb.auth.signOut();
+
+        showMessage(
+          ensureError?.message ||
+          "Your account exists, but your RiGiD profile could not be created."
+        );
+
+        return;
+
+      }
+
+
+      profile =
+        ensuredProfile;
+
+    }
+
+
+    /* -----------------------------------------------------
        Pending
-       ------------------------------------------------------- */
+       ----------------------------------------------------- */
 
     if (
       profile.status === "pending"
@@ -1282,9 +2472,9 @@ async function loginUser(event) {
     }
 
 
-    /* -------------------------------------------------------
+    /* -----------------------------------------------------
        Rejected
-       ------------------------------------------------------- */
+       ----------------------------------------------------- */
 
     if (
       profile.status === "rejected"
@@ -1293,7 +2483,7 @@ async function loginUser(event) {
       await sb.auth.signOut();
 
       showMessage(
-        "Your access request was rejected. Please contact an administrator."
+        "Your access request was rejected."
       );
 
       return;
@@ -1301,34 +2491,34 @@ async function loginUser(event) {
     }
 
 
-    /* -------------------------------------------------------
+    /* -----------------------------------------------------
        Approved
-       ------------------------------------------------------- */
+       ----------------------------------------------------- */
 
     if (
-      profile.status === "approved"
+      routeApprovedUser(
+        profile
+      )
     ) {
-
-      window.location.href =
-        LOGIN_CONFIG.DASHBOARD_URL;
 
       return;
 
     }
 
 
-    /* -------------------------------------------------------
-       Unknown status
-       ------------------------------------------------------- */
+    /* -----------------------------------------------------
+       Invalid status
+       ----------------------------------------------------- */
 
     await sb.auth.signOut();
 
     showMessage(
-      "Your account has an invalid status. Contact an administrator."
+      "Your account has an invalid status."
     );
 
+  }
 
-  } catch (error) {
+  catch (error) {
 
     console.error(
       "Login error:",
@@ -1336,15 +2526,1236 @@ async function loginUser(event) {
     );
 
     showMessage(
+      error.message ||
       "Something went wrong while logging in."
     );
 
-  } finally {
+  }
 
-    button.disabled = false;
+  finally {
+
+    if (button) {
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        "Log In";
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================================
+   GOOGLE SIGN-IN
+   ========================================================================= */
+
+async function signUpWithGoogle() {
+
+  clearMessage();
+
+
+  const button =
+    el("googleSignupBtn");
+
+
+  if (!button) {
+
+    showMessage(
+      "Google sign-in button was not found."
+    );
+
+    return;
+
+  }
+
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "Connecting to Google…";
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await sb.auth.signInWithOAuth({
+
+        provider:
+          "google",
+
+        options: {
+
+          redirectTo:
+            LOGIN_CONFIG.LOGIN_REDIRECT_URL,
+
+          scopes:
+            "https://www.googleapis.com/auth/drive.file",
+
+          queryParams: {
+
+            access_type:
+              "offline",
+
+            prompt:
+              "consent"
+
+          }
+
+        }
+
+      });
+
+
+    if (error) {
+
+      console.error(
+        "Google OAuth:",
+        error
+      );
+
+      showMessage(
+        error.message ||
+        "Unable to connect to Google."
+      );
+
+
+      button.disabled =
+        false;
+
+
+      button.innerHTML = `
+        <span class="google-icon">
+          G
+        </span>
+        Continue with Google
+      `;
+
+      return;
+
+    }
+
+
+    console.log(
+      "Google OAuth started:",
+      data
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Google sign-in:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+      "Unable to connect to Google."
+    );
+
+
+    button.disabled =
+      false;
+
+
+    button.innerHTML = `
+      <span class="google-icon">
+        G
+      </span>
+      Continue with Google
+    `;
+
+  }
+
+}
+
+
+/* =========================================================================
+   GOOGLE USER SETUP
+   ========================================================================= */
+
+async function setupGoogleUser(
+  user
+) {
+
+  if (!user) {
+    return;
+  }
+
+
+  console.log(
+    "Google user:",
+    user
+  );
+
+
+  /* ---------------------------------------------------------
+     PROFILE CHECK
+     --------------------------------------------------------- */
+
+  let {
+    data: profile,
+    error
+  } =
+    await sb
+      .from("profiles")
+      .select(`
+        id,
+        email,
+        full_name,
+        role,
+        status
+      `)
+      .eq(
+        "id",
+        user.id
+      )
+      .maybeSingle();
+
+
+  if (error) {
+
+    console.error(
+      "Google profile lookup error:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+      "Unable to check your RiGiD profile."
+    );
+
+    return;
+
+  }
+
+
+  /* ---------------------------------------------------------
+     PROFILE MISSING
+     --------------------------------------------------------- */
+
+  if (!profile) {
+
+    console.log(
+      "Profile missing. Calling ensure_my_profile()..."
+    );
+
+
+    const {
+      data: ensuredProfile,
+      error: ensureError
+    } =
+      await sb.rpc(
+        "ensure_my_profile"
+      );
+
+
+    if (
+      ensureError ||
+      !ensuredProfile
+    ) {
+
+      console.error(
+        "ensure_my_profile failed:",
+        ensureError
+      );
+
+      showMessage(
+        ensureError?.message ||
+        "Unable to create your RiGiD profile. Please contact an administrator."
+      );
+
+      return;
+
+    }
+
+
+    console.log(
+      "RiGiD profile created/recovered:",
+      ensuredProfile
+    );
+
+
+    profile =
+      ensuredProfile;
+
+  }
+
+
+  /* ---------------------------------------------------------
+     APPROVED
+     --------------------------------------------------------- */
+
+  if (
+    profile.status === "approved"
+  ) {
+
+    routeApprovedUser(
+      profile
+    );
+
+    return;
+
+  }
+
+
+  /* ---------------------------------------------------------
+     REJECTED
+     --------------------------------------------------------- */
+
+  if (
+    profile.status === "rejected"
+  ) {
+
+    showMessage(
+      "Your previous access request was rejected. Please contact an administrator."
+    );
+
+    return;
+
+  }
+
+
+  /* ---------------------------------------------------------
+     PENDING
+     --------------------------------------------------------- */
+
+  if (
+    profile.status === "pending"
+  ) {
+
+    /*
+     * If the user has no memberships yet,
+     * allow them to complete the request.
+     *
+     * If memberships already exist,
+     * show pending state.
+     */
+
+    const [
+      forumResult,
+      teamResult,
+      domainResult
+    ] =
+      await Promise.all([
+
+        sb
+          .from("forum_members")
+          .select(
+            "forum_id",
+            {
+              count: "exact",
+              head: true
+            }
+          )
+          .eq(
+            "profile_id",
+            user.id
+          ),
+
+        sb
+          .from("team_members")
+          .select(
+            "team_id",
+            {
+              count: "exact",
+              head: true
+            }
+          )
+          .eq(
+            "profile_id",
+            user.id
+          ),
+
+        sb
+          .from("domain_members")
+          .select(
+            "domain_id",
+            {
+              count: "exact",
+              head: true
+            }
+          )
+          .eq(
+            "profile_id",
+            user.id
+          )
+
+      ]);
+
+
+    const existingMemberships =
+      (
+        (forumResult.count || 0) +
+        (teamResult.count || 0) +
+        (domainResult.count || 0)
+      ) > 0;
+
+
+    if (
+      existingMemberships
+    ) {
+
+      showGooglePendingState(
+        user,
+        profile
+      );
+
+      return;
+
+    }
+
+
+    showGoogleProfileSetup(
+      user,
+      profile
+    );
+
+    return;
+
+  }
+
+
+  showGoogleProfileSetup(
+    user,
+    profile
+  );
+
+}
+
+
+/* =========================================================================
+   SHOW GOOGLE PROFILE SETUP
+   ========================================================================= */
+
+function showGoogleProfileSetup(
+  user,
+  profile
+) {
+
+  const setup =
+    el("googleProfileSetup");
+
+  const name =
+    el("googleUserName");
+
+  const email =
+    el("googleUserEmail");
+
+  const button =
+    el("googleRequestAccessBtn");
+
+
+  if (!setup) {
+
+    console.error(
+      "googleProfileSetup not found."
+    );
+
+    showMessage(
+      "Google sign-in succeeded, but the Google access form is missing from the page."
+    );
+
+    return;
+
+  }
+
+
+  setup.classList.remove(
+    "hidden"
+  );
+
+
+  if (name) {
+
+    name.textContent =
+      profile?.full_name ||
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      "Google User";
+
+  }
+
+
+  if (email) {
+
+    email.textContent =
+      profile?.email ||
+      user.email ||
+      "";
+
+  }
+
+
+  /* ---------------------------------------------------------
+     Hide normal signup
+     --------------------------------------------------------- */
+
+  el("emailSignupFields")
+    ?.classList.add(
+      "hidden"
+    );
+
+  el("googleDivider")
+    ?.classList.add(
+      "hidden"
+    );
+
+  el("googleSignupBtn")
+    ?.classList.add(
+      "hidden"
+    );
+
+  el("requestAccessBtn")
+    ?.classList.add(
+      "hidden"
+    );
+
+  el("sendVerificationBtn")
+    ?.classList.add(
+      "hidden"
+    );
+
+  el("resendVerificationBox")
+    ?.classList.add(
+      "hidden"
+    );
+
+  el("verificationStatus")
+    ?.classList.add(
+      "hidden"
+    );
+
+
+  /* ---------------------------------------------------------
+     Reset Google selections
+     --------------------------------------------------------- */
+
+  googleSelectedForums.clear();
+
+
+  el("googleSelectedForumsContainer")
+    ?.replaceChildren();
+
+
+  const googleForum =
+    el("googleForum");
+
+
+  if (googleForum) {
+
+    googleForum.value =
+      "";
+
+  }
+
+
+  /* ---------------------------------------------------------
+     Password
+     --------------------------------------------------------- */
+
+  el("googlePasswordBox")
+    ?.classList.remove(
+      "hidden"
+    );
+
+
+  const password =
+    el("googlePassword");
+
+  const password2 =
+    el("googlePassword2");
+
+
+  if (password) {
+    password.value = "";
+  }
+
+
+  if (password2) {
+    password2.value = "";
+  }
+
+
+  if (button) {
+
+    button.disabled =
+      false;
 
     button.textContent =
-      "Log In";
+      "Request Access";
+
+  }
+
+
+  clearMessage();
+
+}
+
+
+/* =========================================================================
+   GOOGLE PENDING STATE
+   ========================================================================= */
+
+function showGooglePendingState(
+  user,
+  profile
+) {
+
+  const setup =
+    el("googleProfileSetup");
+
+  const name =
+    el("googleUserName");
+
+  const email =
+    el("googleUserEmail");
+
+  const button =
+    el("googleRequestAccessBtn");
+
+
+  if (!setup) {
+
+    showMessage(
+      "Your access request is already pending.",
+      "ok"
+    );
+
+    return;
+
+  }
+
+
+  setup.classList.remove(
+    "hidden"
+  );
+
+
+  if (name) {
+
+    name.textContent =
+      profile?.full_name ||
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      "Google User";
+
+  }
+
+
+  if (email) {
+
+    email.textContent =
+      profile?.email ||
+      user.email ||
+      "";
+
+  }
+
+
+  el("googlePasswordBox")
+    ?.classList.add(
+      "hidden"
+    );
+
+
+  if (button) {
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "Request Already Submitted";
+
+  }
+
+
+  el("emailSignupFields")
+    ?.classList.add(
+      "hidden"
+    );
+
+  el("googleDivider")
+    ?.classList.add(
+      "hidden"
+    );
+
+  el("googleSignupBtn")
+    ?.classList.add(
+      "hidden"
+    );
+
+  el("requestAccessBtn")
+    ?.classList.add(
+      "hidden"
+    );
+
+  el("sendVerificationBtn")
+    ?.classList.add(
+      "hidden"
+    );
+
+
+  showMessage(
+    "Your access request is already submitted and is waiting for admin approval.",
+    "ok"
+  );
+
+}
+
+
+/* =========================================================================
+   GOOGLE REQUEST ACCESS
+   ========================================================================= */
+
+async function submitGoogleAccessRequest() {
+
+  clearMessage();
+
+
+  const button =
+    el("googleRequestAccessBtn");
+
+
+  if (!button) {
+
+    showMessage(
+      "Google Request Access button was not found."
+    );
+
+    return;
+
+  }
+
+
+  /* ---------------------------------------------------------
+     Get current user
+     --------------------------------------------------------- */
+
+  const {
+    data: {
+      user
+    },
+    error: userError
+  } =
+    await sb.auth.getUser();
+
+
+  if (userError) {
+
+    console.error(
+      "Google current-user error:",
+      userError
+    );
+
+    showMessage(
+      userError.message ||
+      "Unable to verify your Google session."
+    );
+
+    return;
+
+  }
+
+
+  if (!user) {
+
+    showMessage(
+      "Your Google session has expired. Please sign in again."
+    );
+
+    return;
+
+  }
+
+
+  /* ---------------------------------------------------------
+     CHECK PROFILE
+     --------------------------------------------------------- */
+
+  let {
+    data: profile,
+    error: profileError
+  } =
+    await sb
+      .from("profiles")
+      .select(`
+        id,
+        email,
+        full_name,
+        role,
+        status
+      `)
+      .eq(
+        "id",
+        user.id
+      )
+      .maybeSingle();
+
+
+  if (profileError) {
+
+    console.error(
+      "Google profile lookup:",
+      profileError
+    );
+
+    showMessage(
+      profileError.message ||
+      "Unable to check your profile."
+    );
+
+    return;
+
+  }
+
+
+  if (!profile) {
+
+    console.log(
+      "Profile missing before Google request. Calling ensure_my_profile()..."
+    );
+
+
+    const {
+      data: ensuredProfile,
+      error: ensureError
+    } =
+      await sb.rpc(
+        "ensure_my_profile"
+      );
+
+
+    if (
+      ensureError ||
+      !ensuredProfile
+    ) {
+
+      console.error(
+        "ensure_my_profile failed:",
+        ensureError
+      );
+
+      showMessage(
+        ensureError?.message ||
+        "Unable to create your RiGiD profile."
+      );
+
+      return;
+
+    }
+
+
+    profile =
+      ensuredProfile;
+
+  }
+
+
+  if (
+    profile.status !== "pending"
+  ) {
+
+    showMessage(
+      `Your account status is "${profile.status}".`
+    );
+
+    return;
+
+  }
+
+
+  /* ---------------------------------------------------------
+     Collect selections
+     --------------------------------------------------------- */
+
+  const selections =
+    collectSelections(
+      googleSelectedForums,
+      "googleSelectedForumsContainer",
+      "googleSelectedTeams",
+      "googleSelectedDomains"
+    );
+
+
+  if (
+    !validateForumSelection(
+      googleSelectedForums
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  if (
+    !validateSelections(
+      selections.forumIds,
+      selections.teamIds,
+      selections.domainIds
+    )
+  ) {
+
+    return;
+
+  }
+
+
+  /* ---------------------------------------------------------
+     Password
+     --------------------------------------------------------- */
+
+  const passwordBox =
+    el("googlePasswordBox");
+
+
+  const settingPassword =
+    passwordBox &&
+    !passwordBox.classList.contains(
+      "hidden"
+    );
+
+
+  if (settingPassword) {
+
+    const password =
+      el("googlePassword")
+        ?.value || "";
+
+
+    const password2 =
+      el("googlePassword2")
+        ?.value || "";
+
+
+    if (
+      password.length < 8
+    ) {
+
+      showMessage(
+        "Password must contain at least 8 characters."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      password !== password2
+    ) {
+
+      showMessage(
+        "Passwords do not match."
+      );
+
+      return;
+
+    }
+
+  }
+
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "Submitting…";
+
+
+  try {
+
+    /* -----------------------------------------------------
+       Set password
+       ----------------------------------------------------- */
+
+    if (settingPassword) {
+
+      const password =
+        el("googlePassword")
+          ?.value || "";
+
+
+      const {
+        error: passwordError
+      } =
+        await sb.auth.updateUser({
+
+          password
+
+        });
+
+
+      if (passwordError) {
+
+        console.error(
+          "Google password update:",
+          passwordError
+        );
+
+        showMessage(
+          passwordError.message ||
+          "Unable to set your password."
+        );
+
+        return;
+
+      }
+
+    }
+
+
+    /* -----------------------------------------------------
+       Submit membership request
+       ----------------------------------------------------- */
+
+    const result =
+      await submitAccessRequest(
+        selections
+      );
+
+
+    if (!result.success) {
+
+      showMessage(
+        result.error
+      );
+
+      return;
+
+    }
+
+
+    /* -----------------------------------------------------
+       Sign out after request
+       ----------------------------------------------------- */
+
+    await sb.auth.signOut();
+
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "Request Submitted";
+
+
+    showMessage(
+      "Access request submitted successfully. An administrator must approve your account.",
+      "ok"
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Google access request:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+      "Unable to submit your access request."
+    );
+
+  }
+
+  finally {
+
+    if (
+      button.textContent !==
+      "Request Submitted"
+    ) {
+
+      button.disabled =
+        false;
+
+      button.textContent =
+        "Request Access";
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================================
+   USE DIFFERENT GOOGLE ACCOUNT
+   ========================================================================= */
+
+async function useDifferentGoogleAccount() {
+
+  clearMessage();
+
+
+  const button =
+    el(
+      "googleUseDifferentAccountBtn"
+    );
+
+
+  if (button) {
+
+    button.disabled =
+      true;
+
+    button.textContent =
+      "Signing out…";
+
+  }
+
+
+  try {
+
+    await sb.auth.signOut();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Google signout:",
+      error
+    );
+
+  }
+
+
+  /* ---------------------------------------------------------
+     Clear selections
+     --------------------------------------------------------- */
+
+  googleSelectedForums.clear();
+
+
+  el("googleSelectedForumsContainer")
+    ?.replaceChildren();
+
+
+  const googleForum =
+    el("googleForum");
+
+
+  if (googleForum) {
+
+    googleForum.value =
+      "";
+
+  }
+
+
+  const password =
+    el("googlePassword");
+
+  const password2 =
+    el("googlePassword2");
+
+
+  if (password) {
+    password.value = "";
+  }
+
+
+  if (password2) {
+    password2.value = "";
+  }
+
+
+  /* ---------------------------------------------------------
+     Restore normal signup
+     --------------------------------------------------------- */
+
+  el("emailSignupFields")
+    ?.classList.remove(
+      "hidden"
+    );
+
+  el("googleDivider")
+    ?.classList.remove(
+      "hidden"
+    );
+
+  el("googleSignupBtn")
+    ?.classList.remove(
+      "hidden"
+    );
+
+  el("requestAccessBtn")
+    ?.classList.remove(
+      "hidden"
+    );
+
+  el("sendVerificationBtn")
+    ?.classList.remove(
+      "hidden"
+    );
+
+
+  el("googleProfileSetup")
+    ?.classList.add(
+      "hidden"
+    );
+
+
+  el("googlePasswordBox")
+    ?.classList.remove(
+      "hidden"
+    );
+
+
+  const googleButton =
+    el("googleSignupBtn");
+
+
+  if (googleButton) {
+
+    googleButton.disabled =
+      false;
+
+    googleButton.innerHTML = `
+      <span class="google-icon">
+        G
+      </span>
+      Continue with Google
+    `;
+
+  }
+
+
+  const requestButton =
+    el("googleRequestAccessBtn");
+
+
+  if (requestButton) {
+
+    requestButton.disabled =
+      false;
+
+    requestButton.textContent =
+      "Request Access";
+
+  }
+
+
+  if (button) {
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "Not you? Use a different Google account";
 
   }
 
@@ -1363,7 +3774,8 @@ async function checkExistingSession() {
       data: {
         session
       }
-    } = await sb.auth.getSession();
+    } =
+      await sb.auth.getSession();
 
 
     if (!session) {
@@ -1375,7 +3787,8 @@ async function checkExistingSession() {
       data: {
         user
       }
-    } = await sb.auth.getUser();
+    } =
+      await sb.auth.getUser();
 
 
     if (!user) {
@@ -1383,172 +3796,333 @@ async function checkExistingSession() {
     }
 
 
-    /* -------------------------------------------------------
-       GOOGLE USER
-       ------------------------------------------------------- */
+    console.log(
+      "Existing session:",
+      {
+        id:
+          user.id,
 
-    const isGoogleUser =
-      user.app_metadata?.provider === "google";
+        email:
+          user.email,
+
+        provider:
+          user.app_metadata?.provider
+      }
+    );
 
 
-    if (isGoogleUser) {
+    const provider =
+      user.app_metadata?.provider;
 
-      /* -------------------------------------------------------
-         Google signup should always return to Sign Up tab
-         ------------------------------------------------------- */
 
-      const signupTab =
-        el("tabSignup");
+    /* =====================================================
+       GOOGLE EXISTING SESSION
+       ===================================================== */
 
-      if (signupTab) {
-        signupTab.click();
+    if (
+      provider === "google"
+    ) {
+
+      el("tabSignup")
+        ?.click();
+
+
+      /*
+       * Check Google provider token
+       */
+
+      console.log(
+        "Existing Google session provider token:",
+        session.provider_token
+          ? "AVAILABLE"
+          : "NOT AVAILABLE"
+      );
+
+
+      console.log(
+        "Existing Google session refresh token:",
+        session.provider_refresh_token
+          ? "AVAILABLE"
+          : "NOT AVAILABLE"
+      );
+
+
+      /*
+       * TEMPORARY GOOGLE DRIVE TEST
+       */
+
+      if (
+        session.provider_token
+      ) {
+
+        try {
+
+          console.log(
+            "Testing Google Drive connection..."
+          );
+
+
+          const driveResponse =
+            await fetch(
+              "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/google-drive",
+              {
+
+                method:
+                  "POST",
+
+                headers: {
+
+                  "Authorization":
+                    `Bearer ${session.access_token}`,
+
+                  "Content-Type":
+                    "application/json"
+
+                },
+
+                body:
+                  JSON.stringify({
+
+                    access_token:
+                      session.provider_token
+
+                  })
+
+              }
+            );
+
+
+          const driveResult =
+            await driveResponse.json();
+
+
+          console.log(
+            "RiGiD Drive result:",
+            driveResult
+          );
+
+
+          if (
+            !driveResponse.ok
+          ) {
+
+            console.error(
+              "Google Drive function returned error:",
+              driveResult
+            );
+
+          }
+
+        }
+
+        catch (driveError) {
+
+          console.error(
+            "RiGiD Drive request failed:",
+            driveError
+          );
+
+        }
+
+      }
+
+      else {
+
+        console.warn(
+          "Google provider token is not available in the existing session."
+        );
+
       }
 
 
-      await setupGoogleUser(user);
+      /*
+       * Continue normal RiGiD Google-user setup
+       */
+
+      await setupGoogleUser(
+        user
+      );
+
 
       return;
+
     }
 
 
-    /* -------------------------------------------------------
-       If user has just returned from email verification,
-       check the confirmed email.
-       ------------------------------------------------------- */
+    /* =====================================================
+       EMAIL USER
+       ===================================================== */
 
-    /* -------------------------------------------------------
-    EMAIL VERIFICATION RETURN
-    ------------------------------------------------------- */
+    if (
+      user.email_confirmed_at
+    ) {
 
-    if (user.email_confirmed_at) {
+      el("tabSignup")
+        ?.click();
 
-      /*
-         The user has just returned from the
-         verification link.
-  
-         Make sure the Sign Up section is visible
-         so the verification result can be seen.
-      */
-
-      const signupTab =
-        el("tabSignup");
-
-      if (signupTab) {
-        signupTab.click();
-      }
-
-
-      /*
-         Show the verified state.
-      */
 
       markEmailVerified();
 
     }
 
-    /* -------------------------------------------------------
-       Check profile
-       ------------------------------------------------------- */
+  }
 
-    const {
-      data: profile
-    } = await sb
-      .from("profiles")
-      .select("status")
-      .eq(
-        "id",
-        user.id
-      )
-      .single();
-
-
-    /* -------------------------------------------------------
-   Check profile status
-   ------------------------------------------------------- */
-
-    if (profile) {
-
-      /* -----------------------------------------------------
-         Already approved
-         ----------------------------------------------------- */
-
-      if (
-        profile.status === "approved"
-      ) {
-
-        window.location.href =
-          LOGIN_CONFIG.DASHBOARD_URL;
-
-        return;
-      }
-
-
-      /* -----------------------------------------------------
-         Access request already pending
-         ----------------------------------------------------- */
-
-      if (
-        profile.status === "pending"
-      ) {
-
-        showMessage(
-          "Your access request is already pending. Please wait for an administrator to approve your account.",
-          "ok"
-        );
-
-
-        /* -----------------------------------------------
-           Prevent creating another request
-           ----------------------------------------------- */
-
-        const requestButton =
-          el("requestAccessBtn");
-
-        if (requestButton) {
-
-          requestButton.disabled = true;
-
-          requestButton.textContent =
-            "Request Already Submitted";
-        }
-
-
-        /* -----------------------------------------------
-           Sign out after displaying the message
-           ----------------------------------------------- */
-
-        await sb.auth.signOut();
-
-        return;
-      }
-
-
-      /* -----------------------------------------------------
-         Previously rejected
-         ----------------------------------------------------- */
-
-      if (
-        profile.status === "rejected"
-      ) {
-
-        showMessage(
-          "Your previous access request was rejected. Please contact an administrator."
-        );
-
-        await sb.auth.signOut();
-
-        return;
-      }
-    }
-
-  } catch (error) {
+  catch (error) {
 
     console.error(
-      "Session check failed:",
+      "checkExistingSession:",
       error
     );
 
   }
+
+}
+
+
+/* =========================================================================
+   SUPABASE AUTH STATE CHANGE
+   ========================================================================= */
+
+function initAuthStateListener() {
+
+  sb.auth.onAuthStateChange(
+    async (
+      event,
+      session
+    ) => {
+
+      console.log(
+        "Auth event:",
+        event
+      );
+
+
+      if (
+        event === "SIGNED_IN" &&
+        session?.user
+      ) {
+
+        const provider =
+          session.user
+            .app_metadata
+            ?.provider;
+
+
+        if (
+          provider === "google"
+        ) {
+
+          console.log(
+            "RiGiD session:",
+            session
+          );
+
+
+          console.log(
+            "Google provider token:",
+            session.provider_token
+              ? "AVAILABLE"
+              : "NOT AVAILABLE"
+          );
+
+
+          console.log(
+            "Google provider refresh token:",
+            session.provider_refresh_token
+              ? "AVAILABLE"
+              : "NOT AVAILABLE"
+          );
+
+
+          /*
+           * TEMPORARY DRIVE TEST
+           *
+           * This is intentionally retained for testing.
+           * We will replace this with the final secure
+           * token architecture later.
+           */
+
+          if (
+            session.provider_token
+          ) {
+
+            try {
+
+              const driveResponse =
+                await fetch(
+                  "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/google-drive",
+                  {
+
+                    method:
+                      "POST",
+
+                    headers: {
+
+                      "Authorization":
+                        `Bearer ${session.access_token}`,
+
+                      "Content-Type":
+                        "application/json"
+
+                    },
+
+                    body:
+                      JSON.stringify({
+
+                        access_token:
+                          session.provider_token
+
+                      })
+
+                  }
+                );
+
+
+              const driveResult =
+                await driveResponse.json();
+
+
+              console.log(
+                "RiGiD Drive result:",
+                driveResult
+              );
+
+            }
+
+            catch (driveError) {
+
+              console.error(
+                "RiGiD Drive request failed:",
+                driveError
+              );
+
+            }
+
+          }
+
+
+          /*
+           * Small delay prevents race conditions
+           * immediately after OAuth redirect.
+           */
+
+          setTimeout(
+            () => {
+
+              setupGoogleUser(
+                session.user
+              );
+
+            },
+            300
+          );
+
+        }
+
+      }
+
+    }
+  );
 
 }
 
@@ -1561,48 +4135,77 @@ document.addEventListener(
   "DOMContentLoaded",
   async () => {
 
+    console.log(
+      "RiGiD login initialization..."
+    );
+
+
+    /* -----------------------------------------------------
+       UI
+       ----------------------------------------------------- */
+
     startClock();
 
     initTheme();
 
     initTabs();
 
-    await loadTeams();
+    initForumSelection();
+
+
+    /* -----------------------------------------------------
+       Load database data
+       ----------------------------------------------------- */
+
+    await loadForumData();
+
+
+    /* -----------------------------------------------------
+       Auth listener
+       ----------------------------------------------------- */
+
+    initAuthStateListener();
+
+
+    /* -----------------------------------------------------
+       Existing session
+       ----------------------------------------------------- */
 
     await checkExistingSession();
 
 
-    /* -------------------------------------------------------
-       Login
-       ------------------------------------------------------- */
+    /* -----------------------------------------------------
+       LOGIN
+       ----------------------------------------------------- */
 
     el("loginForm")
-      .addEventListener(
+      ?.addEventListener(
         "submit",
         loginUser
       );
 
 
-    /* -------------------------------------------------------
-       Signup
-       ------------------------------------------------------- */
+    /* -----------------------------------------------------
+       NORMAL ACCESS REQUEST
+       ----------------------------------------------------- */
 
     el("signupForm")
-      .addEventListener(
+      ?.addEventListener(
         "submit",
         requestAccess
       );
 
 
-    /* -------------------------------------------------------
-       Verification
-       ------------------------------------------------------- */
+    /* -----------------------------------------------------
+       VERIFICATION
+       ----------------------------------------------------- */
 
     el("sendVerificationBtn")
-      .addEventListener(
+      ?.addEventListener(
         "click",
         sendVerificationLink
       );
+
 
     el("resendVerificationBtn")
       ?.addEventListener(
@@ -1610,11 +4213,17 @@ document.addEventListener(
         resendVerificationLink
       );
 
+
+    /* -----------------------------------------------------
+       GOOGLE
+       ----------------------------------------------------- */
+
     el("googleSignupBtn")
-      .addEventListener(
+      ?.addEventListener(
         "click",
         signUpWithGoogle
       );
+
 
     el("googleRequestAccessBtn")
       ?.addEventListener(
@@ -1622,778 +4231,17 @@ document.addEventListener(
         submitGoogleAccessRequest
       );
 
+
     el("googleUseDifferentAccountBtn")
       ?.addEventListener(
         "click",
         useDifferentGoogleAccount
       );
 
+
+    console.log(
+      "RiGiD login initialized successfully."
+    );
+
   }
 );
-
-/* =========================================================================
-   USE A DIFFERENT GOOGLE ACCOUNT
-   ========================================================================= */
-
-async function useDifferentGoogleAccount() {
-
-  clearMessage();
-
-  const button =
-    el("googleUseDifferentAccountBtn");
-
-  if (button) {
-    button.disabled = true;
-    button.textContent = "Signing out…";
-  }
-
-  try {
-
-    await sb.auth.signOut();
-
-  } catch (error) {
-
-    console.error(
-      "Sign out error:",
-      error
-    );
-
-  }
-
-
-  /*
-   * Reset the Google profile setup box back to empty.
-   */
-
-  const teamSelect = el("googleTeam");
-  if (teamSelect) {
-    teamSelect.value = "";
-    teamSelect.disabled = false;
-  }
-
-  const password = el("googlePassword");
-  if (password) password.value = "";
-
-  const password2 = el("googlePassword2");
-  if (password2) password2.value = "";
-
-  el("googlePasswordBox")
-    ?.classList.remove("hidden");
-
-  const requestBtn = el("googleRequestAccessBtn");
-  if (requestBtn) {
-    requestBtn.disabled = false;
-    requestBtn.textContent = "Request Access";
-  }
-
-
-  /*
-   * Hide the Google profile box, show the normal
-   * signup controls again.
-   */
-
-  el("googleProfileSetup")
-    ?.classList.add("hidden");
-
-  el("emailSignupFields")
-    ?.classList.remove("hidden");
-
-  el("googleDivider")
-    ?.classList.remove("hidden");
-
-  el("sendVerificationBtn")
-    ?.classList.remove("hidden");
-
-  el("verificationStatus")
-    ?.classList.add("hidden");
-
-  const googleBtn = el("googleSignupBtn");
-  if (googleBtn) {
-    googleBtn.classList.remove("hidden");
-    googleBtn.disabled = false;
-    googleBtn.innerHTML = `
-            <span class="google-icon">G</span>
-            Continue with Google
-        `;
-  }
-
-  el("requestAccessBtn")
-    ?.classList.remove("hidden");
-
-  if (button) {
-    button.disabled = false;
-    button.textContent = "Not you? Use a different Google account";
-  }
-
-  clearMessage();
-
-}
-
-
-/* =========================================================================
-   GOOGLE SIGN-UP
-   ========================================================================= */
-
-async function signUpWithGoogle() {
-
-  clearMessage();
-
-  const button = el("googleSignupBtn");
-
-  button.disabled = true;
-  button.textContent = "Connecting to Google…";
-
-  try {
-
-    const { data, error } = await sb.auth.signInWithOAuth({
-
-      provider: "google",
-
-      options: {
-
-        redirectTo:
-          `${window.location.origin}/login/login.html`
-
-      }
-
-    });
-
-
-    if (error) {
-
-      console.error(
-        "Google OAuth error:",
-        error
-      );
-
-      showMessage(
-        error.message ||
-        "Unable to connect to Google."
-      );
-
-      button.disabled = false;
-      button.innerHTML = `
-                <span class="google-icon">G</span>
-                Continue with Google
-            `;
-
-      return;
-    }
-
-
-    /*
-     * Supabase redirects the browser to Google.
-     *
-     * We don't manually redirect here.
-     */
-
-  } catch (error) {
-
-    console.error(
-      "Google sign-up error:",
-      error
-    );
-
-    showMessage(
-      "Unable to connect to Google."
-    );
-
-    button.disabled = false;
-
-    button.innerHTML = `
-            <span class="google-icon">G</span>
-            Continue with Google
-        `;
-
-  }
-
-}
-/* =========================================================================
-   GOOGLE PROFILE SETUP
-   ========================================================================= */
-
-async function setupGoogleUser(user) {
-
-  if (!user) {
-    return;
-  }
-
-
-  const email =
-    (user.email || "")
-      .trim()
-      .toLowerCase();
-
-
-  /* ---------------------------------------------------------
-     Google account must be a KCT account
-     --------------------------------------------------------- */
-
-
-
-
-  /* ---------------------------------------------------------
-     Get existing profile
-     --------------------------------------------------------- */
-
-  const {
-    data: profile,
-    error
-  } = await sb
-    .from("profiles")
-    .select(
-      "id, email, full_name, team_id, role, status"
-    )
-    .eq(
-      "id",
-      user.id
-    )
-    .maybeSingle();
-
-
-  if (error) {
-
-    console.error(
-      "Google profile lookup error:",
-      error
-    );
-
-    showMessage(
-      "Unable to load your profile."
-    );
-
-    return;
-
-  }
-
-
-  /* ---------------------------------------------------------
-     Existing approved user
-     --------------------------------------------------------- */
-
-  if (
-    profile &&
-    profile.status === "approved"
-  ) {
-
-    window.location.href =
-      LOGIN_CONFIG.DASHBOARD_URL;
-
-    return;
-
-  }
-
-
-  /* ---------------------------------------------------------
-     Existing pending user with team
-     --------------------------------------------------------- */
-
-  if (
-    profile &&
-    profile.status === "pending" &&
-    profile.team_id
-  ) {
-
-    showGooglePendingState(
-      user,
-      profile
-    );
-
-    return;
-
-  }
-
-
-  /* ---------------------------------------------------------
-     New Google user
-     OR
-     Existing profile without team
-     --------------------------------------------------------- */
-
-  showGoogleTeamSelection(user);
-
-}
-function showGoogleTeamSelection(user) {
-
-  const setup = el("googleProfileSetup");
-  const name = el("googleUserName");
-  const email = el("googleUserEmail");
-  const teamSelect = el("googleTeam");
-
-  if (!setup || !teamSelect) {
-    console.error("Google team selection elements not found.");
-    return;
-  }
-
-  setup.classList.remove("hidden");
-
-  if (name) {
-    name.textContent =
-      user.user_metadata?.full_name ||
-      user.user_metadata?.name ||
-      "Google User";
-  }
-
-  if (email) {
-    email.textContent =
-      user.email || "";
-  }
-
-  /*
-   * Copy the already-loaded team options.
-   * Do NOT call loadTeams() again here.
-   */
-
-  const signupTeam = el("signupTeam");
-
-  if (signupTeam) {
-
-    teamSelect.innerHTML =
-      signupTeam.innerHTML;
-
-  }
-
-  /*
-   * Hide the normal signup controls.
-   */
-
-  el("emailSignupFields")
-    ?.classList.add("hidden");
-
-  el("googleDivider")
-    ?.classList.add("hidden");
-
-  el("sendVerificationBtn")
-    ?.classList.add("hidden");
-
-  el("verificationStatus")
-    ?.classList.add("hidden");
-
-  el("googleSignupBtn")
-    ?.classList.add("hidden");
-
-  el("requestAccessBtn")
-    ?.classList.add("hidden");
-}
-/* =========================================================================
-   GOOGLE REQUEST ACCESS
-   ========================================================================= */
-
-function copyTeamsToGoogleSelect() {
-
-  const source =
-    el("signupTeam");
-
-  const target =
-    el("googleTeam");
-
-  if (!source || !target) {
-    return;
-  }
-
-  target.innerHTML =
-    source.innerHTML;
-}
-
-function showGooglePendingState(user, profile) {
-
-  const setup = el("googleProfileSetup");
-  const name = el("googleUserName");
-  const email = el("googleUserEmail");
-  const teamSelect = el("googleTeam");
-  const button = el("googleRequestAccessBtn");
-
-  if (!setup) {
-    showMessage(
-      "Your access request is already waiting for admin approval.",
-      "ok"
-    );
-    return;
-  }
-
-  setup.classList.remove("hidden");
-
-  if (name) {
-    name.textContent =
-      user.user_metadata?.full_name ||
-      user.user_metadata?.name ||
-      "Google User";
-  }
-
-  if (email) {
-    email.textContent = user.email || "";
-  }
-
-  copyTeamsToGoogleSelect();
-
-  if (teamSelect) {
-    teamSelect.value = profile.team_id || "";
-    teamSelect.disabled = true;
-  }
-
-  /*
-   * Password was already set the first time they went
-   * through this flow — don't ask again.
-   */
-
-  const passwordBox =
-    el("googlePasswordBox");
-
-  if (passwordBox) {
-    passwordBox.classList.add("hidden");
-  }
-
-  if (button) {
-    button.disabled = true;
-    button.textContent = "Request Already Submitted";
-  }
-
-  el("emailSignupFields")
-    ?.classList.add("hidden");
-
-  el("googleDivider")
-    ?.classList.add("hidden");
-
-  el("sendVerificationBtn")
-    ?.classList.add("hidden");
-
-  el("resendVerificationBtn")
-    ?.addEventListener(
-      "click",
-      resendVerificationLink
-    );
-
-  el("verificationStatus")
-    ?.classList.add("hidden");
-
-  el("googleSignupBtn")
-    ?.classList.add("hidden");
-
-  el("requestAccessBtn")
-    ?.classList.add("hidden");
-
-  showMessage(
-    "Your access request is already submitted and is waiting for admin approval.",
-    "ok"
-  );
-}
-
-async function submitGoogleAccessRequest() {
-
-  clearMessage();
-
-  const teamSelect =
-    el("googleTeam");
-
-  const button =
-    el("googleRequestAccessBtn");
-
-
-  /* ---------------------------------------------------------
-     Validate elements
-     --------------------------------------------------------- */
-
-  if (!teamSelect || !button) {
-
-    console.error(
-      "Google team or request button not found."
-    );
-
-    showMessage(
-      "Unable to process the request. Please refresh the page."
-    );
-
-    return;
-  }
-
-
-  /* ---------------------------------------------------------
-     Get selected team
-     --------------------------------------------------------- */
-
-  const teamId =
-    teamSelect.value;
-
-
-  if (!teamId) {
-
-    showMessage(
-      "Please select your team."
-    );
-
-    return;
-  }
-
-
-  /* ---------------------------------------------------------
-     Validate password
-     (only required the first time — box is hidden for
-     returning pending users who already set one)
-     --------------------------------------------------------- */
-
-  const passwordBox =
-    el("googlePasswordBox");
-
-  const settingPassword =
-    passwordBox &&
-    !passwordBox.classList.contains("hidden");
-
-  let password = null;
-
-  if (settingPassword) {
-
-    const passwordInput =
-      el("googlePassword");
-
-    const password2Input =
-      el("googlePassword2");
-
-    password =
-      passwordInput?.value || "";
-
-    const password2 =
-      password2Input?.value || "";
-
-
-    if (password.length < 8) {
-
-      showMessage(
-        "Password must contain at least 8 characters."
-      );
-
-      return;
-    }
-
-
-    if (password !== password2) {
-
-      showMessage(
-        "Passwords do not match."
-      );
-
-      return;
-    }
-
-  }
-
-
-  /* ---------------------------------------------------------
-     Disable button while processing
-     --------------------------------------------------------- */
-
-  button.disabled = true;
-
-  button.textContent =
-    "Submitting…";
-
-
-  try {
-
-    /* -----------------------------------------------------
-       Get current Google user
-       ----------------------------------------------------- */
-
-    const {
-      data: {
-        user
-      },
-      error: userError
-    } = await sb.auth.getUser();
-
-
-    if (userError) {
-
-      console.error(
-        "Google user lookup error:",
-        userError
-      );
-
-      showMessage(
-        "Unable to verify your Google session. Please sign in again."
-      );
-
-      return;
-    }
-
-
-    if (!user) {
-
-      showMessage(
-        "Your Google session has expired. Please sign in again."
-      );
-
-      return;
-    }
-
-
-    /* -----------------------------------------------------
-       Get Google email
-       ----------------------------------------------------- */
-
-    const email =
-      (user.email || "")
-        .trim()
-        .toLowerCase();
-
-
-    if (!email) {
-
-      showMessage(
-        "Unable to determine your Google email address."
-      );
-
-      return;
-    }
-
-
-    /* -----------------------------------------------------
-       GOOGLE USERS
-
-       Gmail and other Google accounts are allowed.
-
-       No @kct.ac.in restriction here.
-       ----------------------------------------------------- */
-
-
-    /* -----------------------------------------------------
-       Update ONLY team_id
-
-       The Supabase RPC should handle the update securely.
-
-       It must NOT allow the user to change:
-         role
-         status
-         email
-         id
-       ----------------------------------------------------- */
-
-    const {
-      error: teamError
-    } = await sb.rpc(
-      "set_my_team",
-      {
-        selected_team_id: teamId
-      }
-    );
-
-
-    if (teamError) {
-
-      console.error(
-        "Google team update error:",
-        teamError
-      );
-
-      showMessage(
-        "Unable to save your team. Please try again."
-      );
-
-      return;
-    }
-
-
-    /* -----------------------------------------------------
-       Set password
-
-       Google's email is already verified by Google itself,
-       so no separate email-verification step is needed here.
-       This just lets the user log back in later with their
-       email + this password instead of via Google every time.
-       ----------------------------------------------------- */
-
-    if (settingPassword) {
-
-      const {
-        error: passwordError
-      } = await sb.auth.updateUser({
-        password: password
-      });
-
-
-      if (passwordError) {
-
-        console.error(
-          "Google password set error:",
-          passwordError
-        );
-
-        showMessage(
-          "Unable to set your password. Please try again."
-        );
-
-        return;
-      }
-
-    }
-
-
-    /* -----------------------------------------------------
-       Access request submitted
-
-       Profile remains:
-
-         role   = member
-         status = pending
-
-       The user cannot approve themselves.
-       ----------------------------------------------------- */
-
-
-    await sb.auth.signOut();
-
-
-    /* -----------------------------------------------------
-       Update UI
-       ----------------------------------------------------- */
-
-    button.textContent =
-      "Request Submitted";
-
-
-    showMessage(
-      "Access request submitted. An administrator must approve your account.",
-      "ok"
-    );
-
-
-    /* -----------------------------------------------------
-       Keep button disabled after successful submission
-       ----------------------------------------------------- */
-
-    button.disabled = true;
-
-
-  } catch (error) {
-
-    console.error(
-      "Google request error:",
-      error
-    );
-
-    showMessage(
-      error.message ||
-      "Something went wrong. Please try again."
-    );
-
-
-  } finally {
-
-    /*
-     * Only re-enable the button if the request
-     * was NOT successfully submitted.
-     */
-
-    if (
-      button.textContent !==
-      "Request Submitted"
-    ) {
-
-      button.disabled = false;
-
-      button.textContent =
-        "Request Access";
-    }
-
-  }
-
-}

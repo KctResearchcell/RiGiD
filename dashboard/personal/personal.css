@@ -4777,3 +4777,341 @@ body.theme-dim .daily-record-panel {
 
     font-size: 10px;
 }
+
+/* =========================================================
+   JOIN FORUM
+========================================================= */
+
+
+/* JOIN FORUM BUTTON */
+
+.join-forum-btn {
+    min-height: 36px;
+    padding: 0 13px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    border: 1px solid rgba(77, 166, 255, 0.28);
+    border-radius: 9px;
+
+    background: rgba(77, 166, 255, 0.07);
+
+    color: var(--blue);
+
+    font-size: 10px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.join-forum-btn:hover {
+    background: rgba(77, 166, 255, 0.14);
+
+    border-color:
+        rgba(77, 166, 255, 0.5);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 6px 18px rgba(77, 166, 255, 0.12);
+}
+
+
+.join-forum-btn:active {
+    transform: translateY(0);
+}
+
+
+/* PLUS */
+
+.join-forum-icon {
+    width: 21px;
+    height: 21px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 6px;
+
+    background: rgba(77, 166, 255, 0.15);
+
+    color: var(--blue);
+
+    font-size: 15px;
+    font-weight: 500;
+
+    line-height: 1;
+}
+
+
+/* =========================================================
+   JOIN FORUM MODAL
+========================================================= */
+
+.join-forum-modal-box {
+    width: min(500px, 100%);
+}
+
+
+/* DESCRIPTION UNDER TITLE */
+
+.join-forum-modal-box .modal-header small {
+    display: block;
+
+    margin-top: 6px;
+
+    color: var(--text-soft);
+
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   TEAM / DOMAIN OPTIONS
+========================================================= */
+
+.join-forum-type-options {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 8px;
+}
+
+
+.join-forum-type-option {
+    min-height: 42px;
+
+    margin: 0 !important;
+    padding: 0 12px;
+
+    display: flex !important;
+    align-items: center;
+
+    gap: 8px;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    background: rgba(255, 255, 255, 0.025);
+
+    color: var(--text-secondary);
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.join-forum-type-option:hover {
+    background: rgba(255, 255, 255, 0.055);
+
+    border-color:
+        rgba(77, 166, 255, 0.3);
+
+    color: var(--text-main);
+}
+
+
+.join-forum-type-option input {
+    width: 14px !important;
+    height: 14px;
+
+    margin: 0;
+
+    accent-color: var(--blue);
+
+    cursor: pointer;
+}
+
+
+.join-forum-type-option input:checked + span {
+    color: var(--blue);
+}
+
+
+/* =========================================================
+   JOIN FORUM INFORMATION BOX
+========================================================= */
+
+.join-forum-info {
+    margin-top: 4px;
+    margin-bottom: 14px;
+
+    padding: 10px 11px;
+
+    border: 1px solid rgba(77, 166, 255, 0.12);
+    border-radius: 9px;
+
+    background: rgba(77, 166, 255, 0.045);
+
+    color: var(--text-soft);
+
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   SELECT STATES
+========================================================= */
+
+#joinForumSelect,
+#joinTeamSelect,
+#joinDomainSelect {
+    cursor: pointer;
+}
+
+
+#joinForumSelect:disabled,
+#joinTeamSelect:disabled,
+#joinDomainSelect:disabled {
+    opacity: 0.55;
+
+    cursor: wait;
+}
+
+
+/* =========================================================
+   JOIN BUTTON
+========================================================= */
+
+#submitJoinForum {
+    min-width: 100px;
+}
+
+
+#submitJoinForum:hover {
+    color: var(--text-main);
+
+    background:
+        rgba(77, 166, 255, 0.2);
+
+    border-color:
+        rgba(77, 166, 255, 0.5);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .profile-join-forum {
+        justify-content: center;
+    }
+
+    .join-forum-type-options {
+        grid-template-columns: 1fr;
+    }
+
+    .join-forum-btn {
+        width: 100%;
+        max-width: 220px;
+    }
+
+}
+
+/* =========================================================
+   PROFILE ACTION ROW
+========================================================= */
+
+.social-profile-links {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+
+/* DIVIDER BEFORE JOIN FORUM */
+
+.profile-action-divider {
+    width: 1px;
+    height: 22px;
+
+    margin: 0 4px;
+
+    background: var(--border);
+}
+
+
+/* JOIN FORUM */
+
+.join-forum-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    height: 32px;
+    padding: 0 11px;
+
+    border: 1px solid rgba(77, 166, 255, 0.25);
+    border-radius: 8px;
+
+    background: rgba(77, 166, 255, 0.05);
+
+    color: var(--blue);
+
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.join-forum-btn:hover {
+    background: rgba(77, 166, 255, 0.12);
+
+    border-color: rgba(77, 166, 255, 0.45);
+
+    transform: translateY(-1px);
+}
+
+
+.join-forum-btn:active {
+    transform: translateY(0);
+}
+
+
+/* PLUS ICON */
+
+.join-forum-icon {
+    width: 18px;
+    height: 18px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 5px;
+
+    background: rgba(77, 166, 255, 0.12);
+
+    color: var(--blue);
+
+    font-size: 14px;
+    font-weight: 400;
+
+    line-height: 1;
+}

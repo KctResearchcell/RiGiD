@@ -538,3 +538,623 @@ button:disabled {
 #sendVerificationBtn {
   margin-top: 16px;
 }
+
+/* =========================================================================
+   FORUM / TEAM / DOMAIN SELECTION
+   ========================================================================= */
+
+
+/* -------------------------------------------------------------------------
+   SELECTED FORUMS CONTAINER
+   ------------------------------------------------------------------------- */
+
+.selected-forums-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    width: 100%;
+
+    margin-top: 10px;
+}
+
+
+/* -------------------------------------------------------------------------
+   SELECTED FORUM CARD
+   ------------------------------------------------------------------------- */
+
+.selected-forum-card {
+    width: 100%;
+
+    padding: 14px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--bg-alt) 82%,
+            transparent
+        );
+
+    transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+
+.selected-forum-card:hover {
+    border-color:
+        color-mix(
+            in srgb,
+            var(--accent) 45%,
+            var(--border)
+        );
+
+    background:
+        color-mix(
+            in srgb,
+            var(--accent) 4%,
+            var(--bg-alt)
+        );
+}
+
+
+/* -------------------------------------------------------------------------
+   FORUM HEADER
+   ------------------------------------------------------------------------- */
+
+.selected-forum-header {
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-bottom: 14px;
+}
+
+
+.selected-forum-label {
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-family:
+        'JetBrains Mono',
+        monospace;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.12em;
+
+    text-transform: uppercase;
+
+    color: var(--accent);
+}
+
+
+.selected-forum-header h3 {
+    margin: 0;
+
+    font-family:
+        'Space Grotesk',
+        sans-serif;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    line-height: 1.3;
+
+    color: var(--ink);
+}
+
+
+/* -------------------------------------------------------------------------
+   REMOVE FORUM BUTTON
+   ------------------------------------------------------------------------- */
+
+.remove-forum-btn {
+    flex-shrink: 0;
+
+    width: 26px;
+    height: 26px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid var(--border);
+
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: var(--soft);
+
+    font-family:
+        'Inter',
+        sans-serif;
+
+    font-size: 18px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        color 0.15s ease,
+        border-color 0.15s ease,
+        background-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+
+.remove-forum-btn:hover {
+    color: var(--danger);
+
+    border-color:
+        color-mix(
+            in srgb,
+            var(--danger) 45%,
+            var(--border)
+        );
+
+    background:
+        color-mix(
+            in srgb,
+            var(--danger) 8%,
+            transparent
+        );
+
+    transform: translateY(-1px);
+}
+
+
+/* -------------------------------------------------------------------------
+   TEAM / DOMAIN GROUP
+   ------------------------------------------------------------------------- */
+
+.forum-selection-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    margin-top: 13px;
+}
+
+
+.forum-selection-group > label:first-child {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-bottom: 2px;
+
+    font-family:
+        'Space Grotesk',
+        sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 600;
+
+    color: var(--ink);
+}
+
+
+.forum-selection-group > label:first-child span {
+    font-family:
+        'JetBrains Mono',
+        monospace;
+
+    font-size: 9px;
+
+    font-weight: 400;
+
+    color: var(--soft);
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.06em;
+}
+
+
+/* -------------------------------------------------------------------------
+   SELECTION OPTION
+   ------------------------------------------------------------------------- */
+
+.selection-option {
+    position: relative;
+
+    display: flex !important;
+
+    align-items: center;
+
+    gap: 9px;
+
+    width: 100%;
+
+    padding: 8px 10px;
+
+    border: 1px solid transparent;
+
+    border-radius: 7px;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+}
+
+
+.selection-option:hover {
+    background:
+        color-mix(
+            in srgb,
+            var(--accent) 6%,
+            transparent
+        );
+
+    border-color:
+        color-mix(
+            in srgb,
+            var(--accent) 18%,
+            transparent
+        );
+}
+
+
+/* -------------------------------------------------------------------------
+   CHECKBOX
+   ------------------------------------------------------------------------- */
+
+.selection-option input[type="checkbox"] {
+    flex-shrink: 0;
+
+    width: 15px;
+    height: 15px;
+
+    margin: 0;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    border: 1px solid var(--border);
+
+    border-radius: 4px;
+
+    background: var(--card);
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.selection-option input[type="checkbox"]:hover {
+    border-color: var(--accent);
+}
+
+
+.selection-option input[type="checkbox"]:checked {
+    border-color: var(--accent);
+
+    background: var(--accent);
+
+    box-shadow:
+        0 0 0 2px
+        color-mix(
+            in srgb,
+            var(--accent) 12%,
+            transparent
+        );
+}
+
+
+/* CHECK MARK */
+
+.selection-option input[type="checkbox"]:checked::after {
+    content: "";
+
+    display: block;
+
+    width: 4px;
+    height: 8px;
+
+    margin-left: 4px;
+    margin-top: 1px;
+
+    border:
+        solid
+        var(--card);
+
+    border-width:
+        0 2px 2px 0;
+
+    transform: rotate(45deg);
+}
+
+
+/* -------------------------------------------------------------------------
+   OPTION TEXT
+   ------------------------------------------------------------------------- */
+
+.selection-option span {
+    flex: 1;
+
+    min-width: 0;
+
+    font-family:
+        'Inter',
+        sans-serif;
+
+    font-size: 11.5px;
+
+    line-height: 1.4;
+
+    color: var(--ink);
+
+    transition:
+        color 0.15s ease;
+}
+
+
+.selection-option:hover span {
+    color: var(--accent);
+}
+
+
+/* -------------------------------------------------------------------------
+   EMPTY STATE
+   ------------------------------------------------------------------------- */
+
+.selection-empty {
+    margin: 2px 0 0;
+
+    padding: 8px 10px;
+
+    border-radius: 6px;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--soft) 6%,
+            transparent
+        );
+
+    color: var(--soft);
+
+    font-family:
+        'JetBrains Mono',
+        monospace;
+
+    font-size: 9.5px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================================
+   REQUIRED MARK
+   ========================================================================= */
+
+.required-mark {
+    color: var(--accent);
+
+    font-size: 11px;
+
+    margin-left: 2px;
+}
+
+
+/* =========================================================================
+   SELECT INPUT
+   ========================================================================= */
+
+.field-input[type="select"],
+select.field-input {
+    cursor: pointer;
+}
+
+
+select.field-input option {
+    background: var(--card);
+
+    color: var(--ink);
+}
+
+
+/* =========================================================================
+   GOOGLE PROFILE FORM
+   ========================================================================= */
+
+.google-profile-setup {
+    width: 100%;
+
+    box-sizing: border-box;
+}
+
+
+.google-profile-setup > div {
+    width: 100%;
+}
+
+
+/* =========================================================================
+   GOOGLE USER INFO
+   ========================================================================= */
+
+.google-user-info {
+    padding-bottom: 12px;
+
+    margin-bottom: 4px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+
+.google-user-name {
+    color: var(--ink);
+}
+
+
+.google-user-email {
+    color: var(--soft);
+}
+
+
+/* =========================================================================
+   GOOGLE PASSWORD AREA
+   ========================================================================= */
+
+#googlePasswordBox {
+    width: 100%;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================================
+   GOOGLE REQUEST BUTTON
+   ========================================================================= */
+
+#googleRequestAccessBtn {
+    margin-top: 16px;
+}
+
+
+/* =========================================================================
+   NORMAL REQUEST ACCESS
+   ========================================================================= */
+
+#requestAccessBtn {
+    margin-top: 0;
+}
+
+
+/* =========================================================================
+   GOOGLE / NORMAL FORM SPACING
+   ========================================================================= */
+
+#signupForm > .auth-divider {
+    margin-top: 2px;
+}
+
+
+#signupForm > .google-btn {
+    margin-top: 0;
+}
+
+
+#googleProfileSetup .field-hint {
+    line-height: 1.5;
+}
+
+
+/* =========================================================================
+   MOBILE
+   ========================================================================= */
+
+@media (max-width: 480px) {
+
+    .auth-card {
+        padding: 18px;
+    }
+
+
+    .selected-forum-card {
+        padding: 12px;
+    }
+
+
+    .selected-forum-header h3 {
+        font-size: 13px;
+    }
+
+
+    .selection-option {
+        padding: 8px;
+    }
+
+
+    .selection-option span {
+        font-size: 11px;
+    }
+
+
+    .google-profile-setup {
+        padding: 13px;
+    }
+
+}
+
+
+/* =========================================================================
+   DARK MODE REINFORCEMENT
+   ========================================================================= */
+
+.dark .selected-forum-card {
+    background:
+        color-mix(
+            in srgb,
+            var(--bg-alt) 88%,
+            transparent
+        );
+}
+
+
+.dark .selection-option input[type="checkbox"] {
+    background: var(--card);
+}
+
+
+.dark .selection-option input[type="checkbox"]:checked {
+    background: var(--accent);
+}
+
+
+/* =========================================================================
+   FOCUS STATES
+   ========================================================================= */
+
+.selection-option input[type="checkbox"]:focus-visible,
+.remove-forum-btn:focus-visible,
+select.field-input:focus-visible {
+    outline: 2px solid var(--accent);
+
+    outline-offset: 2px;
+}
+
+
+/* =========================================================================
+   SMOOTH HIDDEN STATE
+   ========================================================================= */
+
+.hidden {
+    display: none !important;
+}

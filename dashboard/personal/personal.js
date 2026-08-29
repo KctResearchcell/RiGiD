@@ -38,213 +38,32 @@ const personalUser = {
 
 };
 
-
 /* =========================================================
-   2. WORK ITEMS
+   2. REAL PERSONAL DATA
+   Loaded from Supabase for the logged-in user only.
 ========================================================= */
 
-let workItems = [
+let workItems = [];
 
-    {
-        id: 1,
-        type: "project",
-        title: "PMSG Generator Simulation",
-        description:
-            "Simulation and control of a permanent magnet synchronous generator.",
-        status: "ongoing",
-        startDate: "2026-08-05",
-        endDate: "",
-        updatedDate: "2026-08-16",
-        createdAt: "2026-08-05"
-    },
+let accolades = [];
 
-    {
-        id: 2,
-        type: "design",
-        title: "Dual Rotor Housing Design",
-        description:
-            "Mechanical design for the dual rotor wind turbine system.",
-        status: "ongoing",
-        startDate: "2026-08-08",
-        endDate: "",
-        updatedDate: "2026-08-15",
-        createdAt: "2026-08-08"
-    },
+let dailyBlogs = {};
 
-    {
-        id: 3,
-        type: "paper",
-        title: "Renewable Energy Hosting Capacity",
-        description:
-            "Research paper on renewable integration and distribution feeder stability.",
-        status: "ongoing",
-        startDate: "2026-08-01",
-        endDate: "",
-        updatedDate: "2026-08-16",
-        createdAt: "2026-08-01"
-    },
+let reminders = [];
 
-    {
-        id: 4,
-        type: "prototype",
-        title: "Active Rectifier Prototype",
-        description:
-            "Prototype implementation of an active rectifier.",
-        status: "completed",
-        startDate: "2026-07-12",
-        endDate: "2026-08-10",
-        updatedDate: "2026-08-10",
-        createdAt: "2026-07-12"
-    },
+let personalLinks = [];
 
-    {
-        id: 5,
-        type: "project",
-        title: "Natural Fibre Air Filter",
-        description:
-            "Development of biodegradable natural fibre-based air filtration media.",
-        status: "completed",
-        startDate: "2026-06-10",
-        endDate: "2026-07-20",
-        updatedDate: "2026-07-20",
-        createdAt: "2026-06-10"
-    },
-
-    {
-        id: 6,
-        type: "design",
-        title: "Street Light Air Purifier",
-        description:
-            "Design of an integrated street-light air purification system.",
-        status: "completed",
-        startDate: "2026-05-12",
-        endDate: "2026-07-05",
-        updatedDate: "2026-07-05",
-        createdAt: "2026-05-12"
-    },
-
-    {
-        id: 7,
-        type: "simulation",
-        title: "MPPT Simulation",
-        description:
-            "MATLAB Simulink MPPT simulation.",
-        status: "completed",
-        startDate: "2026-06-18",
-        endDate: "2026-07-01",
-        updatedDate: "2026-07-01",
-        createdAt: "2026-06-18"
-    }
-
-];
-
-/* =========================================================
-   ACCOLADES
-========================================================= */
-
-let accolades = [
-
-    {
-        id: 1,
-        title: "Visvesvaraya Award",
-        date: "2026-08-01",
-        description:
-            "Award for technical excellence."
-    },
-
-    {
-        id: 2,
-        title: "BUILD-A-THON Winner",
-        date: "2026-07-15",
-        description:
-            "Winner of the BUILD-A-THON competition."
-    }
-
-];
-
-
-/* =========================================================
-   3. DAILY BLOGS
-========================================================= */
-
-let dailyBlogs = {
-
-    "2026-08-14":
-        "Reviewed the project progress and updated the research documentation.",
-
-    "2026-08-16":
-        "Worked on the PMSG simulation and reviewed generator output characteristics."
-
-};
-
-
-/* =========================================================
-   4. EXTRA ACTIVITIES
-========================================================= */
-
-let extraActivities = [
-
-    {
-        id: "upload-1",
-        date: "2026-08-16",
-        type: "upload",
-        title: "PMSG_simulation.pdf",
-        description: "Simulation document uploaded."
-    },
-
-    {
-        id: "link-1",
-        date: "2026-08-16",
-        type: "link",
-        title: "Project GitHub Repository",
-        description: "GitHub project repository.",
-        url: "https://github.com/"
-    }
-
-];
-
-
-/* =========================================================
-   5. REMINDERS
-========================================================= */
-
-let reminders = [
-
-    {
-        id: 1,
-        title: "Review project documentation",
-        date: "2026-08-18",
-        hour: "18",
-        minute: "30",
-        description: "Review the latest project documentation.",
-        createdAt: "2026-08-18"
-    }
-
-];
-
-
-/* =========================================================
-   6. FILES
-========================================================= */
+let extraActivities = [];
 
 let uploadedFiles = [];
-
 
 /* =========================================================
    7. CALENDAR STATE
 ========================================================= */
 
-let calendarDate = new Date(
-    2026,
-    7,
-    1
-);
+let calendarDate = new Date();
 
-let selectedDate = new Date(
-    2026,
-    7,
-    16
-);
+let selectedDate = new Date();
 
 
 /* =========================================================
@@ -276,10 +95,11 @@ document.addEventListener(
 );
 
 
-function initializeDashboard() {
-    initializeAccolades();
+async function initializeDashboard() {
 
-    loadProfile();
+    await loadPersonalWorkspaceData();
+
+    await loadProfile();
 
     initializeClock();
 
@@ -307,6 +127,8 @@ function initializeDashboard() {
 
     initializeSettings();
 
+    initializeAccolades();
+
     initializeTheme();
 
     initializeHeader();
@@ -314,6 +136,11 @@ function initializeDashboard() {
     initializeCalendar();
 
     initializeDailyBlog();
+
+
+    /* =================================================
+       RENDER REAL DATA
+    ================================================= */
 
     renderAllTimelines();
 
@@ -420,19 +247,397 @@ function isValidURL(value) {
    11. PROFILE
    LOAD REAL DATA FROM SUPABASE
 ========================================================= */
+/* =========================================================
+   10B. LOAD PERSONAL WORKSPACE DATA
+========================================================= */
+
+async function loadPersonalWorkspaceData() {
+
+    try {
+
+        /* =================================================
+           CURRENT USER
+        ================================================= */
+
+        const {
+            data: { user },
+            error: authError
+        } = await sb.auth.getUser();
+
+
+        if (authError) {
+            throw authError;
+        }
+
+
+        if (!user) {
+
+            console.error(
+                "No authenticated user."
+            );
+
+            return false;
+
+        }
+
+
+        /* =================================================
+           LOAD ALL PERSONAL TABLES
+        ================================================= */
+
+        const [
+            workResult,
+            blogResult,
+            reminderResult,
+            accoladeResult,
+            linkResult
+        ] = await Promise.all([
+
+            sb
+                .from("personal_work")
+                .select(`
+                    id,
+                    profile_id,
+                    forum_id,
+                    team_id,
+                    domain_id,
+                    title,
+                    description,
+                    category,
+                    status,
+                    start_date,
+                    end_date,
+                    created_at,
+                    updated_at
+                `)
+                .eq("profile_id", user.id)
+                .order("created_at", {
+                    ascending: false
+                }),
+
+
+            sb
+                .from("daily_blogs")
+                .select(`
+                    id,
+                    profile_id,
+                    date,
+                    content,
+                    created_at,
+                    updated_at
+                `)
+                .eq("profile_id", user.id)
+                .order("date", {
+                    ascending: false
+                }),
+
+
+            sb
+                .from("personal_reminders")
+                .select(`
+                    id,
+                    profile_id,
+                    title,
+                    date,
+                    hour,
+                    minute,
+                    description,
+                    created_at
+                `)
+                .eq("profile_id", user.id)
+                .order("date", {
+                    ascending: false
+                }),
+
+
+            sb
+                .from("personal_accolades")
+                .select(`
+                    id,
+                    profile_id,
+                    title,
+                    date,
+                    description,
+                    url,
+                    created_at
+                `)
+                .eq("profile_id", user.id)
+                .order("date", {
+                    ascending: false
+                }),
+
+
+            sb
+                .from("personal_links")
+                .select(`
+                    id,
+                    profile_id,
+                    title,
+                    url,
+                    description,
+                    created_at
+                `)
+                .eq("profile_id", user.id)
+                .order("created_at", {
+                    ascending: false
+                })
+
+        ]);
+
+
+        /* =================================================
+           ERROR CHECK
+        ================================================= */
+
+        if (workResult.error) {
+            throw workResult.error;
+        }
+
+        if (blogResult.error) {
+            throw blogResult.error;
+        }
+
+        if (reminderResult.error) {
+            throw reminderResult.error;
+        }
+
+        if (accoladeResult.error) {
+            throw accoladeResult.error;
+        }
+
+        if (linkResult.error) {
+            throw linkResult.error;
+        }
+
+
+        /* =================================================
+           PERSONAL WORK
+        ================================================= */
+
+        workItems =
+            (workResult.data || []).map(item => ({
+
+                id:
+                    item.id,
+
+                type:
+                    String(item.category || "")
+                        .toLowerCase(),
+
+                title:
+                    item.title,
+
+                description:
+                    item.description || "",
+
+                status:
+                    item.status || "ongoing",
+
+                startDate:
+                    item.start_date,
+
+                endDate:
+                    item.end_date || "",
+
+                createdAt:
+                    item.created_at,
+
+                updatedDate:
+                    item.updated_at
+                        ? item.updated_at.slice(0, 10)
+                        : item.start_date,
+
+                forumId:
+                    item.forum_id,
+
+                teamId:
+                    item.team_id,
+
+                domainId:
+                    item.domain_id
+
+            }));
+
+
+        /* =================================================
+           DAILY BLOGS
+           Convert rows → existing date-keyed structure
+        ================================================= */
+
+        dailyBlogs = {};
+
+
+        (blogResult.data || []).forEach(blog => {
+
+            dailyBlogs[blog.date] =
+                blog.content;
+
+        });
+
+
+        /* =================================================
+           REMINDERS
+        ================================================= */
+
+        reminders =
+            (reminderResult.data || []).map(reminder => ({
+
+                id:
+                    reminder.id,
+
+                title:
+                    reminder.title,
+
+                date:
+                    reminder.date,
+
+                hour:
+                    Number(reminder.hour),
+
+                minute:
+                    Number(reminder.minute),
+
+                description:
+                    reminder.description || "",
+
+                createdAt:
+                    reminder.created_at
+
+            }));
+
+
+        /* =================================================
+           ACCOLADES
+        ================================================= */
+
+        accolades =
+            (accoladeResult.data || []).map(accolade => ({
+
+                id:
+                    accolade.id,
+
+                title:
+                    accolade.title,
+
+                date:
+                    accolade.date,
+
+                description:
+                    accolade.description || "",
+
+                url:
+                    accolade.url || "",
+
+                createdAt:
+                    accolade.created_at
+
+            }));
+
+
+        /* =================================================
+           LINKS
+        ================================================= */
+
+        personalLinks =
+            (linkResult.data || []).map(link => ({
+
+                id:
+                    link.id,
+
+                title:
+                    link.title,
+
+                url:
+                    link.url,
+
+                description:
+                    link.description || "",
+
+                createdAt:
+                    link.created_at
+
+            }));
+
+
+        /* =================================================
+           EXTRA ACTIVITIES
+           
+           IMPORTANT:
+           We are NOT generating fake activities.
+           Real uploads/Drive activity will be connected
+           separately.
+        ================================================= */
+
+        extraActivities = [];
+
+
+        console.log(
+            "Personal workspace loaded:",
+            {
+                workItems,
+                dailyBlogs,
+                reminders,
+                accolades,
+                personalLinks
+            }
+        );
+
+
+        return true;
+
+    }
+    catch (error) {
+
+        console.error(
+            "Failed to load personal workspace:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
+
+function getProfileInitials(name, email) {
+
+    const value =
+        String(name || email || "").trim();
+
+    if (!value) {
+        return "?";
+    }
+
+    const parts =
+        value
+            .split(/\s+/)
+            .filter(Boolean);
+
+    if (parts.length >= 2) {
+
+        return (
+            parts[0].charAt(0) +
+            parts[parts.length - 1].charAt(0)
+        ).toUpperCase();
+
+    }
+
+    return value
+        .substring(0, 2)
+        .toUpperCase();
+
+}
 
 async function loadProfile() {
 
     try {
 
         /* =================================================
-           CURRENT AUTH USER
-        ================================================== */
+           GET CURRENT LOGGED-IN USER
+        ================================================= */
 
         const {
-            data: {
-                user
-            },
+            data: { user },
             error: authError
         } = await sb.auth.getUser();
 
@@ -440,7 +645,7 @@ async function loadProfile() {
         if (authError) {
 
             console.error(
-                "Unable to get authenticated user:",
+                "Auth user error:",
                 authError
             );
 
@@ -452,7 +657,7 @@ async function loadProfile() {
         if (!user) {
 
             console.error(
-                "No authenticated user found."
+                "No authenticated user."
             );
 
             return;
@@ -461,11 +666,11 @@ async function loadProfile() {
 
 
         /* =================================================
-           PROFILE
-        ================================================== */
+           LOAD PROFILE
+        ================================================= */
 
         const {
-            data: profileData,
+            data: profile,
             error: profileError
         } = await sb
             .from("profiles")
@@ -485,7 +690,7 @@ async function loadProfile() {
         if (profileError) {
 
             console.error(
-                "Failed to load profile:",
+                "Profile loading error:",
                 profileError
             );
 
@@ -495,43 +700,57 @@ async function loadProfile() {
 
 
         /* =================================================
-           STORE PROFILE
-        ================================================== */
+           BASIC PROFILE
+        ================================================= */
 
         personalUser.id =
-            profileData.id;
+            profile.id;
 
         personalUser.name =
-            profileData.full_name ||
+            profile.full_name ||
             user.user_metadata?.full_name ||
             user.email?.split("@")[0] ||
             "User";
 
         personalUser.email =
-            profileData.email ||
+            profile.email ||
             user.email ||
             "";
 
         personalUser.role =
-            profileData.role ||
+            profile.role ||
             "";
 
+        updateWorkspaceButton();
+
         personalUser.status =
-            profileData.status ||
+            profile.status ||
             "";
 
         personalUser.bio =
-            profileData.bio ||
+            profile.bio ||
             "";
 
         personalUser.profileImage =
-            profileData.avatar_url ||
+            profile.avatar_url ||
             "";
 
+        const profilePlaceholder =
+             getElement("profilePlaceholder");
+
+if (profilePlaceholder) {
+
+    profilePlaceholder.textContent =
+        getProfileInitials(
+            personalUser.name,
+            personalUser.email
+        );
+
+}
 
         /* =================================================
            FORUM MEMBERSHIPS
-        ================================================== */
+        ================================================= */
 
         const {
             data: forumMemberships,
@@ -552,7 +771,7 @@ async function loadProfile() {
         if (forumError) {
 
             console.error(
-                "Failed to load forum memberships:",
+                "Forum membership error:",
                 forumError
             );
 
@@ -561,13 +780,13 @@ async function loadProfile() {
 
         personalUser.forums =
             (forumMemberships || [])
-                .map(member => member.forums)
+                .map(row => row.forums)
                 .filter(Boolean);
 
 
         /* =================================================
            TEAM MEMBERSHIPS
-        ================================================== */
+        ================================================= */
 
         const {
             data: teamMemberships,
@@ -589,7 +808,7 @@ async function loadProfile() {
         if (teamError) {
 
             console.error(
-                "Failed to load team memberships:",
+                "Team membership error:",
                 teamError
             );
 
@@ -598,13 +817,13 @@ async function loadProfile() {
 
         personalUser.teams =
             (teamMemberships || [])
-                .map(member => member.teams)
+                .map(row => row.teams)
                 .filter(Boolean);
 
 
         /* =================================================
            DOMAIN MEMBERSHIPS
-        ================================================== */
+        ================================================= */
 
         const {
             data: domainMemberships,
@@ -626,7 +845,7 @@ async function loadProfile() {
         if (domainError) {
 
             console.error(
-                "Failed to load domain memberships:",
+                "Domain membership error:",
                 domainError
             );
 
@@ -635,20 +854,16 @@ async function loadProfile() {
 
         personalUser.domains =
             (domainMemberships || [])
-                .map(member => member.domains)
+                .map(row => row.domains)
                 .filter(Boolean);
 
 
         /* =================================================
-           BUILD PROFILE DETAILS
-        ================================================== */
+           BUILD DETAILS
+        ================================================= */
 
         personalUser.details = [];
 
-
-        /*
-         * Role
-         */
 
         if (personalUser.role) {
 
@@ -670,12 +885,6 @@ async function loadProfile() {
         }
 
 
-        /*
-         * Forum
-         *
-         * Multiple forums are supported.
-         */
-
         if (personalUser.forums.length) {
 
             personalUser.details.push({
@@ -696,12 +905,6 @@ async function loadProfile() {
         }
 
 
-        /*
-         * Team
-         *
-         * Multiple teams are supported.
-         */
-
         if (personalUser.teams.length) {
 
             personalUser.details.push({
@@ -721,12 +924,6 @@ async function loadProfile() {
 
         }
 
-
-        /*
-         * Domain
-         *
-         * Multiple domains are supported.
-         */
 
         if (personalUser.domains.length) {
 
@@ -749,20 +946,23 @@ async function loadProfile() {
 
 
         /* =================================================
-           UPDATE BASIC PROFILE UI
-        ================================================== */
+           UPDATE HEADER
+        ================================================= */
 
         setText(
             "profileName",
             personalUser.name
         );
 
-
         setText(
             "profileEmail",
             personalUser.email
         );
 
+
+        /* =================================================
+           UPDATE LOCKED EMAIL
+        ================================================= */
 
         setText(
             "lockedProfileEmail",
@@ -777,15 +977,15 @@ async function loadProfile() {
 
 
         /* =================================================
-           PROFILE DETAILS
-        ================================================== */
+           UPDATE PROFILE DETAILS
+        ================================================= */
 
         renderProfileDetails();
 
 
         /* =================================================
-           SOCIAL PROFILES
-        ================================================== */
+           UPDATE SOCIAL LINKS
+        ================================================= */
 
         updateSocialDisplay("github");
 
@@ -793,34 +993,29 @@ async function loadProfile() {
 
 
         /* =================================================
-           PROFILE PHOTO
-        ================================================== */
+           PROFILE IMAGE
+        ================================================= */
 
-        const image =
+        const profileImage =
             getElement("profileImage");
 
-        const placeholder =
-            getElement("profilePlaceholder");
 
+        if (personalUser.profileImage) {
 
-        if (
-            personalUser.profileImage
-        ) {
+            if (profileImage) {
 
-            if (image) {
-
-                image.src =
+                profileImage.src =
                     personalUser.profileImage;
 
-                image.classList.remove(
+                profileImage.classList.remove(
                     "hidden"
                 );
 
             }
 
-            if (placeholder) {
+            if (profilePlaceholder) {
 
-                placeholder.classList.add(
+                profilePlaceholder.classList.add(
                     "hidden"
                 );
 
@@ -828,17 +1023,17 @@ async function loadProfile() {
 
         } else {
 
-            if (image) {
+            if (profileImage) {
 
-                image.classList.add(
+                profileImage.classList.add(
                     "hidden"
                 );
 
             }
 
-            if (placeholder) {
+            if (profilePlaceholder) {
 
-                placeholder.classList.remove(
+                profilePlaceholder.classList.remove(
                     "hidden"
                 );
 
@@ -848,18 +1043,77 @@ async function loadProfile() {
 
 
         console.log(
-            "Real profile loaded:",
+            "REAL PROFILE:",
             personalUser
         );
 
     }
-
     catch (error) {
 
         console.error(
-            "Unexpected profile loading error:",
+            "Profile initialization error:",
             error
         );
+
+    }
+
+}
+
+function updateWorkspaceButton() {
+
+    const button =
+        getElement("personalWorkspaceBtn");
+
+    const icon =
+        getElement("workspaceBtnIcon");
+
+    const text =
+        getElement("workspaceBtnText");
+
+
+    if (!button || !text) {
+        return;
+    }
+
+
+    const isAdmin =
+        personalUser.role === "admin";
+
+
+    if (isAdmin) {
+
+        if (icon) {
+            icon.textContent = "⚙";
+        }
+
+        text.textContent =
+            "Administration";
+
+
+        button.onclick = () => {
+
+            window.location.href =
+                "../admin/admin.html";
+
+        };
+
+    }
+    else {
+
+        if (icon) {
+            icon.textContent = "⌂";
+        }
+
+        text.textContent =
+            "Personal Workspace";
+
+
+        button.onclick = () => {
+
+            window.location.href =
+                "personal.html";
+
+        };
 
     }
 
@@ -1614,9 +1868,6 @@ function initializeProfilePhoto() {
                 const image =
                     getElement("profileImage");
 
-                const placeholder =
-                    getElement("profilePlaceholder");
-
 
                 if (image) {
 
@@ -1780,7 +2031,7 @@ function initializeSocialURL() {
 
         github.addEventListener(
             "click",
-            function() {
+            function () {
 
                 handleSocialClick("github");
 
@@ -1796,7 +2047,7 @@ function initializeSocialURL() {
 
         linkedin.addEventListener(
             "click",
-            function() {
+            function () {
 
                 handleSocialClick("linkedin");
 
@@ -1958,7 +2209,7 @@ function openSocialURLModal() {
 
 
     setTimeout(
-        function() {
+        function () {
 
             input.focus();
 
@@ -2024,9 +2275,9 @@ function saveSocialURL(event) {
 
         if (
             parsedURL.protocol !==
-                "http:" &&
+            "http:" &&
             parsedURL.protocol !==
-                "https:"
+            "https:"
         ) {
 
             throw new Error();
@@ -2125,7 +2376,7 @@ function saveSocialURL(event) {
 
                     profile.linkedinUsername =
                         parts[
-                            parts.length - 1
+                        parts.length - 1
                         ];
 
                 }
@@ -2680,11 +2931,6 @@ function closeQuickCreate() {
 
 }
 
-
-/* =========================================================
-   23. CREATE WORK
-========================================================= */
-
 function initializeCreateModal() {
 
     const form =
@@ -2696,6 +2942,16 @@ function initializeCreateModal() {
     const cancel =
         getElement("cancelCreateModal");
 
+    const forumSelect =
+        getElement("createForum");
+
+    const targetSelect =
+        getElement("createTarget");
+
+
+    /* =================================================
+       FORM SUBMIT
+    ================================================= */
 
     if (form) {
 
@@ -2706,6 +2962,10 @@ function initializeCreateModal() {
 
     }
 
+
+    /* =================================================
+       CLOSE
+    ================================================= */
 
     if (close) {
 
@@ -2726,13 +2986,530 @@ function initializeCreateModal() {
 
     }
 
+
+    /* =================================================
+       FORUM CHANGE
+    ================================================= */
+
+    if (forumSelect) {
+
+        forumSelect.addEventListener(
+            "change",
+            () => {
+
+                populateCreateTargets();
+
+            }
+        );
+
+    }
+
+
+    /* =================================================
+       TARGET CHANGE
+    ================================================= */
+
+    if (targetSelect) {
+
+        targetSelect.addEventListener(
+            "change",
+            () => {
+
+                updateCreateTargetState();
+
+            }
+        );
+
+    }
+
+
+    /* =================================================
+       INITIAL LOAD
+    ================================================= */
+
+    populateCreateForums();
+
 }
 
 
-function openCreateModal(type) {
+/* =========================================================
+   POPULATE FORUMS
+========================================================= */
+async function populateCreateForums() {
 
-    currentCreateType = type;
+    const select =
+        getElement("createForum");
 
+    const targetSelect =
+        getElement("createTarget");
+
+
+    if (!select) {
+        return;
+    }
+
+
+    /* =================================================
+       RESET
+    ================================================= */
+
+    select.innerHTML = `
+        <option value="">
+            Loading forums...
+        </option>
+    `;
+
+    select.disabled = true;
+
+
+    if (targetSelect) {
+
+        targetSelect.innerHTML = `
+            <option value="">
+                Select Team/Domain
+            </option>
+        `;
+
+        targetSelect.disabled = true;
+
+    }
+
+
+    /* =================================================
+       GET REAL FORUMS FROM DATABASE
+    ================================================= */
+
+    const {
+        data: forums,
+        error
+    } = await sb
+        .from("forums")
+        .select(`
+            id,
+            name,
+            description
+        `)
+        .order(
+            "name",
+            {
+                ascending: true
+            }
+        );
+
+
+    /* =================================================
+       ERROR
+    ================================================= */
+
+    if (error) {
+
+        console.error(
+            "Create Forum loading error:",
+            error
+        );
+
+        select.innerHTML = `
+            <option value="">
+                Unable to load forums
+            </option>
+        `;
+
+        select.disabled = true;
+
+        showToast(
+            "Unable to load forums."
+        );
+
+        return;
+
+    }
+
+
+    /* =================================================
+       NO FORUMS
+    ================================================= */
+
+    if (!forums || forums.length === 0) {
+
+        select.innerHTML = `
+            <option value="">
+                No forums available
+            </option>
+        `;
+
+        select.disabled = true;
+
+        console.log(
+            "No forums found in forums table."
+        );
+
+        return;
+
+    }
+
+
+    /* =================================================
+       POPULATE
+    ================================================= */
+
+    select.innerHTML = `
+        <option value="">
+            Select forum
+        </option>
+    `;
+
+
+    forums.forEach(forum => {
+
+        const option =
+            document.createElement("option");
+
+
+        option.value =
+            forum.id;
+
+
+        option.textContent =
+            forum.name;
+
+
+        select.appendChild(
+            option
+        );
+
+    });
+
+
+    select.disabled = false;
+
+
+    console.log(
+        "Create Forum options loaded:",
+        forums
+    );
+
+}
+
+
+/* =========================================================
+   POPULATE TEAM + DOMAIN
+========================================================= */
+
+async function populateCreateTargets() {
+
+    const forumSelect =
+        getElement("createForum");
+
+    const targetSelect =
+        getElement("createTarget");
+
+
+    if (
+        !forumSelect ||
+        !targetSelect
+    ) {
+        return;
+    }
+
+
+    const forumId =
+        forumSelect.value;
+
+
+    targetSelect.innerHTML = `
+        <option value="">
+            Select Team/Domain
+        </option>
+    `;
+
+
+    targetSelect.disabled =
+        !forumId;
+
+
+    if (!forumId) {
+        return;
+    }
+
+
+    /* =================================================
+       LOAD TEAMS + DOMAINS FOR SELECTED FORUM
+    ================================================= */
+
+    const [
+        teamsResult,
+        domainsResult
+    ] = await Promise.all([
+
+        sb
+            .from("teams")
+            .select("id, name, forum_id")
+            .eq("forum_id", forumId)
+            .order("name"),
+
+        sb
+            .from("domains")
+            .select("id, name, forum_id")
+            .eq("forum_id", forumId)
+            .order("name")
+
+    ]);
+
+
+    if (teamsResult.error) {
+
+        console.error(
+            "Error loading teams:",
+            teamsResult.error
+        );
+
+    }
+
+
+    if (domainsResult.error) {
+
+        console.error(
+            "Error loading domains:",
+            domainsResult.error
+        );
+
+    }
+
+
+    /* =================================================
+       ADD TEAMS
+    ================================================= */
+
+    if (!teamsResult.error) {
+
+        (teamsResult.data || [])
+            .forEach(team => {
+
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    `team:${team.id}`;
+
+                option.textContent =
+                    `Team — ${team.name}`;
+
+                targetSelect.appendChild(
+                    option
+                );
+
+            });
+
+    }
+
+
+    /* =================================================
+       ADD DOMAINS
+    ================================================= */
+
+    if (!domainsResult.error) {
+
+        (domainsResult.data || [])
+            .forEach(domain => {
+
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    `domain:${domain.id}`;
+
+                option.textContent =
+                    `Domain — ${domain.name}`;
+
+                targetSelect.appendChild(
+                    option
+                );
+
+            });
+
+    }
+
+
+    console.log(
+        "Create Team/Domain options loaded:",
+        targetSelect.options.length - 1
+    );
+
+}
+
+
+/* =========================================================
+   TEAM / DOMAIN STATE
+========================================================= */
+
+function updateCreateTargetState() {
+
+    const forumSelect =
+        getElement("createForum");
+
+    const targetSelect =
+        getElement("createTarget");
+
+
+    if (
+        !forumSelect ||
+        !targetSelect
+    ) {
+        return;
+    }
+
+
+    targetSelect.disabled =
+        !forumSelect.value;
+
+}
+
+
+/* =========================================================
+   OPEN CREATE MODAL
+========================================================= */
+
+async function openCreateModal(type) {
+
+    currentCreateType =
+        type || "";
+
+
+    updateCreateModalTitle(
+        currentCreateType
+    );
+
+
+    /* =================================================
+       RESET FORM FIELDS
+    ================================================= */
+
+    setInput(
+        getElement("createName"),
+        ""
+    );
+
+
+    setInput(
+        getElement("createDescription"),
+        ""
+    );
+
+
+    setInput(
+        getElement("createDate"),
+        getDateKey(new Date())
+    );
+
+
+    setInput(
+        getElement("createEndDate"),
+        ""
+    );
+
+
+    /* =================================================
+       STATUS
+    ================================================= */
+
+    const statusSelect =
+        getElement("createStatus");
+
+
+    if (statusSelect) {
+
+        statusSelect.value =
+            "ongoing";
+
+    }
+
+
+    /* =================================================
+       FORUM
+    ================================================= */
+
+    const forumSelect =
+        getElement("createForum");
+
+
+    if (forumSelect) {
+
+        forumSelect.value = "";
+
+    }
+
+
+    /* =================================================
+       TEAM / DOMAIN
+       SINGLE SELECT
+    ================================================= */
+
+    const targetSelect =
+        getElement("createTarget");
+
+
+    if (targetSelect) {
+
+        targetSelect.innerHTML = `
+            <option value="">
+                Select Team/Domain
+            </option>
+        `;
+
+        targetSelect.disabled = true;
+
+    }
+
+
+    /* =================================================
+       POPULATE FORUMS
+    ================================================= */
+
+    await populateCreateForums();
+
+
+    /* =================================================
+       OPEN MODAL
+    ================================================= */
+
+    const modal =
+        getElement("createModal");
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    /* =================================================
+       FOCUS TITLE
+    ================================================= */
+
+    setTimeout(() => {
+
+        const input =
+            getElement("createName");
+
+        if (input) {
+
+            input.focus();
+
+        }
+
+    }, 50);
+
+}
+
+
+/* =========================================================
+   UPDATE MODAL TITLE
+========================================================= */
+
+function updateCreateModalTitle(type) {
 
     const config = {
 
@@ -2770,7 +3547,11 @@ function openCreateModal(type) {
 
 
     const selected =
-        config[type] || config.project;
+        config[type] ||
+        {
+            eyebrow: "NEW WORK",
+            title: "Create Work"
+        };
 
 
     setText(
@@ -2785,64 +3566,65 @@ function openCreateModal(type) {
     );
 
 
-    setText(
-        "createNameLabel",
-        `${capitalize(type)} Title`
-    );
+    const label =
+        getElement("createNameLabel");
 
 
-    const input =
-        getElement("createName");
+    if (label) {
 
-
-    if (input) {
-
-        input.value = "";
-
-        input.placeholder =
-            `Enter ${type} title`;
+        label.textContent =
+            `${capitalize(type || "Work")} Title`;
 
     }
-
-
-    setInput(
-        getElement("createDescription"),
-        ""
-    );
-
-
-    setInput(
-        getElement("createDate"),
-        getDateKey(new Date())
-    );
-
-
-    const modal =
-        getElement("createModal");
-
-
-    if (modal) {
-
-        modal.classList.remove("hidden");
-
-    }
-
-
-    setTimeout(() => {
-
-        if (input) {
-            input.focus();
-        }
-
-    }, 50);
 
 }
 
 
-function handleCreateSubmit(event) {
+/* =========================================================
+   SUBMIT CREATE
+========================================================= */
+
+async function handleCreateSubmit(event) {
 
     event.preventDefault();
 
+
+    /* =================================================
+       CURRENT USER
+    ================================================= */
+
+    const {
+        data: { user },
+        error: authError
+    } = await sb.auth.getUser();
+
+
+    if (
+        authError ||
+        !user
+    ) {
+
+        showToast(
+            "You must be logged in."
+        );
+
+        return;
+
+    }
+
+
+    /* =================================================
+       VALUES
+    ================================================= */
+
+    const type =
+        currentCreateType;
+
+    const forumId =
+        getInputValue("createForum");
+
+    const target =
+    getInputValue("createTarget");
 
     const title =
         getInputValue("createName");
@@ -2850,8 +3632,82 @@ function handleCreateSubmit(event) {
     const description =
         getInputValue("createDescription");
 
-    const date =
+    const startDate =
         getInputValue("createDate");
+
+    const endDate =
+        getInputValue("createEndDate");
+
+    const status =
+        getInputValue("createStatus") ||
+        "ongoing";
+        let teamId = null;
+let domainId = null;
+
+
+if (target.startsWith("team:")) {
+
+    teamId =
+        target.substring(5);
+
+}
+
+
+if (target.startsWith("domain:")) {
+
+    domainId =
+        target.substring(7);
+
+}
+
+    /* =================================================
+       VALIDATION
+    ================================================= */
+
+    if (!type) {
+
+        showToast(
+            "Please select what you want to create."
+        );
+
+        return;
+
+    }
+
+
+    if (!forumId) {
+
+        showToast(
+            "Please select exactly one forum."
+        );
+
+        return;
+
+    }
+
+
+    const hasTeam =
+        Boolean(teamId);
+
+    const hasDomain =
+        Boolean(domainId);
+
+
+    /*
+     * EXACTLY ONE TARGET
+     */
+
+    if (
+        hasTeam === hasDomain
+    ) {
+
+        showToast(
+            "Select exactly one team OR one domain."
+        );
+
+        return;
+
+    }
 
 
     if (!title) {
@@ -2865,10 +3721,10 @@ function handleCreateSubmit(event) {
     }
 
 
-    if (!date) {
+    if (!startDate) {
 
         showToast(
-            "Please select a date."
+            "Please select a start date."
         );
 
         return;
@@ -2876,67 +3732,247 @@ function handleCreateSubmit(event) {
     }
 
 
-    const item = {
+    if (
+        endDate &&
+        endDate < startDate
+    ) {
 
-        id:
-            Date.now(),
+        showToast(
+            "End date cannot be before start date."
+        );
 
-        type:
-            currentCreateType,
+        return;
+
+    }
+
+
+    /* =================================================
+       VERIFY TEAM / DOMAIN BELONGS TO FORUM
+    ================================================= */
+
+    if (hasTeam) {
+
+    const {
+        data: team,
+        error: teamError
+    } = await sb
+        .from("teams")
+        .select("id, forum_id")
+        .eq("id", teamId)
+        .eq("forum_id", forumId)
+        .maybeSingle();
+
+
+    if (teamError || !team) {
+
+        console.error(
+            "Team validation error:",
+            teamError
+        );
+
+        showToast(
+            "Selected team does not belong to this forum."
+        );
+
+        return;
+
+    }
+
+}
+
+
+    if (hasDomain) {
+
+    const {
+        data: domain,
+        error: domainError
+    } = await sb
+        .from("domains")
+        .select("id, forum_id")
+        .eq("id", domainId)
+        .eq("forum_id", forumId)
+        .maybeSingle();
+
+
+    if (domainError || !domain) {
+
+        console.error(
+            "Domain validation error:",
+            domainError
+        );
+
+        showToast(
+            "Selected domain does not belong to this forum."
+        );
+
+        return;
+
+    }
+
+}
+
+
+    /* =================================================
+       INSERT INTO SUPABASE
+    ================================================= */
+
+    const payload = {
+
+        profile_id:
+            user.id,
+
+        forum_id:
+            forumId,
+
+        team_id:
+            hasTeam
+                ? teamId
+                : null,
+
+        domain_id:
+            hasDomain
+                ? domainId
+                : null,
 
         title:
             title,
 
         description:
-            description,
+            description || null,
+
+        category:
+            type,
 
         status:
-            "ongoing",
+            status,
 
-        startDate:
-            date,
+        start_date:
+            startDate,
 
-        endDate:
-            "",
-
-        updatedDate:
-            date,
-
-        createdAt:
-            date
+        end_date:
+            endDate || null
 
     };
 
 
-    workItems.push(item);
+    const {
+        data,
+        error
+    } = await sb
+        .from("personal_work")
+        .insert(payload)
+        .select()
+        .single();
 
 
-    refreshWorkspace();
+    if (error) {
+
+        console.error(
+            "Create work error:",
+            error
+        );
+
+        showToast(
+            error.message ||
+            "Unable to create work."
+        );
+
+        return;
+
+    }
+
+
+    /* =================================================
+       ADD REAL DATABASE RECORD TO MEMORY
+    ================================================= */
+
+    workItems.unshift({
+
+        id:
+            data.id,
+
+        type:
+            data.category,
+
+        title:
+            data.title,
+
+        description:
+            data.description || "",
+
+        status:
+            data.status,
+
+        startDate:
+            data.start_date,
+
+        endDate:
+            data.end_date || "",
+
+        updatedDate:
+            data.updated_at
+                ? data.updated_at.slice(0, 10)
+                : data.start_date,
+
+        createdAt:
+            data.created_at,
+
+        forumId:
+            data.forum_id,
+
+        teamId:
+            data.team_id,
+
+        domainId:
+            data.domain_id
+
+    });
+
+
+    /* =================================================
+       REFRESH UI
+    ================================================= */
+
+    renderWorkCategoryColumns();
+
+    renderAllTimelines();
+
+    renderCalendar();
+
+    loadSelectedDateActivities();
+
+    loadStatistics();
 
 
     closeCreateModal();
 
 
     showToast(
-        `${capitalize(currentCreateType)} created.`
+        `${capitalize(type)} created successfully.`
     );
 
 }
 
+
+/* =========================================================
+   CLOSE CREATE MODAL
+========================================================= */
 
 function closeCreateModal() {
 
     const modal =
         getElement("createModal");
 
+
     if (modal) {
 
-        modal.classList.add("hidden");
+        modal.classList.add(
+            "hidden"
+        );
 
     }
 
 }
-
 
 /* =========================================================
    24. REFRESH EVERYTHING
@@ -2964,14 +4000,14 @@ function refreshWorkspace() {
 function renderWorkCategoryColumns() {
 
     const categories = [
-    "study",
-    "project",
-    "prototype",
-    "design",
-    "simulation",
-    "paper",
-    "reminder"
-];
+        "study",
+        "project",
+        "prototype",
+        "design",
+        "simulation",
+        "paper",
+        "reminder"
+    ];
 
 
     categories.forEach(type => {
@@ -3154,65 +4190,65 @@ function createWorkCategoryButton(
 
 
     button.addEventListener(
-    "click",
-    () => {
+        "click",
+        () => {
 
-        if (!item) {
-            return;
+            if (!item) {
+                return;
+            }
+
+            /* REMINDER */
+            if (item.type === "reminder") {
+
+                showReminderDetails(item);
+
+                return;
+            }
+
+
+            /* CATEGORY PAGE */
+            const pageMap = {
+
+                study:
+                    "study/study.html",
+
+                paper:
+                    "paper/paper.html",
+
+                simulation:
+                    "simulation/simulation.html",
+
+                project:
+                    "project/project.html",
+
+                design:
+                    "design/design.html",
+
+                prototype:
+                    "prototype/prototype.html",
+
+                design:
+                    "design/design.html",
+
+                remainder:
+                    "remainder/remainder.html"
+
+            };
+
+
+            const targetPage =
+                pageMap[item.type];
+
+
+            if (targetPage) {
+
+                window.location.href =
+                    targetPage;
+
+            }
+
         }
-
-        /* REMINDER */
-        if (item.type === "reminder") {
-
-            showReminderDetails(item);
-
-            return;
-        }
-
-
-        /* CATEGORY PAGE */
-        const pageMap = {
-
-            study:
-                "study/study.html",
-
-            paper:
-                "paper/paper.html",
-
-            simulation:
-                "simulation/simulation.html",
-
-            project:
-                "project/project.html",
-
-            design:
-                "design/design.html",
-
-            prototype:
-                "prototype/prototype.html",
-
-            design:
-                "design/design.html",
-
-            remainder:
-                "remainder/remainder.html"
-
-        };
-
-
-        const targetPage =
-            pageMap[item.type];
-
-
-        if (targetPage) {
-
-            window.location.href =
-                targetPage;
-
-        }
-
-    }
-);
+    );
 
 
     container.appendChild(button);
@@ -3937,7 +4973,13 @@ function renderCalendar() {
 
 
     if (!container) {
+
+        console.error(
+            "Calendar container #calendarDays not found."
+        );
+
         return;
+
     }
 
 
@@ -3947,6 +4989,10 @@ function renderCalendar() {
     const month =
         calendarDate.getMonth();
 
+
+    /* =================================================
+       MONTH / YEAR
+    ================================================= */
 
     if (monthLabel) {
 
@@ -3969,13 +5015,19 @@ function renderCalendar() {
     }
 
 
+    /* =================================================
+       CLEAR OLD DATES
+    ================================================= */
+
     container.innerHTML = "";
 
 
-    /*
+    /* =================================================
+       FIRST DAY OF MONTH
+
        Monday = 0
        Sunday = 6
-    */
+    ================================================= */
 
     let firstDay =
         new Date(
@@ -3991,6 +5043,10 @@ function renderCalendar() {
             : firstDay - 1;
 
 
+    /* =================================================
+       NUMBER OF DAYS
+    ================================================= */
+
     const daysInMonth =
         new Date(
             year,
@@ -3998,6 +5054,10 @@ function renderCalendar() {
             0
         ).getDate();
 
+
+    /* =================================================
+       PREVIOUS MONTH DATES
+    ================================================= */
 
     const previousMonthDays =
         new Date(
@@ -4031,6 +5091,10 @@ function renderCalendar() {
     }
 
 
+    /* =================================================
+       CURRENT MONTH DATES
+    ================================================= */
+
     for (
         let day = 1;
         day <= daysInMonth;
@@ -4055,11 +5119,21 @@ function renderCalendar() {
     }
 
 
-    const remaining =
-        Math.ceil(
-            container.children.length / 7
-        ) * 7 -
+    /* =================================================
+       NEXT MONTH DATES
+    ================================================= */
+
+    const totalCells =
         container.children.length;
+
+
+    const remaining =
+        (
+            Math.ceil(
+                totalCells / 7
+            ) * 7
+        ) -
+        totalCells;
 
 
     for (
@@ -4084,6 +5158,15 @@ function renderCalendar() {
         );
 
     }
+
+
+    console.log(
+        "Calendar rendered:",
+        year,
+        month + 1,
+        "dates:",
+        container.children.length
+    );
 
 }
 
@@ -5372,25 +6455,6 @@ function initializeTheme() {
 
 function initializeHeader() {
 
-    const workspace =
-        getElement("personalWorkspaceBtn");
-
-    if (workspace) {
-
-        workspace.addEventListener(
-            "click",
-            () => {
-
-                showToast(
-                    "You are already in Personal Workspace."
-                );
-
-            }
-        );
-
-    }
-
-
     const signout =
         getElement("signOutBtn");
 
@@ -6029,8 +7093,8 @@ function renderAccolades() {
 
                 <small>
                      ${escapeHTML(
-                     accolade.description || ""
-                     )}
+            accolade.description || ""
+        )}
                 </small>
 
             ${accolade.url
@@ -6125,12 +7189,12 @@ function addAccolade(event) {
         );
 
     const urlElement =
-    getElement("accoladeUrl");
+        getElement("accoladeUrl");
 
-const url =
-    urlElement
-        ? urlElement.value.trim()
-        : "";
+    const url =
+        urlElement
+            ? urlElement.value.trim()
+            : "";
 
 
     if (!title || !date) {
@@ -6713,7 +7777,7 @@ function submitFeedback() {
 
     });
 
-    
+
 
 
     /* =======================================================
@@ -6734,201 +7798,201 @@ function submitFeedback() {
    SUBMIT JOIN FORUM
 ======================================================= */
 
-const joinForm = document.getElementById("joinForumForm");
-const submitJoinForum = document.getElementById("submitJoinForum");
+    const joinForm = document.getElementById("joinForumForm");
+    const submitJoinForum = document.getElementById("submitJoinForum");
 
-joinForm?.addEventListener("submit", async (event) => {
+    joinForm?.addEventListener("submit", async (event) => {
 
-    event.preventDefault();
+        event.preventDefault();
 
-    const forumId = forumSelect.value;
+        const forumId = forumSelect.value;
 
-    const selectedType =
-        document.querySelector(
-            'input[name="joinMembershipType"]:checked'
-        )?.value;
+        const selectedType =
+            document.querySelector(
+                'input[name="joinMembershipType"]:checked'
+            )?.value;
 
-    const teamId =
-        selectedType === "team"
-            ? teamSelect.value
-            : null;
+        const teamId =
+            selectedType === "team"
+                ? teamSelect.value
+                : null;
 
-    const domainId =
-        selectedType === "domain"
-            ? domainSelect.value
-            : null;
-
-
-    /* ---------------------------------------------------
-       VALIDATION
-    --------------------------------------------------- */
-
-    if (!forumId) {
-
-        infoBox.textContent =
-            "Please select a forum.";
-
-        infoBox.classList.remove("hidden");
-
-        return;
-    }
+        const domainId =
+            selectedType === "domain"
+                ? domainSelect.value
+                : null;
 
 
-    if (!selectedType) {
+        /* ---------------------------------------------------
+           VALIDATION
+        --------------------------------------------------- */
 
-        infoBox.textContent =
-            "Please choose Team or Domain.";
+        if (!forumId) {
 
-        infoBox.classList.remove("hidden");
+            infoBox.textContent =
+                "Please select a forum.";
 
-        return;
-    }
+            infoBox.classList.remove("hidden");
 
-
-    if (selectedType === "team" && !teamId) {
-
-        infoBox.textContent =
-            "Please select a team.";
-
-        infoBox.classList.remove("hidden");
-
-        return;
-    }
+            return;
+        }
 
 
-    if (selectedType === "domain" && !domainId) {
+        if (!selectedType) {
 
-        infoBox.textContent =
-            "Please select a domain.";
+            infoBox.textContent =
+                "Please choose Team or Domain.";
 
-        infoBox.classList.remove("hidden");
+            infoBox.classList.remove("hidden");
 
-        return;
-    }
-
-
-    /* ---------------------------------------------------
-       CURRENT USER
-    --------------------------------------------------- */
-
-    const {
-        data: {
-            user
-        },
-        error: userError
-    } = await sb.auth.getUser();
+            return;
+        }
 
 
-    if (userError || !user) {
+        if (selectedType === "team" && !teamId) {
 
-        console.error(
-            "Unable to identify current user:",
-            userError
-        );
+            infoBox.textContent =
+                "Please select a team.";
 
-        infoBox.textContent =
-            "Your session has expired. Please log in again.";
+            infoBox.classList.remove("hidden");
 
-        infoBox.classList.remove("hidden");
-
-        return;
-    }
+            return;
+        }
 
 
-    /* ---------------------------------------------------
-       SUBMIT
-    --------------------------------------------------- */
+        if (selectedType === "domain" && !domainId) {
 
-    submitJoinForum.disabled = true;
+            infoBox.textContent =
+                "Please select a domain.";
 
-    submitJoinForum.textContent =
-        "Joining...";
+            infoBox.classList.remove("hidden");
 
-
-    try {
-
-        const { data, error } = await sb.rpc(
-            "join_forum_workspace",
-            {
-                p_forum_id: forumId,
-                p_team_id: teamId,
-                p_domain_id: domainId
-            }
-        );
+            return;
+        }
 
 
-        if (error) {
+        /* ---------------------------------------------------
+           CURRENT USER
+        --------------------------------------------------- */
+
+        const {
+            data: {
+                user
+            },
+            error: userError
+        } = await sb.auth.getUser();
+
+
+        if (userError || !user) {
 
             console.error(
-                "Join forum error:",
-                error
+                "Unable to identify current user:",
+                userError
             );
 
-            throw error;
+            infoBox.textContent =
+                "Your session has expired. Please log in again.";
+
+            infoBox.classList.remove("hidden");
+
+            return;
         }
 
 
-        /* ------------------------------------------------
-           SUCCESS
-        ------------------------------------------------ */
+        /* ---------------------------------------------------
+           SUBMIT
+        --------------------------------------------------- */
 
-        console.log(
-            "Successfully joined:",
-            data
-        );
-
-
-        modal.classList.add("hidden");
-
-
-        /* Existing toast if available */
-
-        if (typeof showToast === "function") {
-
-            showToast(
-                "Successfully joined the forum."
-            );
-
-        } else {
-
-            alert(
-                "Successfully joined the forum."
-            );
-
-        }
-
-
-        /* Refresh profile/membership data */
-
-        if (
-            typeof loadPersonalData === "function"
-        ) {
-
-            await loadPersonalData();
-
-        }
-
-    } catch (error) {
-
-        console.error(error);
-
-
-        infoBox.textContent =
-            error.message ||
-            "Unable to join this forum.";
-
-        infoBox.classList.remove("hidden");
-
-    } finally {
-
-        submitJoinForum.disabled = false;
+        submitJoinForum.disabled = true;
 
         submitJoinForum.textContent =
-            "Join Forum";
+            "Joining...";
 
-    }
 
-});
+        try {
+
+            const { data, error } = await sb.rpc(
+                "join_forum_workspace",
+                {
+                    p_forum_id: forumId,
+                    p_team_id: teamId,
+                    p_domain_id: domainId
+                }
+            );
+
+
+            if (error) {
+
+                console.error(
+                    "Join forum error:",
+                    error
+                );
+
+                throw error;
+            }
+
+
+            /* ------------------------------------------------
+               SUCCESS
+            ------------------------------------------------ */
+
+            console.log(
+                "Successfully joined:",
+                data
+            );
+
+
+            modal.classList.add("hidden");
+
+
+            /* Existing toast if available */
+
+            if (typeof showToast === "function") {
+
+                showToast(
+                    "Successfully joined the forum."
+                );
+
+            } else {
+
+                alert(
+                    "Successfully joined the forum."
+                );
+
+            }
+
+
+            /* Refresh profile/membership data */
+
+            if (
+                typeof loadPersonalData === "function"
+            ) {
+
+                await loadPersonalData();
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+
+            infoBox.textContent =
+                error.message ||
+                "Unable to join this forum.";
+
+            infoBox.classList.remove("hidden");
+
+        } finally {
+
+            submitJoinForum.disabled = false;
+
+            submitJoinForum.textContent =
+                "Join Forum";
+
+        }
+
+    });
 
 
 })();

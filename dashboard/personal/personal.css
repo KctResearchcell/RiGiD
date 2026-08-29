@@ -5115,3 +5115,329 @@ body.theme-dim .daily-record-panel {
 
     line-height: 1;
 }
+
+/* =========================================================
+   CALENDAR DATE VISIBILITY FIX
+========================================================= */
+
+.calendar-days {
+    display: grid !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+
+    width: 100%;
+    min-height: 220px;
+}
+
+
+.calendar-day {
+    display: flex !important;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 31px;
+
+    aspect-ratio: 1 / 1;
+
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    background: transparent;
+
+    color: var(--text-secondary) !important;
+
+    font-size: 10px;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+
+.calendar-day.other-month {
+    color: rgba(119, 129, 151, 0.35) !important;
+}
+
+
+.calendar-day:hover {
+    color: var(--text-main) !important;
+
+    background:
+        rgba(255, 255, 255, 0.06);
+}
+
+
+.calendar-day.selected {
+    color: var(--white) !important;
+
+    background:
+        var(--blue-soft);
+}
+
+
+.calendar-day.today {
+    color: var(--text-main) !important;
+
+    border-color:
+        rgba(77, 166, 255, 0.3);
+}
+
+/* =========================================================
+   CREATE MODAL — REFINED UI
+========================================================= */
+
+#createModal .modal {
+    width: min(620px, 92vw);
+    max-height: 88vh;
+}
+
+
+/* HEADER */
+
+#createModal .modal-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+
+#createModal .modal-title {
+    font-size: 25px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+}
+
+
+/* FORM */
+
+#createForm {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+
+#createForm .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+
+/* LABELS */
+
+#createForm label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+}
+
+
+/* INPUTS */
+
+#createForm input,
+#createForm textarea,
+#createForm select {
+
+    width: 100%;
+
+    min-height: 43px;
+
+    padding: 10px 13px;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+    line-height: 1.4;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+#createForm textarea {
+
+    min-height: 90px;
+
+    resize: vertical;
+}
+
+
+/* FOCUS */
+
+#createForm input:focus,
+#createForm textarea:focus,
+#createForm select:focus {
+
+    outline: none;
+
+    border-color:
+        rgba(77, 166, 255, 0.55);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(77, 166, 255, 0.08);
+
+}
+
+
+/* HELPER TEXT */
+
+#createForm small {
+
+    font-size: 10px;
+
+    line-height: 1.4;
+
+    opacity: 0.65;
+}
+
+
+/* TEAM / DOMAIN AREA */
+
+#createForm #createTeam,
+#createForm #createDomain {
+
+    min-height: 42px;
+}
+
+
+/* DISABLED */
+
+#createForm select:disabled {
+
+    opacity: 0.4;
+
+    cursor: not-allowed;
+}
+
+
+/* ACTIONS */
+
+#createForm .modal-actions {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 5px;
+}
+
+
+#createForm .modal-cancel,
+#createForm .modal-save {
+
+    min-height: 40px;
+
+    padding: 0 18px;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+#createForm .modal-cancel:hover,
+#createForm .modal-save:hover {
+
+    transform: translateY(-1px);
+
+}
+
+/* =========================================================
+   TEAM / DOMAIN TARGET TOGGLE
+========================================================= */
+
+.target-type-toggle {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 6px;
+
+    padding: 4px;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 9px;
+
+    background: rgba(255,255,255,0.025);
+
+}
+
+
+.target-type-btn {
+
+    height: 38px;
+
+    border: 1px solid transparent;
+
+    border-radius: 6px;
+
+    background: transparent;
+
+    color: var(--text-secondary);
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+
+}
+
+
+.target-type-btn:hover {
+
+    color: var(--text-main);
+
+    background:
+        rgba(255,255,255,0.045);
+
+}
+
+
+.target-type-btn.active {
+
+    color: var(--text-main);
+
+    background:
+        rgba(77,166,255,0.12);
+
+    border-color:
+        rgba(77,166,255,0.25);
+
+}
+
+
+.target-type-btn:active {
+
+    transform: scale(0.98);
+
+}

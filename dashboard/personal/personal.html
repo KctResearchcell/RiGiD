@@ -139,11 +139,11 @@
 
             <button class="header-btn active" id="personalWorkspaceBtn" type="button">
 
-                <span class="btn-icon">
+                <span class="btn-icon" id="workspaceBtnIcon">
                     ⌂
                 </span>
 
-                <span>
+                <span id="workspaceBtnText">
                     Personal Workspace
                 </span>
 
@@ -193,7 +193,7 @@
                 <div class="profile-photo" id="profilePhoto">
 
                     <span class="profile-placeholder" id="profilePlaceholder">
-                        NT
+
                     </span>
 
                     <img id="profileImage" class="profile-image hidden" src="" alt="Profile photo">
@@ -226,7 +226,7 @@
                 <div class="profile-name-row">
 
                     <h1 id="profileName">
-                        Navin TK
+                        Name
                     </h1>
 
                     <button class="edit-profile-field" type="button" title="Edit profile">
@@ -237,7 +237,7 @@
 
 
                 <div class="profile-email" id="profileEmail">
-                    navin@kct.ac.in
+                    mailID
                 </div>
 
 
@@ -267,7 +267,7 @@
                     </span>
 
                     <strong id="lockedProfileEmail">
-                        navin@kct.ac.in
+                        ----
                     </strong>
 
                     <small>
@@ -1454,15 +1454,12 @@
 
                 <form id="joinForumForm">
 
-
-                    <!-- =================================================
-                 FORUM
-            ================================================== -->
+                    <!-- FORUM -->
 
                     <div class="form-group">
 
                         <label for="joinForumSelect">
-                            Forum
+                            FORUM
                         </label>
 
                         <select id="joinForumSelect" required>
@@ -1476,58 +1473,18 @@
                     </div>
 
 
-                    <!-- =================================================
-                 MEMBERSHIP TYPE
-            ================================================== -->
+                    <!-- TEAM / DOMAIN -->
 
                     <div class="form-group">
 
-                        <label>
-                            Join as
+                        <label for="joinTarget">
+                            TEAM / DOMAIN
                         </label>
 
-                        <div class="join-forum-type-options">
-
-                            <label class="join-forum-type-option">
-
-                                <input type="radio" name="joinMembershipType" value="team" id="joinTeamRadio">
-
-                                <span>
-                                    Team
-                                </span>
-
-                            </label>
-
-
-                            <label class="join-forum-type-option">
-
-                                <input type="radio" name="joinMembershipType" value="domain" id="joinDomainRadio">
-
-                                <span>
-                                    Domain
-                                </span>
-
-                            </label>
-
-                        </div>
-
-                    </div>
-
-
-                    <!-- =================================================
-                 TEAM
-            ================================================== -->
-
-                    <div class="form-group hidden" id="joinTeamGroup">
-
-                        <label for="joinTeamSelect">
-                            Team
-                        </label>
-
-                        <select id="joinTeamSelect">
+                        <select id="joinTarget" required disabled>
 
                             <option value="">
-                                Select Team
+                                Select Team/Domain
                             </option>
 
                         </select>
@@ -1535,30 +1492,7 @@
                     </div>
 
 
-                    <!-- =================================================
-                 DOMAIN
-            ================================================== -->
-
-                    <div class="form-group hidden" id="joinDomainGroup">
-
-                        <label for="joinDomainSelect">
-                            Domain
-                        </label>
-
-                        <select id="joinDomainSelect">
-
-                            <option value="">
-                                Select Domain
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <!-- =================================================
-                 INFORMATION
-            ================================================== -->
+                    <!-- INFORMATION -->
 
                     <div class="join-forum-info hidden" id="joinForumInfo">
                         Select a forum and then choose
@@ -1566,16 +1500,13 @@
                     </div>
 
 
-                    <!-- =================================================
-                 ACTIONS
-            ================================================== -->
+                    <!-- ACTIONS -->
 
                     <div class="modal-actions">
 
                         <button class="modal-cancel" id="cancelJoinForumModal" type="button">
                             Cancel
                         </button>
-
 
                         <button class="modal-save" id="submitJoinForum" type="submit">
                             Join Forum
@@ -1883,9 +1814,53 @@
 
                 <form id="createForm">
 
+                    <!-- FORUM -->
+
                     <div class="form-group">
 
-                        <label id="createNameLabel">
+                        <label for="createForum">
+                            FORUM
+                        </label>
+
+                        <select id="createForum" required>
+
+                            <option value="">
+                                Select forum
+                            </option>
+
+                        </select>
+
+                        <small>
+                            Select exactly one forum.
+                        </small>
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="createTarget">
+                            TEAM / DOMAIN
+                        </label>
+
+                        <select id="createTarget" required disabled>
+
+                            <option value="">
+                                Select Team/Domain
+                            </option>
+
+                        </select>
+
+                        <small>
+                            Select one team or one domain.
+                        </small>
+
+                    </div>
+
+                    <!-- TITLE -->
+
+                    <div class="form-group">
+
+                        <label id="createNameLabel" for="createName">
                             Project Name
                         </label>
 
@@ -1894,10 +1869,12 @@
                     </div>
 
 
+                    <!-- DESCRIPTION -->
+
                     <div class="form-group">
 
-                        <label>
-                            Description
+                        <label for="createDescription">
+                            DESCRIPTION
                         </label>
 
                         <textarea id="createDescription" placeholder="Describe your work..."></textarea>
@@ -1905,13 +1882,55 @@
                     </div>
 
 
+                    <!-- START DATE -->
+
                     <div class="form-group">
 
-                        <label>
-                            Start Date
+                        <label for="createDate">
+                            START DATE
                         </label>
 
                         <input id="createDate" type="date" required>
+
+                    </div>
+
+
+                    <!-- END DATE -->
+
+                    <div class="form-group">
+
+                        <label for="createEndDate">
+                            END DATE
+                        </label>
+
+                        <input id="createEndDate" type="date">
+
+                    </div>
+
+
+                    <!-- STATUS -->
+
+                    <div class="form-group">
+
+                        <label for="createStatus">
+                            STATUS
+                        </label>
+
+                        <select id="createStatus">
+
+                            <option value="ongoing">
+                                Ongoing
+                            </option>
+
+                            <option value="completed">
+                                Completed
+                            </option>
+
+                            <option value="paused">
+                                Paused
+                            </option>
+
+                        </select>
 
                     </div>
 

@@ -1,48 +1,42 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>RiGiD — Study</title>
 
 
     <!-- =====================================================
-         FONTS
-    ====================================================== -->
+     FONTS
+====================================================== -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
 
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
-        rel="stylesheet"
-    >
+        rel="stylesheet">
 
 
     <!-- =====================================================
-         CSS
-    ====================================================== -->
+     CSS
+====================================================== -->
 
-    <link
-        rel="stylesheet"
-        href="study.css"
-    >
+    <link rel="stylesheet" href="study.css">
+
 
 </head>
-
 
 <body>
 
 
     <!-- =====================================================
-         BACKGROUND
-    ====================================================== -->
+     BACKGROUND
+====================================================== -->
 
     <div class="study-background"></div>
 
@@ -55,157 +49,132 @@
 
 
     <!-- =====================================================
-         HEADER
-    ====================================================== -->
+     HEADER
+====================================================== -->
 
     <header class="study-header">
 
-    <!-- LEFT -->
-    <div class="study-header-left">
+        <div class="study-header-left">
 
-        <button
-            class="back-button"
-            id="backToWorkspace"
-            type="button"
-        >
-            <span class="back-icon">←</span>
-            <span>Workspace</span>
-        </button>
+            <button class="back-button" id="backToWorkspace" type="button">
 
-        <div class="study-brand">
+                <span class="back-icon">
+                    ←
+                </span>
 
-            <div class="study-brand-mark">
-                R
-            </div>
+                <span>
+                    Workspace
+                </span>
 
-            <div class="study-brand-text">
+            </button>
 
-                <div class="study-brand-name">
-                    R<span>i</span>G<span>i</span>D
+
+            <div class="study-brand">
+
+                <div class="study-brand-mark">
+                    S
                 </div>
 
-                <div class="study-brand-section">
-                    STUDY
+
+                <div class="study-brand-text">
+
+                    <div class="study-brand-name">
+                        R<span>i</span>G<span>i</span>D
+                    </div>
+
+
+                    <div class="study-brand-section">
+                        STUDY
+                    </div>
+
                 </div>
 
             </div>
 
         </div>
 
-    </div>
 
 
-    <!-- CENTER -->
-    <nav class="study-navigation">
+        <nav class="study-navigation">
 
-        <button
-            class="study-nav-item active"
-            data-section="learning"
-            type="button"
-        >
-            Learning
-        </button>
-
-        <button
-            class="study-nav-item"
-            data-section="concepts"
-            type="button"
-        >
-            Concepts
-        </button>
-
-        <button
-            class="study-nav-item"
-            data-section="problems"
-            type="button"
-        >
-            Problems
-        </button>
-
-        <button
-            class="study-nav-item"
-            data-section="resources"
-            type="button"
-        >
-            Resources
-        </button>
-
-        <button
-            class="study-nav-item"
-            data-section="timeline"
-            type="button"
-        >
-            Timeline
-        </button>
-
-        <button
-            class="study-nav-item"
-            data-section="uploads"
-            type="button"
-        >
-            Files
-        </button>
-
-    </nav>
+            <button class="study-nav-item active" data-section="learning" type="button">
+                Learning
+            </button>
 
 
-    <!-- RIGHT -->
-    <div class="study-header-right">
+            <button class="study-nav-item" data-section="concepts" type="button">
+                Concepts
+            </button>
 
-        <div class="study-live-time">
 
-            <span
-                class="live-date"
-                id="liveDate"
-            >
-                23 AUG 2026
-            </span>
+            <button class="study-nav-item" data-section="problems" type="button">
+                Problems
+            </button>
 
-            <span class="live-separator">
-                •
-            </span>
 
-            <span
-                class="live-clock"
-                id="liveClock"
-            >
-                10:42:18 AM
-            </span>
+            <button class="study-nav-item" data-section="resources" type="button">
+                Resources
+            </button>
+
+
+            <button class="study-nav-item" data-section="timeline" type="button">
+                Timeline
+            </button>
+
+
+            <button class="study-nav-item" data-section="uploads" type="button">
+                Files
+            </button>
+
+        </nav>
+
+
+
+        <div class="study-header-right">
+
+            <div class="study-live-time">
+
+                <span class="live-date" id="liveDate">
+                    DD MM YYYY
+                </span>
+
+
+                <span class="live-separator">
+                    •
+                </span>
+
+
+                <span class="live-clock" id="liveClock">
+                    10:10:00 AM
+                </span>
+
+            </div>
+
+
+            <button class="header-icon-button" id="studySettings" type="button" title="Settings">
+                ⚙
+            </button>
 
         </div>
 
-
-        <button
-            class="header-icon-button"
-            id="studySettings"
-            type="button"
-            title="Settings"
-        >
-            ⚙
-        </button>
-
-    </div>
-
-</header>
+    </header>
 
 
 
     <!-- =====================================================
-         MAIN
-    ====================================================== -->
+     MAIN
+====================================================== -->
 
     <main class="study-container">
 
 
 
         <!-- =================================================
-             COMPACT STUDY HEADER
-        ================================================== -->
+         STUDY HERO
+    ================================================== -->
 
         <section class="study-hero">
 
-
-            <!-- LEFT -->
 
             <div class="study-hero-main">
 
@@ -215,10 +184,8 @@
                         STUDY
                     </span>
 
-                    <span
-                        class="study-status"
-                        id="studyStatus"
-                    >
+
+                    <span class="study-status" id="studyStatus">
                         ● IN PROGRESS
                     </span>
 
@@ -226,44 +193,22 @@
 
 
                 <h1 id="studyTopic">
-                    Power Electronics Fundamentals
+                    Topic
                 </h1>
 
 
-                <p
-                    class="study-introduction"
-                    id="studyIntroduction"
-                >
-                    Understanding the fundamentals of power
-                    electronic converters, switching devices,
-                    control and energy conversion.
+                <p class="study-introduction" id="studyIntroduction">
+                    Understanding the fundamentals
                 </p>
 
 
-                <div
-                    class="study-tags"
-                    id="studyTags"
-                >
-
-                    <span>
-                        POWER ELECTRONICS
-                    </span>
-
-                    <span>
-                        PMSG
-                    </span>
-
-                    <span>
-                        CONTROL
-                    </span>
-
+                <div class="study-tags" id="studyTags">
+                    <!-- JavaScript -->
                 </div>
 
             </div>
 
 
-
-            <!-- RIGHT -->
 
             <div class="study-hero-side">
 
@@ -274,19 +219,22 @@
                         CONFIDENCE
                     </span>
 
+
                     <strong id="confidenceValue">
-                        4 / 5
+                        0 / 5
                     </strong>
+
 
                     <div class="confidence-bars">
 
-                        <span class="confidence active"></span>
-                        <span class="confidence active"></span>
-                        <span class="confidence active"></span>
-                        <span class="confidence active"></span>
+                        <span class="confidence"></span>
+                        <span class="confidence"></span>
+                        <span class="confidence"></span>
+                        <span class="confidence"></span>
                         <span class="confidence"></span>
 
                     </div>
+
 
                     <div class="confidence-actions">
 
@@ -294,17 +242,21 @@
                             1
                         </button>
 
+
                         <button data-confidence="2" type="button">
                             2
                         </button>
+
 
                         <button data-confidence="3" type="button">
                             3
                         </button>
 
+
                         <button data-confidence="4" type="button">
                             4
                         </button>
+
 
                         <button data-confidence="5" type="button">
                             5
@@ -313,6 +265,7 @@
                     </div>
 
                 </div>
+
 
 
                 <div class="hero-meta">
@@ -329,6 +282,7 @@
 
                     </div>
 
+
                     <div>
 
                         <span>
@@ -336,10 +290,11 @@
                         </span>
 
                         <strong id="studyCreatedDate">
-                            18 Aug 2026
+                            —
                         </strong>
 
                     </div>
+
 
                     <div>
 
@@ -348,7 +303,7 @@
                         </span>
 
                         <strong id="studyUpdatedDate">
-                            23 Aug 2026
+                            —
                         </strong>
 
                     </div>
@@ -362,22 +317,11 @@
 
 
         <!-- =================================================
-             NAVIGATION
-        ================================================== -->
+         LEARNING
+    ================================================== -->
 
-      
+        <section class="study-section" id="learningSection">
 
-
-
-        <!-- =================================================
-             ROW 1
-             LEARNING + OBJECTIVE
-        ================================================== -->
-
-        <section
-            class="study-section"
-            id="learningSection"
-        >
 
             <div class="section-heading compact-heading">
 
@@ -396,10 +340,11 @@
             </div>
 
 
+
             <div class="learning-grid">
 
 
-                <!-- WHAT I LEARNED -->
+                <!-- MAIN LEARNING -->
 
                 <article class="study-card learning-card">
 
@@ -417,41 +362,23 @@
 
                         </div>
 
-                        <button
-                            class="small-action"
-                            id="editLearning"
-                            type="button"
-                        >
+
+                        <button class="small-action" id="editLearning" type="button">
                             Edit
                         </button>
 
                     </div>
 
 
-                    <div
-                        class="learning-content"
-                        id="learningContent"
-                    >
-
-                        <p>
-                            Power electronic converters control
-                            electrical energy by switching
-                            semiconductor devices at high frequency.
-                        </p>
-
-                        <p>
-                            Duty cycle affects average output voltage,
-                            while inductors and capacitors smooth
-                            the resulting waveform.
-                        </p>
-
+                    <div class="learning-content" id="learningContent">
+                        <!-- JavaScript -->
                     </div>
 
                 </article>
 
 
 
-                <!-- LEARNING OBJECTIVE -->
+                <!-- OBJECTIVE -->
 
                 <article class="study-card objective-card">
 
@@ -469,12 +396,13 @@
 
                         </div>
 
-                        <button
-                            class="small-action"
-                            id="editObjective"
-                            type="button"
-                        >
+
+                        <button class="small-action" id="editObjective" type="button">
                             Edit
+                        </button>
+
+                        <button class="small-action" id="deleteObjective" type="button">
+                            Delete
                         </button>
 
                     </div>
@@ -486,9 +414,9 @@
                             ◎
                         </div>
 
+
                         <p id="learningObjective">
-                            Understand how switching converters
-                            regulate and transfer electrical energy.
+                            <!-- JavaScript -->
                         </p>
 
                     </div>
@@ -500,8 +428,8 @@
                             NEXT FOCUS
                         </span>
 
-                        <strong>
-                            Switching losses
+                        <strong id="nextFocus">
+                            —
                         </strong>
 
                     </div>
@@ -530,24 +458,16 @@
 
                     </div>
 
-                    <button
-                        class="add-button"
-                        id="addKnowledge"
-                        type="button"
-                    >
+
+                    <button class="add-button" id="addKnowledge" type="button">
                         + Add
                     </button>
 
                 </div>
 
 
-                <div
-                    class="knowledge-grid"
-                    id="knowledgeList"
-                >
-
+                <div class="knowledge-grid" id="knowledgeList">
                     <!-- JavaScript -->
-
                 </div>
 
             </article>
@@ -557,14 +477,10 @@
 
 
         <!-- =================================================
-             ROW 2
-             CONCEPTS + PROBLEMS
-        ================================================== -->
+         CONCEPTS + PROBLEMS
+    ================================================== -->
 
-        <section
-            class="study-section"
-            id="conceptsSection"
-        >
+        <section class="study-section" id="conceptsSection">
 
             <div class="two-column-layout">
 
@@ -587,24 +503,16 @@
 
                         </div>
 
-                        <button
-                            class="primary-study-button small-button"
-                            id="addConcept"
-                            type="button"
-                        >
+
+                        <button class="primary-study-button small-button" id="addConcept" type="button">
                             + Concept
                         </button>
 
                     </div>
 
 
-                    <div
-                        class="concept-grid"
-                        id="conceptGrid"
-                    >
-
+                    <div class="concept-grid" id="conceptGrid">
                         <!-- JavaScript -->
-
                     </div>
 
                 </div>
@@ -613,10 +521,7 @@
 
                 <!-- PROBLEMS -->
 
-                <div
-                    id="problemsSection"
-                    class="inner-section"
-                >
+                <div id="problemsSection" class="inner-section">
 
                     <div class="section-heading compact-heading">
 
@@ -632,24 +537,16 @@
 
                         </div>
 
-                        <button
-                            class="primary-study-button small-button"
-                            id="addProblem"
-                            type="button"
-                        >
+
+                        <button class="primary-study-button small-button" id="addProblem" type="button">
                             + Problem
                         </button>
 
                     </div>
 
 
-                    <div
-                        class="problems-list"
-                        id="problemsList"
-                    >
-
+                    <div class="problems-list" id="problemsList">
                         <!-- JavaScript -->
-
                     </div>
 
                 </div>
@@ -661,14 +558,10 @@
 
 
         <!-- =================================================
-             ROW 3
-             RESOURCES + RELATED WORK
-        ================================================== -->
+         RESOURCES + RELATED WORK
+    ================================================== -->
 
-        <section
-            class="study-section"
-            id="resourcesSection"
-        >
+        <section class="study-section" id="resourcesSection">
 
             <div class="two-column-layout">
 
@@ -691,24 +584,16 @@
 
                         </div>
 
-                        <button
-                            class="primary-study-button small-button"
-                            id="addResource"
-                            type="button"
-                        >
+
+                        <button class="primary-study-button small-button" id="addResource" type="button">
                             + Resource
                         </button>
 
                     </div>
 
 
-                    <div
-                        class="resources-list"
-                        id="resourcesList"
-                    >
-
+                    <div class="resources-list" id="resourcesList">
                         <!-- JavaScript -->
-
                     </div>
 
                 </div>
@@ -733,24 +618,16 @@
 
                         </div>
 
-                        <button
-                            class="primary-study-button small-button"
-                            id="addRelatedWork"
-                            type="button"
-                        >
+
+                        <button class="primary-study-button small-button" id="addRelatedWork" type="button">
                             + Link
                         </button>
 
                     </div>
 
 
-                    <div
-                        class="related-work-grid"
-                        id="relatedWorkGrid"
-                    >
-
+                    <div class="related-work-grid" id="relatedWorkGrid">
                         <!-- JavaScript -->
-
                     </div>
 
                 </div>
@@ -762,14 +639,10 @@
 
 
         <!-- =================================================
-             TIMELINE / STUDY PLAN
-        ================================================== -->
+         TIMELINE
+    ================================================== -->
 
-        <section
-            class="study-section"
-            id="timelineSection"
-        >
-
+        <section class="study-section" id="timelineSection">
 
             <div class="section-heading">
 
@@ -791,35 +664,21 @@
                 </div>
 
 
-                <button
-                    class="primary-study-button"
-                    id="addStudySession"
-                    type="button"
-                >
+                <button class="primary-study-button" id="addStudySession" type="button">
                     + Add Timeline
                 </button>
 
             </div>
 
 
-
             <div class="timeline-layout">
 
 
-                <!-- TIMELINE -->
-
-                <div
-                    class="study-timeline"
-                    id="studyTimeline"
-                >
-
+                <div class="study-timeline" id="studyTimeline">
                     <!-- JavaScript -->
-
                 </div>
 
 
-
-                <!-- NEXT WORK -->
 
                 <aside class="future-work-panel">
 
@@ -837,91 +696,20 @@
 
                         </div>
 
-                        <span class="future-count">
-                            03
+
+                        <span class="future-count" id="futureWorkCount">
+                            0
                         </span>
 
                     </div>
 
 
-                    <div
-                        class="future-work-list"
-                        id="futureWorkList"
-                    >
-
-                        <div class="future-work-item">
-
-                            <div class="future-date">
-                                25 AUG
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Study switching losses
-                                </strong>
-
-                                <p>
-                                    Understand conduction and
-                                    switching loss mechanisms.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="future-work-item">
-
-                            <div class="future-date">
-                                27 AUG
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Solve converter problems
-                                </strong>
-
-                                <p>
-                                    Apply the theory to numerical
-                                    converter design problems.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="future-work-item">
-
-                            <div class="future-date">
-                                30 AUG
-                            </div>
-
-                            <div>
-
-                                <strong>
-                                    Apply knowledge to PMSG
-                                </strong>
-
-                                <p>
-                                    Connect the concepts learned
-                                    here to the active rectifier.
-                                </p>
-
-                            </div>
-
-                        </div>
-
+                    <div class="future-work-list" id="futureWorkList">
+                        <!-- JavaScript -->
                     </div>
 
 
-                    <button
-                        class="future-add-button"
-                        id="addFutureWork"
-                        type="button"
-                    >
+                    <button class="future-add-button" id="addFutureWork" type="button">
                         + Add Future Work
                     </button>
 
@@ -934,14 +722,10 @@
 
 
         <!-- =================================================
-             UPLOADS
-        ================================================== -->
+         UPLOADS
+    ================================================== -->
 
-        <section
-            class="study-section"
-            id="uploadsSection"
-        >
-
+        <section class="study-section" id="uploadsSection">
 
             <div class="section-heading">
 
@@ -964,46 +748,29 @@
 
                 <div class="upload-actions-top">
 
-                    <button
-                        class="secondary-study-button"
-                        id="addLinkButton"
-                        type="button"
-                    >
+                    <button class="secondary-study-button" id="addLinkButton" type="button">
                         🔗 Add Link
                     </button>
 
 
-                    <button
-                        class="primary-study-button"
-                        id="uploadButton"
-                        type="button"
-                    >
+                    <button class="primary-study-button" id="uploadButton" type="button">
                         ↑ Upload
                     </button>
 
-                    <input
-                        type="file"
-                        id="studyFileInput"
-                        multiple
-                        hidden
-                    >
+
+                    <input type="file" id="studyFileInput" multiple hidden>
 
                 </div>
 
             </div>
 
 
-
-            <!-- UPLOAD DROP ZONE -->
-
-            <div
-                class="study-upload-zone"
-                id="studyUploadZone"
-            >
+            <div class="study-upload-zone" id="studyUploadZone">
 
                 <div class="upload-symbol">
                     ↑
                 </div>
+
 
                 <div>
 
@@ -1021,16 +788,8 @@
             </div>
 
 
-
-            <!-- FILES / LINKS -->
-
-            <div
-                class="attachment-grid"
-                id="studyUploadGrid"
-            >
-
+            <div class="attachment-grid" id="studyUploadGrid">
                 <!-- JavaScript -->
-
             </div>
 
         </section>
@@ -1038,16 +797,13 @@
 
 
         <!-- =================================================
-             STUDY REFLECTION
-        ================================================== -->
+         REFLECTION
+    ================================================== -->
 
         <section class="study-section reflection-section">
 
-
             <div class="reflection-grid">
 
-
-                <!-- CURRENT STATE -->
 
                 <div class="study-card current-state-card">
 
@@ -1077,7 +833,7 @@
                             </span>
 
                             <strong id="summaryConfidence">
-                                4 / 5
+                                0 / 5
                             </strong>
 
                         </div>
@@ -1090,7 +846,7 @@
                             </span>
 
                             <strong id="summaryConcepts">
-                                4
+                                0
                             </strong>
 
                         </div>
@@ -1103,7 +859,7 @@
                             </span>
 
                             <strong id="summaryProblems">
-                                1
+                                0
                             </strong>
 
                         </div>
@@ -1116,7 +872,7 @@
                             </span>
 
                             <strong id="summaryTime">
-                                3h 30m
+                                0h
                             </strong>
 
                         </div>
@@ -1126,8 +882,6 @@
                 </div>
 
 
-
-                <!-- NEXT STEP -->
 
                 <div class="study-card reflection-card">
 
@@ -1148,17 +902,10 @@
                     </div>
 
 
-                    <textarea
-                        id="nextStudy"
-                        placeholder="Write what you need to learn next..."
-                    ></textarea>
+                    <textarea id="nextStudy" placeholder="Write what you need to learn next..."></textarea>
 
 
-                    <button
-                        class="primary-study-button"
-                        id="saveReflection"
-                        type="button"
-                    >
+                    <button class="primary-study-button" id="saveReflection" type="button">
                         Save Plan
                     </button>
 
@@ -1171,25 +918,17 @@
 
 
         <!-- =================================================
-             BOTTOM ACTIONS
-        ================================================== -->
+         BOTTOM ACTIONS
+    ================================================== -->
 
         <div class="study-bottom-actions">
 
-            <button
-                class="secondary-study-button"
-                id="editStudy"
-                type="button"
-            >
+            <button class="secondary-study-button" id="editStudy" type="button">
                 ✎ Edit Study
             </button>
 
 
-            <button
-                class="secondary-study-button danger"
-                id="archiveStudy"
-                type="button"
-            >
+            <button class="secondary-study-button danger" id="archiveStudy" type="button">
                 Archive Study
             </button>
 
@@ -1200,13 +939,252 @@
 
 
     <!-- =====================================================
-         KNOWLEDGE MODAL
-    ====================================================== -->
+     EDIT STUDY MODAL
+====================================================== -->
 
-    <div
-        class="study-modal hidden"
-        id="knowledgeModal"
-    >
+    <div class="study-modal hidden" id="studyEditModal">
+
+        <div class="study-modal-box large-modal">
+
+            <div class="modal-heading">
+
+                <div>
+
+                    <span>
+                        STUDY INFORMATION
+                    </span>
+
+                    <h3>
+                        Edit Study
+                    </h3>
+
+                </div>
+
+
+                <button class="modal-close" id="closeStudyEditModal" type="button">
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="form-grid">
+
+
+                <div class="form-field full">
+
+                    <label>
+                        Study Title
+                    </label>
+
+                    <input id="studyTitleInput" type="text" placeholder="What are you studying?">
+
+                </div>
+
+
+                <div class="form-field full">
+
+                    <label>
+                        Introduction
+                    </label>
+
+                    <textarea id="studyIntroductionInput" placeholder="Briefly describe this study..."></textarea>
+
+                </div>
+
+
+                <div class="form-field full">
+
+                    <label>
+                        Objective
+                    </label>
+
+                    <textarea id="studyObjectiveInput" placeholder="What are you trying to understand?"></textarea>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label>
+                        Status
+                    </label>
+
+                    <select id="studyStatusInput">
+
+                        <option value="in-progress">
+                            In Progress
+                        </option>
+
+                        <option value="planned">
+                            Planned
+                        </option>
+
+                        <option value="completed">
+                            Completed
+                        </option>
+
+                        <option value="paused">
+                            Paused
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-field">
+
+                    <label>
+                        Tags
+                    </label>
+
+                    <input id="studyTagsInput" type="text" placeholder="Example: Power, Control, PMSG">
+
+                </div>
+
+
+                <div class="form-field full">
+
+                    <label>
+                        Next Focus
+                    </label>
+
+                    <input id="studyNextStudyInput" type="text" placeholder="What should you study next?">
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button class="secondary-study-button" id="cancelStudyEdit" type="button">
+                    Cancel
+                </button>
+
+
+                <button class="primary-study-button" id="saveStudyEdit" type="button">
+                    Save Study
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+     LEARNING MODAL
+====================================================== -->
+
+    <div class="study-modal hidden" id="learningModal">
+
+        <div class="study-modal-box">
+
+            <div class="modal-heading">
+
+                <div>
+
+                    <span>
+                        MAIN LEARNING
+                    </span>
+
+                    <h3>
+                        Edit Learning
+                    </h3>
+
+                </div>
+
+
+                <button class="modal-close" id="closeLearningModal" type="button">
+                    ×
+                </button>
+
+            </div>
+
+
+            <textarea id="learningInput" placeholder="Write what you learned..."></textarea>
+
+
+            <div class="modal-actions">
+
+                <button class="secondary-study-button" id="cancelLearning" type="button">
+                    Cancel
+                </button>
+
+
+                <button class="primary-study-button" id="saveLearning" type="button">
+                    Save Learning
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+     OBJECTIVE MODAL
+====================================================== -->
+
+    <div class="study-modal hidden" id="objectiveModal">
+
+        <div class="study-modal-box">
+
+            <div class="modal-heading">
+
+                <div>
+
+                    <span>
+                        OBJECTIVE
+                    </span>
+
+                    <h3>
+                        Edit Objective
+                    </h3>
+
+                </div>
+
+
+                <button class="modal-close" id="closeObjectiveModal" type="button">
+                    ×
+                </button>
+
+            </div>
+
+
+            <textarea id="objectiveInput" placeholder="What are you trying to understand?"></textarea>
+
+
+            <div class="modal-actions">
+
+                <button class="secondary-study-button" id="cancelObjective" type="button">
+                    Cancel
+                </button>
+
+
+                <button class="primary-study-button" id="saveObjective" type="button">
+                    Save Objective
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+     KNOWLEDGE MODAL
+====================================================== -->
+
+    <div class="study-modal hidden" id="knowledgeModal">
 
         <div class="study-modal-box">
 
@@ -1224,39 +1202,25 @@
 
                 </div>
 
-                <button
-                    class="modal-close"
-                    id="closeKnowledgeModal"
-                    type="button"
-                >
+
+                <button class="modal-close" id="closeKnowledgeModal" type="button">
                     ×
                 </button>
 
             </div>
 
 
-            <textarea
-                id="knowledgeInput"
-                placeholder="What important thing did you learn?"
-            ></textarea>
+            <textarea id="knowledgeInput" placeholder="What important thing did you learn?"></textarea>
 
 
             <div class="modal-actions">
 
-                <button
-                    class="secondary-study-button"
-                    id="cancelKnowledge"
-                    type="button"
-                >
+                <button class="secondary-study-button" id="cancelKnowledge" type="button">
                     Cancel
                 </button>
 
 
-                <button
-                    class="primary-study-button"
-                    id="saveKnowledge"
-                    type="button"
-                >
+                <button class="primary-study-button" id="saveKnowledge" type="button">
                     Add Knowledge
                 </button>
 
@@ -1269,13 +1233,110 @@
 
 
     <!-- =====================================================
-         PROBLEM MODAL
-    ====================================================== -->
+     CONCEPT MODAL
+====================================================== -->
 
-    <div
-        class="study-modal hidden"
-        id="problemModal"
-    >
+    <div class="study-modal hidden" id="conceptModal">
+
+        <div class="study-modal-box">
+
+            <div class="modal-heading">
+
+                <div>
+
+                    <span>
+                        KNOWLEDGE MAP
+                    </span>
+
+                    <h3 id="conceptModalTitle">
+                        Add Concept
+                    </h3>
+
+                </div>
+
+
+                <button class="modal-close" id="closeConceptModal" type="button">
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Concept
+                </label>
+
+                <input id="conceptTitleInput" type="text" placeholder="Concept name">
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Description
+                </label>
+
+                <textarea id="conceptDescriptionInput" placeholder="Explain this concept..."></textarea>
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Understanding Level
+                </label>
+
+                <select id="conceptLevelInput">
+
+                    <option value="learning">
+                        Learning
+                    </option>
+
+                    <option value="understood">
+                        Understood
+                    </option>
+
+                    <option value="strong">
+                        Strong
+                    </option>
+
+                    <option value="mastered">
+                        Mastered
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button class="secondary-study-button" id="cancelConcept" type="button">
+                    Cancel
+                </button>
+
+
+                <button class="primary-study-button" id="saveConcept" type="button">
+                    Save Concept
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+     PROBLEM MODAL
+====================================================== -->
+
+    <div class="study-modal hidden" id="problemModal">
 
         <div class="study-modal-box">
 
@@ -1293,46 +1354,28 @@
 
                 </div>
 
-                <button
-                    class="modal-close"
-                    id="closeProblemModal"
-                    type="button"
-                >
+
+                <button class="modal-close" id="closeProblemModal" type="button">
                     ×
                 </button>
 
             </div>
 
 
-            <input
-                id="problemTitleInput"
-                type="text"
-                placeholder="What problem or doubt did you find?"
-            >
+            <input id="problemTitleInput" type="text" placeholder="What problem or doubt did you find?">
 
 
-            <textarea
-                id="problemDescriptionInput"
-                placeholder="Describe the problem..."
-            ></textarea>
+            <textarea id="problemDescriptionInput" placeholder="Describe the problem..."></textarea>
 
 
             <div class="modal-actions">
 
-                <button
-                    class="secondary-study-button"
-                    id="cancelProblem"
-                    type="button"
-                >
+                <button class="secondary-study-button" id="cancelProblem" type="button">
                     Cancel
                 </button>
 
 
-                <button
-                    class="primary-study-button"
-                    id="saveProblem"
-                    type="button"
-                >
+                <button class="primary-study-button" id="saveProblem" type="button">
                     Add Problem
                 </button>
 
@@ -1345,13 +1388,334 @@
 
 
     <!-- =====================================================
-         LINK MODAL
-    ====================================================== -->
+     RESOURCE MODAL
+====================================================== -->
 
-    <div
-        class="study-modal hidden"
-        id="linkModal"
-    >
+    <div class="study-modal hidden" id="resourceModal">
+
+        <div class="study-modal-box">
+
+            <div class="modal-heading">
+
+                <div>
+
+                    <span>
+                        STUDY MATERIAL
+                    </span>
+
+                    <h3 id="resourceModalTitle">
+                        Add Resource
+                    </h3>
+
+                </div>
+
+
+                <button class="modal-close" id="closeResourceModal" type="button">
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Resource Title
+                </label>
+
+                <input id="resourceTitleInput" type="text" placeholder="Resource name">
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Type
+                </label>
+
+                <select id="resourceTypeInput">
+
+                    <option value="book">
+                        Book
+                    </option>
+
+                    <option value="paper">
+                        Research Paper
+                    </option>
+
+                    <option value="video">
+                        Video
+                    </option>
+
+                    <option value="website">
+                        Website
+                    </option>
+
+                    <option value="course">
+                        Course
+                    </option>
+
+                    <option value="notes">
+                        Notes
+                    </option>
+
+                    <option value="other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    URL
+                </label>
+
+                <input id="resourceURLInput" type="url" placeholder="https://...">
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Notes
+                </label>
+
+                <textarea id="resourceDescriptionInput" placeholder="Why is this resource useful?"></textarea>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button class="secondary-study-button" id="cancelResource" type="button">
+                    Cancel
+                </button>
+
+
+                <button class="primary-study-button" id="saveResource" type="button">
+                    Save Resource
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+     RELATED WORK MODAL
+====================================================== -->
+
+    <div class="study-modal hidden" id="relatedWorkModal">
+
+        <div class="study-modal-box">
+
+            <div class="modal-heading">
+
+                <div>
+
+                    <span>
+                        KNOWLEDGE NETWORK
+                    </span>
+
+                    <h3>
+                        Add Related Work
+                    </h3>
+
+                </div>
+
+
+                <button class="modal-close" id="closeRelatedWorkModal" type="button">
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Title
+                </label>
+
+                <input id="relatedWorkTitleInput" type="text" placeholder="Related study, paper or project">
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Type
+                </label>
+
+                <select id="relatedWorkTypeInput">
+
+                    <option value="study">
+                        Study
+                    </option>
+
+                    <option value="project">
+                        Project
+                    </option>
+
+                    <option value="paper">
+                        Paper
+                    </option>
+
+                    <option value="design">
+                        Design
+                    </option>
+
+                    <option value="prototype">
+                        Prototype
+                    </option>
+
+                    <option value="external">
+                        External
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Link / Reference
+                </label>
+
+                <input id="relatedWorkURLInput" type="text" placeholder="URL or RiGiD work reference">
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Description
+                </label>
+
+                <textarea id="relatedWorkDescriptionInput" placeholder="How is this related?"></textarea>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button class="secondary-study-button" id="cancelRelatedWork" type="button">
+                    Cancel
+                </button>
+
+
+                <button class="primary-study-button" id="saveRelatedWork" type="button">
+                    Save Link
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+     FUTURE WORK MODAL
+====================================================== -->
+
+    <div class="study-modal hidden" id="futureWorkModal">
+
+        <div class="study-modal-box">
+
+            <div class="modal-heading">
+
+                <div>
+
+                    <span>
+                        UPCOMING
+                    </span>
+
+                    <h3>
+                        Add Future Work
+                    </h3>
+
+                </div>
+
+
+                <button class="modal-close" id="closeFutureWorkModal" type="button">
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Date
+                </label>
+
+                <input id="futureWorkDate" type="date">
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Title
+                </label>
+
+                <input id="futureWorkTitle" type="text" placeholder="What should you do next?">
+
+            </div>
+
+
+            <div class="form-field">
+
+                <label>
+                    Description
+                </label>
+
+                <textarea id="futureWorkDescription" placeholder="Describe the upcoming work..."></textarea>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button class="secondary-study-button" id="cancelFutureWork" type="button">
+                    Cancel
+                </button>
+
+
+                <button class="primary-study-button" id="saveFutureWork" type="button">
+                    Add Future Work
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+     LINK MODAL
+====================================================== -->
+
+    <div class="study-modal hidden" id="linkModal">
 
         <div class="study-modal-box">
 
@@ -1369,53 +1733,31 @@
 
                 </div>
 
-                <button
-                    class="modal-close"
-                    id="closeLinkModal"
-                    type="button"
-                >
+
+                <button class="modal-close" id="closeLinkModal" type="button">
                     ×
                 </button>
 
             </div>
 
 
-            <input
-                id="linkTitleInput"
-                type="text"
-                placeholder="Link title"
-            >
+            <input id="linkTitleInput" type="text" placeholder="Link title">
 
 
-            <input
-                id="linkURLInput"
-                type="url"
-                placeholder="https://example.com"
-            >
+            <input id="linkURLInput" type="url" placeholder="https://example.com">
 
 
-            <textarea
-                id="linkDescriptionInput"
-                placeholder="What is this link useful for?"
-            ></textarea>
+            <textarea id="linkDescriptionInput" placeholder="What is this link useful for?"></textarea>
 
 
             <div class="modal-actions">
 
-                <button
-                    class="secondary-study-button"
-                    id="cancelLink"
-                    type="button"
-                >
+                <button class="secondary-study-button" id="cancelLink" type="button">
                     Cancel
                 </button>
 
 
-                <button
-                    class="primary-study-button"
-                    id="saveLink"
-                    type="button"
-                >
+                <button class="primary-study-button" id="saveLink" type="button">
                     Add Link
                 </button>
 
@@ -1428,13 +1770,10 @@
 
 
     <!-- =====================================================
-         TIMELINE MODAL
-    ====================================================== -->
+     TIMELINE MODAL
+====================================================== -->
 
-    <div
-        class="study-modal hidden"
-        id="timelineModal"
-    >
+    <div class="study-modal hidden" id="timelineModal">
 
         <div class="study-modal-box large-modal">
 
@@ -1446,17 +1785,14 @@
                         STUDY PLAN
                     </span>
 
-                    <h3>
+                    <h3 id="timelineModalTitle">
                         Add Timeline Entry
                     </h3>
 
                 </div>
 
-                <button
-                    class="modal-close"
-                    id="closeTimelineModal"
-                    type="button"
-                >
+
+                <button class="modal-close" id="closeTimelineModal" type="button">
                     ×
                 </button>
 
@@ -1472,10 +1808,7 @@
                         Date
                     </label>
 
-                    <input
-                        id="timelineDate"
-                        type="date"
-                    >
+                    <input id="timelineDate" type="date">
 
                 </div>
 
@@ -1511,11 +1844,7 @@
                         Title
                     </label>
 
-                    <input
-                        id="timelineTitle"
-                        type="text"
-                        placeholder="What will you study?"
-                    >
+                    <input id="timelineTitle" type="text" placeholder="What will you study?">
 
                 </div>
 
@@ -1526,10 +1855,7 @@
                         Objective / Work to Do
                     </label>
 
-                    <textarea
-                        id="timelineDescription"
-                        placeholder="What exactly should be achieved during this timeline entry?"
-                    ></textarea>
+                    <textarea id="timelineDescription" placeholder="What exactly should be achieved?"></textarea>
 
                 </div>
 
@@ -1540,11 +1866,7 @@
                         Expected Time
                     </label>
 
-                    <input
-                        id="timelineDuration"
-                        type="text"
-                        placeholder="Example: 2 hours"
-                    >
+                    <input id="timelineDuration" type="text" placeholder="Example: 2 hours">
 
                 </div>
 
@@ -1578,21 +1900,13 @@
 
             <div class="modal-actions">
 
-                <button
-                    class="secondary-study-button"
-                    id="cancelTimeline"
-                    type="button"
-                >
+                <button class="secondary-study-button" id="cancelTimeline" type="button">
                     Cancel
                 </button>
 
 
-                <button
-                    class="primary-study-button"
-                    id="saveTimeline"
-                    type="button"
-                >
-                    Add Timeline
+                <button class="primary-study-button" id="saveTimeline" type="button">
+                    Save Timeline
                 </button>
 
             </div>
@@ -1604,21 +1918,22 @@
 
 
     <!-- =====================================================
-         TOAST
-    ====================================================== -->
+     TOAST
+====================================================== -->
 
-    <div
-        class="study-toast hidden"
-        id="studyToast"
-    >
+    <div class="study-toast hidden" id="studyToast">
         Saved
     </div>
 
 
 
     <!-- =====================================================
-         JAVASCRIPT
-    ====================================================== -->
+     JAVASCRIPT
+====================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../../../supabase-client.js"></script>
 
     <script src="study.js"></script>
 

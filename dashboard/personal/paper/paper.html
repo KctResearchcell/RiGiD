@@ -1,259 +1,273 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
+ 
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>RiGiD — Paper</title>
-
-
-    <!-- =====================================================
-         FONTS
-    ====================================================== -->
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
-        rel="stylesheet"
-    >
+<title>RiGiD — Paper</title>
 
 
-    <!-- =====================================================
-         CSS
-    ====================================================== -->
+<!-- =====================================================
+     FONTS
+====================================================== -->
 
-    <link
-        rel="stylesheet"
-        href="paper.css"
-    >
+<link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+>
+
+
+<link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+>
+
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+    rel="stylesheet"
+>
+
+
+<!-- =====================================================
+     PAGE CSS
+====================================================== -->
+
+<link
+    rel="stylesheet"
+    href="paper.css"
+>
+ 
 
 </head>
 
-
 <body>
 
+<!-- =====================================================
+     BACKGROUND
+===================================================== -->
 
-    <!-- =====================================================
-         BACKGROUND
-    ====================================================== -->
+<div class="paper-background"></div>
 
-    <div class="paper-background"></div>
+<div class="paper-grid"></div>
 
-    <div class="paper-grid"></div>
+<div class="paper-glow paper-glow-one"></div>
 
-    <div class="paper-glow paper-glow-one"></div>
+<div class="paper-glow paper-glow-two"></div>
 
-    <div class="paper-glow paper-glow-two"></div>
+<!-- =====================================================
+     HEADER
+===================================================== -->
 
+<header class="paper-header">
 
+ 
+<!-- LEFT -->
 
-    <!-- =====================================================
-         HEADER
-    ====================================================== -->
-
-    <header class="paper-header">
-
-
-        <!-- LEFT -->
-
-        <div class="paper-header-left">
-
-            <button
-                class="back-button"
-                id="backToWorkspace"
-                type="button"
-            >
-
-                <span class="back-icon">
-                    ←
-                </span>
-
-                <span>
-                    Workspace
-                </span>
-
-            </button>
+<div class="paper-header-left">
 
 
-            <div class="paper-brand">
+    <button
+        class="back-button"
+        id="backToWorkspace"
+        type="button"
+    >
 
-                <div class="paper-brand-mark">
-                    R
-                </div>
+        <span class="back-icon">
+            ←
+        </span>
+
+        <span>
+            Workspace
+        </span>
+
+    </button>
 
 
-                <div class="paper-brand-text">
 
-                    <div class="paper-brand-name">
-                        R<span>i</span>G<span>i</span>D
-                    </div>
+    <div class="paper-brand">
 
-                    <div class="paper-brand-section">
-                        PAPER
-                    </div>
 
-                </div>
-
-            </div>
-
+        <div class="paper-brand-mark">
+            P
         </div>
 
 
-
-        <!-- CENTER NAVIGATION -->
-
-        <nav class="paper-navigation">
+        <div class="paper-brand-text">
 
 
-            <button
-                class="paper-nav-item active"
-                data-section="overview"
-                type="button"
-            >
-                Overview
-            </button>
-
-
-            <button
-                class="paper-nav-item"
-                data-section="learning"
-                type="button"
-            >
-                Learning
-            </button>
-
-
-            <button
-                class="paper-nav-item"
-                data-section="writing"
-                type="button"
-            >
-                Writing
-            </button>
-
-
-            <button
-                class="paper-nav-item"
-                data-section="references"
-                type="button"
-            >
-                References
-            </button>
-
-
-            <button
-                class="paper-nav-item"
-                data-section="versions"
-                type="button"
-            >
-                Versions
-            </button>
-
-
-            <button
-                class="paper-nav-item"
-                data-section="timeline"
-                type="button"
-            >
-                Timeline
-            </button>
-
-
-            <button
-                class="paper-nav-item"
-                data-section="uploads"
-                type="button"
-            >
-                Files
-            </button>
-
-
-        </nav>
-
-
-
-        <!-- RIGHT -->
-
-        <div class="paper-header-right">
-
-
-            <div class="paper-live-time">
-
-                <span
-                    class="live-date"
-                    id="liveDate"
-                >
-                    23 AUG 2026
-                </span>
-
-
-                <span class="live-separator">
-                    •
-                </span>
-
-
-                <span
-                    class="live-clock"
-                    id="liveClock"
-                >
-                    11:55:00 AM
-                </span>
-
+            <div class="paper-brand-name">
+                R<span>i</span>G<span>i</span>D
             </div>
 
 
-            <button
-                class="header-icon-button"
-                id="paperSettings"
-                type="button"
-                title="Settings"
-            >
-                ⚙
-            </button>
+            <div class="paper-brand-section">
+                PAPER
+            </div>
 
 
         </div>
 
 
-    </header>
+    </div>
+
+
+</div>
 
 
 
-    <!-- =====================================================
-         MAIN
-    ====================================================== -->
+<!-- CENTER NAVIGATION -->
 
-    <main class="paper-container">
+<nav class="paper-navigation">
 
 
+    <button
+        class="paper-nav-item active"
+        data-section="overview"
+        type="button"
+    >
+        Overview
+    </button>
 
-        <!-- =================================================
-             PAPER HERO / OVERVIEW
-        ================================================== -->
 
-        <section
-            class="paper-hero"
-            id="overviewSection"
+    <button
+        class="paper-nav-item"
+        data-section="learning"
+        type="button"
+    >
+        Learning
+    </button>
+
+
+    <button
+        class="paper-nav-item"
+        data-section="writing"
+        type="button"
+    >
+        Writing
+    </button>
+
+
+    <button
+        class="paper-nav-item"
+        data-section="references"
+        type="button"
+    >
+        References
+    </button>
+
+
+    <button
+        class="paper-nav-item"
+        data-section="versions"
+        type="button"
+    >
+        Versions
+    </button>
+
+
+    <button
+        class="paper-nav-item"
+        data-section="timeline"
+        type="button"
+    >
+        Timeline
+    </button>
+
+
+    <button
+        class="paper-nav-item"
+        data-section="uploads"
+        type="button"
+    >
+        Files
+    </button>
+
+
+</nav>
+
+
+
+<!-- RIGHT -->
+
+<div class="paper-header-right">
+
+
+    <div class="paper-live-time">
+
+
+        <span
+            class="live-date"
+            id="liveDate"
         >
+            --
+        </span>
 
 
-            <!-- LEFT -->
-
-            <div class="paper-hero-main">
-
-
-                <div class="paper-label-row">
+        <span class="live-separator">
+            •
+        </span>
 
 
-                    <span class="paper-type">
-                        PAPER
+        <span
+            class="live-clock"
+            id="liveClock"
+        >
+            --
+        </span>
+
+
+    </div>
+
+
+</div>
+ 
+
+</header>
+
+<!-- =====================================================
+     MAIN CONTAINER
+===================================================== -->
+
+<main class="paper-container">
+
+ 
+<!-- =================================================
+     PAPER OVERVIEW
+================================================== -->
+
+<section
+    class="paper-section"
+    id="overviewSection"
+>
+
+
+    <div class="paper-overview-layout">
+
+
+        <div class="paper-main-information">
+
+
+            <div class="paper-overview-top">
+
+
+                <div class="paper-type-row">
+
+
+                    <span
+                        class="paper-type"
+                        id="paperType"
+                    >
+                        RESEARCH PAPER
                     </span>
 
 
@@ -261,15 +275,7 @@
                         class="paper-status"
                         id="paperStatus"
                     >
-                        ● DRAFT
-                    </span>
-
-
-                    <span
-                        class="paper-stage"
-                        id="paperStage"
-                    >
-                        STAGE 03
+                        IN PROGRESS
                     </span>
 
 
@@ -277,78 +283,44 @@
 
 
 
-                <h1 id="paperTitle">
-                    Advancements in Outdoor Air Filtration:
-                    A Review of Existing Techniques and Technologies
-                </h1>
+                <div class="paper-title-row">
 
 
-
-                <p
-                    class="paper-description"
-                    id="paperDescription"
-                >
-                    Review and analysis of existing outdoor air
-                    purification and filtration technologies.
-                </p>
+                    <div>
 
 
-
-                <!-- AUTHORS -->
-
-                <div class="paper-authors">
-
-                    <span class="meta-label">
-                        AUTHORS
-                    </span>
+                        <h1 id="paperTitle">
+                            Untitled Paper
+                        </h1>
 
 
-                    <div
-                        class="author-list"
-                        id="authorList"
-                    >
+                        <p id="paperDescription">
+                            Add a description for this paper.
+                        </p>
 
-                        <span class="author-chip">
-                            You
-                        </span>
 
                     </div>
 
 
                     <button
-                        class="inline-add-button"
-                        id="addAuthor"
+                        class="secondary-paper-button"
+                        id="editPaper"
                         type="button"
                     >
-                        + Author
+                        ✎ Edit Paper
                     </button>
+
 
                 </div>
 
 
-
-                <!-- TAGS -->
 
                 <div
                     class="paper-tags"
                     id="paperTags"
                 >
 
-                    <span>
-                        AIR FILTRATION
-                    </span>
-
-                    <span>
-                        HEPA
-                    </span>
-
-                    <span>
-                        ESP
-                    </span>
-
-                    <span>
-                        OUTDOOR AIR QUALITY
-                    </span>
+                    <!-- Rendered by JavaScript -->
 
                 </div>
 
@@ -357,1329 +329,543 @@
 
 
 
-            <!-- RIGHT -->
-
-            <div class="paper-hero-side">
+            <div class="paper-meta-card">
 
 
-                <!-- STAGE -->
+                <div>
 
-                <div class="paper-stage-card">
-
-
-                    <span class="small-label">
-                        PAPER STAGE
+                    <span>
+                        AUTHORS
                     </span>
 
-
-                    <strong id="stageLabel">
-                        Draft
+                    <strong id="paperAuthors">
+                        You
                     </strong>
 
-
-                    <div class="stage-progress">
-
-                        <span class="stage-node completed">
-                            1
-                        </span>
-
-                        <span class="stage-line completed"></span>
-
-                        <span class="stage-node completed">
-                            2
-                        </span>
-
-                        <span class="stage-line active"></span>
-
-                        <span class="stage-node active">
-                            3
-                        </span>
-
-                        <span class="stage-line"></span>
-
-                        <span class="stage-node">
-                            4
-                        </span>
-
-                        <span class="stage-line"></span>
-
-                        <span class="stage-node">
-                            5
-                        </span>
-
-                    </div>
-
-
-                    <div class="stage-labels">
-
-                        <span>
-                            IDEA
-                        </span>
-
-                        <span>
-                            OUTLINE
-                        </span>
-
-                        <span>
-                            DRAFT
-                        </span>
-
-                        <span>
-                            REVIEW
-                        </span>
-
-                        <span>
-                            PUBLISHED
-                        </span>
-
-                    </div>
-
-
                 </div>
-
-
-
-                <!-- PAPER META -->
-
-                <div class="paper-meta-card">
-
-
-                    <div>
-
-                        <span>
-                            SOURCE
-                        </span>
-
-                        <strong id="paperSource">
-                            Self
-                        </strong>
-
-                    </div>
-
-
-                    <div>
-
-                        <span>
-                            TARGET
-                        </span>
-
-                        <strong id="paperTarget">
-                            Journal / Conference
-                        </strong>
-
-                    </div>
-
-
-                    <div>
-
-                        <span>
-                            DEADLINE
-                        </span>
-
-                        <strong id="paperDeadline">
-                            Not set
-                        </strong>
-
-                    </div>
-
-
-                    <div>
-
-                        <span>
-                            UPDATED
-                        </span>
-
-                        <strong id="paperUpdated">
-                            23 Aug 2026
-                        </strong>
-
-                    </div>
-
-
-                </div>
-
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =================================================
-             PAPER NAVIGATION STATUS
-        ================================================== -->
-
-        <section class="paper-progress-strip">
-
-
-            <div class="progress-strip-item">
-
-                <span>
-                    SECTIONS
-                </span>
-
-                <strong id="sectionProgress">
-                    3 / 8
-                </strong>
-
-            </div>
-
-
-            <div class="progress-strip-item">
-
-                <span>
-                    REFERENCES
-                </span>
-
-                <strong id="referenceCount">
-                    0
-                </strong>
-
-            </div>
-
-
-            <div class="progress-strip-item">
-
-                <span>
-                    DRAFTS
-                </span>
-
-                <strong id="draftCount">
-                    2
-                </strong>
-
-            </div>
-
-
-            <div class="progress-strip-item">
-
-                <span>
-                    OPEN QUESTIONS
-                </span>
-
-                <strong id="questionCount">
-                    2
-                </strong>
-
-            </div>
-
-
-            <div class="progress-strip-item">
-
-                <span>
-                    COMPLETION
-                </span>
-
-                <strong id="paperCompletion">
-                    38%
-                </strong>
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =================================================
-             READING / LEARNING
-        ================================================== -->
-
-        <section
-            class="paper-section"
-            id="learningSection"
-        >
-
-
-            <div class="section-heading">
 
 
                 <div>
 
-                    <span class="section-label">
-                        PAPER UNDERSTANDING
+                    <span>
+                        SOURCE
                     </span>
 
-                    <h2>
-                        What I Learned
-                    </h2>
-
-                    <p>
-                        Capture the important knowledge, findings
-                        and reasoning from the paper.
-                    </p>
-
-                </div>
-
-
-                <button
-                    class="primary-paper-button"
-                    id="addLearning"
-                    type="button"
-                >
-                    + Add Learning
-                </button>
-
-
-            </div>
-
-
-
-            <div class="learning-grid">
-
-
-                <!-- WHAT WE LEARNED -->
-
-                <article class="paper-card large-learning-card">
-
-
-                    <div class="card-header">
-
-
-                        <div>
-
-                            <span class="small-label">
-                                MAIN TAKEAWAYS
-                            </span>
-
-                            <h3>
-                                What We Learned
-                            </h3>
-
-                        </div>
-
-
-                        <button
-                            class="small-action"
-                            id="editLearning"
-                            type="button"
-                        >
-                            Edit
-                        </button>
-
-
-                    </div>
-
-
-                    <div
-                        class="paper-learning-content"
-                        id="learningContent"
-                    >
-
-                        <p>
-                            Existing outdoor air purification
-                            techniques include mechanical filtration,
-                            electrostatic precipitation, ionization,
-                            photocatalysis and other hybrid systems.
-                        </p>
-
-                        <p>
-                            The effectiveness of each approach depends
-                            on particle size, airflow, energy consumption,
-                            maintenance and environmental conditions.
-                        </p>
-
-                    </div>
-
-
-                </article>
-
-
-
-                <!-- KEY FINDINGS -->
-
-                <article class="paper-card findings-card">
-
-
-                    <div class="card-header">
-
-
-                        <div>
-
-                            <span class="small-label">
-                                FINDINGS
-                            </span>
-
-                            <h3>
-                                Key Findings
-                            </h3>
-
-                        </div>
-
-
-                        <button
-                            class="add-button"
-                            id="addFinding"
-                            type="button"
-                        >
-                            + Add
-                        </button>
-
-
-                    </div>
-
-
-                    <div
-                        class="findings-list"
-                        id="findingsList"
-                    >
-
-                        <!-- JS -->
-
-                    </div>
-
-
-                </article>
-
-
-            </div>
-
-
-
-            <!-- METHODOLOGY + QUESTIONS -->
-
-            <div class="two-column-layout">
-
-
-                <!-- METHODOLOGY -->
-
-                <article class="paper-card">
-
-
-                    <div class="card-header">
-
-
-                        <div>
-
-                            <span class="small-label">
-                                ANALYSIS
-                            </span>
-
-                            <h3>
-                                Methodology Notes
-                            </h3>
-
-                        </div>
-
-
-                        <button
-                            class="small-action"
-                            id="editMethodology"
-                            type="button"
-                        >
-                            Edit
-                        </button>
-
-
-                    </div>
-
-
-                    <div
-                        class="methodology-content"
-                        id="methodologyContent"
-                    >
-
-                        <p>
-                            Note how the authors selected,
-                            compared and evaluated the
-                            technologies.
-                        </p>
-
-                    </div>
-
-
-                </article>
-
-
-
-                <!-- QUESTIONS -->
-
-                <article class="paper-card">
-
-
-                    <div class="card-header">
-
-
-                        <div>
-
-                            <span class="small-label">
-                                CRITICAL THINKING
-                            </span>
-
-                            <h3>
-                                Questions & Gaps
-                            </h3>
-
-                        </div>
-
-
-                        <button
-                            class="add-button"
-                            id="addQuestion"
-                            type="button"
-                        >
-                            + Question
-                        </button>
-
-
-                    </div>
-
-
-                    <div
-                        class="question-list"
-                        id="questionList"
-                    >
-
-                        <!-- JS -->
-
-                    </div>
-
-
-                </article>
-
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =================================================
-             PAPER WRITING WORKSPACE
-        ================================================== -->
-
-        <section
-            class="paper-section"
-            id="writingSection"
-        >
-
-
-            <div class="section-heading">
-
-
-                <div>
-
-                    <span class="section-label">
-                        WRITING WORKSPACE
-                    </span>
-
-                    <h2>
-                        Paper Structure
-                    </h2>
-
-                    <p>
-                        Build the paper section by section and
-                        track what is complete.
-                    </p>
-
-                </div>
-
-
-                <div class="writing-actions">
-
-
-                    <button
-                        class="secondary-paper-button"
-                        id="saveDraft"
-                        type="button"
-                    >
-                        Save Draft
-                    </button>
-
-
-                    <button
-                        class="primary-paper-button"
-                        id="newVersion"
-                        type="button"
-                    >
-                        + New Version
-                    </button>
-
-
-                </div>
-
-
-            </div>
-
-
-
-            <div class="writing-layout">
-
-
-                <!-- SECTION CHECKLIST -->
-
-                <aside class="section-checklist">
-
-
-                    <div class="checklist-header">
-
-
-                        <div>
-
-                            <span class="small-label">
-                                PROGRESS
-                            </span>
-
-                            <h3>
-                                Sections
-                            </h3>
-
-                        </div>
-
-
-                        <strong
-                            id="writingPercentage"
-                        >
-                            38%
-                        </strong>
-
-
-                    </div>
-
-
-
-                    <div
-                        class="writing-progress-bar"
-                    >
-
-                        <span
-                            id="writingProgressFill"
-                        ></span>
-
-                    </div>
-
-
-
-                    <div
-                        class="paper-section-list"
-                        id="paperSectionList"
-                    >
-
-                        <!-- JS -->
-
-                    </div>
-
-
-                </aside>
-
-
-
-                <!-- EDITOR -->
-
-                <div class="paper-editor">
-
-
-                    <div class="editor-toolbar">
-
-
-                        <div>
-
-                            <span class="editor-status">
-                                EDITING
-                            </span>
-
-                            <strong
-                                id="activeSectionTitle"
-                            >
-                                Abstract
-                            </strong>
-
-                        </div>
-
-
-                        <div class="editor-actions">
-
-
-                            <button
-                                type="button"
-                                id="editorBold"
-                                title="Bold"
-                            >
-                                B
-                            </button>
-
-
-                            <button
-                                type="button"
-                                id="editorItalic"
-                                title="Italic"
-                            >
-                                I
-                            </button>
-
-
-                            <button
-                                type="button"
-                                id="editorList"
-                                title="List"
-                            >
-                                ≡
-                            </button>
-
-
-                        </div>
-
-
-                    </div>
-
-
-
-                    <textarea
-                        id="paperEditor"
-                        placeholder="Start writing this section..."
-                    ></textarea>
-
-
-
-                    <div class="editor-footer">
-
-
-                        <span id="wordCount">
-                            0 words
-                        </span>
-
-
-                        <span>
-                            Auto-save enabled
-                        </span>
-
-
-                    </div>
-
-
-                </div>
-
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =================================================
-             REFERENCES
-        ================================================== -->
-
-        <section
-            class="paper-section"
-            id="referencesSection"
-        >
-
-
-            <div class="section-heading">
-
-
-                <div>
-
-                    <span class="section-label">
-                        BIBLIOGRAPHY
-                    </span>
-
-                    <h2>
-                        References
-                    </h2>
-
-                    <p>
-                        Maintain the sources used while developing
-                        the paper.
-                    </p>
-
-                </div>
-
-
-                <button
-                    class="primary-paper-button"
-                    id="addReference"
-                    type="button"
-                >
-                    + Reference
-                </button>
-
-
-            </div>
-
-
-
-            <div
-                class="reference-list"
-                id="referenceList"
-            >
-
-                <!-- JS -->
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =================================================
-             VERSION HISTORY
-        ================================================== -->
-
-        <section
-            class="paper-section"
-            id="versionsSection"
-        >
-
-
-            <div class="section-heading">
-
-
-                <div>
-
-                    <span class="section-label">
-                        DOCUMENT HISTORY
-                    </span>
-
-                    <h2>
-                        Draft & Version History
-                    </h2>
-
-                    <p>
-                        Keep every major paper version instead of
-                        overwriting previous drafts.
-                    </p>
-
-                </div>
-
-
-                <button
-                    class="primary-paper-button"
-                    id="uploadDraft"
-                    type="button"
-                >
-                    ↑ Upload Draft
-                </button>
-
-
-                <input
-                    type="file"
-                    id="draftFileInput"
-                    hidden
-                    multiple
-                    accept=".pdf,.doc,.docx,.odt"
-                >
-
-
-            </div>
-
-
-
-            <div
-                class="version-grid"
-                id="versionGrid"
-            >
-
-                <!-- JS -->
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =================================================
-             TIMELINE + FUTURE WORK
-        ================================================== -->
-
-        <section
-            class="paper-section"
-            id="timelineSection"
-        >
-
-
-            <div class="section-heading">
-
-
-                <div>
-
-                    <span class="section-label">
-                        PAPER PLAN
-                    </span>
-
-                    <h2>
-                        Timeline & Future Work
-                    </h2>
-
-                    <p>
-                        Plan research, writing, review and submission
-                        activities.
-                    </p>
-
-                </div>
-
-
-                <button
-                    class="primary-paper-button"
-                    id="addTimeline"
-                    type="button"
-                >
-                    + Timeline
-                </button>
-
-
-            </div>
-
-
-
-            <div class="timeline-layout">
-
-
-                <!-- TIMELINE -->
-
-                <div
-                    class="paper-timeline"
-                    id="paperTimeline"
-                >
-
-                    <!-- JS -->
-
-                </div>
-
-
-
-                <!-- FUTURE WORK -->
-
-                <aside class="future-work-panel">
-
-
-                    <div class="future-work-header">
-
-
-                        <div>
-
-                            <span class="small-label">
-                                UPCOMING
-                            </span>
-
-                            <h3>
-                                Future Work
-                            </h3>
-
-                        </div>
-
-
-                        <span
-                            class="future-count"
-                            id="futureCount"
-                        >
-                            03
-                        </span>
-
-
-                    </div>
-
-
-
-                    <div
-                        class="future-work-list"
-                        id="futureWorkList"
-                    >
-
-                        <!-- JS -->
-
-                    </div>
-
-
-
-                    <button
-                        class="future-add-button"
-                        id="addFutureWork"
-                        type="button"
-                    >
-                        + Add Future Work
-                    </button>
-
-
-                </aside>
-
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =================================================
-             FILES / LINKS
-        ================================================== -->
-
-        <section
-            class="paper-section"
-            id="uploadsSection"
-        >
-
-
-            <div class="section-heading">
-
-
-                <div>
-
-                    <span class="section-label">
-                        ATTACHMENTS
-                    </span>
-
-                    <h2>
-                        Files & Links
-                    </h2>
-
-                    <p>
-                        Store PDFs, figures, datasets, documents,
-                        videos, links and other paper material.
-                    </p>
-
-                </div>
-
-
-                <div class="upload-actions-top">
-
-
-                    <button
-                        class="secondary-paper-button"
-                        id="addPaperLink"
-                        type="button"
-                    >
-                        🔗 Add Link
-                    </button>
-
-
-                    <button
-                        class="primary-paper-button"
-                        id="uploadPaperFile"
-                        type="button"
-                    >
-                        ↑ Upload
-                    </button>
-
-
-                    <input
-                        type="file"
-                        id="paperFileInput"
-                        hidden
-                        multiple
-                    >
-
-
-                </div>
-
-
-            </div>
-
-
-
-            <!-- DROP ZONE -->
-
-            <div
-                class="paper-upload-zone"
-                id="paperUploadZone"
-            >
-
-
-                <div class="upload-symbol">
-                    ↑
-                </div>
-
-
-                <div>
-
-                    <strong>
-                        Drop files here
+                    <strong id="paperSource">
+                        Self
                     </strong>
 
-                    <p>
-                        PDFs · Documents · Images · Videos ·
-                        Datasets · Presentations · Any file
-                    </p>
-
                 </div>
-
-
-            </div>
-
-
-
-            <div
-                class="attachment-grid"
-                id="paperAttachmentGrid"
-            >
-
-                <!-- JS -->
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =================================================
-             REVIEWER / MENTOR FEEDBACK
-        ================================================== -->
-
-        <section class="paper-section">
-
-
-            <div class="section-heading">
 
 
                 <div>
 
-                    <span class="section-label">
-                        REVIEW
+                    <span>
+                        TARGET
                     </span>
 
-                    <h2>
-                        Reviewer & Mentor Feedback
-                    </h2>
+                    <strong id="paperTarget">
+                        Journal / Conference
+                    </strong>
 
                 </div>
 
 
-                <button
-                    class="primary-paper-button"
-                    id="addFeedback"
-                    type="button"
-                >
-                    + Feedback
-                </button>
+                <div>
+
+                    <span>
+                        DEADLINE
+                    </span>
+
+                    <strong id="paperDeadline">
+                        Not set
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        UPDATED
+                    </span>
+
+                    <strong id="paperUpdated">
+                        --
+                    </strong>
+
+                </div>
 
 
             </div>
-
-
-
-            <div
-                class="feedback-grid"
-                id="feedbackGrid"
-            >
-
-                <!-- JS -->
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =================================================
-             PAPER SUMMARY
-        ================================================== -->
-
-        <section class="paper-section">
-
-
-            <div class="summary-grid">
-
-
-                <!-- PAPER STATUS -->
-
-                <article class="paper-card">
-
-
-                    <div class="card-header">
-
-
-                        <div>
-
-                            <span class="small-label">
-                                PAPER STATUS
-                            </span>
-
-                            <h3>
-                                Current State
-                            </h3>
-
-                        </div>
-
-
-                    </div>
-
-
-                    <div class="paper-summary-stats">
-
-
-                        <div>
-
-                            <span>
-                                SECTIONS
-                            </span>
-
-                            <strong id="summarySections">
-                                3 / 8
-                            </strong>
-
-                        </div>
-
-
-                        <div>
-
-                            <span>
-                                REFERENCES
-                            </span>
-
-                            <strong id="summaryReferences">
-                                0
-                            </strong>
-
-                        </div>
-
-
-                        <div>
-
-                            <span>
-                                VERSIONS
-                            </span>
-
-                            <strong id="summaryVersions">
-                                2
-                            </strong>
-
-                        </div>
-
-
-                        <div>
-
-                            <span>
-                                WORDS
-                            </span>
-
-                            <strong id="summaryWords">
-                                0
-                            </strong>
-
-                        </div>
-
-
-                    </div>
-
-
-                </article>
-
-
-
-                <!-- NEXT ACTION -->
-
-                <article class="paper-card next-action-card">
-
-
-                    <div class="card-header">
-
-
-                        <div>
-
-                            <span class="small-label">
-                                NEXT ACTION
-                            </span>
-
-                            <h3>
-                                What needs to happen next?
-                            </h3>
-
-                        </div>
-
-
-                    </div>
-
-
-                    <textarea
-                        id="nextPaperAction"
-                        placeholder="Write the next action for this paper..."
-                    ></textarea>
-
-
-                    <button
-                        class="primary-paper-button"
-                        id="saveNextAction"
-                        type="button"
-                    >
-                        Save Next Action
-                    </button>
-
-
-                </article>
-
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =================================================
-             BOTTOM ACTIONS
-        ================================================== -->
-
-        <div class="paper-bottom-actions">
-
-
-            <button
-                class="secondary-paper-button"
-                id="editPaper"
-                type="button"
-            >
-                ✎ Edit Paper
-            </button>
-
-
-            <button
-                class="secondary-paper-button danger"
-                id="archivePaper"
-                type="button"
-            >
-                Archive Paper
-            </button>
 
 
         </div>
 
 
-    </main>
+    </div>
+
+
+</section>
 
 
 
-    <!-- =====================================================
-         ADD REFERENCE MODAL
-    ====================================================== -->
+<!-- =================================================
+     PAPER PROGRESS
+================================================== -->
 
-    <div
-        class="paper-modal hidden"
-        id="referenceModal"
-    >
-
-        <div class="paper-modal-box">
+<section class="paper-progress-strip">
 
 
-            <div class="modal-heading">
+    <div class="progress-strip-item">
+
+        <span>
+            SECTIONS
+        </span>
+
+        <strong id="sectionProgress">
+            0 / 0
+        </strong>
+
+    </div>
+
+
+    <div class="progress-strip-item">
+
+        <span>
+            REFERENCES
+        </span>
+
+        <strong id="referenceCount">
+            0
+        </strong>
+
+    </div>
+
+
+    <div class="progress-strip-item">
+
+        <span>
+            DRAFTS
+        </span>
+
+        <strong id="draftCount">
+            0
+        </strong>
+
+    </div>
+
+
+    <div class="progress-strip-item">
+
+        <span>
+            OPEN QUESTIONS
+        </span>
+
+        <strong id="questionCount">
+            0
+        </strong>
+
+    </div>
+
+
+    <div class="progress-strip-item">
+
+        <span>
+            COMPLETION
+        </span>
+
+        <strong id="paperCompletion">
+            0%
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     LEARNING
+================================================== -->
+
+<section
+    class="paper-section"
+    id="learningSection"
+>
+
+
+    <div class="section-heading">
+
+
+        <div>
+
+            <span class="section-label">
+                PAPER UNDERSTANDING
+            </span>
+
+            <h2>
+                What I Learned
+            </h2>
+
+            <p>
+                Capture the important knowledge, findings
+                and reasoning from the paper.
+            </p>
+
+        </div>
+
+
+        <button
+            class="primary-paper-button"
+            id="addLearning"
+            type="button"
+        >
+            + Add Learning
+        </button>
+
+
+    </div>
+
+
+
+    <div class="learning-grid">
+
+
+        <!-- WHAT WE LEARNED -->
+
+        <article class="paper-card large-learning-card">
+
+
+            <div class="card-header">
 
 
                 <div>
 
-                    <span>
-                        BIBLIOGRAPHY
+                    <span class="small-label">
+                        MAIN TAKEAWAYS
                     </span>
 
                     <h3>
-                        Add Reference
+                        What We Learned
                     </h3>
 
                 </div>
 
 
                 <button
-                    class="modal-close"
-                    id="closeReferenceModal"
+                    class="small-action"
+                    id="editLearning"
                     type="button"
                 >
-                    ×
+                    Edit
+                </button>
+
+
+            </div>
+
+
+            <div
+                class="paper-learning-content"
+                id="learningContent"
+            >
+
+                <!-- Rendered by JavaScript -->
+
+            </div>
+
+
+        </article>
+
+
+
+        <!-- KEY FINDINGS -->
+
+        <article class="paper-card findings-card">
+
+
+            <div class="card-header">
+
+
+                <div>
+
+                    <span class="small-label">
+                        FINDINGS
+                    </span>
+
+                    <h3>
+                        Key Findings
+                    </h3>
+
+                </div>
+
+
+                <button
+                    class="add-button"
+                    id="addFinding"
+                    type="button"
+                >
+                    + Add
+                </button>
+
+
+            </div>
+
+
+            <div
+                class="findings-list"
+                id="findingsList"
+            >
+
+                <!-- Rendered by JavaScript -->
+
+            </div>
+
+
+        </article>
+
+
+    </div>
+
+
+
+    <!-- METHODOLOGY + QUESTIONS -->
+
+    <div class="two-column-layout">
+
+
+        <!-- METHODOLOGY -->
+
+        <article class="paper-card">
+
+
+            <div class="card-header">
+
+
+                <div>
+
+                    <span class="small-label">
+                        ANALYSIS
+                    </span>
+
+                    <h3>
+                        Methodology Notes
+                    </h3>
+
+                </div>
+
+
+                <button
+                    class="small-action"
+                    id="editMethodology"
+                    type="button"
+                >
+                    Edit
+                </button>
+
+
+            </div>
+
+
+            <div
+                class="methodology-content"
+                id="methodologyContent"
+            >
+
+                <!-- Rendered by JavaScript -->
+
+            </div>
+
+
+        </article>
+
+
+
+        <!-- QUESTIONS -->
+
+        <article class="paper-card">
+
+
+            <div class="card-header">
+
+
+                <div>
+
+                    <span class="small-label">
+                        CRITICAL THINKING
+                    </span>
+
+                    <h3>
+                        Questions & Gaps
+                    </h3>
+
+                </div>
+
+
+                <button
+                    class="add-button"
+                    id="addQuestion"
+                    type="button"
+                >
+                    + Question
+                </button>
+
+
+            </div>
+
+
+            <div
+                class="question-list"
+                id="questionList"
+            >
+
+                <!-- Rendered by JavaScript -->
+
+            </div>
+
+
+        </article>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     PAPER WRITING WORKSPACE
+================================================== -->
+
+<section
+    class="paper-section"
+    id="writingSection"
+>
+
+
+    <div class="section-heading">
+
+
+        <div>
+
+            <span class="section-label">
+                WRITING WORKSPACE
+            </span>
+
+            <h2>
+                Paper Structure
+            </h2>
+
+            <p>
+                Create your own paper structure. Add, rename,
+                reorder and remove sections according to the
+                requirements of your paper.
+            </p>
+
+        </div>
+
+
+
+        <div class="writing-actions">
+
+
+            <button
+                class="secondary-paper-button"
+                id="saveDraft"
+                type="button"
+            >
+                Save Draft
+            </button>
+
+
+            <button
+                class="secondary-paper-button"
+                id="addPaperSection"
+                type="button"
+            >
+                + Add Section
+            </button>
+
+
+            <button
+                class="primary-paper-button"
+                id="newVersion"
+                type="button"
+            >
+                + New Version
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <div class="writing-layout">
+
+
+        <!-- SECTION CHECKLIST -->
+
+        <aside class="section-checklist">
+
+
+            <div class="checklist-header">
+
+
+                <div>
+
+                    <span class="small-label">
+                        PROGRESS
+                    </span>
+
+                    <h3>
+                        Sections
+                    </h3>
+
+                </div>
+
+
+                <strong
+                    id="writingPercentage"
+                >
+                    0%
+                </strong>
+
+
+            </div>
+
+
+
+            <div class="writing-progress-bar">
+
+                <span
+                    id="writingProgressFill"
+                ></span>
+
+            </div>
+
+
+
+            <!-- SECTION TOOLBAR -->
+
+            <div class="section-list-toolbar">
+
+
+                <span>
+                    YOUR PAPER STRUCTURE
+                </span>
+
+
+                <button
+                    type="button"
+                    id="addPaperSectionSide"
+                    title="Add Section"
+                >
+                    +
                 </button>
 
 
@@ -1687,111 +873,1754 @@
 
 
 
+            <!-- USER-CREATED SECTIONS -->
+
+            <div
+                class="paper-section-list"
+                id="paperSectionList"
+            >
+
+                <!-- Rendered by JavaScript -->
+
+            </div>
+
+
+
+            <!-- EMPTY STATE -->
+
+            <div
+                class="paper-section-empty hidden"
+                id="paperSectionEmpty"
+            >
+
+
+                <strong>
+                    No sections yet
+                </strong>
+
+
+                <span>
+                    Create the structure that best fits
+                    your paper.
+                </span>
+
+
+                <button
+                    class="secondary-paper-button"
+                    id="addFirstPaperSection"
+                    type="button"
+                >
+                    + Add First Section
+                </button>
+
+
+            </div>
+
+
+        </aside>
+
+
+
+        <!-- PAPER EDITOR -->
+
+        <div class="paper-editor">
+
+
+            <div class="editor-toolbar">
+
+
+                <div class="editor-section-heading">
+
+
+                    <span class="editor-status">
+                        EDITING
+                    </span>
+
+
+                    <strong
+                        id="activeSectionTitle"
+                    >
+                        Select a section
+                    </strong>
+
+
+                    <span
+                        class="active-section-description"
+                        id="activeSectionDescription"
+                    >
+                        Select a paper section to start writing.
+                    </span>
+
+
+                </div>
+
+
+
+                <div class="editor-section-controls">
+
+
+                    <!-- STATUS -->
+
+                    <div class="editor-status-control">
+
+
+                        <label
+                            for="activeSectionStatus"
+                        >
+                            STATUS
+                        </label>
+
+
+                        <select
+                            id="activeSectionStatus"
+                            disabled
+                        >
+
+                            <option value="not-started">
+                                Not Started
+                            </option>
+
+                            <option value="in-progress">
+                                In Progress
+                            </option>
+
+                            <option value="completed">
+                                Completed
+                            </option>
+
+                        </select>
+
+
+                    </div>
+
+
+
+                    <!-- SECTION ACTIONS -->
+
+                    <div class="editor-section-action-buttons">
+
+
+                        <button
+                            class="small-action"
+                            id="renameActiveSection"
+                            type="button"
+                            disabled
+                        >
+                            Rename
+                        </button>
+
+
+                        <button
+                            class="small-action"
+                            id="moveActiveSectionUp"
+                            type="button"
+                            title="Move Section Up"
+                            disabled
+                        >
+                            ↑
+                        </button>
+
+
+                        <button
+                            class="small-action"
+                            id="moveActiveSectionDown"
+                            type="button"
+                            title="Move Section Down"
+                            disabled
+                        >
+                            ↓
+                        </button>
+
+
+                        <button
+                            class="small-action danger-action"
+                            id="deleteActiveSection"
+                            type="button"
+                            disabled
+                        >
+                            Delete
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <textarea
+                id="paperEditor"
+                placeholder="Select or create a section to start writing..."
+                disabled
+            ></textarea>
+
+
+
+            <div class="editor-footer">
+
+
+                <span id="wordCount">
+                    0 words
+                </span>
+
+
+                <span id="editorSaveState">
+                    Select a section to start writing
+                </span>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     REFERENCES
+================================================== -->
+
+<section
+    class="paper-section"
+    id="referencesSection"
+>
+
+
+    <div class="section-heading">
+
+
+        <div>
+
+            <span class="section-label">
+                BIBLIOGRAPHY
+            </span>
+
+            <h2>
+                References
+            </h2>
+
+            <p>
+                Maintain and organize the sources used
+                while developing this paper.
+            </p>
+
+        </div>
+
+
+        <button
+            class="primary-paper-button"
+            id="addReference"
+            type="button"
+        >
+            + Reference
+        </button>
+
+
+    </div>
+
+
+
+    <div
+        class="reference-list"
+        id="referenceList"
+    >
+
+        <!-- Rendered by JavaScript -->
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     VERSION HISTORY
+================================================== -->
+
+<section
+    class="paper-section"
+    id="versionsSection"
+>
+
+
+    <div class="section-heading">
+
+
+        <div>
+
+            <span class="section-label">
+                DOCUMENT HISTORY
+            </span>
+
+            <h2>
+                Draft & Version History
+            </h2>
+
+            <p>
+                Preserve important versions instead of
+                overwriting previous drafts.
+            </p>
+
+        </div>
+
+
+
+        <div class="writing-actions">
+
+
+            <button
+                class="secondary-paper-button"
+                id="newVersionFromWorkspace"
+                type="button"
+            >
+                + Create Version
+            </button>
+
+
+            <button
+                class="primary-paper-button"
+                id="uploadDraft"
+                type="button"
+            >
+                ↑ Upload Draft
+            </button>
+
+
+            <input
+                type="file"
+                id="draftFileInput"
+                hidden
+                multiple
+                accept=".pdf,.doc,.docx,.odt"
+            >
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <div
+        class="version-grid"
+        id="versionGrid"
+    >
+
+        <!-- Rendered by JavaScript -->
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     TIMELINE + FUTURE WORK
+================================================== -->
+
+<section
+    class="paper-section"
+    id="timelineSection"
+>
+
+
+    <div class="section-heading">
+
+
+        <div>
+
+            <span class="section-label">
+                RESEARCH PROGRESS
+            </span>
+
+            <h2>
+                Timeline & Future Work
+            </h2>
+
+            <p>
+                Track important milestones and plan
+                the next research and writing activities.
+            </p>
+
+        </div>
+
+
+
+        <div class="writing-actions">
+
+
+            <button
+                class="secondary-paper-button"
+                id="addFutureWork"
+                type="button"
+            >
+                + Future Work
+            </button>
+
+
+            <button
+                class="primary-paper-button"
+                id="addPaperTimeline"
+                type="button"
+            >
+                + Timeline
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <div class="timeline-layout">
+
+
+        <div
+            class="paper-timeline-list"
+            id="paperTimelineList"
+        >
+
+            <!-- Rendered by JavaScript -->
+
+        </div>
+
+
+        <div
+            class="future-work-list"
+            id="futureWorkList"
+        >
+
+            <!-- Rendered by JavaScript -->
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     FILES & LINKS
+================================================== -->
+
+<section
+    class="paper-section"
+    id="uploadsSection"
+>
+
+
+    <div class="section-heading">
+
+
+        <div>
+
+            <span class="section-label">
+                ATTACHMENTS
+            </span>
+
+            <h2>
+                Files & Links
+            </h2>
+
+            <p>
+                Store documents, figures, datasets, videos,
+                links and other material related to this paper.
+            </p>
+
+        </div>
+
+
+
+        <div class="upload-actions-top">
+
+
+            <button
+                class="secondary-paper-button"
+                id="addPaperLink"
+                type="button"
+            >
+                🔗 Add Link
+            </button>
+
+
+            <button
+                class="primary-paper-button"
+                id="uploadPaperFile"
+                type="button"
+            >
+                ↑ Upload
+            </button>
+
+
+            <input
+                type="file"
+                id="paperFileInput"
+                hidden
+                multiple
+            >
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <div
+        class="paper-upload-zone"
+        id="paperUploadZone"
+    >
+
+
+        <div class="upload-symbol">
+            ↑
+        </div>
+
+
+        <div>
+
+            <strong>
+                Drop files here
+            </strong>
+
+
+            <p>
+                PDFs · Documents · Images · Videos ·
+                Datasets · Presentations · Any file
+            </p>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <div
+        class="attachment-grid"
+        id="paperAttachmentGrid"
+    >
+
+        <!-- Rendered by JavaScript -->
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     REVIEWER / MENTOR FEEDBACK
+================================================== -->
+
+<section
+    class="paper-section"
+    id="feedbackSection"
+>
+
+
+    <div class="section-heading">
+
+
+        <div>
+
+            <span class="section-label">
+                REVIEW
+            </span>
+
+            <h2>
+                Reviewer & Mentor Feedback
+            </h2>
+
+        </div>
+
+
+        <button
+            class="primary-paper-button"
+            id="addFeedback"
+            type="button"
+        >
+            + Feedback
+        </button>
+
+
+    </div>
+
+
+
+    <div
+        class="feedback-grid"
+        id="feedbackGrid"
+    >
+
+        <!-- Rendered by JavaScript -->
+
+    </div>
+
+
+</section>
+
+
+
+<!-- =================================================
+     PAPER SUMMARY
+================================================== -->
+
+<section class="paper-section">
+
+
+    <div class="summary-grid">
+
+
+        <article class="paper-card">
+
+
+            <div class="card-header">
+
+
+                <div>
+
+                    <span class="small-label">
+                        PAPER STATUS
+                    </span>
+
+                    <h3>
+                        Current State
+                    </h3>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="paper-summary-stats">
+
+
+                <div>
+
+                    <span>
+                        SECTIONS
+                    </span>
+
+                    <strong id="summarySections">
+                        0 / 0
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        REFERENCES
+                    </span>
+
+                    <strong id="summaryReferences">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        VERSIONS
+                    </span>
+
+                    <strong id="summaryVersions">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        WORDS
+                    </span>
+
+                    <strong id="summaryWords">
+                        0
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+        </article>
+
+
+
+        <article class="paper-card next-action-card">
+
+
+            <div class="card-header">
+
+
+                <div>
+
+                    <span class="small-label">
+                        NEXT ACTION
+                    </span>
+
+                    <h3>
+                        What should happen next?
+                    </h3>
+
+                </div>
+
+
+            </div>
+
+
+
+            <textarea
+                id="nextPaperAction"
+                placeholder="Describe the next important action for this paper..."
+            ></textarea>
+
+
+
+            <div class="card-footer">
+
+
+                <span>
+                    Keep the next important step clear and actionable.
+                </span>
+
+
+                <button
+                    class="primary-paper-button"
+                    id="saveNextAction"
+                    type="button"
+                >
+                    Save
+                </button>
+
+
+            </div>
+
+
+        </article>
+
+
+    </div>
+
+
+</section>
+ 
+
+</main>
+
+<!-- =====================================================
+     EDIT PAPER MODAL
+===================================================== -->
+
+<div
+    class="paper-modal hidden"
+    id="paperInformationModal"
+>
+
+ 
+<div class="paper-modal-box large-modal">
+
+
+    <div class="modal-heading">
+
+
+        <div>
+
+            <span>
+                PAPER INFORMATION
+            </span>
+
+            <h3>
+                Edit Paper
+            </h3>
+
+        </div>
+
+
+        <button
+            class="modal-close"
+            id="closePaperInfoModal"
+            type="button"
+        >
+            ×
+        </button>
+
+
+    </div>
+
+
+
+    <div class="form-grid">
+
+
+        <div class="form-field full">
+
+            <label>
+                Paper Title
+            </label>
+
+            <input
+                id="paperInfoTitle"
+                type="text"
+                placeholder="Enter paper title"
+            >
+
+        </div>
+
+
+
+        <div class="form-field full">
+
+            <label>
+                Description
+            </label>
+
+            <textarea
+                id="paperInfoDescription"
+                placeholder="Describe this paper..."
+            ></textarea>
+
+        </div>
+
+
+
+        <div class="form-field">
+
+            <label>
+                Paper Type
+            </label>
+
+            <input
+                id="paperInfoType"
+                type="text"
+                placeholder="Research Paper"
+            >
+
+        </div>
+
+
+
+        <div class="form-field">
+
+            <label>
+                Status
+            </label>
+
+            <select id="paperInfoStatus">
+
+                <option value="not-started">
+                    Not Started
+                </option>
+
+                <option value="in-progress">
+                    In Progress
+                </option>
+
+                <option value="review">
+                    Review
+                </option>
+
+                <option value="published">
+                    Published
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <div class="form-field">
+
+            <label>
+                Source
+            </label>
+
+            <input
+                id="paperInfoSource"
+                type="text"
+                placeholder="Self"
+            >
+
+        </div>
+
+
+
+        <div class="form-field">
+
+            <label>
+                Target
+            </label>
+
+            <input
+                id="paperInfoTarget"
+                type="text"
+                placeholder="Journal / Conference"
+            >
+
+        </div>
+
+
+
+        <div class="form-field">
+
+            <label>
+                Deadline
+            </label>
+
+            <input
+                id="paperInfoDeadline"
+                type="date"
+            >
+
+        </div>
+
+
+    </div>
+
+
+
+    <div class="modal-actions">
+
+
+        <button
+            class="secondary-paper-button"
+            id="cancelPaperInfo"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-paper-button"
+            id="savePaperInfo"
+            type="button"
+        >
+            Save Changes
+        </button>
+
+
+    </div>
+
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     LEARNING MODAL
+===================================================== -->
+
+<div
+    class="paper-modal hidden"
+    id="learningModal"
+>
+
+ 
+<div class="paper-modal-box large-modal">
+
+
+    <div class="modal-heading">
+
+
+        <div>
+
+            <span>
+                PAPER UNDERSTANDING
+            </span>
+
+            <h3 id="learningModalTitle">
+                Add Learning
+            </h3>
+
+        </div>
+
+
+        <button
+            class="modal-close"
+            id="closeLearningModal"
+            type="button"
+        >
+            ×
+        </button>
+
+
+    </div>
+
+
+
+    <div class="form-field full">
+
+
+        <label>
+            What did you learn?
+        </label>
+
+
+        <textarea
+            id="learningInput"
+            placeholder="Write the important knowledge, insight or takeaway you gained from this paper..."
+        ></textarea>
+
+
+    </div>
+
+
+
+    <div class="modal-actions">
+
+
+        <button
+            class="secondary-paper-button"
+            id="cancelLearning"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-paper-button"
+            id="saveLearning"
+            type="button"
+        >
+            Save Learning
+        </button>
+
+
+    </div>
+
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     FINDING MODAL
+===================================================== -->
+
+<div
+    class="paper-modal hidden"
+    id="findingModal"
+>
+
+ 
+<div class="paper-modal-box large-modal">
+
+
+    <div class="modal-heading">
+
+
+        <div>
+
+            <span>
+                FINDINGS
+            </span>
+
+            <h3 id="findingModalTitle">
+                Add Finding
+            </h3>
+
+        </div>
+
+
+        <button
+            class="modal-close"
+            id="closeFindingModal"
+            type="button"
+        >
+            ×
+        </button>
+
+
+    </div>
+
+
+
+    <div class="form-field full">
+
+
+        <label>
+            Key Finding
+        </label>
+
+
+        <textarea
+            id="findingInput"
+            placeholder="Describe an important finding from the paper..."
+        ></textarea>
+
+
+    </div>
+
+
+
+    <div class="modal-actions">
+
+
+        <button
+            class="secondary-paper-button"
+            id="cancelFinding"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-paper-button"
+            id="saveFinding"
+            type="button"
+        >
+            Save Finding
+        </button>
+
+
+    </div>
+
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     METHODOLOGY MODAL
+===================================================== -->
+
+<div
+    class="paper-modal hidden"
+    id="methodologyModal"
+>
+
+ 
+<div class="paper-modal-box large-modal">
+
+
+    <div class="modal-heading">
+
+
+        <div>
+
+            <span>
+                ANALYSIS
+            </span>
+
+            <h3>
+                Edit Methodology Notes
+            </h3>
+
+        </div>
+
+
+        <button
+            class="modal-close"
+            id="closeMethodologyModal"
+            type="button"
+        >
+            ×
+        </button>
+
+
+    </div>
+
+
+
+    <div class="form-field full">
+
+
+        <label>
+            Methodology Notes
+        </label>
+
+
+        <textarea
+            id="methodologyInput"
+            placeholder="Describe how the authors conducted the research, selected methods, collected data or evaluated results..."
+        ></textarea>
+
+
+    </div>
+
+
+
+    <div class="modal-actions">
+
+
+        <button
+            class="secondary-paper-button"
+            id="cancelMethodology"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-paper-button"
+            id="saveMethodology"
+            type="button"
+        >
+            Save Notes
+        </button>
+
+
+    </div>
+
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     QUESTION MODAL
+===================================================== -->
+
+<div
+    class="paper-modal hidden"
+    id="questionModal"
+>
+
+ 
+<div class="paper-modal-box large-modal">
+
+
+    <div class="modal-heading">
+
+
+        <div>
+
+            <span>
+                CRITICAL THINKING
+            </span>
+
+            <h3 id="questionModalTitle">
+                Add Question or Gap
+            </h3>
+
+        </div>
+
+
+        <button
+            class="modal-close"
+            id="closeQuestionModal"
+            type="button"
+        >
+            ×
+        </button>
+
+
+    </div>
+
+
+
+    <div class="form-field full">
+
+
+        <label>
+            Question / Research Gap
+        </label>
+
+
+        <textarea
+            id="questionInput"
+            placeholder="What question remains unanswered, or what research gap did you identify?"
+        ></textarea>
+
+
+    </div>
+
+
+
+    <div class="modal-actions">
+
+
+        <button
+            class="secondary-paper-button"
+            id="cancelQuestion"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-paper-button"
+            id="saveQuestion"
+            type="button"
+        >
+            Save Question
+        </button>
+
+
+    </div>
+
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     PAPER SECTION MODAL
+===================================================== -->
+
+<div
+    class="paper-modal hidden"
+    id="paperSectionModal"
+>
+
+ 
+<div class="paper-modal-box large-modal">
+
+
+    <div class="modal-heading">
+
+
+        <div>
+
+            <span>
+                PAPER STRUCTURE
+            </span>
+
+            <h3 id="paperSectionModalTitle">
+                Add Paper Section
+            </h3>
+
+        </div>
+
+
+        <button
+            class="modal-close"
+            id="closePaperSectionModal"
+            type="button"
+        >
+            ×
+        </button>
+
+
+    </div>
+
+
+
+    <div class="form-grid">
+
+
+        <div class="form-field full">
+
+
+            <label>
+                Section Title
+            </label>
+
+
+            <input
+                id="paperSectionName"
+                type="text"
+                placeholder="Example: Experimental Setup"
+            >
+
+
+        </div>
+
+
+
+        <div class="form-field full">
+
+
+            <label>
+                Description / Purpose
+            </label>
+
+
+            <textarea
+                id="paperSectionPurpose"
+                placeholder="What should this section contain?"
+            ></textarea>
+
+
+        </div>
+
+
+
+        <div class="form-field">
+
+
+            <label>
+                Initial Status
+            </label>
+
+
+            <select id="paperSectionStatus">
+
+                <option value="not-started">
+                    Not Started
+                </option>
+
+                <option value="in-progress">
+                    In Progress
+                </option>
+
+                <option value="completed">
+                    Completed
+                </option>
+
+            </select>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <div class="modal-actions">
+
+
+        <button
+            class="secondary-paper-button"
+            id="cancelPaperSection"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-paper-button"
+            id="savePaperSection"
+            type="button"
+        >
+            Add Section
+        </button>
+
+
+    </div>
+
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     DELETE PAPER SECTION MODAL
+===================================================== -->
+
+<div
+    class="paper-modal hidden"
+    id="deletePaperSectionModal"
+>
+
+ 
+<div class="paper-modal-box">
+
+
+    <div class="modal-heading">
+
+
+        <div>
+
+            <span>
+                PAPER STRUCTURE
+            </span>
+
+            <h3>
+                Delete Section
+            </h3>
+
+        </div>
+
+
+        <button
+            class="modal-close"
+            id="closeDeletePaperSectionModal"
+            type="button"
+        >
+            ×
+        </button>
+
+
+    </div>
+
+
+
+    <p
+        class="delete-warning-text"
+        id="deletePaperSectionText"
+    >
+        This section and its content will be permanently removed.
+    </p>
+
+
+
+    <div class="modal-actions">
+
+
+        <button
+            class="secondary-paper-button"
+            id="cancelDeletePaperSection"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-paper-button danger-button"
+            id="confirmDeletePaperSection"
+            type="button"
+        >
+            Delete Section
+        </button>
+
+
+    </div>
+
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     REFERENCE MODAL
+===================================================== -->
+
+<div
+    class="paper-modal hidden"
+    id="referenceModal"
+>
+
+ 
+<div class="paper-modal-box large-modal">
+
+
+    <div class="modal-heading">
+
+
+        <div>
+
+            <span>
+                BIBLIOGRAPHY
+            </span>
+
+            <h3>
+                Add Reference
+            </h3>
+
+        </div>
+
+
+        <button
+            class="modal-close"
+            id="closeReferenceModal"
+            type="button"
+        >
+            ×
+        </button>
+
+
+    </div>
+
+
+
+    <div class="form-grid">
+
+
+        <div class="form-field full">
+
+            <label>
+                Reference Title
+            </label>
+
             <input
                 id="referenceTitle"
                 type="text"
-                placeholder="Paper / book title"
+                placeholder="Reference title"
             >
 
+        </div>
+
+
+        <div class="form-field full">
+
+            <label>
+                Author(s)
+            </label>
 
             <input
                 id="referenceAuthors"
                 type="text"
-                placeholder="Authors"
+                placeholder="Author(s)"
             >
 
+        </div>
+
+
+        <div class="form-field">
+
+            <label>
+                Publication Year
+            </label>
 
             <input
                 id="referenceYear"
                 type="text"
-                placeholder="Publication year"
+                placeholder="2026"
             >
 
+        </div>
+
+
+        <div class="form-field">
+
+            <label>
+                DOI / URL
+            </label>
 
             <input
                 id="referenceDOI"
                 type="text"
-                placeholder="DOI / URL"
+                placeholder="DOI or URL"
             >
 
+        </div>
+
+
+        <div class="form-field full">
+
+            <label>
+                Notes
+            </label>
 
             <textarea
                 id="referenceNotes"
                 placeholder="Why is this reference important?"
             ></textarea>
 
-
-
-            <div class="modal-actions">
-
-
-                <button
-                    class="secondary-paper-button"
-                    id="cancelReference"
-                    type="button"
-                >
-                    Cancel
-                </button>
-
-
-                <button
-                    class="primary-paper-button"
-                    id="saveReference"
-                    type="button"
-                >
-                    Add Reference
-                </button>
-
-
-            </div>
-
-
         </div>
+
 
     </div>
 
 
 
-    <!-- =====================================================
-         LINK MODAL
-    ====================================================== -->
-
-    <div
-        class="paper-modal hidden"
-        id="paperLinkModal"
-    >
-
-        <div class="paper-modal-box">
+    <div class="modal-actions">
 
 
-            <div class="modal-heading">
+        <button
+            class="secondary-paper-button"
+            id="cancelReference"
+            type="button"
+        >
+            Cancel
+        </button>
 
 
-                <div>
-
-                    <span>
-                        RESOURCE
-                    </span>
-
-                    <h3>
-                        Add Link
-                    </h3>
-
-                </div>
+        <button
+            class="primary-paper-button"
+            id="saveReference"
+            type="button"
+        >
+            Save Reference
+        </button>
 
 
-                <button
-                    class="modal-close"
-                    id="closePaperLinkModal"
-                    type="button"
-                >
-                    ×
-                </button>
+    </div>
 
 
-            </div>
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     PAPER LINK MODAL
+===================================================== -->
+
+<div
+    class="paper-modal hidden"
+    id="paperLinkModal"
+>
+
+ 
+<div class="paper-modal-box large-modal">
 
 
+    <div class="modal-heading">
+
+
+        <div>
+
+            <span>
+                RESOURCE
+            </span>
+
+            <h3>
+                Add Link
+            </h3>
+
+        </div>
+
+
+        <button
+            class="modal-close"
+            id="closePaperLinkModal"
+            type="button"
+        >
+            ×
+        </button>
+
+
+    </div>
+
+
+
+    <div class="form-grid">
+
+
+        <div class="form-field full">
+
+            <label>
+                Link Title
+            </label>
 
             <input
                 id="paperLinkTitle"
@@ -1799,6 +2628,14 @@
                 placeholder="Link title"
             >
 
+        </div>
+
+
+        <div class="form-field full">
+
+            <label>
+                URL
+            </label>
 
             <input
                 id="paperLinkURL"
@@ -1806,287 +2643,325 @@
                 placeholder="https://example.com"
             >
 
+        </div>
+
+
+        <div class="form-field full">
+
+            <label>
+                Description
+            </label>
 
             <textarea
                 id="paperLinkDescription"
                 placeholder="What is this link useful for?"
             ></textarea>
 
-
-
-            <div class="modal-actions">
-
-
-                <button
-                    class="secondary-paper-button"
-                    id="cancelPaperLink"
-                    type="button"
-                >
-                    Cancel
-                </button>
-
-
-                <button
-                    class="primary-paper-button"
-                    id="savePaperLink"
-                    type="button"
-                >
-                    Add Link
-                </button>
-
-
-            </div>
-
-
         </div>
+
 
     </div>
 
 
 
-    <!-- =====================================================
-         TIMELINE MODAL
-    ====================================================== -->
+    <div class="modal-actions">
 
-    <div
-        class="paper-modal hidden"
-        id="paperTimelineModal"
-    >
 
-        <div class="paper-modal-box large-modal">
+        <button
+            class="secondary-paper-button"
+            id="cancelPaperLink"
+            type="button"
+        >
+            Cancel
+        </button>
 
 
-            <div class="modal-heading">
+        <button
+            class="primary-paper-button"
+            id="savePaperLink"
+            type="button"
+        >
+            Add Link
+        </button>
 
 
-                <div>
+    </div>
 
-                    <span>
-                        PAPER PLAN
-                    </span>
 
-                    <h3>
-                        Add Timeline Entry
-                    </h3>
+</div>
+ 
 
-                </div>
+</div>
 
+<!-- =====================================================
+     TIMELINE MODAL
+===================================================== -->
 
-                <button
-                    class="modal-close"
-                    id="closePaperTimelineModal"
-                    type="button"
-                >
-                    ×
-                </button>
+<div
+    class="paper-modal hidden"
+    id="paperTimelineModal"
+>
 
+ 
+<div class="paper-modal-box large-modal">
 
-            </div>
 
+    <div class="modal-heading">
 
 
-            <div class="form-grid">
+        <div>
 
+            <span>
+                TIMELINE
+            </span>
 
-                <div class="form-field">
-
-                    <label>
-                        Date
-                    </label>
-
-                    <input
-                        id="paperTimelineDate"
-                        type="date"
-                    >
-
-                </div>
-
-
-                <div class="form-field">
-
-                    <label>
-                        Status
-                    </label>
-
-                    <select
-                        id="paperTimelineStatus"
-                    >
-
-                        <option value="planned">
-                            Planned
-                        </option>
-
-                        <option value="ongoing">
-                            Ongoing
-                        </option>
-
-                        <option value="completed">
-                            Completed
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="form-field full">
-
-                    <label>
-                        Task
-                    </label>
-
-                    <input
-                        id="paperTimelineTitle"
-                        type="text"
-                        placeholder="What needs to be done?"
-                    >
-
-                </div>
-
-
-                <div class="form-field full">
-
-                    <label>
-                        Objective
-                    </label>
-
-                    <textarea
-                        id="paperTimelineDescription"
-                        placeholder="What should be achieved?"
-                    ></textarea>
-
-                </div>
-
-
-                <div class="form-field">
-
-                    <label>
-                        Duration
-                    </label>
-
-                    <input
-                        id="paperTimelineDuration"
-                        type="text"
-                        placeholder="Example: 3 hours"
-                    >
-
-                </div>
-
-
-                <div class="form-field">
-
-                    <label>
-                        Priority
-                    </label>
-
-                    <select
-                        id="paperTimelinePriority"
-                    >
-
-                        <option value="normal">
-                            Normal
-                        </option>
-
-                        <option value="high">
-                            High
-                        </option>
-
-                        <option value="low">
-                            Low
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-            </div>
-
-
-
-            <div class="modal-actions">
-
-
-                <button
-                    class="secondary-paper-button"
-                    id="cancelPaperTimeline"
-                    type="button"
-                >
-                    Cancel
-                </button>
-
-
-                <button
-                    class="primary-paper-button"
-                    id="savePaperTimeline"
-                    type="button"
-                >
-                    Add Timeline
-                </button>
-
-
-            </div>
-
+            <h3 id="paperTimelineModalTitle">
+                Add Timeline Entry
+            </h3>
 
         </div>
+
+
+        <button
+            class="modal-close"
+            id="closePaperTimelineModal"
+            type="button"
+        >
+            ×
+        </button>
+
 
     </div>
 
 
 
-    <!-- =====================================================
-         FEEDBACK MODAL
-    ====================================================== -->
-
-    <div
-        class="paper-modal hidden"
-        id="feedbackModal"
-    >
-
-        <div class="paper-modal-box">
+    <div class="form-grid">
 
 
-            <div class="modal-heading">
+        <div class="form-field">
+
+            <label>
+                Date
+            </label>
+
+            <input
+                id="paperTimelineDate"
+                type="date"
+            >
+
+        </div>
 
 
-                <div>
+        <div class="form-field">
 
-                    <span>
-                        REVIEW
-                    </span>
+            <label>
+                Status
+            </label>
 
-                    <h3>
-                        Add Feedback
-                    </h3>
+            <select
+                id="paperTimelineStatus"
+            >
 
-                </div>
+                <option value="planned">
+                    Planned
+                </option>
+
+                <option value="ongoing">
+                    Ongoing
+                </option>
+
+                <option value="completed">
+                    Completed
+                </option>
+
+            </select>
+
+        </div>
 
 
-                <button
-                    class="modal-close"
-                    id="closeFeedbackModal"
-                    type="button"
-                >
-                    ×
-                </button>
+        <div class="form-field full">
+
+            <label>
+                Title
+            </label>
+
+            <input
+                id="paperTimelineTitle"
+                type="text"
+                placeholder="What needs to happen?"
+            >
+
+        </div>
 
 
-            </div>
+        <div class="form-field full">
+
+            <label>
+                Objective / Description
+            </label>
+
+            <textarea
+                id="paperTimelineDescription"
+                placeholder="What should be achieved?"
+            ></textarea>
+
+        </div>
 
 
+        <div class="form-field">
+
+            <label>
+                Duration
+            </label>
+
+            <input
+                id="paperTimelineDuration"
+                type="text"
+                placeholder="Example: 3 hours"
+            >
+
+        </div>
+
+
+        <div class="form-field">
+
+            <label>
+                Priority
+            </label>
+
+            <select
+                id="paperTimelinePriority"
+            >
+
+                <option value="normal">
+                    Normal
+                </option>
+
+                <option value="high">
+                    High
+                </option>
+
+                <option value="low">
+                    Low
+                </option>
+
+            </select>
+
+        </div>
+
+
+    </div>
+
+
+
+    <div class="modal-actions">
+
+
+        <button
+            class="secondary-paper-button"
+            id="cancelPaperTimeline"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-paper-button"
+            id="savePaperTimeline"
+            type="button"
+        >
+            Save Timeline
+        </button>
+
+
+    </div>
+
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     FEEDBACK MODAL
+===================================================== -->
+
+<div
+    class="paper-modal hidden"
+    id="feedbackModal"
+>
+
+ 
+<div class="paper-modal-box large-modal">
+
+
+    <div class="modal-heading">
+
+
+        <div>
+
+            <span>
+                REVIEW
+            </span>
+
+            <h3>
+                Add Feedback
+            </h3>
+
+        </div>
+
+
+        <button
+            class="modal-close"
+            id="closeFeedbackModal"
+            type="button"
+        >
+            ×
+        </button>
+
+
+    </div>
+
+
+
+    <div class="form-grid">
+
+
+        <div class="form-field">
+
+            <label>
+                Reviewer / Mentor
+            </label>
 
             <input
                 id="feedbackPerson"
                 type="text"
-                placeholder="Reviewer / mentor name"
+                placeholder="Name"
             >
 
+        </div>
+
+
+        <div class="form-field">
+
+            <label>
+                Date
+            </label>
 
             <input
                 id="feedbackDate"
                 type="date"
             >
 
+        </div>
+
+
+        <div class="form-field full">
+
+            <label>
+                Feedback Type
+            </label>
 
             <select id="feedbackType">
 
@@ -2104,64 +2979,78 @@
 
             </select>
 
+        </div>
+
+
+        <div class="form-field full">
+
+            <label>
+                Feedback
+            </label>
 
             <textarea
                 id="feedbackContent"
                 placeholder="Write the feedback..."
             ></textarea>
 
-
-
-            <div class="modal-actions">
-
-
-                <button
-                    class="secondary-paper-button"
-                    id="cancelFeedback"
-                    type="button"
-                >
-                    Cancel
-                </button>
-
-
-                <button
-                    class="primary-paper-button"
-                    id="saveFeedback"
-                    type="button"
-                >
-                    Add Feedback
-                </button>
-
-
-            </div>
-
-
         </div>
 
+
     </div>
 
 
 
-    <!-- =====================================================
-         TOAST
-    ====================================================== -->
+    <div class="modal-actions">
 
-    <div
-        class="paper-toast hidden"
-        id="paperToast"
-    >
-        Saved
+
+        <button
+            class="secondary-paper-button"
+            id="cancelFeedback"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-paper-button"
+            id="saveFeedback"
+            type="button"
+        >
+            Save Feedback
+        </button>
+
+
     </div>
 
 
+</div>
+ 
 
-    <!-- =====================================================
-         JAVASCRIPT
-    ====================================================== -->
+</div>
 
-    <script src="paper.js"></script>
+<!-- =====================================================
+     TOAST
+===================================================== -->
 
+<div
+    class="paper-toast hidden"
+    id="paperToast"
+>
+    Saved
+</div>
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- RiGiD Supabase Client -->
+<script src="../../../supabase-client.js"></script>
+
+<!-- Paper Logic -->
+<script src="paper.js"></script>
 
 </body>
-
 </html>

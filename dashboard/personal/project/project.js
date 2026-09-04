@@ -1,1186 +1,3527 @@
 /* =========================================================
-   RiGiD — PROJECT
-   Interactive behaviour
+RiGiD — PROJECT WORKSPACE
+project.js
+
+Backend-connected version
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+/* =========================================================
+CONFIG
+========================================================= */
 
-    /* =====================================================
-       HELPERS
-    ===================================================== */
+const SUPABASE_FUNCTIONS_URL =
+    "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1";
 
-    const $ = (selector) =>
-        document.querySelector(selector);
+/* =========================================================
+DOM HELPERS
+========================================================= */
 
-    const $$ = (selector) =>
-        document.querySelectorAll(selector);
+const $ = selector =>
+    document.querySelector(selector);
+
+const $$ = selector =>
+    Array.from(
+        document.querySelectorAll(selector)
+    );
+
+function getElement(id) {
 
 
-    function showToast(message) {
+    return document.getElementById(id);
 
-        const toast = $("#projectToast");
 
-        if (!toast) return;
+}
 
-        toast.textContent = message;
+function getInputValue(id) {
 
-        toast.classList.remove("hidden");
 
-        clearTimeout(window.projectToastTimer);
+    const element =
+        getElement(id);
 
-        window.projectToastTimer =
-            setTimeout(() => {
-                toast.classList.add("hidden");
-            }, 2200);
+
+    if (!element) {
+
+        return "";
+
     }
 
 
-    function openModal(modal) {
+    return String(
+        element.value || ""
+    ).trim();
 
-        if (!modal) return;
 
-        modal.classList.remove("hidden");
+}
 
-        document.body.style.overflow = "hidden";
+function setInputValue(
+    id,
+    value
+) {
+
+
+    const element =
+        getElement(id);
+
+
+    if (!element) {
+
+        return;
+
     }
 
 
-    function closeModal(modal) {
+    element.value =
+        value ?? "";
 
-        if (!modal) return;
 
-        modal.classList.add("hidden");
+}
 
-        document.body.style.overflow = "";
+function setText(
+    id,
+    value
+) {
+
+
+    const element =
+        getElement(id);
+
+
+    if (!element) {
+
+        return;
+
     }
 
 
-    function todayISO() {
+    element.textContent =
+        value ?? "";
 
-        const date = new Date();
 
-        const offset =
-            date.getTimezoneOffset() * 60000;
+}
 
-        return new Date(
-            date.getTime() - offset
-        ).toISOString().slice(0, 10);
+/* =========================================================
+STATE
+========================================================= */
+
+let projectData = null;
+
+let currentWorkId = null;
+
+let editingTaskId = null;
+
+let selectedTaskId = null;
+
+let editingMilestoneId = null;
+
+let editingTimelineId = null;
+
+let confirmCallback = null;
+
+let toastTimer = null;
+
+let isSaving = false;
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeProject
+);
+
+
+function updateClock() {
+
+    const clockElement =
+        document.getElementById("clock");
+
+    if (!clockElement) return;
+
+
+    const now =
+        new Date();
+
+
+    const timeString =
+        now.toLocaleTimeString(
+            "en-IN",
+            {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                hour12: true
+            }
+        );
+
+
+    clockElement.textContent =
+        timeString;
+}
+
+
+function setLoading(isLoading) {
+
+    const loader =
+        document.getElementById("loadingOverlay") ||
+        document.getElementById("loading-overlay") ||
+        document.querySelector(".loading-overlay");
+
+
+    if (!loader) return;
+
+
+    if (isLoading) {
+
+        loader.style.display =
+            "flex";
+
+        loader.classList.add(
+            "active"
+        );
+
+    }
+
+    else {
+
+        loader.style.display =
+            "none";
+
+        loader.classList.remove(
+            "active"
+        );
+
+    }
+}
+/* =========================================================
+   UTILITY FUNCTIONS
+========================================================= */
+
+function clampPercentage(value) {
+
+    const number =
+        Number(value);
+
+    if (
+        Number.isNaN(number) ||
+        !Number.isFinite(number)
+    ) {
+        return 0;
     }
 
 
-    function formatDate(dateString) {
+    return Math.min(
+        100,
+        Math.max(
+            0,
+            number
+        )
+    );
+}
 
-        if (!dateString) return "";
 
-        const date =
-            new Date(`${dateString}T00:00:00`);
+function showToast(
+    message,
+    type = "info"
+) {
 
-        if (Number.isNaN(date.getTime()))
-            return dateString;
+    const toast =
+        document.getElementById("toast") ||
+        document.getElementById("toastMessage") ||
+        document.querySelector(".toast");
 
 
-        return date
-            .toLocaleDateString(
-                "en-GB",
-                {
-                    day: "2-digit",
-                    month: "short"
-                }
-            )
-            .toUpperCase();
+    if (!toast) {
+
+        console.log(
+            `[${type}] ${message}`
+        );
+
+        return;
+
     }
 
 
-    /* =====================================================
-       LIVE DATE + CLOCK
-    ===================================================== */
-
-    function updateClock() {
-
-        const now = new Date();
-
-        const date =
-            $("#liveDate");
-
-        const clock =
-            $("#liveClock");
+    toast.textContent =
+        message;
 
 
-        if (date) {
-
-            date.textContent =
-                now.toLocaleDateString(
-                    "en-GB",
-                    {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric"
-                    }
-                ).toUpperCase();
-
-        }
+    toast.classList.add(
+        "show"
+    );
 
 
-        if (clock) {
+    toast.classList.remove(
+        "success",
+        "error",
+        "info",
+        "warning"
+    );
 
-            clock.textContent =
-                now.toLocaleTimeString(
-                    "en-US",
-                    {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit"
-                    }
+
+    toast.classList.add(
+        type
+    );
+
+
+    clearTimeout(
+        window.__projectToastTimeout
+    );
+
+
+    window.__projectToastTimeout =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
                 );
 
+            },
+            3000
+        );
+}
+function formatDate(dateValue) {
+
+    if (!dateValue) {
+        return "Not specified";
+    }
+
+
+    const date =
+        new Date(dateValue);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+        return "Not specified";
+    }
+
+
+    return date.toLocaleDateString(
+        "en-IN",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
         }
+    );
+
+}
+
+
+/* =========================================================
+   UTILITY FUNCTIONS
+========================================================= */
+
+function generateID(
+    prefix = "item"
+) {
+
+    if (
+        window.crypto &&
+        typeof window.crypto.randomUUID === "function"
+    ) {
+
+        return `${prefix}-${window.crypto.randomUUID()}`;
 
     }
+
+
+    return `${prefix}-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 10)}`;
+
+}
+
+
+function clone(value) {
+
+    if (
+        value === undefined ||
+        value === null
+    ) {
+
+        return value;
+
+    }
+
+
+    return JSON.parse(
+        JSON.stringify(value)
+    );
+
+}
+
+
+function findById(
+    array,
+    id
+) {
+
+    return (
+        Array.isArray(array)
+            ? array
+            : []
+    ).find(
+        item =>
+            String(item.id) ===
+            String(id)
+    );
+
+}
+
+
+function clampPercentage(value) {
+
+    const number =
+        Number(value);
+
+
+    if (
+        Number.isNaN(number) ||
+        !Number.isFinite(number)
+    ) {
+
+        return 0;
+
+    }
+
+
+    return Math.max(
+        0,
+        Math.min(
+            100,
+            number
+        )
+    );
+
+}
+
+
+function formatLabel(value) {
+
+    return String(
+        value ||
+        ""
+    )
+        .replace(
+            /[-_]/g,
+            " "
+        )
+        .replace(
+            /\b\w/g,
+            character =>
+                character.toUpperCase()
+        );
+
+}
+
+
+function todayISO() {
+
+    const date =
+        new Date();
+
+
+    const offset =
+        date.getTimezoneOffset() *
+        60000;
+
+
+    return new Date(
+        date.getTime() -
+        offset
+    )
+        .toISOString()
+        .slice(
+            0,
+            10
+        );
+
+}
+
+
+function normalizeDateInput(value) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    const string =
+        String(value).trim();
+
+
+    if (
+        /^\d{4}-\d{2}-\d{2}$/
+            .test(string)
+    ) {
+
+        return string;
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+
+    }
+
+
+    const offset =
+        date.getTimezoneOffset() *
+        60000;
+
+
+    return new Date(
+        date.getTime() -
+        offset
+    )
+        .toISOString()
+        .slice(
+            0,
+            10
+        );
+
+}
+
+
+function formatDate(value) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    const normalized =
+        normalizeDateInput(
+            value
+        );
+
+
+    if (!normalized) {
+
+        return String(
+            value
+        );
+
+    }
+
+
+    const date =
+        new Date(
+            `${normalized}T00:00:00`
+        );
+
+
+    return date
+        .toLocaleDateString(
+            "en-IN",
+            {
+
+                day:
+                    "2-digit",
+
+                month:
+                    "short",
+
+                year:
+                    "numeric"
+
+            }
+        );
+
+}
+
+function getExtension(
+    filename
+) {
+
+
+    const parts =
+        String(
+            filename ||
+            ""
+        ).split(
+            "."
+        );
+
+
+    if (
+        parts.length <
+        2
+    ) {
+
+        return "FILE";
+
+    }
+
+
+    return parts
+        .pop()
+        .slice(
+            0,
+            5
+        )
+        .toUpperCase();
+
+
+}
+
+function formatDateTime(value) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(
+            value
+        );
+
+    }
+
+
+    return date.toLocaleString(
+        "en-IN",
+        {
+
+            day:
+                "2-digit",
+
+            month:
+                "short",
+
+            year:
+                "numeric",
+
+            hour:
+                "2-digit",
+
+            minute:
+                "2-digit"
+
+        }
+    );
+
+}
+
+
+function normalizeURL(value) {
+
+    const url =
+        String(
+            value ||
+            ""
+        )
+            .trim();
+
+
+    if (!url) {
+
+        return "";
+
+    }
+
+
+    if (
+        /^https?:\/\//i
+            .test(url)
+    ) {
+
+        return url;
+
+    }
+
+
+    return `https://${url}`;
+
+}
+
+
+function emptyState(message) {
+
+    const element =
+        document.createElement(
+            "div"
+        );
+
+
+    element.className =
+        "empty-state";
+
+
+    element.textContent =
+        message;
+
+
+    return element;
+
+}
+
+
+function openModal(modal) {
+
+    if (!modal) {
+
+        return;
+
+    }
+
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+
+    document.body.style.overflow =
+        "hidden";
+
+}
+
+
+function closeModal(modal) {
+
+    if (!modal) {
+
+        return;
+
+    }
+
+
+    modal.classList.add(
+        "hidden"
+    );
+
+
+    const openModalExists =
+        $$(".project-modal")
+            .some(
+                item =>
+                    !item.classList.contains(
+                        "hidden"
+                    )
+            );
+
+
+    if (!openModalExists) {
+
+        document.body.style.overflow =
+            "";
+
+    }
+
+}
+
+
+function askConfirm(
+    title,
+    message,
+    callback
+) {
+
+    confirmCallback =
+        callback;
+
+
+    setText(
+        "confirmModalTitle",
+        title
+    );
+
+
+    setText(
+        "confirmModalMessage",
+        message
+    );
+
+
+    openModal(
+        getElement(
+            "confirmModal"
+        )
+    );
+
+}
+
+
+function closeConfirm() {
+
+    confirmCallback =
+        null;
+
+
+    closeModal(
+        getElement(
+            "confirmModal"
+        )
+    );
+
+}
+
+
+function showToast(
+    message,
+    type = "info"
+) {
+
+    const toast =
+        getElement(
+            "projectToast"
+        ) ||
+        getElement(
+            "toast"
+        ) ||
+        getElement(
+            "toastMessage"
+        ) ||
+        document.querySelector(
+            ".toast"
+        );
+
+
+    if (!toast) {
+
+        console.log(
+            `[${type}] ${message}`
+        );
+
+        return;
+
+    }
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.remove(
+        "hidden"
+    );
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    toast.classList.remove(
+        "success",
+        "error",
+        "info",
+        "warning"
+    );
+
+
+    if (type) {
+
+        toast.classList.add(
+            type
+        );
+
+    }
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.add(
+                    "hidden"
+                );
+
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2800
+        );
+
+}
+/* =========================================================
+MISSING PROJECT UTILITY FUNCTIONS
+========================================================= */
+
+function generateID(
+    prefix = "item"
+) {
+
+
+    if (
+        window.crypto &&
+        typeof window.crypto.randomUUID === "function"
+    ) {
+
+        return `${prefix}-${window.crypto.randomUUID()}`;
+
+    }
+
+
+    return `${prefix}-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 10)}`;
+
+
+}
+
+function clone(value) {
+
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return value;
+
+    }
+
+
+    return JSON.parse(
+        JSON.stringify(value)
+    );
+
+
+}
+
+function findById(
+    array,
+    id
+) {
+
+
+    return (
+        Array.isArray(array)
+            ? array
+            : []
+    ).find(
+        item =>
+            String(item.id) ===
+            String(id)
+    );
+
+
+}
+
+function formatLabel(value) {
+
+
+    return String(
+        value ||
+        ""
+    )
+        .replace(
+            /[-_]/g,
+            " "
+        )
+        .replace(
+            /\b\w/g,
+            character =>
+                character.toUpperCase()
+        );
+
+
+}
+
+function todayISO() {
+
+
+    const date =
+        new Date();
+
+
+    const offset =
+        date.getTimezoneOffset() *
+        60000;
+
+
+    return new Date(
+        date.getTime() -
+        offset
+    )
+        .toISOString()
+        .slice(
+            0,
+            10
+        );
+
+
+}
+
+function normalizeDateInput(value) {
+
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    const string =
+        String(value).trim();
+
+
+    if (
+        /^\d{4}-\d{2}-\d{2}$/
+            .test(string)
+    ) {
+
+        return string;
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+
+    }
+
+
+    const offset =
+        date.getTimezoneOffset() *
+        60000;
+
+
+    return new Date(
+        date.getTime() -
+        offset
+    )
+        .toISOString()
+        .slice(
+            0,
+            10
+        );
+
+
+}
+
+function formatDateTime(value) {
+
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(value);
+
+    }
+
+
+    return date.toLocaleString(
+        "en-IN",
+        {
+
+            day:
+                "2-digit",
+
+            month:
+                "short",
+
+            year:
+                "numeric",
+
+            hour:
+                "2-digit",
+
+            minute:
+                "2-digit"
+
+        }
+    );
+
+
+}
+
+function emptyState(message) {
+
+
+    return `
+    <div class="empty-state">
+        ${escapeHTML(message)}
+    </div>
+`;
+
+
+}
+
+function normalizeURL(value) {
+
+
+    const url =
+        String(
+            value ||
+            ""
+        ).trim();
+
+
+    if (!url) {
+
+        return "";
+
+    }
+
+
+    if (
+        /^https?:\/\//i.test(url)
+    ) {
+
+        return url;
+
+    }
+
+
+    return `https://${url}`;
+
+
+}
+
+function getInitials(name) {
+
+
+    const parts =
+        String(
+            name ||
+            ""
+        )
+            .trim()
+            .split(
+                /\s+/
+            )
+            .filter(Boolean);
+
+
+    if (!parts.length) {
+
+        return "?";
+
+    }
+
+
+    return parts
+        .slice(0, 2)
+        .map(
+            part =>
+                part.charAt(0)
+                    .toUpperCase()
+        )
+        .join("");
+
+
+}
+
+function escapeHTML(value) {
+
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        value ??
+        "";
+
+
+    return div.innerHTML;
+
+
+}
+
+async function initializeProject() {
+
+    currentWorkId =
+        getWorkIdFromURL();
 
 
     updateClock();
 
-    setInterval(updateClock, 1000);
 
-
-    /* =====================================================
-       NAVIGATION
-    ===================================================== */
-
-    $$(".project-nav-item").forEach(item => {
-
-        item.addEventListener(
-            "click",
-            () => {
-
-                $$(".project-nav-item")
-                    .forEach(nav =>
-                        nav.classList.remove("active")
-                    );
-
-
-                item.classList.add("active");
-
-
-                const sectionID =
-                    item.dataset.section;
-
-
-                const section =
-                    document.getElementById(
-                        sectionID
-                    );
-
-
-                if (section) {
-
-                    section.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
-
-                }
-
-            }
-        );
-
-    });
-
-
-    /* =====================================================
-       EDIT PROJECT
-    ===================================================== */
-
-    const editProject =
-        $("#editProject");
-
-
-    if (editProject) {
-
-        editProject.addEventListener(
-            "click",
-            () => {
-
-                const title =
-                    $("#projectTitle");
-
-                const description =
-                    $("#projectDescription");
-
-
-                const newTitle =
-                    prompt(
-                        "Project title:",
-                        title?.textContent.trim()
-                    );
-
-
-                if (newTitle === null)
-                    return;
-
-
-                const newDescription =
-                    prompt(
-                        "Project description:",
-                        description?.textContent.trim()
-                    );
-
-
-                if (
-                    title &&
-                    newTitle.trim()
-                ) {
-
-                    title.textContent =
-                        newTitle.trim();
-
-                }
-
-
-                if (
-                    description &&
-                    newDescription !== null
-                ) {
-
-                    description.textContent =
-                        newDescription.trim();
-
-                }
-
-
-                showToast(
-                    "Project details updated"
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       PROJECT STATUS
-    ===================================================== */
-
-    const projectStatus =
-        $("#projectStatus");
-
-
-    if (projectStatus) {
-
-        projectStatus.addEventListener(
-            "click",
-            () => {
-
-                const statuses = [
-                    "NOT STARTED",
-                    "IN PROGRESS",
-                    "ON HOLD",
-                    "COMPLETED"
-                ];
-
-
-                const current =
-                    projectStatus.textContent
-                        .replace("●", "")
-                        .trim();
-
-
-                const index =
-                    statuses.indexOf(current);
-
-
-                const next =
-                    statuses[
-                        (index + 1) %
-                        statuses.length
-                    ];
-
-
-                projectStatus.textContent =
-                    `● ${next}`;
-
-
-                showToast(
-                    `Status: ${next}`
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       PROJECT PRIORITY
-    ===================================================== */
-
-    const projectPriority =
-        $("#projectPriority");
-
-
-    if (projectPriority) {
-
-        projectPriority.addEventListener(
-            "click",
-            () => {
-
-                const priorities = [
-                    "LOW PRIORITY",
-                    "MEDIUM PRIORITY",
-                    "HIGH PRIORITY"
-                ];
-
-
-                const current =
-                    projectPriority.textContent.trim();
-
-
-                const index =
-                    priorities.indexOf(current);
-
-
-                const next =
-                    priorities[
-                        (index + 1) %
-                        priorities.length
-                    ];
-
-
-                projectPriority.textContent =
-                    next;
-
-
-                showToast(
-                    `Priority: ${next}`
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       PROJECT PROGRESS
-    ===================================================== */
-
-    const progressCard =
-        $(".progress-card");
-
-
-    const progressBar =
-        $("#projectProgressBar");
-
-
-    const progressText =
-        $("#projectProgress");
-
-
-    const progressStatus =
-        $("#progressStatus");
-
-
-    function updateProgress(value) {
-
-        value =
-            Math.max(
-                0,
-                Math.min(
-                    100,
-                    Number(value)
-                )
-            );
-
-
-        if (progressBar) {
-
-            progressBar.style.width =
-                `${value}%`;
-
-        }
-
-
-        if (progressText) {
-
-            progressText.textContent =
-                `${value}%`;
-
-        }
-
-
-        if (progressStatus) {
-
-            if (value === 100) {
-
-                progressStatus.textContent =
-                    "Completed";
-
-            } else if (value >= 70) {
-
-                progressStatus.textContent =
-                    "On track";
-
-            } else if (value >= 40) {
-
-                progressStatus.textContent =
-                    "In progress";
-
-            } else {
-
-                progressStatus.textContent =
-                    "Getting started";
-
-            }
-
-        }
-
-    }
-
-
-    progressCard?.addEventListener(
-        "click",
-        event => {
-
-            if (
-                event.target.closest("button")
-            )
-                return;
-
-
-            const current =
-                progressText?.textContent
-                    .replace("%", "")
-                    .trim() || "0";
-
-
-            const value =
-                prompt(
-                    "Project progress (0–100):",
-                    current
-                );
-
-
-            if (value === null)
-                return;
-
-
-            if (
-                value === "" ||
-                Number.isNaN(Number(value))
-            ) {
-
-                showToast(
-                    "Enter a valid percentage"
-                );
-
-                return;
-
-            }
-
-
-            updateProgress(value);
-
-            showToast(
-                "Project progress updated"
-            );
-
-        }
+    setInterval(
+        updateClock,
+        1000
     );
 
 
-    /* =====================================================
-       CURRENT WORK
-    ===================================================== */
+    if (!currentWorkId) {
+
+        showToast(
+            "Project ID is missing."
+        );
+
+        return;
+
+    }
+
+
+    setLoading(
+        true
+    );
+
+
+    try {
+
+        await loadProjectData();
+
+
+        initializeProjectPage();
+
+
+        showToast(
+            "Project loaded."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Project initialization error:",
+            error
+        );
+
+
+        showToast(
+            error.message ||
+            "Unable to load Project."
+        );
+
+    }
+
+    finally {
+
+        setLoading(
+            false
+        );
+
+    }
+
+}
+/* =========================================================
+GET WORK ID
+========================================================= */
+
+function getWorkIdFromURL() {
+
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    return (
+
+        params.get("work_id") ||
+
+        params.get("id") ||
+
+        params.get("work") ||
+
+        params.get("project")
+
+    );
+
+
+}
+
+/* =========================================================
+AUTH SESSION
+========================================================= */
+
+async function getSession() {
+
+
+    if (!window.sb) {
+
+        throw new Error(
+            "Supabase client is unavailable."
+        );
+
+    }
+
+
+    const {
+        data: {
+            session
+        },
+        error
+    } =
+        await window.sb.auth.getSession();
+
+
+    if (
+        error ||
+        !session
+    ) {
+
+        throw new Error(
+            "You must be logged in."
+        );
+
+    }
+
+
+    return session;
+
+
+}
+
+/* =========================================================
+LOAD PROJECT DATA
+========================================================= */
+
+async function loadProjectData() {
+
+
+    const session =
+        await getSession();
+
+
+    const response =
+        await fetch(
+
+            `${SUPABASE_FUNCTIONS_URL}/get-rigid-work-data`,
+
+            {
+
+                method:
+                    "POST",
+
+                headers: {
+
+                    "Content-Type":
+                        "application/json",
+
+                    "Authorization":
+                        `Bearer ${session.access_token}`
+
+                },
+
+                body:
+                    JSON.stringify({
+
+                        work_id:
+                            currentWorkId
+
+                    })
+
+            }
+
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if (
+        !response.ok ||
+        !result.success
+    ) {
+
+        throw new Error(
+
+            result.error ||
+            "Unable to load Project data."
+
+        );
+
+    }
+
+
+    projectData =
+        convertRigidDataToProjectData(
+
+            result.data,
+            result.work
+
+        );
+
+
+    console.log(
+        "RiGiD Project loaded:",
+        projectData
+    );
+
+
+}
+
+/* =========================================================
+SAVE PROJECT DATA
+========================================================= */
+
+async function saveProjectData() {
+
+
+    if (isSaving) {
+
+        return;
+
+    }
+
+
+    if (!currentWorkId) {
+
+        throw new Error(
+            "Project ID is missing."
+        );
+
+    }
+
+
+    if (!projectData) {
+
+        throw new Error(
+            "Project data is not loaded."
+        );
+
+    }
+
+
+    isSaving =
+        true;
+
+
+    try {
+
+        const session =
+            await getSession();
+
+
+        const rigidData =
+            convertProjectDataToRigidData(
+                projectData
+            );
+
+
+        const response =
+            await fetch(
+
+                `${SUPABASE_FUNCTIONS_URL}/update-rigid-work-data`,
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Authorization":
+                            `Bearer ${session.access_token}`
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            work_id:
+                                currentWorkId,
+
+                            data:
+                                rigidData
+
+                        })
+
+                }
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if (
+            !response.ok ||
+            !result.success
+        ) {
+
+            throw new Error(
+
+                result.error ||
+                "Unable to save Project data."
+
+            );
+
+        }
+
+
+        projectData.updatedAt =
+            new Date()
+                .toISOString();
+
+
+        return result;
+
+    }
+
+    finally {
+
+        isSaving =
+            false;
+
+    }
+
+
+}
+
+/* =========================================================
+DATA CONVERSION
+========================================================= */
+
+function convertRigidDataToProjectData(
+    data,
+    work = {}
+) {
+
+
+    const workspace =
+        data?.workspace || {};
+
+
+    const project =
+        data?.project || {};
+
+
+    return {
+
+        id:
+            workspace.id ||
+            work?.id ||
+            currentWorkId,
+
+
+        title:
+            workspace.title ||
+            work?.title ||
+            "Untitled Project",
+
+
+        status:
+            workspace.status ||
+            project.status ||
+            "in-progress",
+
+
+        description:
+            project.description ||
+            "",
+
+
+        objective:
+            project.objective ||
+            "",
+
+
+        owner:
+            project.owner ||
+            workspace.owner ||
+            work?.owner ||
+            "You",
+
+
+        priority:
+            project.priority ||
+            "medium",
+
+
+        progress:
+            clampPercentage(
+                project.progress ?? 0
+            ),
+
+
+        progressStatus:
+            project.progressStatus ||
+            "on-track",
+
+
+        startDate:
+            project.startDate ||
+            workspace.createdAt ||
+            "",
+
+
+        targetDate:
+            project.targetDate ||
+            "",
+
+
+        tags:
+            Array.isArray(
+                project.tags
+            )
+                ? project.tags
+                : [],
+
+
+        currentWork:
+        {
+
+            title:
+                project.currentWork?.title ||
+                "",
+
+            description:
+                project.currentWork?.description ||
+                ""
+
+        },
+
+
+        nextAction:
+        {
+
+            title:
+                project.nextAction?.title ||
+                "",
+
+            dueDate:
+                project.nextAction?.dueDate ||
+                ""
+
+        },
+
+
+        collaborators:
+            Array.isArray(
+                project.collaborators
+            )
+                ? project.collaborators
+                : [],
+
+
+        milestones:
+            Array.isArray(
+                project.milestones
+            )
+                ? project.milestones
+                : [],
+
+
+        tests:
+            Array.isArray(
+                project.tests
+            )
+                ? project.tests
+                : [],
+
+
+        versions:
+            Array.isArray(
+                project.versions
+            )
+                ? project.versions
+                : [],
+
+
+        issues:
+            Array.isArray(
+                project.issues
+            )
+                ? project.issues
+                : [],
+
+
+        decisions:
+            Array.isArray(
+                project.decisions
+            )
+                ? project.decisions
+                : [],
+
+
+        outcome:
+            project.outcome ||
+            "",
+
+
+        tasks:
+            Array.isArray(
+                data?.tasks
+            )
+                ? data.tasks
+                : [],
+
+
+        timeline:
+            Array.isArray(
+                data?.timeline
+            )
+                ? data.timeline
+                : [],
+
+
+        futureWork:
+            Array.isArray(
+                data?.futureWork
+            )
+                ? data.futureWork
+                : [],
+
+
+        attachments:
+            Array.isArray(
+                data?.attachments
+            )
+                ? data.attachments
+                : [],
+
+
+        links:
+            Array.isArray(
+                data?.links
+            )
+                ? data.links
+                : [],
+
+
+        createdAt:
+            workspace.createdAt ||
+            work?.created_at ||
+            null,
+
+
+        updatedAt:
+            workspace.updatedAt ||
+            work?.updated_at ||
+            null
+
+    };
+
+
+}
+
+function convertProjectDataToRigidData(
+    project
+) {
+
+
+    const now =
+        new Date()
+            .toISOString();
+
+
+    return {
+
+        version:
+            1,
+
+
+        workspace:
+        {
+
+            id:
+                project.id,
+
+            type:
+                "project",
+
+            title:
+                project.title,
+
+            status:
+                project.status ||
+                "in-progress",
+
+            createdAt:
+                project.createdAt ||
+                now,
+
+            updatedAt:
+                now
+
+        },
+
+
+        project:
+        {
+
+            description:
+                project.description ||
+                "",
+
+            objective:
+                project.objective ||
+                "",
+
+            owner:
+                project.owner ||
+                "You",
+
+            priority:
+                project.priority ||
+                "medium",
+
+            progress:
+                clampPercentage(
+                    project.progress
+                ),
+
+            progressStatus:
+                project.progressStatus ||
+                "on-track",
+
+            startDate:
+                project.startDate ||
+                "",
+
+            targetDate:
+                project.targetDate ||
+                "",
+
+            tags:
+                project.tags || [],
+
+            currentWork:
+                project.currentWork || {},
+
+            nextAction:
+                project.nextAction || {},
+
+            collaborators:
+                project.collaborators || [],
+
+            milestones:
+                project.milestones || [],
+
+            tests:
+                project.tests || [],
+
+            versions:
+                project.versions || [],
+
+            issues:
+                project.issues || [],
+
+            decisions:
+                project.decisions || [],
+
+            outcome:
+                project.outcome || ""
+
+        },
+
+
+        tasks:
+            project.tasks || [],
+
+
+        timeline:
+            project.timeline || [],
+
+
+        futureWork:
+            project.futureWork || [],
+
+
+        attachments:
+            project.attachments || [],
+
+
+        links:
+            project.links || []
+
+    };
+
+
+}
+
+/* =========================================================
+INITIALIZE PAGE
+========================================================= */
+
+function initializeProjectPage() {
+
+
+    renderEverything();
+
+    setupNavigation();
+
+    setupProjectDetails();
+
+    setupProgress();
+
+    setupCurrentWork();
+
+    setupNextAction();
+
+    setupDescription();
+
+    setupTasks();
+
+    setupMilestones();
+
+    setupTimeline();
+
+    setupCollaborators();
+
+    setupTests();
+
+    setupVersions();
+
+    setupIssues();
+
+    setupDecisions();
+
+    setupFiles();
+
+    setupLinks();
+
+    setupFutureWork();
+
+    setupOutcome();
+
+    setupModalControls();
+
+    setupDragAndDrop();
+
+
+}
+
+/* =========================================================
+RENDER EVERYTHING
+========================================================= */
+
+function renderEverything() {
+
+
+    if (!projectData) {
+
+        return;
+
+    }
+
+
+    renderHeader();
+
+    renderOverview();
+
+    renderTasks();
+
+    renderMilestones();
+
+    renderTimeline();
+
+    renderCollaborators();
+
+    renderTests();
+
+    renderVersions();
+
+    renderIssues();
+
+    renderDecisions();
+
+    renderAttachments();
+
+    renderLinks();
+
+    renderFutureWork();
+
+    renderOutcome();
+
+
+}
+
+/* =========================================================
+HEADER
+========================================================= */
+
+function renderHeader() {
+
+
+    setText(
+        "projectTitle",
+        projectData.title
+    );
+
+
+    setText(
+        "projectDescription",
+        projectData.description ||
+        "No project description added."
+    );
+
+
+    setText(
+        "projectOwner",
+        projectData.owner ||
+        "You"
+    );
+
+
+    setText(
+        "projectStarted",
+        formatDate(
+            projectData.startDate
+        ) ||
+        "-"
+    );
+
+
+    setText(
+        "projectTarget",
+        formatDate(
+            projectData.targetDate
+        ) ||
+        "-"
+    );
+
+
+    const status =
+        String(
+            projectData.status ||
+            "in-progress"
+        );
+
+
+    const priority =
+        String(
+            projectData.priority ||
+            "medium"
+        );
+
+
+    setText(
+        "projectStatus",
+        `● ${formatLabel(status)}`
+    );
+
+
+    setText(
+        "projectPriority",
+        formatLabel(priority)
+    );
+
+
+    const tags =
+        getElement(
+            "projectTags"
+        );
+
+
+    if (tags) {
+
+        tags.innerHTML =
+            "";
+
+
+        projectData.tags
+            .forEach(
+                tag => {
+
+                    const span =
+                        document.createElement(
+                            "span"
+                        );
+
+
+                    span.textContent =
+                        tag;
+
+
+                    tags.appendChild(
+                        span
+                    );
+
+                }
+            );
+
+    }
+
+
+}
+
+/* =========================================================
+OVERVIEW
+========================================================= */
+
+function renderOverview() {
+
+
+    const progress =
+        clampPercentage(
+            projectData.progress
+        );
+
+
+    setText(
+        "projectProgress",
+        `${progress}%`
+    );
+
+
+    const progressBar =
+        getElement(
+            "projectProgressBar"
+        );
+
+
+    if (progressBar) {
+
+        progressBar.style.width =
+            `${progress}%`;
+
+    }
+
+
+    setText(
+        "progressStatus",
+        formatLabel(
+            projectData.progressStatus
+        )
+    );
+
+
+    setText(
+        "currentWorkTitle",
+
+        projectData.currentWork?.title ||
+        "No current work recorded"
+    );
+
+
+    setText(
+        "currentWorkDescription",
+
+        projectData.currentWork?.description ||
+        "Add the work currently being performed."
+    );
+
+
+    setText(
+        "nextActionTitle",
+
+        projectData.nextAction?.title ||
+        "No next action recorded"
+    );
+
+
+    setText(
+        "nextActionDue",
+
+        projectData.nextAction?.dueDate
+
+            ? formatDate(
+                projectData.nextAction.dueDate
+            )
+
+            : "No due date"
+    );
+
+
+    const description =
+        getElement(
+            "descriptionContent"
+        );
+
+
+    if (description) {
+
+        description.innerHTML =
+            "";
+
+
+        const paragraph =
+            document.createElement(
+                "p"
+            );
+
+
+        paragraph.textContent =
+            projectData.objective ||
+            "No project objective has been added yet.";
+
+
+        description.appendChild(
+            paragraph
+        );
+
+    }
+
+
+}
+
+/* =========================================================
+PROJECT DETAILS
+========================================================= */
+
+function setupProjectDetails() {
+
+
+    $("#editProject")
+        ?.addEventListener(
+            "click",
+            openProjectDetailsModal
+        );
+
+
+    $("#saveProjectDetails")
+        ?.addEventListener(
+            "click",
+            saveProjectDetails
+        );
+
+
+    $("#cancelProjectDetails")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "projectDetailsModal"
+                    )
+                )
+        );
+
+
+    $("#closeProjectDetailsModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "projectDetailsModal"
+                    )
+                )
+        );
+
+
+}
+
+function openProjectDetailsModal() {
+
+
+    setInputValue(
+        "editProjectTitle",
+        projectData.title
+    );
+
+
+    setInputValue(
+        "editProjectDescription",
+        projectData.description
+    );
+
+
+    setInputValue(
+        "editProjectStatus",
+        projectData.status
+    );
+
+
+    setInputValue(
+        "editProjectPriority",
+        projectData.priority
+    );
+
+
+    setInputValue(
+        "editProjectStartDate",
+        normalizeDateInput(
+            projectData.startDate
+        )
+    );
+
+
+    setInputValue(
+        "editProjectTargetDate",
+        normalizeDateInput(
+            projectData.targetDate
+        )
+    );
+
+
+    setInputValue(
+        "editProjectTags",
+        projectData.tags.join(
+            ", "
+        )
+    );
+
+
+    openModal(
+        getElement(
+            "projectDetailsModal"
+        )
+    );
+
+
+}
+
+async function saveProjectDetails() {
+
+
+    const title =
+        getInputValue(
+            "editProjectTitle"
+        );
+
+
+    if (!title) {
+
+        showToast(
+            "Project title is required."
+        );
+
+        return;
+
+    }
+
+
+    const previous =
+        clone(
+            projectData
+        );
+
+
+    projectData.title =
+        title;
+
+
+    projectData.description =
+        getInputValue(
+            "editProjectDescription"
+        );
+
+
+    projectData.status =
+        getInputValue(
+            "editProjectStatus"
+        ) ||
+        "in-progress";
+
+
+    projectData.priority =
+        getInputValue(
+            "editProjectPriority"
+        ) ||
+        "medium";
+
+
+    projectData.startDate =
+        getInputValue(
+            "editProjectStartDate"
+        );
+
+
+    projectData.targetDate =
+        getInputValue(
+            "editProjectTargetDate"
+        );
+
+
+    projectData.tags =
+        getInputValue(
+            "editProjectTags"
+        )
+            .split(",")
+            .map(
+                tag =>
+                    tag.trim()
+            )
+            .filter(
+                Boolean
+            );
+
+
+    renderEverything();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "projectDetailsModal"
+            )
+        );
+
+
+        showToast(
+            "Project updated."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData =
+            previous;
+
+
+        renderEverything();
+
+
+        showToast(
+            error.message ||
+            "Unable to update Project."
+        );
+
+    }
+
+
+}
+
+/* =========================================================
+PROGRESS
+========================================================= */
+
+function setupProgress() {
+
+
+    $("#editProgress")
+        ?.addEventListener(
+            "click",
+            openProgressModal
+        );
+
+
+    $("#projectProgressTrack")
+        ?.addEventListener(
+            "click",
+            openProgressModal
+        );
+
+
+    $("#saveProgress")
+        ?.addEventListener(
+            "click",
+            saveProgress
+        );
+
+
+    $("#cancelProgress")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "progressModal"
+                    )
+                )
+        );
+
+
+    $("#closeProgressModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "progressModal"
+                    )
+                )
+        );
+
+
+}
+
+function openProgressModal() {
+
+
+    setInputValue(
+        "editProjectProgress",
+        projectData.progress
+    );
+
+
+    setInputValue(
+        "editProgressStatus",
+        projectData.progressStatus
+    );
+
+
+    openModal(
+        getElement(
+            "progressModal"
+        )
+    );
+
+
+}
+
+async function saveProgress() {
+
+
+    const previous =
+    {
+
+        progress:
+            projectData.progress,
+
+        progressStatus:
+            projectData.progressStatus
+
+    };
+
+
+    projectData.progress =
+        clampPercentage(
+            getInputValue(
+                "editProjectProgress"
+            )
+        );
+
+
+    projectData.progressStatus =
+        getInputValue(
+            "editProgressStatus"
+        ) ||
+        "on-track";
+
+
+    renderOverview();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "progressModal"
+            )
+        );
+
+
+        showToast(
+            "Progress updated."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.progress =
+            previous.progress;
+
+
+        projectData.progressStatus =
+            previous.progressStatus;
+
+
+        renderOverview();
+
+
+        showToast(
+            error.message ||
+            "Unable to update progress."
+        );
+
+    }
+
+
+}
+
+/* =========================================================
+CURRENT WORK
+========================================================= */
+
+function setupCurrentWork() {
+
 
     $("#editCurrentWork")
         ?.addEventListener(
             "click",
-            () => {
-
-                const container =
-                    $("#currentWork");
-
-                if (!container)
-                    return;
-
-
-                const title =
-                    container.querySelector(
-                        "strong"
-                    );
-
-
-                const description =
-                    container.querySelector(
-                        "p"
-                    );
-
-
-                const newTitle =
-                    prompt(
-                        "Current work:",
-                        title?.textContent.trim()
-                    );
-
-
-                if (newTitle === null)
-                    return;
-
-
-                const newDescription =
-                    prompt(
-                        "Description:",
-                        description?.textContent.trim()
-                    );
-
-
-                if (
-                    title &&
-                    newTitle.trim()
-                ) {
-
-                    title.textContent =
-                        newTitle.trim();
-
-                }
-
-
-                if (
-                    description &&
-                    newDescription !== null
-                ) {
-
-                    description.textContent =
-                        newDescription.trim();
-
-                }
-
-
-                showToast(
-                    "Current work updated"
-                );
-
-            }
+            openCurrentWorkModal
         );
 
 
-    /* =====================================================
-       NEXT ACTION
-    ===================================================== */
+    $("#saveCurrentWork")
+        ?.addEventListener(
+            "click",
+            saveCurrentWork
+        );
+
+
+    $("#cancelCurrentWork")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "currentWorkModal"
+                    )
+                )
+        );
+
+
+    $("#closeCurrentWorkModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "currentWorkModal"
+                    )
+                )
+        );
+
+
+}
+
+function openCurrentWorkModal() {
+
+
+    setInputValue(
+        "editCurrentWorkTitle",
+        projectData.currentWork?.title
+    );
+
+
+    setInputValue(
+        "editCurrentWorkDescription",
+        projectData.currentWork?.description
+    );
+
+
+    openModal(
+        getElement(
+            "currentWorkModal"
+        )
+    );
+
+
+}
+
+async function saveCurrentWork() {
+
+
+    const previous =
+        clone(
+            projectData.currentWork
+        );
+
+
+    projectData.currentWork =
+    {
+
+        title:
+            getInputValue(
+                "editCurrentWorkTitle"
+            ),
+
+        description:
+            getInputValue(
+                "editCurrentWorkDescription"
+            )
+
+    };
+
+
+    renderOverview();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "currentWorkModal"
+            )
+        );
+
+
+        showToast(
+            "Current work updated."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.currentWork =
+            previous;
+
+
+        renderOverview();
+
+
+        showToast(
+            error.message ||
+            "Unable to update current work."
+        );
+
+    }
+
+
+}
+
+/* =========================================================
+NEXT ACTION
+========================================================= */
+
+function setupNextAction() {
+
 
     $("#editNextAction")
         ?.addEventListener(
             "click",
-            () => {
-
-                const container =
-                    $("#nextAction");
-
-
-                const title =
-                    container?.querySelector(
-                        "strong"
-                    );
-
-
-                const date =
-                    container?.querySelector(
-                        "span"
-                    );
-
-
-                const newTitle =
-                    prompt(
-                        "Next action:",
-                        title?.textContent.trim()
-                    );
-
-
-                if (newTitle === null)
-                    return;
-
-
-                const newDate =
-                    prompt(
-                        "Due date:",
-                        date?.textContent
-                    );
-
-
-                if (
-                    title &&
-                    newTitle.trim()
-                ) {
-
-                    title.textContent =
-                        newTitle.trim();
-
-                }
-
-
-                if (
-                    date &&
-                    newDate !== null
-                ) {
-
-                    date.textContent =
-                        newDate.trim();
-
-                }
-
-
-                showToast(
-                    "Next action updated"
-                );
-
-            }
+            openNextActionModal
         );
 
 
-    /* =====================================================
-       DESCRIPTION
-    ===================================================== */
+    $("#saveNextAction")
+        ?.addEventListener(
+            "click",
+            saveNextAction
+        );
+
+
+    $("#cancelNextAction")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "nextActionModal"
+                    )
+                )
+        );
+
+
+    $("#closeNextActionModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "nextActionModal"
+                    )
+                )
+        );
+
+
+}
+
+function openNextActionModal() {
+
+
+    setInputValue(
+        "editNextActionTitle",
+        projectData.nextAction?.title
+    );
+
+
+    setInputValue(
+        "editNextActionDue",
+        normalizeDateInput(
+            projectData.nextAction?.dueDate
+        )
+    );
+
+
+    openModal(
+        getElement(
+            "nextActionModal"
+        )
+    );
+
+
+}
+
+async function saveNextAction() {
+
+
+    const previous =
+        clone(
+            projectData.nextAction
+        );
+
+
+    projectData.nextAction =
+    {
+
+        title:
+            getInputValue(
+                "editNextActionTitle"
+            ),
+
+        dueDate:
+            getInputValue(
+                "editNextActionDue"
+            )
+
+    };
+
+
+    renderOverview();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "nextActionModal"
+            )
+        );
+
+
+        showToast(
+            "Next action updated."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.nextAction =
+            previous;
+
+
+        renderOverview();
+
+
+        showToast(
+            error.message ||
+            "Unable to update next action."
+        );
+
+    }
+
+
+}
+
+/* =========================================================
+DESCRIPTION / OBJECTIVE
+========================================================= */
+
+function setupDescription() {
+
 
     $("#editDescription")
         ?.addEventListener(
             "click",
-            () => {
-
-                const content =
-                    $("#descriptionContent");
-
-
-                if (!content)
-                    return;
-
-
-                const current =
-                    content.innerText.trim();
-
-
-                const updated =
-                    prompt(
-                        "Project objective:",
-                        current
-                    );
-
-
-                if (updated === null)
-                    return;
-
-
-                content.innerHTML = "";
-
-
-                const paragraph =
-                    document.createElement("p");
-
-
-                paragraph.textContent =
-                    updated.trim();
-
-
-                content.appendChild(
-                    paragraph
-                );
-
-
-                showToast(
-                    "Objective updated"
-                );
-
-            }
+            openDescriptionModal
         );
 
 
-    /* =====================================================
-       TASKS
-    ===================================================== */
-
-    const taskModal =
-        $("#taskModal");
-
-
-    const addTask =
-        $("#addTask");
-
-
-    const saveTask =
-        $("#saveTask");
-
-
-    const cancelTask =
-        $("#cancelTask");
-
-
-    const closeTaskModal =
-        $("#closeTaskModal");
-
-
-    let editingTask = null;
-
-
-    function resetTaskForm() {
-
-        $("#taskTitle").value = "";
-
-        $("#taskPriority").value =
-            "medium";
-
-        $("#taskDate").value =
-            todayISO();
-
-        $("#taskStatus").value =
-            "todo";
-
-        $("#taskDescription").value = "";
-
-        editingTask = null;
-
-    }
-
-
-    function openTaskEditor(task = null) {
-
-        resetTaskForm();
-
-        editingTask = task;
-
-
-        if (task) {
-
-            $("#taskTitle").value =
-                task.querySelector(
-                    "h3"
-                )?.textContent.trim() || "";
-
-
-            const priority =
-                task.querySelector(
-                    ".task-priority"
-                );
-
-
-            if (priority) {
-
-                const value =
-                    [...priority.classList]
-                        .find(
-                            item =>
-                                [
-                                    "high",
-                                    "medium",
-                                    "low"
-                                ].includes(item)
-                        );
-
-
-                if (value)
-                    $("#taskPriority").value =
-                        value;
-
-            }
-
-
-            $("#taskDescription").value =
-                task.querySelector(
-                    "p"
-                )?.textContent.trim() || "";
-
-        }
-
-
-        openModal(taskModal);
-
-    }
-
-
-    addTask?.addEventListener(
-        "click",
-        () => openTaskEditor()
-    );
-
-
-    saveTask?.addEventListener(
-        "click",
-        () => {
-
-            const title =
-                $("#taskTitle")
-                    .value
-                    .trim();
-
-
-            const priority =
-                $("#taskPriority")
-                    .value;
-
-
-            const date =
-                $("#taskDate")
-                    .value;
-
-
-            const status =
-                $("#taskStatus")
-                    .value;
-
-
-            const description =
-                $("#taskDescription")
-                    .value
-                    .trim();
-
-
-            if (!title) {
-
-                showToast(
-                    "Task title is required"
-                );
-
-                return;
-
-            }
-
-
-            let task =
-                editingTask;
-
-
-            if (!task) {
-
-                task =
-                    document.createElement(
-                        "article"
-                    );
-
-                task.className =
-                    "task-card";
-
-                task.innerHTML = `
-
-                    <div class="task-top">
-
-                        <span class="task-priority"></span>
-
-                        <button
-                            class="task-menu"
-                            type="button"
-                        >
-                            ⋯
-                        </button>
-
-                    </div>
-
-                    <h3></h3>
-
-                    <p></p>
-
-                    <div class="task-footer">
-
-                        <span></span>
-
-                        <span>You</span>
-
-                    </div>
-
-                `;
-
-            }
-
-
-            task.dataset.status =
-                status;
-
-
-            task.querySelector("h3")
-                .textContent =
-                title;
-
-
-            task.querySelector("p")
-                .textContent =
-                description ||
-                "No description added.";
-
-
-            const priorityElement =
-                task.querySelector(
-                    ".task-priority"
-                );
-
-
-            priorityElement.className =
-                `task-priority ${priority}`;
-
-
-            priorityElement.textContent =
-                priority.toUpperCase();
-
-
-            task.querySelector(
-                ".task-footer span"
-            ).textContent =
-                date
-                    ? formatDate(date)
-                    : "No date";
-
-
-            attachTaskMenu(task);
-
-
-            const targetList =
-                getTaskList(status);
-
-
-            if (targetList) {
-
-                targetList.appendChild(task);
-
-            }
-
-
-            updateTaskCounts();
-
-
-            closeModal(taskModal);
-
-
-            showToast(
-                editingTask
-                    ? "Task updated"
-                    : "Task added"
-            );
-
-        }
-    );
-
-
-    cancelTask?.addEventListener(
-        "click",
-        () => closeModal(taskModal)
-    );
-
-
-    closeTaskModal?.addEventListener(
-        "click",
-        () => closeModal(taskModal)
-    );
-
-
-    function getTaskList(status) {
-
-        if (status === "progress")
-            return $("#progressTasks");
-
-        if (status === "done")
-            return $("#doneTasks");
-
-        return $("#todoTasks");
-
-    }
-
-
-    function updateTaskCounts() {
-
-        const todo =
-            $("#todoTasks")
-                ?.querySelectorAll(
-                    ".task-card"
-                ).length || 0;
-
-
-        const progress =
-            $("#progressTasks")
-                ?.querySelectorAll(
-                    ".task-card"
-                ).length || 0;
-
-
-        const done =
-            $("#doneTasks")
-                ?.querySelectorAll(
-                    ".task-card"
-                ).length || 0;
-
-
-        if ($("#todoCount"))
-            $("#todoCount").textContent =
-                todo;
-
-
-        if ($("#progressTaskCount"))
-            $("#progressTaskCount").textContent =
-                progress;
-
-
-        if ($("#doneTaskCount"))
-            $("#doneTaskCount").textContent =
-                done;
-
-    }
-
-
-    function attachTaskMenu(task) {
-
-        const button =
-            task.querySelector(
-                ".task-menu"
-            );
-
-
-        if (!button)
-            return;
-
-
-        button.onclick =
-            event => {
-
-                event.stopPropagation();
-
-                const action =
-                    prompt(
-                        "Task action:\n1 = Edit\n2 = Change status\n3 = Delete",
-                        "1"
-                    );
-
-
-                if (action === "1") {
-
-                    openTaskEditor(task);
-
-                }
-
-
-                else if (action === "2") {
-
-                    const status =
-                        prompt(
-                            "Status:\ntodo\nprogress\ndone",
-                            task.dataset.status ||
-                            "todo"
-                        );
-
-
-                    if (
-                        ![
-                            "todo",
-                            "progress",
-                            "done"
-                        ].includes(status)
-                    ) {
-
-                        showToast(
-                            "Invalid status"
-                        );
-
-                        return;
-
-                    }
-
-
-                    const list =
-                        getTaskList(status);
-
-
-                    if (list)
-                        list.appendChild(task);
-
-
-                    task.dataset.status =
-                        status;
-
-
-                    updateTaskCounts();
-
-                    showToast(
-                        "Task status updated"
-                    );
-
-                }
-
-
-                else if (action === "3") {
-
-                    if (
-                        confirm(
-                            "Delete this task?"
-                        )
-                    ) {
-
-                        task.remove();
-
-                        updateTaskCounts();
-
-                        showToast(
-                            "Task deleted"
-                        );
-
-                    }
-
-                }
-
-            };
-
-    }
-
-
-    $$(".task-card")
-        .forEach(
-            attachTaskMenu
+    $("#saveDescription")
+        ?.addEventListener(
+            "click",
+            saveDescription
         );
 
 
-    updateTaskCounts();
+    $("#cancelDescription")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "descriptionModal"
+                    )
+                )
+        );
 
 
-    /* =====================================================
-       MILESTONES
-    ===================================================== */
+    $("#closeDescriptionModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "descriptionModal"
+                    )
+                )
+        );
 
-    $("#addMilestone")
+
+}
+
+function openDescriptionModal() {
+
+
+    setInputValue(
+        "editDescriptionContent",
+        projectData.objective
+    );
+
+
+    openModal(
+        getElement(
+            "descriptionModal"
+        )
+    );
+
+
+}
+
+async function saveDescription() {
+
+
+    const previous =
+        projectData.objective;
+
+
+    projectData.objective =
+        getInputValue(
+            "editDescriptionContent"
+        );
+
+
+    renderOverview();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "descriptionModal"
+            )
+        );
+
+
+        showToast(
+            "Project objective updated."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.objective =
+            previous;
+
+
+        renderOverview();
+
+
+        showToast(
+            error.message ||
+            "Unable to update objective."
+        );
+
+    }
+
+
+}
+
+/* =========================================================
+TASKS
+========================================================= */
+
+function setupTasks() {
+
+
+    $("#addTask")
+        ?.addEventListener(
+            "click",
+            () =>
+                openTaskModal()
+        );
+
+
+    $("#saveTask")
+        ?.addEventListener(
+            "click",
+            saveTask
+        );
+
+
+    $("#cancelTask")
+        ?.addEventListener(
+            "click",
+            closeTaskModal
+        );
+
+
+    $("#closeTaskModal")
+        ?.addEventListener(
+            "click",
+            closeTaskModal
+        );
+
+
+    $("#closeTaskActionModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "taskActionModal"
+                    )
+                )
+        );
+
+
+    $("#editSelectedTask")
         ?.addEventListener(
             "click",
             () => {
 
-                const title =
-                    prompt(
-                        "Milestone name:"
+                const task =
+                    findById(
+                        projectData.tasks,
+                        selectedTaskId
                     );
 
 
-                if (!title?.trim())
+                closeModal(
+                    getElement(
+                        "taskActionModal"
+                    )
+                );
+
+
+                if (task) {
+
+                    openTaskModal(
+                        task
+                    );
+
+                }
+
+            }
+        );
+
+
+    $("#moveTaskToTodo")
+        ?.addEventListener(
+            "click",
+            () =>
+                changeSelectedTaskStatus(
+                    "todo"
+                )
+        );
+
+
+    $("#moveTaskToProgress")
+        ?.addEventListener(
+            "click",
+            () =>
+                changeSelectedTaskStatus(
+                    "progress"
+                )
+        );
+
+
+    $("#moveTaskToDone")
+        ?.addEventListener(
+            "click",
+            () =>
+                changeSelectedTaskStatus(
+                    "done"
+                )
+        );
+
+
+    $("#deleteSelectedTask")
+        ?.addEventListener(
+            "click",
+            () => {
+
+                closeModal(
+                    getElement(
+                        "taskActionModal"
+                    )
+                );
+
+
+                askConfirm(
+
+                    "Delete Task",
+
+                    "Are you sure you want to delete this task?",
+
+                    async () => {
+
+                        const previous =
+                            clone(
+                                projectData.tasks
+                            );
+
+
+                        projectData.tasks =
+                            projectData.tasks.filter(
+                                task =>
+                                    String(task.id) !==
+                                    String(
+                                        selectedTaskId
+                                    )
+                            );
+
+
+                        renderTasks();
+
+
+                        try {
+
+                            await saveProjectData();
+
+                            showToast(
+                                "Task deleted."
+                            );
+
+                        }
+
+                        catch (error) {
+
+                            projectData.tasks =
+                                previous;
+
+
+                            renderTasks();
+
+
+                            showToast(
+                                error.message ||
+                                "Unable to delete task."
+                            );
+
+                        }
+
+                    }
+
+                );
+
+            }
+        );
+
+
+}
+
+function openTaskModal(
+    task = null
+) {
+
+
+    editingTaskId =
+        task?.id ||
+        null;
+
+
+    setText(
+        "taskModalHeading",
+
+        task
+            ? "Edit Project Task"
+            : "Add Project Task"
+    );
+
+
+    setInputValue(
+        "taskTitle",
+        task?.title || ""
+    );
+
+
+    setInputValue(
+        "taskPriority",
+        task?.priority || "medium"
+    );
+
+
+    setInputValue(
+        "taskDate",
+        normalizeDateInput(
+            task?.dueDate
+        )
+    );
+
+
+    setInputValue(
+        "taskStatus",
+        task?.status || "todo"
+    );
+
+
+    setInputValue(
+        "taskAssignee",
+        task?.assignee || ""
+    );
+
+
+    setInputValue(
+        "taskDescription",
+        task?.description || ""
+    );
+
+
+    openModal(
+        getElement(
+            "taskModal"
+        )
+    );
+
+
+}
+
+function closeTaskModal() {
+
+
+    editingTaskId =
+        null;
+
+
+    closeModal(
+        getElement(
+            "taskModal"
+        )
+    );
+
+
+}
+
+async function saveTask() {
+
+
+    const title =
+        getInputValue(
+            "taskTitle"
+        );
+
+
+    if (!title) {
+
+        showToast(
+            "Task title is required."
+        );
+
+        return;
+
+    }
+
+
+    const previous =
+        clone(
+            projectData.tasks
+        );
+
+
+    const task =
+    {
+
+        id:
+            editingTaskId ||
+            generateID(
+                "task"
+            ),
+
+        title,
+
+        description:
+            getInputValue(
+                "taskDescription"
+            ),
+
+        priority:
+            getInputValue(
+                "taskPriority"
+            ) ||
+            "medium",
+
+        dueDate:
+            getInputValue(
+                "taskDate"
+            ),
+
+        status:
+            getInputValue(
+                "taskStatus"
+            ) ||
+            "todo",
+
+        assignee:
+            getInputValue(
+                "taskAssignee"
+            ),
+
+        updatedAt:
+            new Date()
+                .toISOString()
+
+    };
+
+
+    if (editingTaskId) {
+
+        const index =
+            projectData.tasks.findIndex(
+                item =>
+                    String(item.id) ===
+                    String(
+                        editingTaskId
+                    )
+            );
+
+
+        if (index >= 0) {
+
+            projectData.tasks[index] =
+            {
+
+                ...projectData.tasks[index],
+
+                ...task
+
+            };
+
+        }
+
+    }
+
+    else {
+
+        task.createdAt =
+            new Date()
+                .toISOString();
+
+
+        projectData.tasks.unshift(
+            task
+        );
+
+    }
+
+
+    renderTasks();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeTaskModal();
+
+
+        showToast(
+
+            editingTaskId
+                ? "Task updated."
+                : "Task added."
+
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.tasks =
+            previous;
+
+
+        renderTasks();
+
+
+        showToast(
+            error.message ||
+            "Unable to save task."
+        );
+
+    }
+
+
+}
+
+async function changeSelectedTaskStatus(
+    status
+) {
+
+
+    const task =
+        findById(
+            projectData.tasks,
+            selectedTaskId
+        );
+
+
+    if (!task) {
+
+        return;
+
+    }
+
+
+    const previous =
+        task.status;
+
+
+    task.status =
+        status;
+
+
+    renderTasks();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "taskActionModal"
+            )
+        );
+
+
+        showToast(
+            "Task status updated."
+        );
+
+    }
+
+    catch (error) {
+
+        task.status =
+            previous;
+
+
+        renderTasks();
+
+
+        showToast(
+            error.message ||
+            "Unable to update task status."
+        );
+
+    }
+
+
+}
+
+function renderTasks() {
+
+
+    const containers =
+    {
+
+        todo:
+            getElement(
+                "todoTasks"
+            ),
+
+        progress:
+            getElement(
+                "progressTasks"
+            ),
+
+        done:
+            getElement(
+                "doneTasks"
+            )
+
+    };
+
+
+    Object.values(
+        containers
+    ).forEach(
+        container => {
+
+            if (container) {
+
+                container.innerHTML =
+                    "";
+
+            }
+
+        }
+    );
+
+
+    projectData.tasks
+        .forEach(
+            task => {
+
+                const status =
+                    [
+
+                        "todo",
+                        "progress",
+                        "done"
+
+                    ].includes(
+                        task.status
+                    )
+
+                        ? task.status
+
+                        : "todo";
+
+
+                const container =
+                    containers[
+                    status
+                    ];
+
+
+                if (!container) {
+
                     return;
 
-
-                const description =
-                    prompt(
-                        "Milestone description:"
-                    );
-
-
-                const date =
-                    prompt(
-                        "Target date:"
-                    );
-
-
-                const progress =
-                    prompt(
-                        "Progress (0–100):",
-                        "0"
-                    );
-
-
-                const value =
-                    Math.max(
-                        0,
-                        Math.min(
-                            100,
-                            Number(progress) || 0
-                        )
-                    );
+                }
 
 
                 const card =
@@ -1190,398 +3531,1455 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 card.className =
-                    "milestone-card planned";
+                    `task-card ${status === "done"
+                        ? "completed"
+                        : ""
+                    }`;
 
 
-                card.innerHTML = `
-
-                    <div class="milestone-top">
-
-                        <span>
-                            NEW MILESTONE
-                        </span>
-
-                        <strong>
-                            ${value}%
-                        </strong>
-
-                    </div>
-
-                    <h3></h3>
-
-                    <p></p>
-
-                    <div class="milestone-bar">
-
-                        <span
-                            style="width:${value}%"
-                        ></span>
-
-                    </div>
-
-                    <div class="milestone-footer">
-
-                        <span>
-                            Planned
-                        </span>
-
-                        <span></span>
-
-                    </div>
-
-                `;
+                card.dataset.id =
+                    task.id;
 
 
-                card.querySelector("h3")
-                    .textContent =
-                    title.trim();
+                card.dataset.status =
+                    status;
 
 
-                card.querySelector("p")
-                    .textContent =
-                    description?.trim() ||
+                const top =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                top.className =
+                    "task-top";
+
+
+                const priority =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                priority.className =
+                    `task-priority ${status === "done"
+                        ? "done"
+                        : task.priority
+                    }`;
+
+
+                priority.textContent =
+                    status === "done"
+
+                        ? "DONE"
+
+                        : String(
+                            task.priority ||
+                            "medium"
+                        )
+                            .toUpperCase();
+
+
+                const menu =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                menu.type =
+                    "button";
+
+
+                menu.className =
+                    "task-menu";
+
+
+                menu.textContent =
+                    "⋯";
+
+
+                menu.addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+
+
+                        selectedTaskId =
+                            task.id;
+
+
+                        openModal(
+                            getElement(
+                                "taskActionModal"
+                            )
+                        );
+
+                    }
+                );
+
+
+                top.append(
+                    priority,
+                    menu
+                );
+
+
+                const title =
+                    document.createElement(
+                        "h3"
+                    );
+
+
+                title.textContent =
+                    task.title ||
+                    "Untitled Task";
+
+
+                const description =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                description.textContent =
+                    task.description ||
                     "No description added.";
 
 
-                card.querySelector(
-                    ".milestone-footer span:last-child"
-                ).textContent =
-                    date?.trim() ||
-                    "No target";
+                const footer =
+                    document.createElement(
+                        "div"
+                    );
 
 
-                $("#milestoneGrid")
-                    ?.appendChild(card);
+                footer.className =
+                    "task-footer";
 
 
-                showToast(
-                    "Milestone added"
+                const date =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                date.textContent =
+                    task.dueDate
+
+                        ? formatDate(
+                            task.dueDate
+                        )
+
+                        : "No date";
+
+
+                const assignee =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                assignee.textContent =
+                    task.assignee ||
+                    "-";
+
+
+                footer.append(
+                    date,
+                    assignee
+                );
+
+
+                card.append(
+                    top,
+                    title,
+                    description,
+                    footer
+                );
+
+
+                container.appendChild(
+                    card
                 );
 
             }
         );
 
 
-    /* =====================================================
-       TIMELINE
-    ===================================================== */
-
-    const timelineModal =
-        $("#timelineModal");
+    updateTaskCounts();
 
 
-    const addTimeline =
-        $("#addTimeline");
+}
+
+function updateTaskCounts() {
 
 
-    const saveTimeline =
-        $("#saveTimeline");
+    const tasks =
+        projectData.tasks || [];
 
 
-    const cancelTimeline =
-        $("#cancelTimeline");
+    const todo =
+        tasks.filter(
+            task =>
+                task.status ===
+                "todo"
+        ).length;
 
 
-    const closeTimelineModal =
-        $("#closeTimelineModal");
+    const progress =
+        tasks.filter(
+            task =>
+                task.status ===
+                "progress"
+        ).length;
 
 
-    let editingTimeline = null;
+    const done =
+        tasks.filter(
+            task =>
+                task.status ===
+                "done"
+        ).length;
 
 
-    function resetTimelineForm() {
-
-        $("#timelineDate").value =
-            todayISO();
-
-        $("#timelineStatus").value =
-            "planned";
-
-        $("#timelineTitle").value =
-            "";
-
-        $("#timelineDescription").value =
-            "";
-
-        editingTimeline = null;
-
-    }
-
-
-    function openTimelineEditor(item = null) {
-
-        resetTimelineForm();
-
-        editingTimeline = item;
-
-
-        if (item) {
-
-            $("#timelineDate").value =
-                item.dataset.date ||
-                todayISO();
-
-
-            $("#timelineStatus").value =
-                item.dataset.status ||
-                "planned";
-
-
-            $("#timelineTitle").value =
-                item.querySelector(
-                    "h3"
-                )?.textContent.trim() || "";
-
-
-            $("#timelineDescription").value =
-                item.querySelector(
-                    "p"
-                )?.textContent.trim() || "";
-
-        }
-
-
-        openModal(
-            timelineModal
-        );
-
-    }
-
-
-    addTimeline?.addEventListener(
-        "click",
-        () =>
-            openTimelineEditor()
+    setText(
+        "todoCount",
+        todo
     );
 
 
-    saveTimeline?.addEventListener(
-        "click",
-        () => {
-
-            const date =
-                $("#timelineDate")
-                    .value;
+    setText(
+        "progressTaskCount",
+        progress
+    );
 
 
-            const status =
-                $("#timelineStatus")
-                    .value;
+    setText(
+        "doneTaskCount",
+        done
+    );
 
 
-            const title =
-                $("#timelineTitle")
-                    .value
-                    .trim();
+}
+
+/* =========================================================
+MILESTONES
+========================================================= */
+
+function setupMilestones() {
 
 
-            const description =
-                $("#timelineDescription")
-                    .value
-                    .trim();
+    $("#addMilestone")
+        ?.addEventListener(
+            "click",
+            () =>
+                openMilestoneModal()
+        );
 
 
-            if (!date || !title) {
-
-                showToast(
-                    "Date and title are required"
-                );
-
-                return;
-
-            }
+    $("#saveMilestone")
+        ?.addEventListener(
+            "click",
+            saveMilestone
+        );
 
 
-            let item =
-                editingTimeline;
+    $("#cancelMilestone")
+        ?.addEventListener(
+            "click",
+            closeMilestoneModal
+        );
 
 
-            if (!item) {
+    $("#closeMilestoneModal")
+        ?.addEventListener(
+            "click",
+            closeMilestoneModal
+        );
 
-                item =
+
+}
+
+function openMilestoneModal(
+    milestone = null
+) {
+
+
+    editingMilestoneId =
+        milestone?.id ||
+        null;
+
+
+    setText(
+        "milestoneModalHeading",
+
+        milestone
+            ? "Edit Milestone"
+            : "Add Milestone"
+    );
+
+
+    setInputValue(
+        "milestoneTitle",
+        milestone?.title || ""
+    );
+
+
+    setInputValue(
+        "milestoneDescription",
+        milestone?.description || ""
+    );
+
+
+    setInputValue(
+        "milestoneProgress",
+        milestone?.progress ?? 0
+    );
+
+
+    setInputValue(
+        "milestoneStatus",
+        milestone?.status || "planned"
+    );
+
+
+    setInputValue(
+        "milestoneDate",
+        normalizeDateInput(
+            milestone?.date
+        )
+    );
+
+
+    openModal(
+        getElement(
+            "milestoneModal"
+        )
+    );
+
+
+}
+
+function closeMilestoneModal() {
+
+
+    editingMilestoneId =
+        null;
+
+
+    closeModal(
+        getElement(
+            "milestoneModal"
+        )
+    );
+
+
+}
+
+async function saveMilestone() {
+
+
+    const title =
+        getInputValue(
+            "milestoneTitle"
+        );
+
+
+    if (!title) {
+
+        showToast(
+            "Milestone title is required."
+        );
+
+        return;
+
+    }
+
+
+    const previous =
+        clone(
+            projectData.milestones
+        );
+
+
+    const milestone =
+    {
+
+        id:
+            editingMilestoneId ||
+            generateID(
+                "milestone"
+            ),
+
+        title,
+
+        description:
+            getInputValue(
+                "milestoneDescription"
+            ),
+
+        progress:
+            clampPercentage(
+                getInputValue(
+                    "milestoneProgress"
+                )
+            ),
+
+        status:
+            getInputValue(
+                "milestoneStatus"
+            ) ||
+            "planned",
+
+        date:
+            getInputValue(
+                "milestoneDate"
+            )
+
+    };
+
+
+    if (editingMilestoneId) {
+
+        const index =
+            projectData.milestones.findIndex(
+                item =>
+                    String(item.id) ===
+                    String(
+                        editingMilestoneId
+                    )
+            );
+
+
+        if (index >= 0) {
+
+            projectData.milestones[index] =
+                milestone;
+
+        }
+
+    }
+
+    else {
+
+        projectData.milestones.push(
+            milestone
+        );
+
+    }
+
+
+    renderMilestones();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeMilestoneModal();
+
+        showToast(
+            "Milestone saved."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.milestones =
+            previous;
+
+
+        renderMilestones();
+
+
+        showToast(
+            error.message ||
+            "Unable to save milestone."
+        );
+
+    }
+
+
+}
+
+function renderMilestones() {
+
+
+    const container =
+        getElement(
+            "milestoneGrid"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        !projectData.milestones.length
+    ) {
+
+        container.innerHTML =
+            emptyState(
+                "No milestones added yet."
+            );
+
+        return;
+
+    }
+
+
+    projectData.milestones
+        .forEach(
+            (
+                milestone,
+                index
+            ) => {
+
+                const card =
                     document.createElement(
                         "article"
                     );
 
-                item.className =
-                    "timeline-item";
+
+                card.className =
+                    `milestone-card ${milestone.status ||
+                    "planned"
+                    }`;
 
 
-                item.innerHTML = `
-
-                    <div class="timeline-date"></div>
-
-                    <div class="timeline-point"></div>
-
-                    <div class="timeline-card">
-
-                        <div class="timeline-top">
-
-                            <span
-                                class="timeline-status"
-                            ></span>
-
-                            <button
-                                class="timeline-edit"
-                                type="button"
-                            >
-                                ✎
-                            </button>
-
-                        </div>
-
-                        <h3></h3>
-
-                        <p></p>
-
-                    </div>
-
-                `;
+                card.addEventListener(
+                    "click",
+                    () =>
+                        openMilestoneModal(
+                            milestone
+                        )
+                );
 
 
-                $("#projectTimelineList")
-                    ?.appendChild(item);
+                const top =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                top.className =
+                    "milestone-top";
+
+
+                const label =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                label.textContent =
+                    `MILESTONE ${String(
+                        index + 1
+                    ).padStart(
+                        2,
+                        "0"
+                    )
+                    }`;
+
+
+                const percentage =
+                    document.createElement(
+                        "strong"
+                    );
+
+
+                percentage.textContent =
+                    `${clampPercentage(
+                        milestone.progress
+                    )}%`;
+
+
+                top.append(
+                    label,
+                    percentage
+                );
+
+
+                const title =
+                    document.createElement(
+                        "h3"
+                    );
+
+
+                title.textContent =
+                    milestone.title;
+
+
+                const description =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                description.textContent =
+                    milestone.description ||
+                    "No description added.";
+
+
+                const bar =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                bar.className =
+                    "milestone-bar";
+
+
+                const barValue =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                barValue.style.width =
+                    `${clampPercentage(
+                        milestone.progress
+                    )}%`;
+
+
+                bar.appendChild(
+                    barValue
+                );
+
+
+                const footer =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                footer.className =
+                    "milestone-footer";
+
+
+                const status =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                status.textContent =
+                    formatLabel(
+                        milestone.status
+                    );
+
+
+                const date =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                date.textContent =
+                    milestone.date
+
+                        ? formatDate(
+                            milestone.date
+                        )
+
+                        : "No target";
+
+
+                footer.append(
+                    status,
+                    date
+                );
+
+
+                card.append(
+                    top,
+                    title,
+                    description,
+                    bar,
+                    footer
+                );
+
+
+                container.appendChild(
+                    card
+                );
 
             }
+        );
 
 
-            item.dataset.date =
-                date;
+}
+
+/* =========================================================
+TIMELINE
+========================================================= */
+
+function setupTimeline() {
 
 
-            item.dataset.status =
-                status;
+    $("#addTimeline")
+        ?.addEventListener(
+            "click",
+            () =>
+                openTimelineModal()
+        );
 
 
-            item.querySelector(
-                ".timeline-date"
-            ).textContent =
-                formatDate(date);
+    $("#saveTimeline")
+        ?.addEventListener(
+            "click",
+            saveTimeline
+        );
 
 
-            item.querySelector(
-                ".timeline-status"
-            ).className =
-                `timeline-status ${status}`;
+    $("#cancelTimeline")
+        ?.addEventListener(
+            "click",
+            closeTimelineModal
+        );
 
 
-            item.querySelector(
-                ".timeline-status"
-            ).textContent =
-                status.toUpperCase();
+    $("#closeTimelineModal")
+        ?.addEventListener(
+            "click",
+            closeTimelineModal
+        );
 
 
-            item.querySelector(
-                ".timeline-point"
-            ).className =
-                `timeline-point ${status}`;
+}
+
+function openTimelineModal(
+    item = null
+) {
 
 
-            item.querySelector("h3")
-                .textContent =
-                title;
+    editingTimelineId =
+        item?.id ||
+        null;
 
 
-            item.querySelector("p")
-                .textContent =
-                description ||
-                "No description added.";
+    setText(
+        "timelineModalHeading",
+
+        item
+            ? "Edit Timeline Entry"
+            : "Timeline Entry"
+    );
 
 
-            attachTimelineEditor(item);
+    setInputValue(
+        "timelineDate",
+        normalizeDateInput(
+            item?.date
+        ) ||
+        todayISO()
+    );
 
 
-            closeModal(
-                timelineModal
+    setInputValue(
+        "timelineStatus",
+        item?.status ||
+        "planned"
+    );
+
+
+    setInputValue(
+        "timelineTitle",
+        item?.title ||
+        ""
+    );
+
+
+    setInputValue(
+        "timelineDescription",
+        item?.description ||
+        ""
+    );
+
+
+    openModal(
+        getElement(
+            "timelineModal"
+        )
+    );
+
+
+}
+
+function closeTimelineModal() {
+
+
+    editingTimelineId =
+        null;
+
+
+    closeModal(
+        getElement(
+            "timelineModal"
+        )
+    );
+
+
+}
+
+async function saveTimeline() {
+
+
+    const date =
+        getInputValue(
+            "timelineDate"
+        );
+
+
+    const title =
+        getInputValue(
+            "timelineTitle"
+        );
+
+
+    if (
+        !date ||
+        !title
+    ) {
+
+        showToast(
+            "Date and title are required."
+        );
+
+        return;
+
+    }
+
+
+    const previous =
+        clone(
+            projectData.timeline
+        );
+
+
+    const item =
+    {
+
+        id:
+            editingTimelineId ||
+            generateID(
+                "timeline"
+            ),
+
+        date,
+
+        status:
+            getInputValue(
+                "timelineStatus"
+            ) ||
+            "planned",
+
+        title,
+
+        description:
+            getInputValue(
+                "timelineDescription"
+            )
+
+    };
+
+
+    if (editingTimelineId) {
+
+        const index =
+            projectData.timeline.findIndex(
+                entry =>
+                    String(entry.id) ===
+                    String(
+                        editingTimelineId
+                    )
             );
 
 
-            showToast(
-                editingTimeline
-                    ? "Timeline updated"
-                    : "Timeline entry added"
+        if (index >= 0) {
+
+            projectData.timeline[index] =
+                item;
+
+        }
+
+    }
+
+    else {
+
+        projectData.timeline.push(
+            item
+        );
+
+    }
+
+
+    renderTimeline();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeTimelineModal();
+
+        showToast(
+            "Timeline saved."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.timeline =
+            previous;
+
+
+        renderTimeline();
+
+
+        showToast(
+            error.message ||
+            "Unable to save timeline."
+        );
+
+    }
+
+
+}
+
+function renderTimeline() {
+
+
+    const container =
+        getElement(
+            "projectTimelineList"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        !projectData.timeline.length
+    ) {
+
+        container.innerHTML =
+            emptyState(
+                "No timeline entries added yet."
+            );
+
+        return;
+
+    }
+
+
+    const items =
+        [
+            ...projectData.timeline
+        ]
+            .sort(
+                (
+                    a,
+                    b
+                ) =>
+                    String(
+                        a.date || ""
+                    )
+                        .localeCompare(
+                            String(
+                                b.date || ""
+                            )
+                        )
+            );
+
+
+    items.forEach(
+        item => {
+
+            const article =
+                document.createElement(
+                    "article"
+                );
+
+
+            article.className =
+                "timeline-item";
+
+
+            const date =
+                document.createElement(
+                    "div"
+                );
+
+
+            date.className =
+                "timeline-date";
+
+
+            date.textContent =
+                formatDate(
+                    item.date
+                );
+
+
+            const point =
+                document.createElement(
+                    "div"
+                );
+
+
+            point.className =
+                `timeline-point ${item.status ||
+                "planned"
+                }`;
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "timeline-card";
+
+
+            const top =
+                document.createElement(
+                    "div"
+                );
+
+
+            top.className =
+                "timeline-top";
+
+
+            const status =
+                document.createElement(
+                    "span"
+                );
+
+
+            status.className =
+                `timeline-status ${item.status ||
+                "planned"
+                }`;
+
+
+            status.textContent =
+                formatLabel(
+                    item.status
+                );
+
+
+            const edit =
+                document.createElement(
+                    "button"
+                );
+
+
+            edit.type =
+                "button";
+
+
+            edit.className =
+                "timeline-edit";
+
+
+            edit.textContent =
+                "✎";
+
+
+            edit.addEventListener(
+                "click",
+                event => {
+
+                    event.stopPropagation();
+
+                    openTimelineModal(
+                        item
+                    );
+
+                }
+            );
+
+
+            const remove =
+                document.createElement(
+                    "button"
+                );
+
+
+            remove.type =
+                "button";
+
+
+            remove.className =
+                "timeline-delete";
+
+
+            remove.textContent =
+                "×";
+
+
+            remove.title =
+                "Delete timeline entry";
+
+
+            remove.addEventListener(
+                "click",
+                async event => {
+
+                    event.stopPropagation();
+
+
+                    if (
+                        !window.confirm(
+                            "Delete this timeline entry?"
+                        )
+                    ) {
+                        return;
+                    }
+
+
+                    const previous =
+                        clone(
+                            projectData.timeline
+                        );
+
+
+                    projectData.timeline =
+                        projectData.timeline.filter(
+                            entry =>
+                                String(entry.id) !==
+                                String(item.id)
+                        );
+
+
+                    renderTimeline();
+
+
+                    try {
+
+                        await saveProjectData();
+
+
+                        showToast(
+                            "Timeline entry deleted.",
+                            "success"
+                        );
+
+                    }
+
+                    catch (error) {
+
+                        projectData.timeline =
+                            previous;
+
+
+                        renderTimeline();
+
+
+                        showToast(
+                            error.message ||
+                            "Unable to delete timeline entry.",
+                            "error"
+                        );
+
+                    }
+
+                }
+            );
+
+
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+
+            actions.className =
+                "timeline-actions";
+
+
+            actions.append(
+                edit,
+                remove
+            );
+
+
+            top.append(
+                status,
+                actions
+            );
+
+
+            const title =
+                document.createElement(
+                    "h3"
+                );
+
+
+            title.textContent =
+                item.title;
+
+
+            const description =
+                document.createElement(
+                    "p"
+                );
+
+
+            description.textContent =
+                item.description ||
+                "No description added.";
+
+
+            card.append(
+                top,
+                title,
+                description
+            );
+
+
+            article.append(
+                date,
+                point,
+                card
+            );
+
+
+            container.appendChild(
+                article
             );
 
         }
     );
 
 
-    cancelTimeline?.addEventListener(
-        "click",
-        () =>
-            closeModal(timelineModal)
-    );
+}
 
+/* =========================================================
+COLLABORATORS
+========================================================= */
 
-    closeTimelineModal?.addEventListener(
-        "click",
-        () =>
-            closeModal(timelineModal)
-    );
+function setupCollaborators() {
 
-
-    function attachTimelineEditor(item) {
-
-        const button =
-            item.querySelector(
-                ".timeline-edit"
-            );
-
-
-        if (!button)
-            return;
-
-
-        button.onclick =
-            () =>
-                openTimelineEditor(item);
-
-    }
-
-
-    $$(".timeline-item")
-        .forEach(
-            attachTimelineEditor
-        );
-
-
-    /* =====================================================
-       COLLABORATORS
-    ===================================================== */
 
     $("#addCollaborator")
         ?.addEventListener(
             "click",
             () => {
 
-                const name =
-                    prompt(
-                        "Member name:"
-                    );
+                setInputValue(
+                    "collaboratorName",
+                    ""
+                );
 
 
-                if (!name?.trim())
-                    return;
+                setInputValue(
+                    "collaboratorRole",
+                    ""
+                );
 
 
-                const role =
-                    prompt(
-                        "Role:"
-                    );
+                setInputValue(
+                    "collaboratorInitials",
+                    ""
+                );
 
 
-                const initials =
+                openModal(
+                    getElement(
+                        "collaboratorModal"
+                    )
+                );
+
+            }
+        );
+
+
+    $("#saveCollaborator")
+        ?.addEventListener(
+            "click",
+            saveCollaborator
+        );
+
+
+    $("#cancelCollaborator")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "collaboratorModal"
+                    )
+                )
+        );
+
+
+    $("#closeCollaboratorModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "collaboratorModal"
+                    )
+                )
+        );
+
+
+}
+
+async function saveCollaborator() {
+
+
+    const name =
+        getInputValue(
+            "collaboratorName"
+        );
+
+
+    if (!name) {
+
+        showToast(
+            "Collaborator name is required."
+        );
+
+        return;
+
+    }
+
+
+    const previous =
+        clone(
+            projectData.collaborators
+        );
+
+
+    projectData.collaborators.push(
+        {
+
+            id:
+                generateID(
+                    "collaborator"
+                ),
+
+            name,
+
+            role:
+                getInputValue(
+                    "collaboratorRole"
+                ),
+
+            initials:
+                getInputValue(
+                    "collaboratorInitials"
+                ) ||
+                getInitials(
                     name
-                        .trim()
-                        .split(/\s+/)
-                        .map(
-                            word =>
-                                word[0]
-                        )
-                        .join("")
-                        .slice(0, 2)
-                        .toUpperCase();
+                )
 
+        }
+    );
+
+
+    renderCollaborators();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "collaboratorModal"
+            )
+        );
+
+
+        showToast(
+            "Collaborator added."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.collaborators =
+            previous;
+
+
+        renderCollaborators();
+
+
+        showToast(
+            error.message ||
+            "Unable to add collaborator."
+        );
+
+    }
+
+
+}
+
+function renderCollaborators() {
+
+
+    const container =
+        getElement(
+            "collaboratorGrid"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        !projectData.collaborators.length
+    ) {
+
+        container.innerHTML =
+            emptyState(
+                "No collaborators added yet."
+            );
+
+        return;
+
+    }
+
+
+    projectData.collaborators
+        .forEach(
+            member => {
 
                 const card =
                     document.createElement(
@@ -1593,283 +4991,673 @@ document.addEventListener("DOMContentLoaded", () => {
                     "collaborator-card";
 
 
-                card.innerHTML = `
-
-                    <div class="member-avatar">
-                        ${initials}
-                    </div>
-
-                    <div>
-
-                        <strong></strong>
-
-                        <span></span>
-
-                    </div>
-
-                `;
+                const avatar =
+                    document.createElement(
+                        "div"
+                    );
 
 
-                card.querySelector(
-                    "strong"
-                ).textContent =
-                    name.trim();
+                avatar.className =
+                    "member-avatar";
 
 
-                card.querySelector(
-                    "span"
-                ).textContent =
-                    role?.trim() ||
-                    "Collaborator";
+                avatar.textContent =
+                    member.initials ||
+                    getInitials(
+                        member.name
+                    );
 
 
-                $("#collaboratorGrid")
-                    ?.appendChild(card);
+                const info =
+                    document.createElement(
+                        "div"
+                    );
 
 
-                showToast(
-                    "Collaborator added"
+                const name =
+                    document.createElement(
+                        "strong"
+                    );
+
+
+                name.textContent =
+                    member.name;
+
+
+                const role =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                role.textContent =
+                    member.role ||
+                    "Team Member";
+
+
+                info.append(
+                    name,
+                    role
+                );
+
+
+                card.append(
+                    avatar,
+                    info
+                );
+
+
+                container.appendChild(
+                    card
                 );
 
             }
         );
 
 
-    /* =====================================================
-       TESTING
-    ===================================================== */
+}
+
+/* =========================================================
+TESTING
+========================================================= */
+
+function setupTests() {
+
 
     $("#addTest")
         ?.addEventListener(
             "click",
             () => {
 
-                const name =
-                    prompt(
-                        "Test name:"
-                    );
+                setInputValue(
+                    "testTitle",
+                    ""
+                );
 
 
-                if (!name?.trim())
-                    return;
-
-
-                const description =
-                    prompt(
-                        "Test description:"
-                    );
-
-
-                const result =
-                    prompt(
-                        "Result:\npassed\nfailed\npending",
-                        "pending"
-                    );
-
-
-                const validResults = [
-                    "passed",
-                    "failed",
+                setInputValue(
+                    "testResult",
                     "pending"
-                ];
+                );
 
 
-                const finalResult =
-                    validResults.includes(
-                        result
+                setInputValue(
+                    "testDate",
+                    todayISO()
+                );
+
+
+                setInputValue(
+                    "testDescription",
+                    ""
+                );
+
+
+                openModal(
+                    getElement(
+                        "testModal"
                     )
-                        ? result
-                        : "pending";
-
-
-                const card =
-                    document.createElement(
-                        "article"
-                    );
-
-
-                card.className =
-                    `test-card ${finalResult}`;
-
-
-                const indicator =
-                    finalResult === "passed"
-                        ? "✓"
-                        : finalResult === "failed"
-                            ? "!"
-                            : "•";
-
-
-                card.innerHTML = `
-
-                    <div class="test-indicator">
-                        ${indicator}
-                    </div>
-
-                    <div class="test-info">
-
-                        <strong></strong>
-
-                        <p></p>
-
-                    </div>
-
-                    <span
-                        class="test-result ${finalResult}"
-                    >
-                        ${finalResult.toUpperCase()}
-                    </span>
-
-                `;
-
-
-                card.querySelector(
-                    "strong"
-                ).textContent =
-                    name.trim();
-
-
-                card.querySelector(
-                    "p"
-                ).textContent =
-                    description?.trim() ||
-                    "No description added.";
-
-
-                $("#testList")
-                    ?.appendChild(card);
-
-
-                updateTestingSummary();
-
-
-                showToast(
-                    "Test added"
                 );
 
             }
         );
 
 
-    function updateTestingSummary() {
-
-        const tests =
-            $$(".test-card");
-
-
-        let passed = 0;
-        let failed = 0;
-        let pending = 0;
+    $("#saveTest")
+        ?.addEventListener(
+            "click",
+            saveTest
+        );
 
 
-        tests.forEach(test => {
-
-            if (
-                test.classList.contains(
-                    "passed"
+    $("#cancelTest")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "testModal"
+                    )
                 )
-            )
-                passed++;
+        );
 
 
-            else if (
-                test.classList.contains(
-                    "failed"
+    $("#closeTestModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "testModal"
+                    )
                 )
-            )
-                failed++;
+        );
 
 
-            else
-                pending++;
+}
 
-        });
-
-
-        const summaryCards =
-            $$(".test-summary-card");
+async function saveTest() {
 
 
-        if (summaryCards.length >= 4) {
-
-            summaryCards[0]
-                .querySelector(
-                    ".test-summary-number"
-                )
-                .textContent =
-                tests.length;
+    const title =
+        getInputValue(
+            "testTitle"
+        );
 
 
-            summaryCards[1]
-                .querySelector(
-                    ".test-summary-number"
-                )
-                .textContent =
-                passed;
+    if (!title) {
 
+        showToast(
+            "Test name is required."
+        );
 
-            summaryCards[2]
-                .querySelector(
-                    ".test-summary-number"
-                )
-                .textContent =
-                failed;
-
-
-            summaryCards[3]
-                .querySelector(
-                    ".test-summary-number"
-                )
-                .textContent =
-                pending;
-
-        }
+        return;
 
     }
 
 
-    /* =====================================================
-       VERSION HISTORY
-    ===================================================== */
+    const previous =
+        clone(
+            projectData.tests
+        );
+
+
+    projectData.tests.unshift(
+        {
+
+            id:
+                generateID(
+                    "test"
+                ),
+
+            title,
+
+            result:
+                getInputValue(
+                    "testResult"
+                ) ||
+                "pending",
+
+            date:
+                getInputValue(
+                    "testDate"
+                ),
+
+            description:
+                getInputValue(
+                    "testDescription"
+                )
+
+        }
+    );
+
+
+    renderTests();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "testModal"
+            )
+        );
+
+
+        showToast(
+            "Test added."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.tests =
+            previous;
+
+
+        renderTests();
+
+
+        showToast(
+            error.message ||
+            "Unable to save test."
+        );
+
+    }
+
+
+}
+
+function renderTests() {
+
+
+    const tests =
+        projectData.tests || [];
+
+
+    const total =
+        tests.length;
+
+
+    const passed =
+        tests.filter(
+            test =>
+                test.result ===
+                "passed"
+        ).length;
+
+
+    const failed =
+        tests.filter(
+            test =>
+                test.result ===
+                "failed"
+        ).length;
+
+
+    const pending =
+        tests.filter(
+            test =>
+                test.result ===
+                "pending"
+        ).length;
+
+
+    setText(
+        "totalTests",
+        total
+    );
+
+
+    setText(
+        "passedTests",
+        passed
+    );
+
+
+    setText(
+        "failedTests",
+        failed
+    );
+
+
+    setText(
+        "pendingTests",
+        pending
+    );
+
+
+    const percentage =
+        total
+
+            ? Math.round(
+                (
+                    passed /
+                    total
+                ) * 100
+            )
+
+            : 0;
+
+
+    setText(
+        "passedTestPercentage",
+        `${percentage}%`
+    );
+
+
+    const container =
+        getElement(
+            "testList"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    if (!tests.length) {
+
+        container.innerHTML =
+            emptyState(
+                "No tests recorded yet."
+            );
+
+        return;
+
+    }
+
+
+    tests.forEach(
+        test => {
+
+            const item =
+                document.createElement(
+                    "article"
+                );
+
+
+            item.className =
+                "test-item";
+
+
+            const title =
+                document.createElement(
+                    "strong"
+                );
+
+
+            title.textContent =
+                test.title;
+
+
+            const result =
+                document.createElement(
+                    "span"
+                );
+
+
+            result.textContent =
+                formatLabel(
+                    test.result
+                );
+
+
+            const description =
+                document.createElement(
+                    "p"
+                );
+
+
+            description.textContent =
+                test.description ||
+                "No observation added.";
+
+
+            item.append(
+                title,
+                result,
+                description
+            );
+
+
+            container.appendChild(
+                item
+            );
+
+        }
+    );
+
+
+}
+
+/* =========================================================
+VERSION HISTORY
+========================================================= */
+
+function setupVersions() {
+
 
     $("#addVersion")
         ?.addEventListener(
             "click",
             () => {
 
-                const version =
-                    prompt(
-                        "Version number:",
-                        "V3"
+                setInputValue(
+                    "versionNumber",
+                    ""
+                );
+
+
+                setInputValue(
+                    "versionDate",
+                    todayISO()
+                );
+
+
+                setInputValue(
+                    "versionTitle",
+                    ""
+                );
+
+
+                setInputValue(
+                    "versionDescription",
+                    ""
+                );
+
+
+                const current =
+                    getElement(
+                        "versionCurrent"
                     );
 
 
-                if (!version?.trim())
-                    return;
+                if (current) {
+
+                    current.checked =
+                        false;
+
+                }
 
 
-                const title =
-                    prompt(
-                        "Version title:"
-                    );
+                openModal(
+                    getElement(
+                        "versionModal"
+                    )
+                );
+
+            }
+        );
 
 
-                if (!title?.trim())
-                    return;
+    $("#saveVersion")
+        ?.addEventListener(
+            "click",
+            saveVersion
+        );
 
 
-                const description =
-                    prompt(
-                        "What changed?"
-                    );
+    $("#cancelVersion")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "versionModal"
+                    )
+                )
+        );
 
 
-                const date =
-                    prompt(
-                        "Date:",
-                        todayISO()
-                    );
+    $("#closeVersionModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "versionModal"
+                    )
+                )
+        );
 
+
+}
+
+async function saveVersion() {
+
+
+    const number =
+        getInputValue(
+            "versionNumber"
+        );
+
+
+    const title =
+        getInputValue(
+            "versionTitle"
+        );
+
+
+    if (
+        !number ||
+        !title
+    ) {
+
+        showToast(
+            "Version number and title are required."
+        );
+
+        return;
+
+    }
+
+
+    const previous =
+        clone(
+            projectData.versions
+        );
+
+
+    const current =
+        getElement(
+            "versionCurrent"
+        )?.checked ||
+        false;
+
+
+    if (current) {
+
+        projectData.versions =
+            projectData.versions.map(
+                version =>
+                ({
+
+                    ...version,
+
+                    current:
+                        false
+
+                })
+            );
+
+    }
+
+
+    projectData.versions.unshift(
+        {
+
+            id:
+                generateID(
+                    "version"
+                ),
+
+            number,
+
+            title,
+
+            description:
+                getInputValue(
+                    "versionDescription"
+                ),
+
+            date:
+                getInputValue(
+                    "versionDate"
+                ),
+
+            current
+
+        }
+    );
+
+
+    renderVersions();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "versionModal"
+            )
+        );
+
+
+        showToast(
+            "Version added."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.versions =
+            previous;
+
+
+        renderVersions();
+
+
+        showToast(
+            error.message ||
+            "Unable to save version."
+        );
+
+    }
+
+
+}
+
+function renderVersions() {
+
+
+    const container =
+        getElement(
+            "versionGrid"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        !projectData.versions.length
+    ) {
+
+        container.innerHTML =
+            emptyState(
+                "No version history added yet."
+            );
+
+        return;
+
+    }
+
+
+    projectData.versions
+        .forEach(
+            version => {
 
                 const card =
                     document.createElement(
@@ -1878,92 +5666,299 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
                 card.className =
-                    "version-card current";
+                    `version-card ${version.current
+                        ? "current"
+                        : ""
+                    }`;
 
 
-                card.innerHTML = `
-
-                    <div class="version-number"></div>
-
-                    <div class="version-info">
-
-                        <div class="version-top">
-
-                            <strong></strong>
-
-                            <span></span>
-
-                        </div>
-
-                        <p></p>
-
-                    </div>
-
-                `;
+                const number =
+                    document.createElement(
+                        "div"
+                    );
 
 
-                card.querySelector(
-                    ".version-number"
-                ).textContent =
-                    version.trim();
+                number.className =
+                    "version-number";
 
 
-                card.querySelector(
-                    ".version-top strong"
-                ).textContent =
-                    title.trim();
+                number.textContent =
+                    version.number;
 
 
-                card.querySelector(
-                    ".version-top span"
-                ).textContent =
-                    date?.trim() ||
-                    "Today";
+                const info =
+                    document.createElement(
+                        "div"
+                    );
 
 
-                card.querySelector(
-                    "p"
-                ).textContent =
-                    description?.trim() ||
+                info.className =
+                    "version-info";
+
+
+                const top =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                top.className =
+                    "version-top";
+
+
+                const title =
+                    document.createElement(
+                        "strong"
+                    );
+
+
+                title.textContent =
+                    version.title;
+
+
+                const date =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                date.textContent =
+                    formatDate(
+                        version.date
+                    );
+
+
+                top.append(
+                    title,
+                    date
+                );
+
+
+                const description =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                description.textContent =
+                    version.description ||
                     "No change description added.";
 
 
-                $("#versionGrid")
-                    ?.prepend(card);
+                info.append(
+                    top,
+                    description
+                );
 
 
-                showToast(
-                    "Version added"
+                card.append(
+                    number,
+                    info
+                );
+
+
+                container.appendChild(
+                    card
                 );
 
             }
         );
 
 
-    /* =====================================================
-       ISSUES
-    ===================================================== */
+}
+
+/* =========================================================
+ISSUES
+========================================================= */
+
+function setupIssues() {
+
 
     $("#addIssue")
         ?.addEventListener(
             "click",
             () => {
 
-                const title =
-                    prompt(
-                        "Issue / blocker:"
-                    );
+                setInputValue(
+                    "issueTitle",
+                    ""
+                );
 
 
-                if (!title?.trim())
-                    return;
+                setInputValue(
+                    "issueDescription",
+                    ""
+                );
 
 
-                const description =
-                    prompt(
-                        "Describe the issue:"
-                    );
+                openModal(
+                    getElement(
+                        "issueModal"
+                    )
+                );
 
+            }
+        );
+
+
+    $("#saveIssue")
+        ?.addEventListener(
+            "click",
+            saveIssue
+        );
+
+
+    $("#cancelIssue")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "issueModal"
+                    )
+                )
+        );
+
+
+    $("#closeIssueModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "issueModal"
+                    )
+                )
+        );
+
+
+}
+
+async function saveIssue() {
+
+
+    const title =
+        getInputValue(
+            "issueTitle"
+        );
+
+
+    if (!title) {
+
+        showToast(
+            "Issue title is required."
+        );
+
+        return;
+
+    }
+
+
+    const previous =
+        clone(
+            projectData.issues
+        );
+
+
+    projectData.issues.unshift(
+        {
+
+            id:
+                generateID(
+                    "issue"
+                ),
+
+            title,
+
+            description:
+                getInputValue(
+                    "issueDescription"
+                ),
+
+            createdAt:
+                new Date()
+                    .toISOString()
+
+        }
+    );
+
+
+    renderIssues();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "issueModal"
+            )
+        );
+
+
+        showToast(
+            "Issue added."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.issues =
+            previous;
+
+
+        renderIssues();
+
+
+        showToast(
+            error.message ||
+            "Unable to save issue."
+        );
+
+    }
+
+
+}
+
+function renderIssues() {
+
+
+    const container =
+        getElement(
+            "issueList"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        !projectData.issues.length
+    ) {
+
+        container.innerHTML =
+            emptyState(
+                "No issues recorded."
+            );
+
+        return;
+
+    }
+
+
+    projectData.issues
+        .forEach(
+            issue => {
 
                 const item =
                     document.createElement(
@@ -1975,72 +5970,257 @@ document.addEventListener("DOMContentLoaded", () => {
                     "issue-item";
 
 
-                item.innerHTML = `
-
-                    <span
-                        class="issue-dot"
-                    ></span>
-
-                    <div>
-
-                        <strong></strong>
-
-                        <p></p>
-
-                    </div>
-
-                `;
+                const dot =
+                    document.createElement(
+                        "span"
+                    );
 
 
-                item.querySelector(
-                    "strong"
-                ).textContent =
-                    title.trim();
+                dot.className =
+                    "issue-dot";
 
 
-                item.querySelector(
-                    "p"
-                ).textContent =
-                    description?.trim() ||
+                const content =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                const title =
+                    document.createElement(
+                        "strong"
+                    );
+
+
+                title.textContent =
+                    issue.title;
+
+
+                const description =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                description.textContent =
+                    issue.description ||
                     "No description added.";
 
 
-                $("#issueList")
-                    ?.appendChild(item);
+                content.append(
+                    title,
+                    description
+                );
 
 
-                showToast(
-                    "Issue added"
+                item.append(
+                    dot,
+                    content
+                );
+
+
+                container.appendChild(
+                    item
                 );
 
             }
         );
 
 
-    /* =====================================================
-       DECISIONS
-    ===================================================== */
+}
+
+/* =========================================================
+DECISIONS
+========================================================= */
+
+function setupDecisions() {
+
 
     $("#addDecision")
         ?.addEventListener(
             "click",
             () => {
 
-                const title =
-                    prompt(
-                        "Decision:"
-                    );
+                setInputValue(
+                    "decisionTitle",
+                    ""
+                );
 
 
-                if (!title?.trim())
-                    return;
+                setInputValue(
+                    "decisionDescription",
+                    ""
+                );
 
 
-                const description =
-                    prompt(
-                        "Why was this decision made?"
-                    );
+                openModal(
+                    getElement(
+                        "decisionModal"
+                    )
+                );
 
+            }
+        );
+
+
+    $("#saveDecision")
+        ?.addEventListener(
+            "click",
+            saveDecision
+        );
+
+
+    $("#cancelDecision")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "decisionModal"
+                    )
+                )
+        );
+
+
+    $("#closeDecisionModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "decisionModal"
+                    )
+                )
+        );
+
+
+}
+
+async function saveDecision() {
+
+
+    const title =
+        getInputValue(
+            "decisionTitle"
+        );
+
+
+    if (!title) {
+
+        showToast(
+            "Decision is required."
+        );
+
+        return;
+
+    }
+
+
+    const previous =
+        clone(
+            projectData.decisions
+        );
+
+
+    projectData.decisions.unshift(
+        {
+
+            id:
+                generateID(
+                    "decision"
+                ),
+
+            title,
+
+            description:
+                getInputValue(
+                    "decisionDescription"
+                ),
+
+            createdAt:
+                new Date()
+                    .toISOString()
+
+        }
+    );
+
+
+    renderDecisions();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "decisionModal"
+            )
+        );
+
+
+        showToast(
+            "Decision added."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.decisions =
+            previous;
+
+
+        renderDecisions();
+
+
+        showToast(
+            error.message ||
+            "Unable to save decision."
+        );
+
+    }
+
+
+}
+
+function renderDecisions() {
+
+
+    const container =
+        getElement(
+            "decisionList"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        !projectData.decisions.length
+    ) {
+
+        container.innerHTML =
+            emptyState(
+                "No decisions recorded."
+            );
+
+        return;
+
+    }
+
+
+    projectData.decisions
+        .forEach(
+            decision => {
 
                 const item =
                     document.createElement(
@@ -2052,394 +6232,346 @@ document.addEventListener("DOMContentLoaded", () => {
                     "decision-item";
 
 
-                item.innerHTML = `
-
-                    <strong></strong>
-
-                    <p></p>
-
-                `;
-
-
-                item.querySelector(
-                    "strong"
-                ).textContent =
-                    title.trim();
-
-
-                item.querySelector(
-                    "p"
-                ).textContent =
-                    description?.trim() ||
-                    "No explanation added.";
-
-
-                $("#decisionList")
-                    ?.appendChild(item);
-
-
-                showToast(
-                    "Decision added"
-                );
-
-            }
-        );
-
-
-    /* =====================================================
-       FILE UPLOAD
-    ===================================================== */
-
-    const fileInput =
-        $("#projectFileInput");
-
-
-    const uploadButton =
-        $("#uploadProjectFile");
-
-
-    const uploadZone =
-        $("#projectUploadZone");
-
-
-    uploadButton?.addEventListener(
-        "click",
-        () =>
-            fileInput?.click()
-    );
-
-
-    uploadZone?.addEventListener(
-        "click",
-        () =>
-            fileInput?.click()
-    );
-
-
-    fileInput?.addEventListener(
-        "change",
-        () => {
-
-            const files =
-                [
-                    ...(fileInput.files || [])
-                ];
-
-
-            files.forEach(
-                addAttachment
-            );
-
-
-            fileInput.value = "";
-
-        }
-    );
-
-
-    function addAttachment(file) {
-
-        const grid =
-            $("#projectAttachmentGrid");
-
-
-        if (!grid)
-            return;
-
-
-        const extension =
-            getExtension(
-                file.name
-            );
-
-
-        const card =
-            document.createElement(
-                "article"
-            );
-
-
-        card.className =
-            "attachment-card";
-
-
-        card.innerHTML = `
-
-            <div class="attachment-icon">
-                ${extension}
-            </div>
-
-            <div class="attachment-info">
-
-                <strong></strong>
-
-                <span></span>
-
-                <small>
-                    Uploaded just now
-                </small>
-
-            </div>
-
-            <button
-                type="button"
-            >
-                Open
-            </button>
-
-        `;
-
-
-        card.querySelector(
-            "strong"
-        ).textContent =
-            file.name;
-
-
-        card.querySelector(
-            "span"
-        ).textContent =
-            `${file.type || "File"} · ${
-                formatBytes(file.size)
-            }`;
-
-
-        card.querySelector(
-            "button"
-        ).addEventListener(
-            "click",
-            () => {
-
-                const url =
-                    URL.createObjectURL(
-                        file
-                    );
-
-
-                window.open(
-                    url,
-                    "_blank",
-                    "noopener"
-                );
-
-            }
-        );
-
-
-        grid.prepend(card);
-
-
-        showToast(
-            `${file.name} added`
-        );
-
-    }
-
-
-    function getExtension(filename) {
-
-        const extension =
-            filename
-                .split(".")
-                .pop()
-                ?.toUpperCase();
-
-
-        if (!extension)
-            return "FILE";
-
-
-        return extension.length > 5
-            ? "FILE"
-            : extension;
-
-    }
-
-
-    function formatBytes(bytes) {
-
-        if (!bytes)
-            return "0 B";
-
-
-        const units = [
-            "B",
-            "KB",
-            "MB",
-            "GB"
-        ];
-
-
-        const index =
-            Math.floor(
-                Math.log(bytes) /
-                Math.log(1024)
-            );
-
-
-        return `${
-            (
-                bytes /
-                Math.pow(
-                    1024,
-                    index
-                )
-            ).toFixed(
-                index === 0
-                    ? 0
-                    : 1
-            )
-        } ${units[index]}`;
-
-    }
-
-
-    /* =====================================================
-       DRAG & DROP
-    ===================================================== */
-
-    if (uploadZone) {
-
-        [
-            "dragenter",
-            "dragover"
-        ].forEach(type => {
-
-            uploadZone.addEventListener(
-                type,
-                event => {
-
-                    event.preventDefault();
-
-                    uploadZone.classList.add(
-                        "dragging"
-                    );
-
-                }
-            );
-
-        });
-
-
-        [
-            "dragleave",
-            "drop"
-        ].forEach(type => {
-
-            uploadZone.addEventListener(
-                type,
-                event => {
-
-                    event.preventDefault();
-
-                    uploadZone.classList.remove(
-                        "dragging"
-                    );
-
-                }
-            );
-
-        });
-
-
-        uploadZone.addEventListener(
-            "drop",
-            event => {
-
-                const files =
-                    [
-                        ...event.dataTransfer.files
-                    ];
-
-
-                files.forEach(
-                    addAttachment
-                );
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       LINK MODAL
-    ===================================================== */
-
-    const linkModal =
-        $("#projectLinkModal");
-
-
-    $("#addProjectLink")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                $("#projectLinkTitle").value =
-                    "";
-
-                $("#projectLinkURL").value =
-                    "";
-
-                $("#projectLinkDescription").value =
-                    "";
-
-                openModal(
-                    linkModal
-                );
-
-            }
-        );
-
-
-    $("#saveProjectLink")
-        ?.addEventListener(
-            "click",
-            () => {
-
                 const title =
-                    $("#projectLinkTitle")
-                        .value
-                        .trim();
+                    document.createElement(
+                        "strong"
+                    );
 
 
-                const url =
-                    $("#projectLinkURL")
-                        .value
-                        .trim();
+                title.textContent =
+                    decision.title;
 
 
                 const description =
-                    $("#projectLinkDescription")
-                        .value
-                        .trim();
-
-
-                if (!title || !url) {
-
-                    showToast(
-                        "Title and URL are required"
+                    document.createElement(
+                        "p"
                     );
+
+
+                description.textContent =
+                    decision.description ||
+                    "No explanation added.";
+
+
+                item.append(
+                    title,
+                    description
+                );
+
+
+                container.appendChild(
+                    item
+                );
+
+            }
+        );
+
+
+}
+
+/* =========================================================
+FILES
+========================================================= */
+
+function setupFiles() {
+
+
+    $("#uploadProjectFile")
+        ?.addEventListener(
+            "click",
+            () =>
+                getElement(
+                    "projectFileInput"
+                )?.click()
+        );
+
+
+    $("#projectUploadZone")
+        ?.addEventListener(
+            "click",
+            () =>
+                getElement(
+                    "projectFileInput"
+                )?.click()
+        );
+
+
+    $("#projectUploadZone")
+        ?.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter" ||
+                    event.key === " "
+                ) {
+
+                    event.preventDefault();
+
+
+                    getElement(
+                        "projectFileInput"
+                    )?.click();
+
+                }
+
+            }
+        );
+
+
+    $("#projectFileInput")
+        ?.addEventListener(
+            "change",
+            async event => {
+
+                const files =
+                    Array.from(
+                        event.target.files ||
+                        []
+                    );
+
+
+                if (!files.length) {
 
                     return;
 
                 }
 
 
-                try {
+                await uploadProjectFiles(
+                    files
+                );
 
-                    new URL(url);
 
-                } catch {
+                event.target.value =
+                    "";
 
-                    showToast(
-                        "Enter a valid URL"
-                    );
+            }
+        );
 
-                    return;
+
+}
+
+async function uploadProjectFiles(
+    files
+) {
+
+
+    const previous =
+        clone(
+            projectData.attachments
+        );
+
+
+    try {
+
+        for (
+            const file of files
+        ) {
+
+            const uploaded =
+                await uploadProjectFile(
+                    file
+                );
+
+
+            projectData.attachments.unshift(
+                {
+
+                    id:
+                        uploaded.id ||
+                        generateID(
+                            "file"
+                        ),
+
+                    name:
+                        uploaded.name ||
+                        file.name,
+
+                    mimeType:
+                        uploaded.mimeType ||
+                        uploaded.type ||
+                        file.type,
+
+                    size:
+                        uploaded.size ||
+                        file.size,
+
+                    url:
+                        uploaded.url ||
+                        uploaded.webViewLink ||
+                        uploaded.webContentLink ||
+                        "",
+
+                    driveFileId:
+                        uploaded.driveFileId ||
+                        uploaded.file_id ||
+                        uploaded.id ||
+                        "",
+
+                    createdAt:
+                        new Date()
+                            .toISOString()
 
                 }
+            );
 
+        }
+
+
+        renderAttachments();
+
+
+        await saveProjectData();
+
+
+        showToast(
+            files.length === 1
+
+                ? "File uploaded."
+
+                : "Files uploaded."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.attachments =
+            previous;
+
+
+        renderAttachments();
+
+
+        showToast(
+            error.message ||
+            "Unable to upload file."
+        );
+
+    }
+
+
+}
+
+async function uploadProjectFile(
+    file
+) {
+
+
+    const session =
+        await getSession();
+
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "work_id",
+        currentWorkId
+    );
+
+
+    formData.append(
+        "file",
+        file
+    );
+
+
+    const response =
+        await fetch(
+
+            `${SUPABASE_FUNCTIONS_URL}/upload-rigid-file`,
+
+            {
+
+                method:
+                    "POST",
+
+                headers:
+                {
+
+                    "Authorization":
+                        `Bearer ${session.access_token}`
+
+                },
+
+                body:
+                    formData
+
+            }
+
+        );
+
+
+    const result =
+        await response.json();
+
+
+    if (
+        !response.ok ||
+        !result.success
+    ) {
+
+        throw new Error(
+
+            result.error ||
+            "Unable to upload file."
+
+        );
+
+    }
+
+
+    return (
+        result.file ||
+        result.data ||
+        result
+    );
+
+
+}
+
+function renderAttachments() {
+
+    const container =
+        getElement(
+            "projectAttachmentGrid"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        !Array.isArray(
+            projectData.attachments
+        ) ||
+        !projectData.attachments.length
+    ) {
+
+        container.innerHTML =
+            emptyState(
+                "No files uploaded yet."
+            );
+
+        return;
+
+    }
+
+
+    projectData.attachments
+        .forEach(
+            attachment => {
 
                 const card =
                     document.createElement(
@@ -2451,52 +6583,159 @@ document.addEventListener("DOMContentLoaded", () => {
                     "attachment-card";
 
 
-                card.innerHTML = `
+                /* =========================
+                   FILE ICON
+                ========================= */
 
-                    <div class="attachment-icon">
-                        LINK
-                    </div>
-
-                    <div class="attachment-info">
-
-                        <strong></strong>
-
-                        <span>
-                            External resource
-                        </span>
-
-                        <small></small>
-
-                    </div>
-
-                    <button type="button">
-                        Open
-                    </button>
-
-                `;
+                const extension =
+                    document.createElement(
+                        "div"
+                    );
 
 
-                card.querySelector(
-                    "strong"
-                ).textContent =
-                    title;
+                extension.className =
+                    "attachment-icon";
 
 
-                card.querySelector(
-                    "small"
-                ).textContent =
-                    description ||
-                    url;
+                extension.textContent =
+                    getExtension(
+                        attachment.name
+                    );
 
 
-                card.querySelector(
-                    "button"
-                ).addEventListener(
+                /* =========================
+                   FILE INFORMATION
+                ========================= */
+
+                const info =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                info.className =
+                    "attachment-info";
+
+
+                const name =
+                    document.createElement(
+                        "strong"
+                    );
+
+
+                name.textContent =
+                    attachment.name ||
+                    "Attachment";
+
+
+                name.title =
+                    attachment.name ||
+                    "Attachment";
+
+
+                const metadata =
+                    document.createElement(
+                        "span"
+                    );
+
+
+                const fileType =
+                    attachment.mimeType ||
+                    attachment.type ||
+                    getExtension(
+                        attachment.name
+                    ) ||
+                    "File";
+
+
+                metadata.textContent =
+                    `${fileType} · ${formatBytes(
+                        attachment.size
+                    )}`;
+
+
+                const date =
+                    document.createElement(
+                        "small"
+                    );
+
+
+                date.textContent =
+                    attachment.createdAt
+
+                        ? `Uploaded ${formatDateTime(
+                            attachment.createdAt
+                        )}`
+
+                        : "Uploaded file";
+
+
+                info.append(
+                    name,
+                    metadata,
+                    date
+                );
+
+
+                /* =========================
+                   ACTIONS
+                ========================= */
+
+                const actions =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                actions.className =
+                    "attachment-actions";
+
+
+                const open =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                open.type =
+                    "button";
+
+
+                open.className =
+                    "attachment-open";
+
+
+                open.textContent =
+                    "Open";
+
+
+                open.addEventListener(
                     "click",
-                    () => {
+                    event => {
+
+                        event.stopPropagation();
+
+
+                        const fileURL =
+                            attachment.url ||
+                            attachment.webViewLink ||
+                            attachment.webContentLink;
+
+
+                        if (!fileURL) {
+
+                            showToast(
+                                "File URL is unavailable.",
+                                "error"
+                            );
+
+                            return;
+
+                        }
+
 
                         window.open(
-                            url,
+                            fileURL,
                             "_blank",
                             "noopener,noreferrer"
                         );
@@ -2505,20 +6744,432 @@ document.addEventListener("DOMContentLoaded", () => {
                 );
 
 
-                $("#projectAttachmentGrid")
-                    ?.prepend(card);
+                const remove =
+                    document.createElement(
+                        "button"
+                    );
 
 
-                closeModal(
-                    linkModal
+                remove.type =
+                    "button";
+
+
+                remove.className =
+                    "attachment-remove";
+
+
+                remove.innerHTML =
+                    "&times;";
+
+
+                remove.title =
+                    "Delete file";
+
+
+                remove.setAttribute(
+                    "aria-label",
+                    "Delete file"
                 );
 
 
-                showToast(
-                    "Link added"
+                remove.addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+
+
+                        deleteAttachment(
+                            attachment
+                        );
+
+                    }
+                );
+
+
+                actions.append(
+                    open,
+                    remove
+                );
+
+
+                /* =========================
+                   CARD CLICK
+                ========================= */
+
+                card.addEventListener(
+                    "click",
+                    () => {
+
+                        const fileURL =
+                            attachment.url ||
+                            attachment.webViewLink ||
+                            attachment.webContentLink;
+
+
+                        if (
+                            fileURL
+                        ) {
+
+                            window.open(
+                                fileURL,
+                                "_blank",
+                                "noopener,noreferrer"
+                            );
+
+                        }
+
+                    }
+                );
+
+
+                card.append(
+                    extension,
+                    info,
+                    actions
+                );
+
+
+                container.appendChild(
+                    card
                 );
 
             }
+        );
+
+}
+
+async function deleteAttachment(
+    attachment
+) {
+
+
+    askConfirm(
+
+        "Delete File",
+
+        `Delete "${attachment.name}"?`,
+
+        async () => {
+
+            const previous =
+                clone(
+                    projectData.attachments
+                );
+
+
+            projectData.attachments =
+                projectData.attachments.filter(
+                    item =>
+                        String(item.id) !==
+                        String(
+                            attachment.id
+                        )
+                );
+
+
+            renderAttachments();
+
+
+            try {
+
+                if (
+                    attachment.driveFileId
+                ) {
+
+                    await deleteProjectFile(
+                        attachment.driveFileId
+                    );
+
+                }
+
+
+                await saveProjectData();
+
+
+                showToast(
+                    "File deleted."
+                );
+
+            }
+
+            catch (error) {
+
+                projectData.attachments =
+                    previous;
+
+
+                renderAttachments();
+
+
+                showToast(
+                    error.message ||
+                    "Unable to delete file."
+                );
+
+            }
+
+        }
+
+    );
+
+
+}
+
+async function deleteProjectFile(
+    fileId
+) {
+
+    const session =
+        await getSession();
+
+
+    if (
+        !session ||
+        !session.access_token
+    ) {
+
+        throw new Error(
+            "Your session has expired. Please sign in again."
+        );
+
+    }
+
+
+    if (!fileId) {
+
+        throw new Error(
+            "File ID is missing."
+        );
+
+    }
+
+
+    const response =
+        await fetch(
+            `${SUPABASE_FUNCTIONS_URL}/delete-rigid-file`,
+            {
+                method: "POST",
+
+                headers: {
+
+                    "Authorization":
+                        `Bearer ${session.access_token}`,
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body:
+                    JSON.stringify({
+
+                        work_id:
+                            currentWorkId,
+
+                        drive_file_id:
+                            fileId
+
+                    })
+            }
+        );
+
+
+    const responseText =
+        await response.text();
+
+
+    console.log(
+        "delete-rigid-file status:",
+        response.status
+    );
+
+
+    console.log(
+        "delete-rigid-file response:",
+        responseText
+    );
+
+
+    let result;
+
+
+    try {
+
+        result =
+            JSON.parse(
+                responseText
+            );
+
+    }
+
+    catch {
+
+        throw new Error(
+            responseText ||
+            "Invalid response from file deletion service."
+        );
+
+    }
+
+
+    if (
+        !response.ok ||
+        !result.success
+    ) {
+
+        throw new Error(
+
+            result?.error ||
+
+            "Unable to delete file."
+
+        );
+
+    }
+
+
+    return true;
+
+}
+
+/* =========================================================
+DRAG AND DROP
+========================================================= */
+
+function setupDragAndDrop() {
+
+
+    const zone =
+        getElement(
+            "projectUploadZone"
+        );
+
+
+    if (!zone) {
+
+        return;
+
+    }
+
+
+    [
+        "dragenter",
+        "dragover"
+    ].forEach(
+        eventName => {
+
+            zone.addEventListener(
+                eventName,
+                event => {
+
+                    event.preventDefault();
+
+                    zone.classList.add(
+                        "dragging"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    [
+        "dragleave",
+        "drop"
+    ].forEach(
+        eventName => {
+
+            zone.addEventListener(
+                eventName,
+                event => {
+
+                    event.preventDefault();
+
+                    zone.classList.remove(
+                        "dragging"
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+    zone.addEventListener(
+        "drop",
+        async event => {
+
+            const files =
+                Array.from(
+                    event.dataTransfer?.files ||
+                    []
+                );
+
+
+            if (
+                files.length
+            ) {
+
+                await uploadProjectFiles(
+                    files
+                );
+
+            }
+
+        }
+    );
+
+
+}
+
+/* =========================================================
+LINKS
+========================================================= */
+
+function setupLinks() {
+
+
+    $("#addProjectLink")
+        ?.addEventListener(
+            "click",
+            () => {
+
+                setInputValue(
+                    "projectLinkTitle",
+                    ""
+                );
+
+
+                setInputValue(
+                    "projectLinkURL",
+                    ""
+                );
+
+
+                setInputValue(
+                    "projectLinkDescription",
+                    ""
+                );
+
+
+                openModal(
+                    getElement(
+                        "projectLinkModal"
+                    )
+                );
+
+            }
+        );
+
+
+    $("#saveProjectLink")
+        ?.addEventListener(
+            "click",
+            saveProjectLink
         );
 
 
@@ -2527,7 +7178,9 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () =>
                 closeModal(
-                    linkModal
+                    getElement(
+                        "projectLinkModal"
+                    )
                 )
         );
 
@@ -2537,45 +7190,506 @@ document.addEventListener("DOMContentLoaded", () => {
             "click",
             () =>
                 closeModal(
-                    linkModal
+                    getElement(
+                        "projectLinkModal"
+                    )
                 )
         );
 
 
-    /* =====================================================
-       FUTURE WORK
-    ===================================================== */
+}
+
+async function saveProjectLink() {
+
+
+    const title =
+        getInputValue(
+            "projectLinkTitle"
+        );
+
+
+    let url =
+        getInputValue(
+            "projectLinkURL"
+        );
+
+
+    if (
+        !title ||
+        !url
+    ) {
+
+        showToast(
+            "Link title and URL are required."
+        );
+
+        return;
+
+    }
+
+
+    url =
+        normalizeURL(
+            url
+        );
+
+
+    const previous =
+        clone(
+            projectData.links
+        );
+
+
+    projectData.links.unshift(
+        {
+
+            id:
+                generateID(
+                    "link"
+                ),
+
+            title,
+
+            url,
+
+            description:
+                getInputValue(
+                    "projectLinkDescription"
+                ),
+
+            createdAt:
+                new Date()
+                    .toISOString()
+
+        }
+    );
+
+
+    renderLinks();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "projectLinkModal"
+            )
+        );
+
+
+        showToast(
+            "Link added."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.links =
+            previous;
+
+
+        renderLinks();
+
+
+        showToast(
+            error.message ||
+            "Unable to save link."
+        );
+
+    }
+
+
+}
+
+function renderLinks() {
+
+
+    const container =
+        getElement(
+            "projectLinkList"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        !projectData.links.length
+    ) {
+
+        container.innerHTML =
+            emptyState(
+                "No project links added yet."
+            );
+
+        return;
+
+    }
+
+
+    projectData.links
+        .forEach(
+            link => {
+
+                const item =
+                    document.createElement(
+                        "article"
+                    );
+
+
+                item.className =
+                    "project-link-item";
+
+
+                const title =
+                    document.createElement(
+                        "strong"
+                    );
+
+
+                title.textContent =
+                    link.title;
+
+
+                const description =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                description.textContent =
+                    link.description ||
+                    "";
+
+
+                const open =
+                    document.createElement(
+                        "a"
+                    );
+
+
+                open.href =
+                    link.url;
+
+
+                open.target =
+                    "_blank";
+
+
+                open.rel =
+                    "noopener";
+
+
+                open.textContent =
+                    "Open →";
+
+
+                const remove =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                remove.type =
+                    "button";
+
+
+                remove.textContent =
+                    "×";
+
+
+                remove.addEventListener(
+                    "click",
+                    () => {
+
+                        askConfirm(
+
+                            "Delete Link",
+
+                            `Delete "${link.title}"?`,
+
+                            async () => {
+
+                                const previous =
+                                    clone(
+                                        projectData.links
+                                    );
+
+
+                                projectData.links =
+                                    projectData.links.filter(
+                                        item =>
+                                            String(item.id) !==
+                                            String(link.id)
+                                    );
+
+
+                                renderLinks();
+
+
+                                try {
+
+                                    await saveProjectData();
+
+                                    showToast(
+                                        "Link deleted."
+                                    );
+
+                                }
+
+                                catch (error) {
+
+                                    projectData.links =
+                                        previous;
+
+
+                                    renderLinks();
+
+
+                                    showToast(
+                                        error.message ||
+                                        "Unable to delete link."
+                                    );
+
+                                }
+
+                            }
+
+                        );
+
+                    }
+                );
+
+
+                item.append(
+                    title,
+                    description,
+                    open,
+                    remove
+                );
+
+
+                container.appendChild(
+                    item
+                );
+
+            }
+        );
+
+
+}
+
+/* =========================================================
+FUTURE WORK
+========================================================= */
+
+function setupFutureWork() {
+
 
     $("#addFutureWork")
         ?.addEventListener(
             "click",
             () => {
 
-                const stage =
-                    prompt(
-                        "Stage / timing:"
-                    );
+                setInputValue(
+                    "futureWorkStage",
+                    ""
+                );
 
 
-                if (!stage?.trim())
-                    return;
+                setInputValue(
+                    "futureWorkTitle",
+                    ""
+                );
 
 
-                const title =
-                    prompt(
-                        "Future work:"
-                    );
+                setInputValue(
+                    "futureWorkDescription",
+                    ""
+                );
 
 
-                if (!title?.trim())
-                    return;
+                openModal(
+                    getElement(
+                        "futureWorkModal"
+                    )
+                );
+
+            }
+        );
 
 
-                const description =
-                    prompt(
-                        "What should be achieved?"
-                    );
+    $("#saveFutureWork")
+        ?.addEventListener(
+            "click",
+            saveFutureWork
+        );
 
+
+    $("#cancelFutureWork")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "futureWorkModal"
+                    )
+                )
+        );
+
+
+    $("#closeFutureWorkModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeModal(
+                    getElement(
+                        "futureWorkModal"
+                    )
+                )
+        );
+
+
+}
+
+async function saveFutureWork() {
+
+
+    const title =
+        getInputValue(
+            "futureWorkTitle"
+        );
+
+
+    if (!title) {
+
+        showToast(
+            "Future work title is required."
+        );
+
+        return;
+
+    }
+
+
+    const previous =
+        clone(
+            projectData.futureWork
+        );
+
+
+    projectData.futureWork.push(
+        {
+
+            id:
+                generateID(
+                    "future"
+                ),
+
+            stage:
+                getInputValue(
+                    "futureWorkStage"
+                ) ||
+                "NEXT",
+
+            title,
+
+            description:
+                getInputValue(
+                    "futureWorkDescription"
+                )
+
+        }
+    );
+
+
+    renderFutureWork();
+
+
+    try {
+
+        await saveProjectData();
+
+        closeModal(
+            getElement(
+                "futureWorkModal"
+            )
+        );
+
+
+        showToast(
+            "Future work added."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.futureWork =
+            previous;
+
+
+        renderFutureWork();
+
+
+        showToast(
+            error.message ||
+            "Unable to save future work."
+        );
+
+    }
+
+
+}
+
+function renderFutureWork() {
+
+
+    const container =
+        getElement(
+            "futureWorkGrid"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    if (
+        !projectData.futureWork.length
+    ) {
+
+        container.innerHTML =
+            emptyState(
+                "No future work added yet."
+            );
+
+        return;
+
+    }
+
+
+    projectData.futureWork
+        .forEach(
+            item => {
 
                 const card =
                     document.createElement(
@@ -2587,143 +7701,977 @@ document.addEventListener("DOMContentLoaded", () => {
                     "future-card";
 
 
-                card.innerHTML = `
-
-                    <span></span>
-
-                    <h3></h3>
-
-                    <p></p>
-
-                `;
+                const stage =
+                    document.createElement(
+                        "span"
+                    );
 
 
-                card.querySelector(
-                    "span"
-                ).textContent =
-                    stage.trim()
-                        .toUpperCase();
+                stage.textContent =
+                    item.stage ||
+                    "NEXT";
 
 
-                card.querySelector(
-                    "h3"
-                ).textContent =
-                    title.trim();
+                const title =
+                    document.createElement(
+                        "h3"
+                    );
 
 
-                card.querySelector(
-                    "p"
-                ).textContent =
-                    description?.trim() ||
+                title.textContent =
+                    item.title;
+
+
+                const description =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                description.textContent =
+                    item.description ||
                     "No description added.";
 
 
-                $("#futureWorkGrid")
-                    ?.appendChild(card);
+                card.append(
+                    stage,
+                    title,
+                    description
+                );
 
 
-                showToast(
-                    "Future work added"
+                container.appendChild(
+                    card
                 );
 
             }
         );
 
 
-    /* =====================================================
-       OUTCOME
-    ===================================================== */
+}
+
+/* =========================================================
+OUTCOME
+========================================================= */
+
+function setupOutcome() {
+
 
     $("#saveOutcome")
         ?.addEventListener(
             "click",
-            () => {
-
-                const outcome =
-                    $("#projectOutcome")
-                        ?.value
-                        .trim();
+            saveOutcome
+        );
 
 
-                if (!outcome) {
+}
 
-                    showToast(
-                        "Write the project outcome first"
-                    );
-
-                    return;
-
-                }
+function renderOutcome() {
 
 
-                showToast(
-                    "Project outcome saved"
+    setInputValue(
+        "projectOutcome",
+        projectData.outcome
+    );
+
+
+}
+
+async function saveOutcome() {
+
+
+    const previous =
+        projectData.outcome;
+
+
+    projectData.outcome =
+        getInputValue(
+            "projectOutcome"
+        );
+
+
+    try {
+
+        await saveProjectData();
+
+        showToast(
+            "Project outcome saved."
+        );
+
+    }
+
+    catch (error) {
+
+        projectData.outcome =
+            previous;
+
+
+        renderOutcome();
+
+
+        showToast(
+            error.message ||
+            "Unable to save outcome."
+        );
+
+    }
+
+
+}
+
+/* =========================================================
+NAVIGATION
+========================================================= */
+
+function setupNavigation() {
+
+
+    $$(".project-nav-item")
+        .forEach(
+            item => {
+
+                item.addEventListener(
+                    "click",
+                    () => {
+
+                        $$(".project-nav-item")
+                            .forEach(
+                                nav =>
+                                    nav.classList.remove(
+                                        "active"
+                                    )
+                            );
+
+
+                        item.classList.add(
+                            "active"
+                        );
+
+
+                        const section =
+                            getElement(
+                                item.dataset.section
+                            );
+
+
+                        section?.scrollIntoView(
+                            {
+
+                                behavior:
+                                    "smooth",
+
+                                block:
+                                    "start"
+
+                            }
+                        );
+
+                    }
                 );
 
             }
         );
 
 
-    /* =====================================================
-       MODAL BACKDROP
-    ===================================================== */
+}
 
-    [
-        taskModal,
-        timelineModal,
-        linkModal
-    ].forEach(modal => {
+/* =========================================================
+MODAL CONTROLS
+========================================================= */
 
-        modal?.addEventListener(
+function setupModalControls() {
+
+
+    $$(".project-modal")
+        .forEach(
+            modal => {
+
+                modal.addEventListener(
+                    "click",
+                    event => {
+
+                        if (
+                            event.target ===
+                            modal
+                        ) {
+
+                            closeModal(
+                                modal
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    $("#cancelConfirm")
+        ?.addEventListener(
             "click",
-            event => {
+            () =>
+                closeConfirm()
+        );
 
-                if (
-                    event.target === modal
-                ) {
 
-                    closeModal(modal);
+    $("#closeConfirmModal")
+        ?.addEventListener(
+            "click",
+            () =>
+                closeConfirm()
+        );
+
+
+    $("#confirmAction")
+        ?.addEventListener(
+            "click",
+            async () => {
+
+                const callback =
+                    confirmCallback;
+
+
+                closeConfirm();
+
+
+                if (callback) {
+
+                    await callback();
 
                 }
 
             }
         );
 
-    });
+
+}
+
+function openModal(
+    modal
+) {
 
 
-    /* =====================================================
-       ESCAPE KEY
-    ===================================================== */
+    if (!modal) {
 
-    document.addEventListener(
-        "keydown",
-        event => {
+        return;
 
-            if (
-                event.key !== "Escape"
-            )
-                return;
+    }
 
 
-            closeModal(taskModal);
-
-            closeModal(
-                timelineModal
-            );
-
-            closeModal(
-                linkModal
-            );
-
-        }
+    modal.classList.remove(
+        "hidden"
     );
 
 
-    /* =====================================================
-       INITIAL STATE
-    ===================================================== */
+    document.body.style.overflow =
+        "hidden";
 
-    updateProgress(62);
 
-});
+}
+
+function closeModal(
+    modal
+) {
+
+
+    if (!modal) {
+
+        return;
+
+    }
+
+
+    modal.classList.add(
+        "hidden"
+    );
+
+
+    const openModalExists =
+        $$(".project-modal")
+            .some(
+                item =>
+                    !item.classList.contains(
+                        "hidden"
+                    )
+            );
+
+
+    if (!openModalExists) {
+
+        document.body.style.overflow =
+            "";
+
+    }
+
+
+}
+
+function askConfirm(
+    title,
+    message,
+    callback
+) {
+
+
+    confirmCallback =
+        callback;
+
+
+    setText(
+        "confirmModalTitle",
+        title
+    );
+
+
+    setText(
+        "confirmModalMessage",
+        message
+    );
+
+
+    openModal(
+        getElement(
+            "confirmModal"
+        )
+    );
+
+
+}
+
+function closeConfirm() {
+
+
+    confirmCallback =
+        null;
+
+
+    closeModal(
+        getElement(
+            "confirmModal"
+        )
+    );
+
+
+}
+
+/* =========================================================
+CLOCK
+========================================================= */
+
+function updateClock() {
+
+
+    const now =
+        new Date();
+
+
+    const date =
+        getElement(
+            "liveDate"
+        );
+
+
+    const clock =
+        getElement(
+            "liveClock"
+        );
+
+
+    if (date) {
+
+        date.textContent =
+            now
+                .toLocaleDateString(
+                    "en-GB",
+                    {
+
+                        day:
+                            "2-digit",
+
+                        month:
+                            "short",
+
+                        year:
+                            "numeric"
+
+                    }
+                )
+                .toUpperCase();
+
+    }
+
+
+    if (clock) {
+
+        clock.textContent =
+            now.toLocaleTimeString(
+                "en-US",
+                {
+
+                    hour:
+                        "2-digit",
+
+                    minute:
+                        "2-digit",
+
+                    second:
+                        "2-digit"
+
+                }
+            );
+
+    }
+
+
+}
+
+/* =========================================================
+LOADING
+========================================================= */
+
+function setLoading(
+    loading
+) {
+
+
+    const element =
+        getElement(
+            "projectLoading"
+        );
+
+
+    if (!element) {
+
+        return;
+
+    }
+
+
+    element.style.display =
+        loading
+            ? "block"
+            : "none";
+
+
+}
+
+/* =========================================================
+TOAST
+========================================================= */
+
+function showToast(
+    message
+) {
+
+
+    const toast =
+        getElement(
+            "projectToast"
+        );
+
+
+    if (!toast) {
+
+        return;
+
+    }
+
+
+    toast.textContent =
+        message;
+
+
+    toast.classList.remove(
+        "hidden"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            () => {
+
+                toast.classList.add(
+                    "hidden"
+                );
+
+            },
+
+            2600
+        );
+
+
+}
+
+/* =========================================================
+UTILITY FUNCTIONS
+========================================================= */
+
+function generateID(
+    prefix = "item"
+) {
+
+
+    if (
+        window.crypto &&
+        typeof crypto.randomUUID ===
+        "function"
+    ) {
+
+        return `${prefix}-${crypto.randomUUID()}`;
+
+    }
+
+
+    return `${prefix}-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 10)}`;
+
+
+}
+
+function clone(
+    value
+) {
+
+
+    return JSON.parse(
+        JSON.stringify(
+            value
+        )
+    );
+
+
+}
+
+function findById(
+    array,
+    id
+) {
+
+
+    return (
+        array || []
+    ).find(
+        item =>
+            String(item.id) ===
+            String(id)
+    );
+
+
+}
+
+function clampPercentage(
+    value
+) {
+
+
+    const number =
+        Number(value);
+
+
+    if (
+        Number.isNaN(
+            number
+        )
+    ) {
+
+        return 0;
+
+    }
+
+
+    return Math.max(
+        0,
+        Math.min(
+            100,
+            number
+        )
+    );
+
+
+}
+
+function formatLabel(
+    value
+) {
+
+
+    return String(
+        value ||
+        ""
+    )
+        .replace(
+            /-/g,
+            " "
+        )
+        .replace(
+            /\b\w/g,
+            character =>
+                character.toUpperCase()
+        );
+
+
+}
+
+function todayISO() {
+
+
+    const date =
+        new Date();
+
+
+    const offset =
+        date.getTimezoneOffset() *
+        60000;
+
+
+    return new Date(
+        date.getTime() -
+        offset
+    )
+        .toISOString()
+        .slice(
+            0,
+            10
+        );
+
+
+}
+
+function normalizeDateInput(
+    value
+) {
+
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    const string =
+        String(value);
+
+
+    if (
+        /^\d{4}-\d{2}-\d{2}$/
+            .test(
+                string
+            )
+    ) {
+
+        return string;
+
+    }
+
+
+    const date =
+        new Date(
+            value
+        );
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+
+    }
+
+
+    return date
+        .toISOString()
+        .slice(
+            0,
+            10
+        );
+
+
+}
+
+function formatDate(
+    value
+) {
+
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    const normalized =
+        normalizeDateInput(
+            value
+        );
+
+
+    if (!normalized) {
+
+        return String(
+            value
+        );
+
+    }
+
+
+    const date =
+        new Date(
+            `${normalized}T00:00:00`
+        );
+
+
+    return date
+        .toLocaleDateString(
+            "en-GB",
+            {
+
+                day:
+                    "2-digit",
+
+                month:
+                    "short",
+
+                year:
+                    "numeric"
+
+            }
+        )
+        .toUpperCase();
+
+
+}
+
+function formatDateTime(
+    value
+) {
+
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    const date =
+        new Date(
+            value
+        );
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(
+            value
+        );
+
+    }
+
+
+    return date
+        .toLocaleString(
+            "en-GB",
+            {
+
+                day:
+                    "2-digit",
+
+                month:
+                    "short",
+
+                year:
+                    "numeric",
+
+                hour:
+                    "2-digit",
+
+                minute:
+                    "2-digit"
+
+            }
+        );
+
+
+}
+
+function getInitials(
+    name
+) {
+
+
+    return String(
+        name ||
+        "?"
+    )
+        .split(
+            /\s+/
+        )
+        .filter(
+            Boolean
+        )
+        .slice(
+            0,
+            3
+        )
+        .map(
+            word =>
+                word[0]
+                    .toUpperCase()
+        )
+        .join(
+            ""
+        );
+
+
+}
+
+
+
+function formatBytes(
+    bytes
+) {
+
+
+    const value =
+        Number(
+            bytes
+        );
+
+
+    if (
+        !value ||
+        Number.isNaN(
+            value
+        )
+    ) {
+
+        return "Unknown size";
+
+    }
+
+
+    const units =
+        [
+
+            "B",
+
+            "KB",
+
+            "MB",
+
+            "GB",
+
+            "TB"
+
+        ];
+
+
+    const index =
+        Math.floor(
+            Math.log(
+                value
+            ) /
+            Math.log(
+                1024
+            )
+        );
+
+
+    return `${(
+        value /
+        Math.pow(
+            1024,
+            index
+        )
+    )
+        .toFixed(
+            index === 0
+                ? 0
+                : 1
+        )} ${units[index]
+        }`;
+
+
+}
+
+function normalizeURL(
+    value
+) {
+
+
+    const url =
+        String(
+            value ||
+            ""
+        ).trim();
+
+
+    if (
+        /^https?:\/\//i
+            .test(
+                url
+            )
+    ) {
+
+        return url;
+
+    }
+
+
+    return `https://${url}`;
+
+
+}
+
+function emptyState(
+    message
+) {
+
+
+    return `
+    <div class="empty-state">
+        ${escapeHTML(message)}
+    </div>
+`;
+
+
+}
+
+function escapeHTML(
+    value
+) {
+
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        String(
+            value ||
+            ""
+        );
+
+
+    return div.innerHTML;
+
+}

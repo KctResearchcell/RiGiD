@@ -1,836 +1,508 @@
 /* =========================================================
    RiGiD — STUDY PAGE
-   study.js
-
-   FRONTEND VERSION
-   ---------------------------------------------------------
-   Backend / Supabase can be connected later.
-
-   Current data is stored in memory only.
+   Clean corrected study.js
 ========================================================= */
 
+let studyData = null;
+let currentWorkId = null;
+let editingTimelineId = null;
+let toastTimer = null;
+
+const SUPABASE_FUNCTIONS_URL =
+    "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1";
+
+const $ = selector => document.querySelector(selector);
+const $$ = selector => document.querySelectorAll(selector);
+
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        await loadStudyData();
+        normalizeStudyData();
+        initializeStudyPage();
+    } catch (error) {
+        console.error("Unable to load Study:", error);
+        alert(error.message || "Unable to load this Study.");
+    }
+});
 
 /* =========================================================
-   01. STUDY DATA
+   DATA LOAD / SAVE
 ========================================================= */
 
-const studyData = {
-
-    id: "study-001",
-
-    topic: "Power Electronics Fundamentals",
-
-    introduction:
-        "Understanding the fundamentals of power electronic converters, switching devices, control and energy conversion.",
-
-    objective:
-        "Understand how switching converters regulate and transfer electrical energy.",
-
-    owner: "You",
-
-    createdDate: "18 Aug 2026",
-
-    updatedDate: "23 Aug 2026",
-
-    status: "in-progress",
-
-    confidence: 4,
-
-    tags: [
-        "POWER ELECTRONICS",
-        "PMSG",
-        "CONTROL"
-    ],
-
-
-    /* -----------------------------------------------------
-       LEARNING
-    ----------------------------------------------------- */
-
-    learning: [
-
-        "Power electronic converters control electrical energy by switching semiconductor devices at high frequency.",
-
-        "Duty cycle affects the average output voltage, while inductors and capacitors are used to smooth the resulting waveform."
-
-    ],
-
-
-    /* -----------------------------------------------------
-       KNOWLEDGE
-    ----------------------------------------------------- */
-
-    knowledge: [
-
-        {
-            id: "knowledge-1",
-
-            text:
-                "Switching frequency directly influences ripple and converter performance."
-        },
-
-        {
-            id: "knowledge-2",
-
-            text:
-                "Duty cycle determines the average voltage in an ideal buck converter."
-        },
-
-        {
-            id: "knowledge-3",
-
-            text:
-                "Component selection must consider voltage, current and ripple requirements."
-        }
-
-    ],
-
-
-    /* -----------------------------------------------------
-       CONCEPTS
-    ----------------------------------------------------- */
-
-    concepts: [
-
-        {
-            id: "concept-1",
-            title: "Switching Devices",
-            description:
-                "MOSFETs, IGBTs and semiconductor switching.",
-            status: "understood"
-        },
-
-        {
-            id: "concept-2",
-            title: "Duty Cycle",
-            description:
-                "Relationship between switching time and average output.",
-            status: "understood"
-        },
-
-        {
-            id: "concept-3",
-            title: "Inductor Ripple",
-            description:
-                "Current ripple and inductor selection.",
-            status: "reviewing"
-        },
-
-        {
-            id: "concept-4",
-            title: "Converter Efficiency",
-            description:
-                "Losses, switching behaviour and efficiency.",
-            status: "learning"
-        }
-
-    ],
-
-
-    /* -----------------------------------------------------
-       PROBLEMS
-    ----------------------------------------------------- */
-
-    problems: [
-
-        {
-            id: "problem-1",
-
-            title:
-                "How does discontinuous conduction affect the converter?",
-
-            description:
-                "Need to understand the boundary between continuous and discontinuous conduction modes.",
-
-            status: "open"
-        },
-
-        {
-            id: "problem-2",
-
-            title:
-                "Why is a gate driver required?",
-
-            description:
-                "Need to understand the voltage and current requirements for reliable MOSFET switching.",
-
-            status: "resolved"
-        }
-
-    ],
-
-
-    /* -----------------------------------------------------
-       RESOURCES
-    ----------------------------------------------------- */
-
-    resources: [
-
-        {
-            id: "resource-1",
-
-            title:
-                "Power Electronics Textbook",
-
-            description:
-                "Reference material used for converter fundamentals.",
-
-            type:
-                "BOOK",
-
-            url:
-                null
-        },
-
-        {
-            id: "resource-2",
-
-            title:
-                "MATLAB Documentation",
-
-            description:
-                "Reference material for simulation concepts.",
-
-            type:
-                "WEBSITE",
-
-            url:
-                "https://www.mathworks.com/help/matlab/"
-        }
-
-    ],
-
-
-    /* -----------------------------------------------------
-       TIMELINE
-    ----------------------------------------------------- */
-
-    timeline: [
-
-        {
-            id: "timeline-1",
-
-            date: "2026-08-18",
-
-            title:
-                "Introduction to Power Converters",
-
-            description:
-                "Study basic converter topology, switching and energy transfer.",
-
-            duration:
-                "1h 20m",
-
-            status:
-                "completed",
-
-            priority:
-                "normal"
-        },
-
-        {
-            id: "timeline-2",
-
-            date: "2026-08-23",
-
-            title:
-                "Study Switching Devices",
-
-            description:
-                "Understand MOSFET operation, gate driving and switching behaviour.",
-
-            duration:
-                "2 hours",
-
-            status:
-                "ongoing",
-
-            priority:
-                "high"
-        },
-
-        {
-            id: "timeline-3",
-
-            date: "2026-08-25",
-
-            title:
-                "Study Switching Losses",
-
-            description:
-                "Understand conduction losses and switching losses in practical converters.",
-
-            duration:
-                "2 hours",
-
-            status:
-                "planned",
-
-            priority:
-                "high"
-        },
-
-        {
-            id: "timeline-4",
-
-            date: "2026-08-27",
-
-            title:
-                "Solve Converter Problems",
-
-            description:
-                "Apply converter equations to numerical design problems.",
-
-            duration:
-                "2 hours",
-
-            status:
-                "planned",
-
-            priority:
-                "normal"
-        },
-
-        {
-            id: "timeline-5",
-
-            date: "2026-08-30",
-
-            title:
-                "Apply Knowledge to PMSG",
-
-            description:
-                "Connect the concepts learned here with the PMSG active rectifier project.",
-
-            duration:
-                "3 hours",
-
-            status:
-                "planned",
-
-            priority:
-                "high"
-        }
-
-    ],
-
-
-    /* -----------------------------------------------------
-       FUTURE WORK
-    ----------------------------------------------------- */
-
-    futureWork: [
-
-        {
-            id: "future-1",
-
-            date: "2026-08-25",
-
-            title:
-                "Study switching losses",
-
-            description:
-                "Understand conduction and switching loss mechanisms.",
-
-            priority:
-                "high"
-        },
-
-        {
-            id: "future-2",
-
-            date: "2026-08-27",
-
-            title:
-                "Solve numerical problems",
-
-            description:
-                "Apply the theory to converter design problems.",
-
-            priority:
-                "normal"
-        },
-
-        {
-            id: "future-3",
-
-            date: "2026-08-30",
-
-            title:
-                "Apply knowledge to PMSG project",
-
-            description:
-                "Use the concepts learned here in the active rectifier.",
-
-            priority:
-                "high"
-        }
-
-    ],
-
-
-    /* -----------------------------------------------------
-       ATTACHMENTS
-    ----------------------------------------------------- */
-
-    attachments: [],
-
-
-    /* -----------------------------------------------------
-       RELATED WORK
-    ----------------------------------------------------- */
-
-    relatedWork: [
-
-        {
-            id: "related-1",
-
-            type: "PAPER",
-
-            title:
-                "Review of Solar Energy Harvesting Circuits",
-
-            description:
-                "Knowledge from this study contributed to the literature review."
-        },
-
-        {
-            id: "related-2",
-
-            type: "PROJECT",
-
-            title:
-                "PMSG Active Rectifier",
-
-            description:
-                "Converter fundamentals are being applied to this project."
-        }
-
-    ],
-
-
-    /* -----------------------------------------------------
-       REFLECTION
-    ----------------------------------------------------- */
-
-    nextStudy:
-        "Review discontinuous conduction mode and practical switching losses."
-
-};
-
-
-/* =========================================================
-   02. DOM SHORTCUTS
-========================================================= */
-
-const $ = selector =>
-    document.querySelector(selector);
-
-
-const $$ = selector =>
-    document.querySelectorAll(selector);
-
-
-/* =========================================================
-   03. INITIALIZATION
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    initializeStudyPage
-);
-
-
-function initializeStudyPage() {
-
-    loadStudyInformation();
-
-    renderConfidence();
-
-    renderLearning();
-
-    renderKnowledge();
-
-    renderConcepts();
-
-    renderProblems();
-
-    renderResources();
-
-    renderTimeline();
-
-    renderFutureWork();
-
-    renderAttachments();
-
-    renderRelatedWork();
-
-    loadReflection();
-
-    updateSummary();
-
-    setupNavigation();
-
-    setupConfidence();
-
-    setupLearning();
-
-    setupKnowledge();
-
-    setupConcepts();
-
-    setupProblems();
-
-    setupResources();
-
-    setupTimeline();
-
-    setupFutureWork();
-
-    setupUploads();
-
-    setupLinks();
-
-    setupRelatedWork();
-
-    setupReflection();
-
-    setupGeneralControls();
-
-}
-
-
-/* =========================================================
-   04. STUDY INFORMATION
-========================================================= */
-
-function loadStudyInformation() {
-
-    const topic =
-        $("#studyTopic");
-
-    const introduction =
-        $("#studyIntroduction");
-
-    const owner =
-        $("#studyOwner");
-
-    const created =
-        $("#studyCreatedDate");
-
-    const updated =
-        $("#studyUpdatedDate");
-
-    const status =
-        $("#studyStatus");
-
-    const objective =
-        $("#learningObjective");
-
-
-    if (topic)
-        topic.textContent =
-            studyData.topic;
-
-
-    if (introduction)
-        introduction.textContent =
-            studyData.introduction;
-
-
-    if (owner)
-        owner.textContent =
-            studyData.owner;
-
-
-    if (created)
-        created.textContent =
-            studyData.createdDate;
-
-
-    if (updated)
-        updated.textContent =
-            studyData.updatedDate;
-
-
-    if (status)
-        status.textContent =
-            getStatusLabel(
-                studyData.status
-            );
-
-
-    if (objective)
-        objective.textContent =
-            studyData.objective;
-
-
-    loadTags();
-
-}
-
-
-/* =========================================================
-   05. TAGS
-========================================================= */
-
-function loadTags() {
-
-    const container =
-        $("#studyTags");
-
-
-    if (!container)
-        return;
-
-
-    container.innerHTML = "";
-
-
-    studyData.tags.forEach(tag => {
-
-        const element =
-            document.createElement("span");
-
-        element.textContent =
-            tag;
-
-        container.appendChild(
-            element
-        );
-
-    });
-
-}
-
-
-/* =========================================================
-   06. STATUS
-========================================================= */
-
-function getStatusLabel(status) {
-
-    const labels = {
-
-        "not-started":
-            "○ NOT STARTED",
-
-        "in-progress":
-            "● IN PROGRESS",
-
-        "completed":
-            "● COMPLETED"
-
-    };
-
-
-    return labels[status]
-        || "● IN PROGRESS";
-
-}
-
-
-/* =========================================================
-   07. CONFIDENCE
-========================================================= */
-
-function renderConfidence() {
-
-    const value =
-        $("#confidenceValue");
-
-    if (value) {
-
-        value.textContent =
-            `${studyData.confidence} / 5`;
-
+async function loadStudyData() {
+    currentWorkId = new URLSearchParams(window.location.search).get("work_id");
+
+    if (!currentWorkId) {
+        throw new Error("Study ID is missing from the URL.");
     }
 
+    const { data: { session }, error: sessionError } =
+        await window.sb.auth.getSession();
 
-    $$(".confidence")
-        .forEach(
-            (bar, index) => {
+    if (sessionError || !session) {
+        throw new Error("You must be logged in to open this Study.");
+    }
 
-                bar.classList.toggle(
-                    "active",
-                    index <
-                    studyData.confidence
-                );
-
-            }
-        );
-
-
-    $$(".confidence-actions button")
-        .forEach(button => {
-
-            button.classList.toggle(
-                "active",
-                Number(
-                    button.dataset.confidence
-                ) === studyData.confidence
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   08. CONFIDENCE CONTROL
-========================================================= */
-
-function setupConfidence() {
-
-    $$(".confidence-actions button")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    studyData.confidence =
-                        Number(
-                            button.dataset.confidence
-                        );
-
-                    renderConfidence();
-
-                    updateDate();
-
-                    showToast(
-                        "Confidence updated."
-                    );
-
-                }
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   09. LEARNING
-========================================================= */
-
-function renderLearning() {
-
-    const container =
-        $("#learningContent");
-
-
-    if (!container)
-        return;
-
-
-    container.innerHTML = "";
-
-
-    studyData.learning.forEach(
-        text => {
-
-            const p =
-                document.createElement("p");
-
-            p.textContent =
-                text;
-
-            container.appendChild(
-                p
-            );
-
+    const response = await fetch(
+        `${SUPABASE_FUNCTIONS_URL}/get-rigid-work-data`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ work_id: currentWorkId })
         }
     );
 
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to load Study data.");
+    }
+
+    studyData = convertRigidDataToStudyData(result.data || {}, result.work || {});
 }
 
+async function saveStudyData() {
+    if (!currentWorkId || !studyData) {
+        throw new Error("Study data is not loaded.");
+    }
 
-function setupLearning() {
+    const { data: { session }, error: sessionError } =
+        await window.sb.auth.getSession();
 
-    $("#editLearning")
-        ?.addEventListener(
-            "click",
-            () => {
+    if (sessionError || !session) {
+        throw new Error("You must be logged in to save this Study.");
+    }
 
-                const current =
-                    studyData.learning.join(
-                        "\n\n"
-                    );
+    const response = await fetch(
+        `${SUPABASE_FUNCTIONS_URL}/update-rigid-work-data`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({
+                work_id: currentWorkId,
+                data: convertStudyDataToRigidData(studyData)
+            })
+        }
+    );
 
+    const result = await response.json();
 
-                const result =
-                    window.prompt(
-                        "Edit what you learned:",
-                        current
-                    );
+    if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to save Study data.");
+    }
 
-
-                if (result === null)
-                    return;
-
-
-                studyData.learning =
-                    result
-                        .split(/\n\s*\n/)
-                        .map(
-                            item =>
-                                item.trim()
-                        )
-                        .filter(Boolean);
-
-
-                renderLearning();
-
-                updateDate();
-
-                showToast(
-                    "Learning updated."
-                );
-
-            }
-        );
-
-
-    $("#editObjective")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                const result =
-                    window.prompt(
-                        "Learning objective:",
-                        studyData.objective
-                    );
-
-
-                if (result === null)
-                    return;
-
-
-                studyData.objective =
-                    result.trim();
-
-
-                $("#learningObjective")
-                    .textContent =
-                    studyData.objective;
-
-
-                updateDate();
-
-                showToast(
-                    "Objective updated."
-                );
-
-            }
-        );
-
+    return result;
 }
-
 
 /* =========================================================
-   10. KNOWLEDGE
+   DATA CONVERSION
+========================================================= */
+
+function convertRigidDataToStudyData(data, work) {
+    const workspace = data.workspace || {};
+    const study = data.study || {};
+
+    return {
+        id: workspace.id || work.id || currentWorkId,
+        topic: workspace.title || work.title || "Untitled Study",
+        introduction: study.introduction || "",
+        objective: study.objective || "",
+        owner: study.owner || workspace.owner || "You",
+        createdAt: workspace.createdAt || null,
+        updatedAt: workspace.updatedAt || null,
+        createdDate: formatDate(workspace.createdAt),
+        updatedDate: formatDate(workspace.updatedAt),
+        status: workspace.status || "in-progress",
+        confidence: Number(study.confidence ?? 0),
+        tags: Array.isArray(study.tags) ? study.tags : [],
+        learning: Array.isArray(study.learning) ? study.learning : [],
+        knowledge: Array.isArray(data.knowledge) ? data.knowledge : [],
+        concepts: Array.isArray(data.concepts) ? data.concepts : [],
+        problems: Array.isArray(data.problems) ? data.problems : [],
+        resources: Array.isArray(data.resources) ? data.resources : [],
+        timeline: Array.isArray(data.tasks) ? data.tasks : [],
+        futureWork: Array.isArray(data.futureWork) ? data.futureWork : [],
+        attachments: Array.isArray(data.attachments) ? data.attachments : [],
+        relatedWork: Array.isArray(data.relatedWork) ? data.relatedWork : [],
+        nextStudy: study.nextStudy || "",
+        reflection: study.reflection || ""
+    };
+}
+
+function convertStudyDataToRigidData(study) {
+    const now = new Date().toISOString();
+
+    return {
+        version: 1,
+        workspace: {
+            id: study.id,
+            type: "study",
+            title: study.topic,
+            status: study.status || "in-progress",
+            createdAt: study.createdAt || now,
+            updatedAt: now
+        },
+        study: {
+            introduction: study.introduction || "",
+            objective: study.objective || "",
+            owner: study.owner || "You",
+            tags: Array.isArray(study.tags) ? study.tags : [],
+            confidence: Number(study.confidence ?? 0),
+            learning: Array.isArray(study.learning) ? study.learning : [],
+            nextStudy: study.nextStudy || "",
+            reflection: study.reflection || ""
+        },
+        knowledge: study.knowledge || [],
+        concepts: study.concepts || [],
+        problems: study.problems || [],
+        resources: study.resources || [],
+        tasks: study.timeline || [],
+        futureWork: study.futureWork || [],
+        attachments: study.attachments || [],
+        relatedWork: study.relatedWork || []
+    };
+}
+
+function normalizeStudyData() {
+    if (!studyData) return;
+
+    [
+        "tags", "learning", "knowledge", "concepts", "problems",
+        "resources", "timeline", "futureWork", "attachments", "relatedWork"
+    ].forEach(key => {
+        if (!Array.isArray(studyData[key])) studyData[key] = [];
+    });
+
+    studyData.confidence = Math.max(
+        0,
+        Math.min(5, Number(studyData.confidence) || 0)
+    );
+}
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+function initializeStudyPage() {
+    loadStudyInformation();
+    renderConfidence();
+    renderLearning();
+    renderKnowledge();
+    renderConcepts();
+    renderProblems();
+    renderResources();
+    renderTimeline();
+    renderFutureWork();
+    renderAttachments();
+    renderRelatedWork();
+    loadReflection();
+    updateSummary();
+
+    setupNavigation();
+    setupConfidence();
+    setupLearning();
+    setupKnowledge();
+    setupConcepts();
+    setupProblems();
+    setupResources();
+    setupRelatedWork();
+    setupTimeline();
+    setupFutureWork();
+    setupUploads();
+    setupLinks();
+    setupReflection();
+    setupGeneralControls();
+    setupModalControls();
+    setupStudyHeader();
+    initializeStudyClock();
+}
+
+/* =========================================================
+   GENERAL INFORMATION
+========================================================= */
+
+function loadStudyInformation() {
+    setText("studyTopic", studyData.topic);
+    setText("studyIntroduction", studyData.introduction || "No introduction added.");
+    setText("studyOwner", studyData.owner || "You");
+    setText("studyCreatedDate", studyData.createdDate || "—");
+    setText("studyUpdatedDate", studyData.updatedDate || "—");
+    setText("studyStatus", getStatusLabel(studyData.status));
+    setText("learningObjective", studyData.objective || "—");
+    setText("nextFocus", studyData.nextStudy || "—");
+
+    const container = $("#studyTags");
+    if (container) {
+        container.innerHTML = "";
+        studyData.tags.forEach(tag => {
+            const span = document.createElement("span");
+            span.textContent = tag;
+            container.appendChild(span);
+        });
+    }
+}
+
+function getStatusLabel(status) {
+    const labels = {
+        "not-started": "○ NOT STARTED",
+        "planned": "○ PLANNED",
+        "in-progress": "● IN PROGRESS",
+        "completed": "● COMPLETED",
+        "paused": "Ⅱ PAUSED",
+        "archived": "● ARCHIVED"
+    };
+    return labels[status] || "● IN PROGRESS";
+}
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+function openModal(selector) {
+    $(selector)?.classList.remove("hidden");
+}
+
+function closeModal(selector) {
+    $(selector)?.classList.add("hidden");
+}
+
+function closeAllModals() {
+    $$(".study-modal").forEach(modal => modal.classList.add("hidden"));
+}
+
+function setupModalControls() {
+    const controls = [
+        ["#closeStudyEditModal", "#studyEditModal"], ["#cancelStudyEdit", "#studyEditModal"],
+        ["#closeLearningModal", "#learningModal"], ["#cancelLearning", "#learningModal"],
+        ["#closeObjectiveModal", "#objectiveModal"], ["#cancelObjective", "#objectiveModal"],
+        ["#closeKnowledgeModal", "#knowledgeModal"], ["#cancelKnowledge", "#knowledgeModal"],
+        ["#closeConceptModal", "#conceptModal"], ["#cancelConcept", "#conceptModal"],
+        ["#closeProblemModal", "#problemModal"], ["#cancelProblem", "#problemModal"],
+        ["#closeResourceModal", "#resourceModal"], ["#cancelResource", "#resourceModal"],
+        ["#closeRelatedWorkModal", "#relatedWorkModal"], ["#cancelRelatedWork", "#relatedWorkModal"],
+        ["#closeFutureWorkModal", "#futureWorkModal"], ["#cancelFutureWork", "#futureWorkModal"],
+        ["#closeLinkModal", "#linkModal"], ["#cancelLink", "#linkModal"],
+        ["#closeTimelineModal", "#timelineModal"], ["#cancelTimeline", "#timelineModal"]
+    ];
+
+    controls.forEach(([button, modal]) => {
+        $(button)?.addEventListener("click", () => closeModal(modal));
+    });
+
+    $$(".study-modal").forEach(modal => {
+        modal.addEventListener("click", event => {
+            if (event.target === modal) closeModal(`#${modal.id}`);
+        });
+    });
+}
+
+document.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeAllModals();
+});
+
+/* =========================================================
+   CONFIDENCE
+========================================================= */
+
+function renderConfidence() {
+    setText("confidenceValue", `${studyData.confidence} / 5`);
+    setText("summaryConfidence", `${studyData.confidence} / 5`);
+
+    $$(".confidence").forEach((bar, index) => {
+        bar.classList.toggle("active", index < studyData.confidence);
+    });
+
+    $$(".confidence-actions button").forEach(button => {
+        button.classList.toggle(
+            "active",
+            Number(button.dataset.confidence) === studyData.confidence
+        );
+    });
+}
+
+function setupConfidence() {
+    $$(".confidence-actions button").forEach(button => {
+        button.addEventListener("click", async () => {
+            const previous = studyData.confidence;
+            studyData.confidence = Number(button.dataset.confidence) || 0;
+            renderConfidence();
+            updateDate();
+
+            try {
+                await saveStudyData();
+                showToast("Confidence updated.");
+            } catch (error) {
+                studyData.confidence = previous;
+                renderConfidence();
+                showToast(error.message || "Unable to save confidence.");
+            }
+        });
+    });
+}
+
+/* =========================================================
+   LEARNING
+========================================================= */
+
+function renderLearning() {
+    const container = $("#learningContent");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    studyData.learning.forEach((item, index) => {
+        const row = document.createElement("article");
+        row.className = "learning-item";
+        row.innerHTML = `
+      <span class="learning-index">${String(index + 1).padStart(2, "0")}</span>
+      <div class="learning-content">
+        <h3>${escapeHTML(item.title || item.text || "")}</h3>
+        <p>${escapeHTML(item.description || "")}</p>
+      </div>
+    `;
+        container.appendChild(row);
+    });
+}
+
+function setupLearning() {
+    $("#editLearning")?.addEventListener("click", () => {
+        const input = $("#learningInput");
+        if (input) {
+            input.value = studyData.learning
+                .map(item => item.title || item.text || "")
+                .filter(Boolean)
+                .join("\n");
+        }
+        openModal("#learningModal");
+        input?.focus();
+    });
+
+    $("#saveLearning")?.addEventListener("click", saveLearning);
+}
+
+async function saveLearning() {
+    const value = $("#learningInput")?.value.trim();
+    if (!value) return showToast("Enter what you learned.");
+
+    const previous = clone(studyData.learning);
+    studyData.learning = value.split("\n").map(line => line.trim()).filter(Boolean)
+        .map(line => ({ id: generateID("learning"), title: line, description: "" }));
+
+    renderLearning();
+    updateDate();
+
+    try {
+        await saveStudyData();
+        closeModal("#learningModal");
+        showToast("Learning updated and saved.");
+    } catch (error) {
+        studyData.learning = previous;
+        renderLearning();
+        showToast(error.message || "Unable to save learning.");
+    }
+}
+
+/* =========================================================
+   OBJECTIVE
+========================================================= */
+
+function setupGeneralControls() {
+    $("#editStudy")?.addEventListener("click", () => {
+        setValue("studyTopicInput", studyData.topic);
+        setValue("studyIntroductionInput", studyData.introduction);
+        openModal("#studyEditModal");
+    });
+
+    $("#saveStudyEdit")?.addEventListener("click", saveStudyEdit);
+
+    $("#editObjective")?.addEventListener("click", () => {
+        setValue("objectiveInput", studyData.objective);
+        openModal("#objectiveModal");
+        $("#objectiveInput")?.focus();
+    });
+    $("#deleteObjective")?.addEventListener(
+    "click",
+    deleteObjective
+);
+
+    $("#saveObjective")?.addEventListener("click", saveObjective);
+
+    $("#archiveStudy")?.addEventListener("click", archiveStudy);
+}
+
+async function saveStudyEdit() {
+    const topic = $("#studyTopicInput")?.value.trim();
+    const introduction = $("#studyIntroductionInput")?.value.trim();
+
+    if (!topic) return showToast("Enter a study title.");
+
+    const previous = { topic: studyData.topic, introduction: studyData.introduction };
+    studyData.topic = topic;
+    studyData.introduction = introduction || "";
+    loadStudyInformation();
+    updateDate();
+
+    try {
+        await saveStudyData();
+        closeModal("#studyEditModal");
+        showToast("Study updated and saved.");
+    } catch (error) {
+        Object.assign(studyData, previous);
+        loadStudyInformation();
+        showToast(error.message || "Unable to save study.");
+    }
+}
+
+async function saveObjective() {
+    const objective = $("#objectiveInput")?.value.trim();
+    if (!objective) return showToast("Enter a learning objective.");
+
+    const previous = studyData.objective;
+    studyData.objective = objective;
+    loadStudyInformation();
+    updateDate();
+
+    try {
+        await saveStudyData();
+        closeModal("#objectiveModal");
+        showToast("Objective updated and saved.");
+    } catch (error) {
+        studyData.objective = previous;
+        loadStudyInformation();
+        showToast(error.message || "Unable to save objective.");
+    }
+}
+
+async function archiveStudy() {
+    if (!window.confirm("Mark this study as archived?")) return;
+
+    const previous = studyData.status;
+    studyData.status = "archived";
+    loadStudyInformation();
+    updateDate();
+
+    try {
+        await saveStudyData();
+        showToast("Study archived.");
+    } catch (error) {
+        studyData.status = previous;
+        loadStudyInformation();
+        showToast(error.message || "Unable to archive study.");
+    }
+}
+
+/* =========================================================
+   KNOWLEDGE — MODAL INPUT
+========================================================= */
+
+/* =========================================================
+   KNOWLEDGE
 ========================================================= */
 
 function renderKnowledge() {
@@ -839,32 +511,57 @@ function renderKnowledge() {
         $("#knowledgeList");
 
 
-    if (!container)
+    if (!container) {
+
         return;
 
+    }
 
-    container.innerHTML = "";
+
+    container.innerHTML =
+        "";
 
 
     studyData.knowledge.forEach(
-        (item, index) => {
+        (
+            item,
+            index
+        ) => {
 
             const element =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
+
 
             element.className =
                 "knowledge-item";
 
 
-            element.innerHTML = `
+            element.innerHTML =
+                `
 
                 <span class="knowledge-number">
                     ${String(index + 1).padStart(2, "0")}
                 </span>
 
+
                 <p>
-                    ${escapeHTML(item.text)}
+                    ${escapeHTML(
+                        item.text ||
+                        item.title ||
+                        ""
+                    )}
                 </p>
+
+
+                <button
+    type="button"
+    class="delete-item-button knowledge-delete-button"
+    data-delete-knowledge="${escapeAttribute(item.id)}"
+>
+    Delete
+</button>
 
             `;
 
@@ -876,45 +573,20 @@ function renderKnowledge() {
         }
     );
 
-}
 
+    $$("[data-delete-knowledge]")
+        .forEach(
+            button => {
 
-function setupKnowledge() {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-    $("#addKnowledge")
-        ?.addEventListener(
-            "click",
-            () => {
+                        deleteKnowledge(
+                            button.dataset.deleteKnowledge
+                        );
 
-                const result =
-                    window.prompt(
-                        "What important thing did you learn?"
-                    );
-
-
-                if (!result)
-                    return;
-
-
-                studyData.knowledge.push({
-
-                    id:
-                        generateID("knowledge"),
-
-                    text:
-                        result.trim()
-
-                });
-
-
-                renderKnowledge();
-
-                updateSummary();
-
-                updateDate();
-
-                showToast(
-                    "Knowledge added."
+                    }
                 );
 
             }
@@ -922,9 +594,66 @@ function setupKnowledge() {
 
 }
 
+async function deleteKnowledge(
+    id
+) {
+
+    await deleteStudyArrayItem(
+
+        "knowledge",
+
+        id,
+
+        renderKnowledge,
+
+        "Knowledge deleted successfully.",
+
+        "Delete this knowledge item?"
+
+    );
+
+}
+
+function setupKnowledge() {
+    $("#addKnowledge")?.addEventListener("click", () => {
+        setValue("knowledgeInput", "");
+        openModal("#knowledgeModal");
+        $("#knowledgeInput")?.focus();
+    });
+
+    $("#saveKnowledge")?.addEventListener("click", saveKnowledge);
+}
+
+async function saveKnowledge() {
+    const text = $("#knowledgeInput")?.value.trim();
+    if (!text) return showToast("Enter the knowledge you gained.");
+
+    const previous = clone(studyData.knowledge);
+    studyData.knowledge.unshift({ id: generateID("knowledge"), text });
+
+    renderKnowledge();
+    updateSummary();
+    updateDate();
+
+    try {
+        await saveStudyData();
+        closeModal("#knowledgeModal");
+        setValue("knowledgeInput", "");
+        showToast("Knowledge added and saved.");
+    } catch (error) {
+        studyData.knowledge = previous;
+        renderKnowledge();
+        updateSummary();
+        showToast(error.message || "Unable to save knowledge.");
+    }
+}
 
 /* =========================================================
-   11. CONCEPTS
+   CONCEPTS — MODAL INPUT
+========================================================= */
+
+/* =========================================================
+   CONCEPTS
 ========================================================= */
 
 function renderConcepts() {
@@ -933,40 +662,80 @@ function renderConcepts() {
         $("#conceptGrid");
 
 
-    if (!container)
+    if (!container) {
+
         return;
 
+    }
 
-    container.innerHTML = "";
+
+    container.innerHTML =
+        "";
 
 
     studyData.concepts.forEach(
-        (concept, index) => {
+        (
+            concept,
+            index
+        ) => {
 
             const card =
-                document.createElement("article");
+                document.createElement(
+                    "article"
+                );
+
 
             card.className =
                 "concept-card";
 
 
-            card.innerHTML = `
+            card.innerHTML =
+                `
 
                 <span class="concept-index">
                     ${String(index + 1).padStart(2, "0")}
                 </span>
 
+
                 <h3>
-                    ${escapeHTML(concept.title)}
+                    ${escapeHTML(
+                        concept.title ||
+                        ""
+                    )}
                 </h3>
 
+
                 <p>
-                    ${escapeHTML(concept.description)}
+                    ${escapeHTML(
+                        concept.description ||
+                        ""
+                    )}
                 </p>
 
-                <span class="concept-status ${escapeHTML(concept.status)}">
-                    ${getConceptStatus(concept.status)}
+
+                <span
+                    class="concept-status ${escapeHTML(
+                        concept.status ||
+                        "learning"
+                    )}"
+                >
+                    ${escapeHTML(
+                        getConceptStatus(
+                            concept.status
+                        )
+                    )}
                 </span>
+
+
+                <button
+                    type="button"
+                    class="delete-item-button"
+                    data-delete-concept="${escapeAttribute(
+                        concept.id
+                    )}"
+                >
+                    Delete
+                </button>
 
             `;
 
@@ -978,121 +747,110 @@ function renderConcepts() {
         }
     );
 
-}
 
+    $$("[data-delete-concept]")
+        .forEach(
+            button => {
 
-function getConceptStatus(status) {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-    const labels = {
+                        deleteConcept(
+                            button.dataset.deleteConcept
+                        );
 
-        understood:
-            "UNDERSTOOD",
-
-        reviewing:
-            "REVIEW",
-
-        learning:
-            "LEARNING"
-
-    };
-
-
-    return labels[status]
-        || "LEARNING";
-
-}
-
-
-function setupConcepts() {
-
-    $("#addConcept")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                const title =
-                    window.prompt(
-                        "Concept name:"
-                    );
-
-
-                if (!title)
-                    return;
-
-
-                const description =
-                    window.prompt(
-                        "Describe the concept:"
-                    );
-
-
-                const status =
-                    window.prompt(
-                        "Status: UNDERSTOOD / REVIEWING / LEARNING",
-                        "LEARNING"
-                    );
-
-
-                studyData.concepts.push({
-
-                    id:
-                        generateID("concept"),
-
-                    title:
-                        title.trim(),
-
-                    description:
-                        description?.trim()
-                        || "Concept added.",
-
-                    status:
-                        normalizeConceptStatus(
-                            status
-                        )
-
-                });
-
-
-                renderConcepts();
-
-                updateDate();
-
-                showToast(
-                    "Concept added."
+                    }
                 );
 
             }
         );
 
 }
+async function deleteConcept(
+    id
+) {
 
+    await deleteStudyArrayItem(
 
-function normalizeConceptStatus(status) {
+        "concepts",
 
-    status =
-        String(status || "")
-            .toLowerCase()
-            .trim();
+        id,
 
+        renderConcepts,
 
-    if (
-        status === "understood" ||
-        status === "reviewing" ||
-        status === "learning"
-    ) {
+        "Concept deleted successfully.",
 
-        return status;
+        "Delete this concept?"
 
-    }
-
-
-    return "learning";
+    );
 
 }
+function getConceptStatus(status) {
+    return {
+        understood: "UNDERSTOOD",
+        reviewing: "REVIEW",
+        learning: "LEARNING",
+        strong: "STRONG",
+        mastered: "MASTERED"
+    }[String(status || "").toLowerCase()] || "LEARNING";
+}
 
+function setupConcepts() {
+    $("#addConcept")?.addEventListener("click", () => {
+        setValue("conceptTitleInput", "");
+        setValue("conceptDescriptionInput", "");
+        setValue("conceptLevelInput", "learning");
+        openModal("#conceptModal");
+        $("#conceptTitleInput")?.focus();
+    });
+
+    $("#saveConcept")?.addEventListener("click", saveConcept);
+}
+
+async function saveConcept() {
+    const title = $("#conceptTitleInput")?.value.trim();
+    const description = $("#conceptDescriptionInput")?.value.trim();
+    const status = $("#conceptLevelInput")?.value || "learning";
+
+    if (!title) return showToast("Enter a concept name.");
+
+    const previous = clone(studyData.concepts);
+    studyData.concepts.push({
+        id: generateID("concept"),
+        title,
+        description: description || "Concept added.",
+        status: normalizeConceptStatus(status)
+    });
+
+    renderConcepts();
+    updateSummary();
+    updateDate();
+
+    try {
+        await saveStudyData();
+        closeModal("#conceptModal");
+        showToast("Concept added and saved.");
+    } catch (error) {
+        studyData.concepts = previous;
+        renderConcepts();
+        updateSummary();
+        showToast(error.message || "Unable to save concept.");
+    }
+}
+
+function normalizeConceptStatus(status) {
+    const allowed = ["understood", "reviewing", "learning", "strong", "mastered"];
+    status = String(status || "").toLowerCase().trim();
+    return allowed.includes(status) ? status : "learning";
+}
 
 /* =========================================================
-   12. PROBLEMS
+   PROBLEMS
+========================================================= */
+
+/* =========================================================
+   PROBLEMS
 ========================================================= */
 
 function renderProblems() {
@@ -1101,227 +859,176 @@ function renderProblems() {
         $("#problemsList");
 
 
-    if (!container)
-        return;
-
-
-    container.innerHTML = "";
-
-
-    studyData.problems.forEach(
-        problem => {
-
-            const card =
-                document.createElement("article");
-
-            card.className =
-                `problem-card ${problem.status}`;
-
-
-            card.innerHTML = `
-
-                <div class="problem-status-dot"></div>
-
-                <div class="problem-content">
-
-                    <div class="problem-header">
-
-                        <h3>
-                            ${escapeHTML(problem.title)}
-                        </h3>
-
-                        <span>
-                            ${problem.status.toUpperCase()}
-                        </span>
-
-                    </div>
-
-                    <p>
-                        ${escapeHTML(problem.description)}
-                    </p>
-
-                </div>
-
-                ${
-                    problem.status === "open"
-                    ?
-                    `
-                    <button
-                        class="problem-action"
-                        data-resolve-problem="${problem.id}"
-                        type="button"
-                    >
-                        Resolve
-                    </button>
-                    `
-                    :
-                    ""
-                }
-
-            `;
-
-
-            container.appendChild(
-                card
-            );
-
-        }
-    );
-
-
-    $$("[data-resolve-problem]")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    resolveProblem(
-                        button.dataset.resolveProblem
-                    );
-
-                }
-            );
-
-        });
-
-}
-
-
-function setupProblems() {
-
-    $("#addProblem")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                openModal(
-                    "#problemModal"
-                );
-
-                $("#problemTitleInput")
-                    ?.focus();
-
-            }
-        );
-
-
-    $("#closeProblemModal")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal("#problemModal")
-        );
-
-
-    $("#cancelProblem")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal("#problemModal")
-        );
-
-
-    $("#saveProblem")
-        ?.addEventListener(
-            "click",
-            saveProblem
-        );
-
-}
-
-
-function saveProblem() {
-
-    const title =
-        $("#problemTitleInput")
-            ?.value.trim();
-
-
-    const description =
-        $("#problemDescriptionInput")
-            ?.value.trim();
-
-
-    if (!title) {
-
-        showToast(
-            "Enter the problem."
-        );
+    if (!container) {
 
         return;
 
     }
 
 
-    studyData.problems.unshift({
-
-        id:
-            generateID("problem"),
-
-        title,
-
-        description:
-            description ||
-            "Problem added for further study.",
-
-        status:
-            "open"
-
-    });
+    container.innerHTML =
+        "";
 
 
-    renderProblems();
+    studyData.problems.forEach(
+        problem => {
 
-    updateSummary();
+            const item =
+                document.createElement(
+                    "article"
+                );
 
-    updateDate();
 
-    clearInput("#problemTitleInput");
+            item.className =
+                "problem-item";
 
-    clearInput("#problemDescriptionInput");
 
-    closeModal("#problemModal");
+            item.innerHTML =
+                `
 
-    showToast(
-        "Problem added."
+                <div class="problem-main">
+
+                    <h3>
+                        ${escapeHTML(
+                            problem.title ||
+                            "Untitled Problem"
+                        )}
+                    </h3>
+
+
+                    <p>
+                        ${escapeHTML(
+                            problem.description ||
+                            ""
+                        )}
+                    </p>
+
+                </div>
+
+
+                <span
+                    class="problem-status ${escapeHTML(
+                        problem.status ||
+                        "open"
+                    )}"
+                >
+                    ${escapeHTML(
+                        String(
+                            problem.status ||
+                            "open"
+                        ).toUpperCase()
+                    )}
+                </span>
+
+
+                <button
+                    type="button"
+                    class="delete-item-button"
+                    data-delete-problem="${escapeAttribute(
+                        problem.id
+                    )}"
+                >
+                    Delete
+                </button>
+
+            `;
+
+
+            container.appendChild(
+                item
+            );
+
+        }
     );
 
-}
 
+    $$("[data-delete-problem]")
+        .forEach(
+            button => {
 
-function resolveProblem(id) {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-    const problem =
-        studyData.problems.find(
-            item =>
-                item.id === id
+                        deleteProblem(
+                            button.dataset.deleteProblem
+                        );
+
+                    }
+                );
+
+            }
         );
 
+}
 
-    if (!problem)
-        return;
+async function deleteProblem(
+    id
+) {
 
+    await deleteStudyArrayItem(
 
-    problem.status =
-        "resolved";
+        "problems",
 
+        id,
 
-    renderProblems();
+        renderProblems,
 
-    updateSummary();
+        "Problem deleted successfully.",
 
-    updateDate();
+        "Delete this problem?"
 
-    showToast(
-        "Problem resolved."
     );
 
 }
 
+function setupProblems() {
+    $("#addProblem")?.addEventListener("click", () => {
+        setValue("problemTitleInput", "");
+        setValue("problemDescriptionInput", "");
+        openModal("#problemModal");
+        $("#problemTitleInput")?.focus();
+    });
+
+    $("#saveProblem")?.addEventListener("click", saveProblem);
+}
+
+async function saveProblem() {
+    const title = $("#problemTitleInput")?.value.trim();
+    const description = $("#problemDescriptionInput")?.value.trim();
+
+    if (!title) return showToast("Enter a problem or doubt.");
+
+    const previous = clone(studyData.problems);
+    studyData.problems.unshift({
+        id: generateID("problem"),
+        title,
+        description: description || "",
+        status: "open"
+    });
+
+    renderProblems();
+    updateSummary();
+    updateDate();
+
+    try {
+        await saveStudyData();
+        closeModal("#problemModal");
+        showToast("Problem added and saved.");
+    } catch (error) {
+        studyData.problems = previous;
+        renderProblems();
+        updateSummary();
+        showToast(error.message || "Unable to save problem.");
+    }
+}
 
 /* =========================================================
-   13. RESOURCES
+   RESOURCES — MODAL INPUT
+========================================================= */
+
+/* =========================================================
+   RESOURCES
 ========================================================= */
 
 function renderResources() {
@@ -1330,65 +1037,108 @@ function renderResources() {
         $("#resourcesList");
 
 
-    if (!container)
+    if (!container) {
+
         return;
 
+    }
 
-    container.innerHTML = "";
+
+    container.innerHTML =
+        "";
 
 
     studyData.resources.forEach(
         resource => {
 
             const card =
-                document.createElement("article");
+                document.createElement(
+                    "article"
+                );
+
 
             card.className =
                 "resource-card";
 
 
-            card.innerHTML = `
+            card.innerHTML =
+                `
 
                 <div class="resource-icon">
-                    ${escapeHTML(resource.type)}
+
+                    ${escapeHTML(
+                        resource.type ||
+                        "RESOURCE"
+                    )}
+
                 </div>
+
 
                 <div class="resource-info">
 
                     <h3>
-                        ${escapeHTML(resource.title)}
+                        ${escapeHTML(
+                            resource.title ||
+                            ""
+                        )}
                     </h3>
 
+
                     <p>
-                        ${escapeHTML(resource.description)}
+                        ${escapeHTML(
+                            resource.description ||
+                            ""
+                        )}
                     </p>
 
+
                     <span>
-                        ${escapeHTML(resource.type)}
+                        ${escapeHTML(
+                            resource.type ||
+                            ""
+                        )}
                     </span>
 
                 </div>
 
+
                 ${
                     resource.url
-                    ?
-                    `
-                    <a
-                        class="resource-open"
-                        href="${escapeAttribute(resource.url)}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Open
-                    </a>
-                    `
-                    :
-                    `
-                    <span class="resource-open">
-                        Saved
-                    </span>
-                    `
+
+                        ? `
+
+                            <a
+                                class="resource-open"
+                                href="${escapeAttribute(
+                                    resource.url
+                                )}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Open
+                            </a>
+
+                        `
+
+                        : `
+
+                            <span class="resource-open">
+                                Saved
+                            </span>
+
+                        `
                 }
+
+
+                <button
+                    type="button"
+                    class="delete-item-button"
+                    data-delete-resource="${escapeAttribute(
+                        resource.id
+                    )}"
+                >
+                    Delete
+                </button>
 
             `;
 
@@ -1400,77 +1150,20 @@ function renderResources() {
         }
     );
 
-}
 
+    $$("[data-delete-resource]")
+        .forEach(
+            button => {
 
-function setupResources() {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-    $("#addResource")
-        ?.addEventListener(
-            "click",
-            () => {
+                        deleteResource(
+                            button.dataset.deleteResource
+                        );
 
-                const title =
-                    window.prompt(
-                        "Resource title:"
-                    );
-
-
-                if (!title)
-                    return;
-
-
-                const description =
-                    window.prompt(
-                        "Description:"
-                    );
-
-
-                const type =
-                    window.prompt(
-                        "Type: BOOK / PAPER / WEBSITE / VIDEO / OTHER",
-                        "WEBSITE"
-                    );
-
-
-                const url =
-                    window.prompt(
-                        "URL (optional):"
-                    );
-
-
-                studyData.resources.unshift({
-
-                    id:
-                        generateID("resource"),
-
-                    title:
-                        title.trim(),
-
-                    description:
-                        description?.trim()
-                        || "Study resource.",
-
-                    type:
-                        String(
-                            type || "OTHER"
-                        )
-                        .toUpperCase(),
-
-                    url:
-                        url
-                            ? normalizeURL(url)
-                            : null
-
-                });
-
-
-                renderResources();
-
-                updateDate();
-
-                showToast(
-                    "Resource added."
+                    }
                 );
 
             }
@@ -1478,521 +1171,484 @@ function setupResources() {
 
 }
 
+async function deleteResource(
+    id
+) {
+
+    await deleteStudyArrayItem(
+
+        "resources",
+
+        id,
+
+        renderResources,
+
+        "Resource deleted successfully.",
+
+        "Delete this resource?"
+
+    );
+
+}
+
+function setupResources() {
+    $("#addResource")?.addEventListener("click", () => {
+        setValue("resourceTitleInput", "");
+        setValue("resourceURLInput", "");
+        setValue("resourceDescriptionInput", "");
+        setValue("resourceTypeInput", "website");
+        openModal("#resourceModal");
+        $("#resourceTitleInput")?.focus();
+    });
+
+    $("#saveResource")?.addEventListener("click", saveResource);
+}
+
+async function saveResource() {
+    const title = $("#resourceTitleInput")?.value.trim();
+    const type = $("#resourceTypeInput")?.value || "other";
+    const url = $("#resourceURLInput")?.value.trim();
+    const description = $("#resourceDescriptionInput")?.value.trim();
+
+    if (!title) return showToast("Enter a resource title.");
+
+    const previous = clone(studyData.resources);
+    studyData.resources.unshift({
+        id: generateID("resource"),
+        title,
+        type: String(type).toUpperCase(),
+        url: url ? normalizeURL(url) : null,
+        description: description || "Study resource."
+    });
+
+    renderResources();
+    updateSummary();
+    updateDate();
+
+    try {
+        await saveStudyData();
+        closeModal("#resourceModal");
+        showToast("Resource added and saved.");
+    } catch (error) {
+        studyData.resources = previous;
+        renderResources();
+        updateSummary();
+        showToast(error.message || "Unable to save resource.");
+    }
+}
 
 /* =========================================================
-   14. TIMELINE
+   RELATED WORK — + LINK
 ========================================================= */
 
-function renderTimeline() {
+/* =========================================================
+   RELATED WORK
+========================================================= */
+
+function renderRelatedWork() {
 
     const container =
-        $("#studyTimeline");
+        $("#relatedWorkGrid");
 
 
-    if (!container)
+    if (!container) {
+
         return;
 
-
-    container.innerHTML = "";
-
-
-    const sorted =
-        [...studyData.timeline]
-            .sort(
-                (a, b) =>
-                    new Date(a.date) -
-                    new Date(b.date)
-            );
+    }
 
 
-    sorted.forEach(entry => {
-
-        const item =
-            document.createElement("article");
-
-        item.className =
-            "study-timeline-item";
+    container.innerHTML =
+        "";
 
 
-        if (
-            entry.status === "ongoing"
-        ) {
+    studyData.relatedWork.forEach(
+        work => {
 
-            item.classList.add(
-                "current"
-            );
-
-        }
+            const card =
+                document.createElement(
+                    "article"
+                );
 
 
-        const formattedDate =
-            formatTimelineDate(
-                entry.date
-            );
+            card.className =
+                `related-work-card ${
+                    String(
+                        work.type ||
+                        "external"
+                    ).toLowerCase()
+                }`;
 
 
-        item.innerHTML = `
+            card.innerHTML =
+                `
 
-            <div class="timeline-point"></div>
+                <span>
+                    ${escapeHTML(
+                        work.type ||
+                        "RELATED"
+                    )}
+                </span>
 
-            <div class="timeline-date">
-                ${formattedDate}
-            </div>
 
-            <div class="timeline-card">
+                <h3>
+                    ${escapeHTML(
+                        work.title ||
+                        ""
+                    )}
+                </h3>
 
-                <div class="timeline-card-top">
 
-                    <div>
+                <p>
+                    ${escapeHTML(
+                        work.description ||
+                        ""
+                    )}
+                </p>
 
-                        <span class="timeline-status ${entry.status}">
-                            ${entry.status.toUpperCase()}
-                        </span>
 
-                        ${
-                            entry.priority === "high"
-                            ?
-                            `
-                            <span class="timeline-priority">
-                                HIGH
-                            </span>
-                            `
-                            :
-                            ""
-                        }
+                <div class="related-work-actions">
 
-                    </div>
+                    <button
+                        type="button"
+                        data-related-work="${escapeAttribute(
+                            work.id
+                        )}"
+                    >
+                        Open →
+                    </button>
 
-                    <div class="timeline-actions">
 
-                        <button
-                            type="button"
-                            data-edit-timeline="${entry.id}"
-                        >
-                            Edit
-                        </button>
-
-                        <button
-                            type="button"
-                            data-delete-timeline="${entry.id}"
-                        >
-                            ×
-                        </button>
-
-                    </div>
+                    <button
+                        type="button"
+                        class="delete-item-button"
+                        data-delete-related-work="${escapeAttribute(
+                            work.id
+                        )}"
+                    >
+                        Delete
+                    </button>
 
                 </div>
 
-                <h3>
-                    ${escapeHTML(entry.title)}
-                </h3>
-
-                <p>
-                    ${escapeHTML(entry.description)}
-                </p>
-
-                <span>
-                    ${escapeHTML(entry.duration || "Time not specified")}
-                </span>
-
-            </div>
-
-        `;
+            `;
 
 
-        container.appendChild(
-            item
-        );
-
-    });
-
-
-    bindTimelineActions();
-
-}
-
-
-function bindTimelineActions() {
-
-    $$("[data-edit-timeline]")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    editTimeline(
-                        button.dataset.editTimeline
-                    );
-
-                }
+            container.appendChild(
+                card
             );
 
-        });
+        }
+    );
 
 
-    $$("[data-delete-timeline]")
-        .forEach(button => {
+    $$("[data-related-work]")
+        .forEach(
+            button => {
 
-            button.addEventListener(
-                "click",
-                () => {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-                    deleteTimeline(
-                        button.dataset.deleteTimeline
-                    );
-
-                }
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   15. TIMELINE SETUP
-========================================================= */
-
-let editingTimelineId = null;
+                        const work =
+                            studyData.relatedWork.find(
+                                item =>
+                                    String(
+                                        item.id
+                                    ) ===
+                                    String(
+                                        button.dataset
+                                            .relatedWork
+                                    )
+                            );
 
 
-function setupTimeline() {
+                        if (
+                            work?.url &&
+                            /^https?:\/\//i.test(
+                                work.url
+                            )
+                        ) {
 
-    $("#addStudySession")
-        ?.addEventListener(
-            "click",
-            () => {
+                            window.open(
+                                work.url,
+                                "_blank",
+                                "noopener,noreferrer"
+                            );
 
-                editingTimelineId = null;
+                        }
 
-                resetTimelineForm();
+                        else {
 
-                $("#timelineDate").value =
-                    getTodayISO();
+                            showToast(
+                                "No web link is available for this item."
+                            );
 
-                $("#timelineStatus").value =
-                    "planned";
+                        }
 
-                openModal(
-                    "#timelineModal"
+                    }
                 );
 
             }
         );
 
 
-    $("#closeTimelineModal")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal("#timelineModal")
-        );
+    $$("[data-delete-related-work]")
+        .forEach(
+            button => {
 
+                button.addEventListener(
+                    "click",
+                    () => {
 
-    $("#cancelTimeline")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal("#timelineModal")
-        );
+                        deleteRelatedWork(
+                            button.dataset
+                                .deleteRelatedWork
+                        );
 
+                    }
+                );
 
-    $("#saveTimeline")
-        ?.addEventListener(
-            "click",
-            saveTimeline
+            }
         );
 
 }
 
+async function deleteRelatedWork(
+    id
+) {
 
-function saveTimeline() {
+    await deleteStudyArrayItem(
 
-    const date =
-        $("#timelineDate")
-            ?.value;
+        "relatedWork",
 
+        id,
 
-    const status =
-        $("#timelineStatus")
-            ?.value;
+        renderRelatedWork,
 
+        "Related work deleted successfully.",
 
-    const title =
-        $("#timelineTitle")
-            ?.value.trim();
+        "Delete this related work?"
 
+    );
 
-    const description =
-        $("#timelineDescription")
-            ?.value.trim();
+}
 
+function setupRelatedWork() {
+    $("#addRelatedWork")?.addEventListener("click", () => {
+        setValue("relatedWorkTitleInput", "");
+        setValue("relatedWorkURLInput", "");
+        setValue("relatedWorkDescriptionInput", "");
+        setValue("relatedWorkTypeInput", "study");
+        openModal("#relatedWorkModal");
+        $("#relatedWorkTitleInput")?.focus();
+    });
 
-    const duration =
-        $("#timelineDuration")
-            ?.value.trim();
+    $("#saveRelatedWork")?.addEventListener("click", saveRelatedWork);
+}
 
+async function saveRelatedWork() {
+    const title = $("#relatedWorkTitleInput")?.value.trim();
+    const type = $("#relatedWorkTypeInput")?.value || "study";
+    const url = $("#relatedWorkURLInput")?.value.trim();
+    const description = $("#relatedWorkDescriptionInput")?.value.trim();
 
-    const priority =
-        $("#timelinePriority")
-            ?.value;
+    if (!title) return showToast("Enter a title for the related work.");
 
+    const previous = clone(studyData.relatedWork);
+    studyData.relatedWork.push({
+        id: generateID("related"),
+        type: String(type).toUpperCase(),
+        title,
+        url: url ? normalizeURL(url) : null,
+        description: description || "Related work."
+    });
 
-    if (!date || !title) {
+    renderRelatedWork();
+    updateDate();
 
-        showToast(
-            "Date and title are required."
-        );
-
-        return;
-
+    try {
+        await saveStudyData();
+        closeModal("#relatedWorkModal");
+        showToast("Related work added and saved.");
+    } catch (error) {
+        studyData.relatedWork = previous;
+        renderRelatedWork();
+        showToast(error.message || "Unable to save related work.");
     }
+}
 
+/* =========================================================
+   TIMELINE
+========================================================= */
 
-    if (editingTimelineId) {
+function renderTimeline() {
+    const container = $("#studyTimeline");
+    if (!container) return;
 
-        const entry =
-            studyData.timeline.find(
-                item =>
-                    item.id ===
-                    editingTimelineId
-            );
+    container.innerHTML = "";
 
+    [...studyData.timeline]
+        .sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0))
+        .forEach(entry => {
+            const item = document.createElement("article");
+            item.className = "study-timeline-item";
 
-        if (entry) {
+            if (entry.status === "ongoing") item.classList.add("current");
 
-            entry.date =
-                date;
-
-            entry.status =
-                status;
-
-            entry.title =
-                title;
-
-            entry.description =
-                description ||
-                "Timeline task.";
-
-            entry.duration =
-                duration ||
-                "Not specified";
-
-            entry.priority =
-                priority;
-
-        }
-
-        showToast(
-            "Timeline updated."
-        );
-
-    }
-
-    else {
-
-        studyData.timeline.push({
-
-            id:
-                generateID("timeline"),
-
-            date,
-
-            status,
-
-            title,
-
-            description:
-                description ||
-                "Timeline task.",
-
-            duration:
-                duration ||
-                "Not specified",
-
-            priority
-
+            item.innerHTML = `
+        <div class="timeline-point"></div>
+        <div class="timeline-date">${escapeHTML(formatDate(entry.date))}</div>
+        <div class="timeline-card">
+          <div class="timeline-card-top">
+            <div>
+              <span class="timeline-status ${escapeHTML(entry.status || "planned")}">
+                ${escapeHTML(String(entry.status || "planned").toUpperCase())}
+              </span>
+              ${entry.priority === "high" ? `<span class="timeline-priority">HIGH</span>` : ""}
+            </div>
+            <div class="timeline-actions">
+              <button type="button" data-edit-timeline="${escapeAttribute(entry.id)}">Edit</button>
+              <button type="button" data-delete-timeline="${escapeAttribute(entry.id)}">×</button>
+            </div>
+          </div>
+          <h3>${escapeHTML(entry.title || "")}</h3>
+          <p>${escapeHTML(entry.description || "")}</p>
+          <span>${escapeHTML(entry.duration || "Time not specified")}</span>
+        </div>
+      `;
+            container.appendChild(item);
         });
 
+    $$("[data-edit-timeline]").forEach(button => {
+        button.addEventListener("click", () => editTimeline(button.dataset.editTimeline));
+    });
 
-        showToast(
-            "Timeline added."
-        );
-
-    }
-
-
-    /*
-     * Keep future work synchronized
-     * with planned timeline entries.
-     */
-
-    syncFutureWorkFromTimeline();
-
-
-    renderTimeline();
-
-    renderFutureWork();
-
-    updateDate();
-
-    closeModal("#timelineModal");
-
-    resetTimelineForm();
-
+    $$("[data-delete-timeline]").forEach(button => {
+        button.addEventListener("click", () => deleteTimeline(button.dataset.deleteTimeline));
+    });
 }
 
+function setupTimeline() {
+    $("#addStudySession")?.addEventListener("click", () => {
+        editingTimelineId = null;
+        resetTimelineForm();
+        setValue("timelineDate", getTodayISO());
+        setValue("timelineStatus", "planned");
+        openModal("#timelineModal");
+    });
 
-/* =========================================================
-   16. EDIT TIMELINE
-========================================================= */
-
-function editTimeline(id) {
-
-    const entry =
-        studyData.timeline.find(
-            item =>
-                item.id === id
-        );
-
-
-    if (!entry)
-        return;
-
-
-    editingTimelineId =
-        id;
-
-
-    $("#timelineDate").value =
-        entry.date;
-
-
-    $("#timelineStatus").value =
-        entry.status;
-
-
-    $("#timelineTitle").value =
-        entry.title;
-
-
-    $("#timelineDescription").value =
-        entry.description;
-
-
-    $("#timelineDuration").value =
-        entry.duration || "";
-
-
-    $("#timelinePriority").value =
-        entry.priority || "normal";
-
-
-    openModal(
-        "#timelineModal"
-    );
-
+    $("#saveTimeline")?.addEventListener("click", saveTimeline);
 }
-
-
-/* =========================================================
-   17. DELETE TIMELINE
-========================================================= */
-
-function deleteTimeline(id) {
-
-    const confirmed =
-        window.confirm(
-            "Delete this timeline entry?"
-        );
-
-
-    if (!confirmed)
-        return;
-
-
-    studyData.timeline =
-        studyData.timeline.filter(
-            item =>
-                item.id !== id
-        );
-
-
-    studyData.futureWork =
-        studyData.futureWork.filter(
-            item =>
-                item.id !== id
-        );
-
-
-    renderTimeline();
-
-    renderFutureWork();
-
-    updateDate();
-
-    showToast(
-        "Timeline entry deleted."
-    );
-
-}
-
-
-/* =========================================================
-   18. TIMELINE FORM
-========================================================= */
 
 function resetTimelineForm() {
-
-    clearInput("#timelineDate");
-
-    clearInput("#timelineTitle");
-
-    clearInput("#timelineDescription");
-
-    clearInput("#timelineDuration");
-
-
-    if ($("#timelineStatus"))
-        $("#timelineStatus").value =
-            "planned";
-
-
-    if ($("#timelinePriority"))
-        $("#timelinePriority").value =
-            "normal";
-
+    ["timelineDate", "timelineTitle", "timelineDescription", "timelineDuration"].forEach(id => setValue(id, ""));
+    setValue("timelineStatus", "planned");
+    setValue("timelinePriority", "normal");
 }
 
+function editTimeline(id) {
+    const entry = studyData.timeline.find(item => String(item.id) === String(id));
+    if (!entry) return;
 
-function formatTimelineDate(dateString) {
-
-    if (!dateString)
-        return "";
-
-
-    const date =
-        new Date(
-            `${dateString}T00:00:00`
-        );
-
-
-    return date
-        .toLocaleDateString(
-            "en-GB",
-            {
-                day: "2-digit",
-                month: "short"
-            }
-        )
-        .toUpperCase();
-
+    editingTimelineId = entry.id;
+    setValue("timelineDate", entry.date || "");
+    setValue("timelineStatus", entry.status || "planned");
+    setValue("timelineTitle", entry.title || "");
+    setValue("timelineDescription", entry.description || "");
+    setValue("timelineDuration", entry.duration || "");
+    setValue("timelinePriority", entry.priority || "normal");
+    openModal("#timelineModal");
 }
 
+async function saveTimeline() {
+    const date = $("#timelineDate")?.value;
+    const status = $("#timelineStatus")?.value || "planned";
+    const title = $("#timelineTitle")?.value.trim();
+    const description = $("#timelineDescription")?.value.trim();
+    const duration = $("#timelineDuration")?.value.trim();
+    const priority = $("#timelinePriority")?.value || "normal";
+
+    if (!date || !title) return showToast("Date and title are required.");
+
+    const previous = clone(studyData.timeline);
+    const entry = {
+        id: editingTimelineId || generateID("timeline"),
+        date, status, title,
+        description: description || "",
+        duration: duration || "",
+        priority
+    };
+
+    if (editingTimelineId) {
+        const index = studyData.timeline.findIndex(item => String(item.id) === String(editingTimelineId));
+        if (index >= 0) studyData.timeline[index] = entry;
+    } else {
+        studyData.timeline.push(entry);
+    }
+
+    syncFutureWorkFromTimeline();
+    renderTimeline();
+    renderFutureWork();
+    updateSummary();
+    updateDate();
+
+    try {
+        await saveStudyData();
+        closeModal("#timelineModal");
+        editingTimelineId = null;
+        showToast("Timeline saved.");
+    } catch (error) {
+        studyData.timeline = previous;
+        syncFutureWorkFromTimeline();
+        renderTimeline();
+        renderFutureWork();
+        showToast(error.message || "Unable to save timeline.");
+    }
+}
+
+async function deleteTimeline(id) {
+    const previous = clone(studyData.timeline);
+    studyData.timeline = studyData.timeline.filter(item => String(item.id) !== String(id));
+    syncFutureWorkFromTimeline();
+    renderTimeline();
+    renderFutureWork();
+    updateDate();
+
+    try {
+        await saveStudyData();
+        showToast("Timeline item deleted.");
+    } catch (error) {
+        studyData.timeline = previous;
+        syncFutureWorkFromTimeline();
+        renderTimeline();
+        renderFutureWork();
+        showToast(error.message || "Unable to delete timeline item.");
+    }
+}
 
 /* =========================================================
-   19. FUTURE WORK
+   FUTURE WORK
+========================================================= */
+
+function syncFutureWorkFromTimeline() {
+    const planned = studyData.timeline
+        .filter(entry => entry.status === "planned")
+        .map(entry => ({
+            id: entry.id,
+            date: entry.date,
+            title: entry.title,
+            description: entry.description,
+            priority: entry.priority,
+            fromTimeline: true
+        }));
+
+    const manual = studyData.futureWork.filter(item => !item.fromTimeline);
+    studyData.futureWork = [...manual, ...planned];
+}
+
+/* =========================================================
+   FUTURE WORK
 ========================================================= */
 
 function renderFutureWork() {
@@ -2001,57 +1657,121 @@ function renderFutureWork() {
         $("#futureWorkList");
 
 
-    if (!container)
+    if (!container) {
+
         return;
 
+    }
 
-    container.innerHTML = "";
+
+    container.innerHTML =
+        "";
 
 
-    const future =
-        [...studyData.futureWork]
-            .sort(
-                (a, b) =>
-                    new Date(a.date) -
-                    new Date(b.date)
+    studyData.futureWork.forEach(
+        item => {
+
+            const row =
+                document.createElement(
+                    "article"
+                );
+
+
+            row.className =
+                "future-work-item";
+
+
+            row.innerHTML =
+                `
+
+                <div>
+
+                    <strong>
+                        ${escapeHTML(
+                            item.title ||
+                            ""
+                        )}
+                    </strong>
+
+
+                    <p>
+                        ${escapeHTML(
+                            item.description ||
+                            ""
+                        )}
+                    </p>
+
+
+                    ${
+                        item.date
+
+                            ? `
+
+                                <span class="future-date">
+
+                                    ${escapeHTML(
+                                        formatDate(
+                                            item.date
+                                        )
+                                    )}
+
+                                </span>
+
+                            `
+
+                            : ""
+                    }
+
+                </div>
+
+
+                <button
+    type="button"
+    class="delete-item-button future-delete-button"
+    data-delete-future-work="${escapeAttribute(
+        item.id
+    )}"
+>
+    Delete
+</button>
+
+            `;
+
+
+            container.appendChild(
+                row
             );
 
-
-    future.forEach(item => {
-
-        const element =
-            document.createElement("div");
-
-        element.className =
-            "future-work-item";
+        }
+    );
 
 
-        element.innerHTML = `
+    $$("[data-delete-future-work]")
+        .forEach(
+            button => {
 
-            <div class="future-date">
-                ${formatTimelineDate(item.date)}
-            </div>
+                button.addEventListener(
+                    "click",
+                    () => {
 
-            <div>
+                        deleteFutureWork(
+                            button.dataset
+                                .deleteFutureWork
+                        );
 
-                <strong>
-                    ${escapeHTML(item.title)}
-                </strong>
+                    }
+                );
 
-                <p>
-                    ${escapeHTML(item.description)}
-                </p>
-
-            </div>
-
-        `;
-
-
-        container.appendChild(
-            element
+            }
         );
 
-    });
+
+    setText(
+        "futureWorkCount",
+        String(
+            studyData.futureWork.length
+        )
+    );
 
 
     const count =
@@ -2064,128 +1784,192 @@ function renderFutureWork() {
 
         count.textContent =
             String(
-                future.length
-            ).padStart(2, "0");
+                studyData.futureWork.length
+            ).padStart(
+                2,
+                "0"
+            );
 
     }
 
 }
 
+async function deleteFutureWork(
+    id
+) {
 
-/* =========================================================
-   20. FUTURE WORK SETUP
-========================================================= */
-
-function setupFutureWork() {
-
-    $("#addFutureWork")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                /*
-                 * Future work is also represented as
-                 * a planned timeline item.
-                 */
-
-                editingTimelineId = null;
-
-                resetTimelineForm();
-
-                $("#timelineDate").value =
-                    getTodayISO();
-
-                $("#timelineStatus").value =
-                    "planned";
-
-                openModal(
-                    "#timelineModal"
-                );
-
-            }
+    const futureItem =
+        studyData.futureWork.find(
+            item =>
+                String(item.id) ===
+                String(id)
         );
 
-}
+
+    if (!futureItem) {
+
+        showToast(
+            "Future work item not found."
+        );
+
+        return;
+
+    }
 
 
-/* =========================================================
-   21. SYNC FUTURE WORK
-========================================================= */
+    const confirmed =
+        window.confirm(
+            "Delete this future work?"
+        );
 
-function syncFutureWorkFromTimeline() {
 
-    studyData.futureWork =
-        studyData.timeline
-            .filter(
-                entry =>
-                    entry.status ===
-                    "planned"
-            )
-            .map(
-                entry => ({
+    if (!confirmed) {
 
-                    id:
-                        entry.id,
+        return;
 
-                    date:
-                        entry.date,
+    }
 
-                    title:
-                        entry.title,
 
-                    description:
-                        entry.description,
+    /*
+     * If this Future Work came from
+     * a Timeline entry, delete the
+     * Timeline entry as well.
+     */
 
-                    priority:
-                        entry.priority
+    if (
+        futureItem.fromTimeline
+    ) {
 
-                })
+        await deleteTimeline(
+            futureItem.id
+        );
+
+        return;
+
+    }
+
+
+    const previous =
+        clone(
+            studyData.futureWork
+        );
+
+
+    try {
+
+        studyData.futureWork =
+            studyData.futureWork.filter(
+                item =>
+                    String(item.id) !==
+                    String(id)
             );
 
+
+        renderFutureWork();
+
+        updateDate();
+
+
+        await saveStudyData();
+
+
+        showToast(
+            "Future work deleted successfully."
+        );
+
+    }
+
+    catch (error) {
+
+        studyData.futureWork =
+            previous;
+
+
+        renderFutureWork();
+
+
+        showToast(
+
+            error.message ||
+
+            "Unable to delete future work."
+
+        );
+
+    }
+
 }
 
+function setupFutureWork() {
+    $("#addFutureWork")?.addEventListener("click", () => {
+        setValue("futureWorkTitleInput", "");
+        setValue("futureWorkDescriptionInput", "");
+        openModal("#futureWorkModal");
+    });
+
+    $("#saveFutureWork")?.addEventListener("click", saveFutureWork);
+}
+
+async function saveFutureWork() {
+    const title = $("#futureWorkTitleInput")?.value.trim();
+    const description = $("#futureWorkDescriptionInput")?.value.trim();
+
+    if (!title) return showToast("Enter a future work title.");
+
+    const previous = clone(studyData.futureWork);
+    studyData.futureWork.push({
+        id: generateID("future-work"),
+        title,
+        description: description || "",
+        fromTimeline: false
+    });
+
+    renderFutureWork();
+    updateDate();
+
+    try {
+        await saveStudyData();
+        closeModal("#futureWorkModal");
+        showToast("Future work added and saved.");
+    } catch (error) {
+        studyData.futureWork = previous;
+        renderFutureWork();
+        showToast(error.message || "Unable to save future work.");
+    }
+}
 
 /* =========================================================
-   22. UPLOADS
+   UPLOADS / ATTACHMENTS
+========================================================= */
+
+/* =========================================================
+   PERMANENT GOOGLE DRIVE FILE UPLOADS
 ========================================================= */
 
 function setupUploads() {
 
-    const button =
-        $("#uploadButton");
-
-    const input =
-        $("#studyFileInput");
-
-    const zone =
-        $("#studyUploadZone");
+    const button = $("#uploadButton");
+    const input = $("#studyFileInput");
+    const zone = $("#studyUploadZone");
 
 
     button?.addEventListener(
         "click",
-        () => {
-
-            input?.click();
-
-        }
+        () => input?.click()
     );
 
 
     zone?.addEventListener(
         "click",
-        () => {
-
-            input?.click();
-
-        }
+        () => input?.click()
     );
 
 
     input?.addEventListener(
         "change",
-        event => {
+        async event => {
 
-            handleFiles(
+            await handleFiles(
                 event.target.files
             );
 
@@ -2223,7 +2007,7 @@ function setupUploads() {
 
     zone?.addEventListener(
         "drop",
-        event => {
+        async event => {
 
             event.preventDefault();
 
@@ -2232,7 +2016,7 @@ function setupUploads() {
             );
 
 
-            handleFiles(
+            await handleFiles(
                 event.dataTransfer.files
             );
 
@@ -2242,17 +2026,32 @@ function setupUploads() {
 }
 
 
-function handleFiles(files) {
+/* =========================================================
+   HANDLE FILES
+========================================================= */
 
-    if (!files?.length)
+async function handleFiles(files) {
+
+    if (!files?.length) {
         return;
+    }
 
 
-    Array.from(files)
-        .forEach(file => {
+    const fileList =
+        Array.from(files);
 
-            const url =
-                URL.createObjectURL(
+
+    for (const file of fileList) {
+
+        try {
+
+            showToast(
+                `Uploading ${file.name}...`
+            );
+
+
+            const uploadedFile =
+                await uploadFileToGoogleDrive(
                     file
                 );
 
@@ -2266,6 +2065,7 @@ function handleFiles(files) {
                     "file",
 
                 name:
+                    uploadedFile.name ||
                     file.name,
 
                 fileType:
@@ -2273,309 +2073,321 @@ function handleFiles(files) {
 
                 size:
                     formatFileSize(
-                        file.size
+                        Number(
+                            uploadedFile.size ||
+                            file.size
+                        )
                     ),
 
                 date:
                     getTodayISO(),
 
-                url,
+
+                /*
+                 * Permanent Google Drive information
+                 */
+
+                driveFileId:
+                    uploadedFile.id,
+
+
+                /*
+                 * Used for opening the file
+                 */
+
+                url:
+                    uploadedFile.webViewLink,
+
+
+                /*
+                 * Useful later if download support
+                 * is added separately.
+                 */
+
+                downloadUrl:
+                    uploadedFile.webContentLink,
+
+
+                mimeType:
+                    uploadedFile.mimeType ||
+                    file.type,
+
 
                 description:
                     ""
 
             });
 
-        });
 
+        }
+
+        catch (error) {
+
+            console.error(
+                "File upload failed:",
+                error
+            );
+
+
+            showToast(
+
+                error.message ||
+
+                `Unable to upload ${file.name}.`
+
+            );
+
+        }
+
+    }
+
+
+    /*
+     * Update UI after all uploads finish.
+     */
 
     renderAttachments();
 
     updateDate();
 
-    showToast(
-        `${files.length} file${files.length > 1 ? "s" : ""} added.`
-    );
 
-}
+    /*
+     * Save permanent attachment metadata
+     * into rigid-data.json.
+     */
 
+    try {
 
-/* =========================================================
-   23. ATTACHMENT RENDERING
-========================================================= */
-
-function renderAttachments() {
-
-    const container =
-        $("#studyUploadGrid");
+        await saveStudyData();
 
 
-    if (!container)
-        return;
-
-
-    container.innerHTML = "";
-
-
-    if (
-        studyData.attachments.length === 0
-    ) {
-
-        container.innerHTML = `
-
-            <div
-                style="
-                    grid-column:1/-1;
-                    padding:18px;
-                    border:1px solid rgba(94,164,220,.12);
-                    border-radius:8px;
-                    color:#6f879c;
-                    text-align:center;
-                    font-size:8px;
-                "
-            >
-                No files or links added yet.
-            </div>
-
-        `;
-
-        return;
+        showToast(
+            `${fileList.length} file${fileList.length > 1 ? "s" : ""} uploaded and saved.`
+        );
 
     }
 
+    catch (error) {
 
-    studyData.attachments.forEach(
-        attachment => {
-
-            if (
-                attachment.type ===
-                "link"
-            ) {
-
-                renderLinkAttachment(
-                    container,
-                    attachment
-                );
-
-            }
-
-            else {
-
-                renderFileAttachment(
-                    container,
-                    attachment
-                );
-
-            }
-
-        }
-    );
-
-}
-
-
-function renderFileAttachment(
-    container,
-    attachment
-) {
-
-    const card =
-        document.createElement("article");
-
-    card.className =
-        "study-upload-card";
-
-
-    const preview =
-        createFilePreview(
-            attachment
+        console.error(
+            "Unable to save attachment metadata:",
+            error
         );
 
 
-    card.innerHTML = `
+        showToast(
 
-        <div class="upload-preview">
-            ${preview}
-        </div>
+            error.message ||
 
-        <div class="upload-info">
+            "Files were uploaded but attachment information could not be saved."
 
-            <span class="upload-name">
-                ${escapeHTML(attachment.name)}
-            </span>
+        );
 
-            <div class="upload-meta">
-
-                <span>
-                    ${escapeHTML(attachment.fileType)}
-                </span>
-
-                <span>
-                    ${escapeHTML(attachment.size)}
-                </span>
-
-            </div>
-
-        </div>
-
-        <div class="upload-actions">
-
-            <button
-                class="upload-action"
-                data-open-attachment="${attachment.id}"
-                type="button"
-            >
-                Open
-            </button>
-
-            <button
-                class="upload-action"
-                data-delete-attachment="${attachment.id}"
-                type="button"
-            >
-                Delete
-            </button>
-
-        </div>
-
-    `;
-
-
-    container.appendChild(
-        card
-    );
+    }
 
 }
 
 
 /* =========================================================
-   24. FILE PREVIEW
+   UPLOAD FILE TO SUPABASE EDGE FUNCTION
 ========================================================= */
 
-function createFilePreview(
-    attachment
+async function uploadFileToGoogleDrive(
+    file
 ) {
 
+    if (!currentWorkId) {
+
+        throw new Error(
+            "Study ID is missing."
+        );
+
+    }
+
+
+    const {
+
+        data: {
+            session
+        },
+
+        error:
+            sessionError
+
+    } =
+
+        await window.sb
+            .auth
+            .getSession();
+
+
     if (
-        attachment.fileType ===
-        "IMAGE"
+        sessionError ||
+        !session
     ) {
 
-        return `
+        throw new Error(
+            "You must be logged in to upload files."
+        );
 
-            <img
-                src="${escapeAttribute(attachment.url)}"
-                alt="${escapeHTML(attachment.name)}"
-            >
+    }
 
-        `;
+
+    const formData =
+        new FormData();
+
+
+    formData.append(
+        "work_id",
+        currentWorkId
+    );
+
+
+    formData.append(
+        "file",
+        file
+    );
+
+
+    const response =
+        await fetch(
+
+            `${SUPABASE_FUNCTIONS_URL}/upload-rigid-file`,
+
+            {
+
+                method:
+                    "POST",
+
+                headers: {
+
+                    "Authorization":
+                        `Bearer ${session.access_token}`
+
+                },
+
+
+                /*
+                 * DO NOT manually set Content-Type here.
+                 *
+                 * The browser automatically adds the
+                 * multipart boundary.
+                 */
+
+                body:
+                    formData
+
+            }
+
+        );
+
+
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+    }
+
+    catch {
+
+        throw new Error(
+            "Invalid response from file upload service."
+        );
 
     }
 
 
     if (
-        attachment.fileType ===
-        "VIDEO"
+        !response.ok ||
+        !result.success ||
+        !result.file
     ) {
 
-        return `
+        throw new Error(
 
-            <video
-                src="${escapeAttribute(attachment.url)}"
-                muted
-            ></video>
+            result?.error ||
 
-        `;
+            "Unable to upload file."
+
+        );
 
     }
 
 
-    if (
-        attachment.fileType ===
-        "PDF"
-    ) {
-
-        return "PDF";
-
-    }
-
-
-    if (
-        attachment.fileType ===
-        "DOCUMENT"
-    ) {
-
-        return "DOC";
-
-    }
-
-
-    if (
-        attachment.fileType ===
-        "SPREADSHEET"
-    ) {
-
-        return "XLS";
-
-    }
-
-
-    if (
-        attachment.fileType ===
-        "ARCHIVE"
-    ) {
-
-        return "ZIP";
-
-    }
-
-
-    return "FILE";
+    return result.file;
 
 }
 
+function renderAttachments() {
+    const container = $("#studyUploadGrid");
+    if (!container) return;
 
-/* =========================================================
-   25. FILE ACTIONS
-========================================================= */
+    container.innerHTML = "";
 
-function setupAttachmentActions() {
+    if (!studyData.attachments.length) {
+        container.innerHTML = `<div class="empty-state">No files or links added yet.</div>`;
+        return;
+    }
 
-    $$("[data-open-attachment]")
-        .forEach(button => {
+    studyData.attachments.forEach(attachment => {
+        const card = document.createElement("article");
+        card.className = attachment.type === "link" ? "link-attachment" : "study-upload-card";
 
-            button.addEventListener(
-                "click",
-                () => {
+        if (attachment.type === "link") {
+            card.innerHTML = `
+        <div>
+          <div class="link-top"><div class="link-icon">🔗</div><span class="link-type">WEB LINK</span></div>
+          <h3>${escapeHTML(attachment.name || "")}</h3>
+          <p class="link-description">${escapeHTML(attachment.description || "")}</p>
+          <div class="link-url">${escapeHTML(attachment.url || "")}</div>
+        </div>
+        <div class="upload-actions">
+          <button class="upload-action" data-open-attachment="${escapeAttribute(attachment.id)}" type="button">Open</button>
+          <button class="upload-action" data-delete-attachment="${escapeAttribute(attachment.id)}" type="button">Delete</button>
+        </div>
+      `;
+        } else {
+            card.innerHTML = `
+        <div class="upload-preview">${createFilePreview(attachment)}</div>
+        <div class="upload-info">
+          <span class="upload-name">${escapeHTML(attachment.name || "")}</span>
+          <div class="upload-meta">
+            <span>${escapeHTML(attachment.fileType || "FILE")}</span>
+            <span>${escapeHTML(attachment.size || "")}</span>
+          </div>
+        </div>
+        <div class="upload-actions">
+          <button class="upload-action" data-open-attachment="${escapeAttribute(attachment.id)}" type="button">Open</button>
+          <button class="upload-action" data-delete-attachment="${escapeAttribute(attachment.id)}" type="button">Delete</button>
+        </div>
+      `;
+        }
 
-                    openAttachment(
-                        button.dataset.openAttachment
-                    );
+        container.appendChild(card);
+    });
 
-                }
-            );
+    $$("[data-open-attachment]").forEach(button => {
+        button.addEventListener("click", () => openAttachment(button.dataset.openAttachment));
+    });
 
-        });
-
-
-    $$("[data-delete-attachment]")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    deleteAttachment(
-                        button.dataset.deleteAttachment
-                    );
-
-                }
-            );
-
-        });
-
+    $$("[data-delete-attachment]").forEach(button => {
+        button.addEventListener("click", () => deleteAttachment(button.dataset.deleteAttachment));
+    });
 }
 
+function createFilePreview(attachment) {
+    if (attachment.fileType === "IMAGE" && attachment.url) {
+        return `<img src="${escapeAttribute(attachment.url)}" alt="${escapeHTML(attachment.name)}">`;
+    }
+    if (attachment.fileType === "VIDEO" && attachment.url) {
+        return `<video src="${escapeAttribute(attachment.url)}" muted></video>`;
+    }
+    return escapeHTML(attachment.fileType || "FILE");
+}
 
 function openAttachment(id) {
 
@@ -2586,24 +2398,88 @@ function openAttachment(id) {
         );
 
 
-    if (!attachment)
-        return;
+    if (!attachment) {
 
-
-    if (attachment.url) {
-
-        window.open(
-            attachment.url,
-            "_blank",
-            "noopener,noreferrer"
+        showToast(
+            "Attachment not found."
         );
+
+        return;
 
     }
 
+
+    /*
+     * External links
+     */
+
+    if (
+        attachment.type ===
+        "link"
+    ) {
+
+        if (attachment.url) {
+
+            window.open(
+                attachment.url,
+                "_blank",
+                "noopener,noreferrer"
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    /*
+     * Permanent Google Drive file
+     */
+
+    const fileURL =
+
+        attachment.url ||
+
+        attachment.webViewLink ||
+
+        (
+
+            attachment.driveFileId
+
+                ? `https://drive.google.com/file/d/${attachment.driveFileId}/view`
+
+                : null
+
+        );
+
+
+    if (!fileURL) {
+
+        showToast(
+            "This file does not have a valid Drive link."
+        );
+
+        return;
+
+    }
+
+
+    window.open(
+        fileURL,
+        "_blank",
+        "noopener,noreferrer"
+    );
+
 }
 
+/* =========================================================
+   DELETE ATTACHMENT
+========================================================= */
 
-function deleteAttachment(id) {
+async function deleteAttachment(
+    id
+) {
 
     const attachment =
         studyData.attachments.find(
@@ -2612,120 +2488,10 @@ function deleteAttachment(id) {
         );
 
 
-    if (!attachment)
-        return;
-
-
-    if (
-        attachment.type === "file" &&
-        attachment.url
-    ) {
-
-        URL.revokeObjectURL(
-            attachment.url
-        );
-
-    }
-
-
-    studyData.attachments =
-        studyData.attachments.filter(
-            item =>
-                item.id !== id
-        );
-
-
-    renderAttachments();
-
-    updateDate();
-
-    showToast(
-        "Attachment deleted."
-    );
-
-}
-
-
-/* =========================================================
-   26. LINK SYSTEM
-========================================================= */
-
-function setupLinks() {
-
-    $("#addLinkButton")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                clearInput(
-                    "#linkTitleInput"
-                );
-
-                clearInput(
-                    "#linkURLInput"
-                );
-
-                clearInput(
-                    "#linkDescriptionInput"
-                );
-
-                openModal(
-                    "#linkModal"
-                );
-
-                $("#linkTitleInput")
-                    ?.focus();
-
-            }
-        );
-
-
-    $("#closeLinkModal")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal("#linkModal")
-        );
-
-
-    $("#cancelLink")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal("#linkModal")
-        );
-
-
-    $("#saveLink")
-        ?.addEventListener(
-            "click",
-            saveLink
-        );
-
-}
-
-
-function saveLink() {
-
-    const title =
-        $("#linkTitleInput")
-            ?.value.trim();
-
-
-    const url =
-        $("#linkURLInput")
-            ?.value.trim();
-
-
-    const description =
-        $("#linkDescriptionInput")
-            ?.value.trim();
-
-
-    if (!title || !url) {
+    if (!attachment) {
 
         showToast(
-            "Title and URL are required."
+            "Attachment not found."
         );
 
         return;
@@ -2733,415 +2499,353 @@ function saveLink() {
     }
 
 
-    studyData.attachments.unshift({
+    const confirmed =
+        window.confirm(
 
-        id:
-            generateID("link"),
+            `Delete "${attachment.name}"?`
 
-        type:
-            "link",
-
-        name:
-            title,
-
-        url:
-            normalizeURL(url),
-
-        description:
-            description ||
-            "Study reference.",
-
-        date:
-            getTodayISO()
-
-    });
+        );
 
 
-    renderAttachments();
+    if (!confirmed) {
 
-    updateDate();
-
-    closeModal("#linkModal");
-
-
-    showToast(
-        "Link added."
-    );
-
-}
-
-
-/* =========================================================
-   27. LINK CARD
-========================================================= */
-
-function renderLinkAttachment(
-    container,
-    attachment
-) {
-
-    const card =
-        document.createElement("article");
-
-    card.className =
-        "link-attachment";
-
-
-    card.innerHTML = `
-
-        <div>
-
-            <div class="link-top">
-
-                <div class="link-icon">
-                    🔗
-                </div>
-
-                <span class="link-type">
-                    WEB LINK
-                </span>
-
-            </div>
-
-            <h3>
-                ${escapeHTML(attachment.name)}
-            </h3>
-
-            <p class="link-description">
-                ${escapeHTML(attachment.description)}
-            </p>
-
-            <div class="link-url">
-                ${escapeHTML(attachment.url)}
-            </div>
-
-        </div>
-
-        <div class="upload-actions">
-
-            <button
-                class="upload-action"
-                data-open-attachment="${attachment.id}"
-                type="button"
-            >
-                Open
-            </button>
-
-            <button
-                class="upload-action"
-                data-delete-attachment="${attachment.id}"
-                type="button"
-            >
-                Delete
-            </button>
-
-        </div>
-
-    `;
-
-
-    container.appendChild(
-        card
-    );
-
-
-    bindAttachmentButtons(
-        card
-    );
-
-}
-
-
-/* =========================================================
-   28. ATTACHMENT BUTTON BINDING
-========================================================= */
-
-function bindAttachmentButtons(
-    container
-) {
-
-    container
-        .querySelectorAll(
-            "[data-open-attachment]"
-        )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    openAttachment(
-                        button.dataset.openAttachment
-                    );
-
-                }
-            );
-
-        });
-
-
-    container
-        .querySelectorAll(
-            "[data-delete-attachment]"
-        )
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    deleteAttachment(
-                        button.dataset.deleteAttachment
-                    );
-
-                }
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   29. RELATED WORK
-========================================================= */
-
-function renderRelatedWork() {
-
-    const container =
-        $("#relatedWorkGrid");
-
-
-    if (!container)
         return;
 
-
-    container.innerHTML = "";
-
-
-    studyData.relatedWork.forEach(
-        work => {
-
-            const card =
-                document.createElement("article");
-
-            card.className =
-                `related-work-card ${work.type.toLowerCase()}`;
+    }
 
 
-            card.innerHTML = `
-
-                <span>
-                    ${escapeHTML(work.type)}
-                </span>
-
-                <h3>
-                    ${escapeHTML(work.title)}
-                </h3>
-
-                <p>
-                    ${escapeHTML(work.description)}
-                </p>
-
-                <button
-                    type="button"
-                    data-related-work="${work.id}"
-                >
-                    Open →
-                </button>
-
-            `;
+    try {
 
 
-            container.appendChild(
-                card
+        /*
+         * Show deletion progress.
+         */
+
+        showToast(
+            `Deleting ${attachment.name}...`
+        );
+
+
+        /*
+         * Delete the actual Google Drive file.
+         *
+         * Only normal uploaded files have
+         * driveFileId.
+         *
+         * Links do not have an actual
+         * Google Drive file.
+         */
+
+        if (
+            attachment.type ===
+            "file" &&
+
+            attachment.driveFileId
+        ) {
+
+            await deleteFileFromGoogleDrive(
+
+                attachment.driveFileId
+
             );
 
         }
-    );
 
 
-    $$("[data-related-work]")
-        .forEach(button => {
+        /*
+         * Remove attachment from Study data.
+         */
 
-            button.addEventListener(
-                "click",
-                () => {
+        studyData.attachments =
+            studyData.attachments.filter(
 
-                    /*
-                     * Backend routing will later
-                     * open the actual Study/Paper/
-                     * Project/Simulation page.
-                     */
+                item =>
+                    item.id !== id
 
-                    showToast(
-                        "Related-work navigation will be connected later."
-                    );
-
-                }
             );
 
-        });
 
-}
+        /*
+         * Update the UI immediately.
+         */
 
-
-function setupRelatedWork() {
-
-    $("#addRelatedWork")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                const title =
-                    window.prompt(
-                        "Related work title:"
-                    );
+        renderAttachments();
 
 
-                if (!title)
-                    return;
+        updateDate();
 
 
-                const type =
-                    window.prompt(
-                        "Type: PAPER / PROJECT / SIMULATION / PROTOTYPE",
-                        "PROJECT"
-                    );
+        /*
+         * Permanently save the updated
+         * attachment list.
+         */
+
+        await saveStudyData();
 
 
-                const description =
-                    window.prompt(
-                        "Why is this related?"
-                    );
-
-
-                studyData.relatedWork.push({
-
-                    id:
-                        generateID("related"),
-
-                    type:
-                        String(
-                            type || "PROJECT"
-                        )
-                        .trim()
-                        .toUpperCase(),
-
-                    title:
-                        title.trim(),
-
-                    description:
-                        description?.trim()
-                        || "Related work."
-
-                });
-
-
-                renderRelatedWork();
-
-                updateDate();
-
-                showToast(
-                    "Related work added."
-                );
-
-            }
+        showToast(
+            "Attachment deleted successfully."
         );
 
-}
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Attachment deletion failed:",
+            error
+        );
 
 
-/* =========================================================
-   30. REFLECTION
-========================================================= */
+        showToast(
 
-function loadReflection() {
+            error.message ||
 
-    const textarea =
-        $("#nextStudy");
+            "Unable to delete attachment."
 
-
-    if (textarea) {
-
-        textarea.value =
-            studyData.nextStudy;
+        );
 
     }
 
 }
 
-
-function setupReflection() {
-
-    $("#saveReflection")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                const textarea =
-                    $("#nextStudy");
-
-
-                if (!textarea)
-                    return;
-
-
-                studyData.nextStudy =
-                    textarea.value.trim();
-
-
-                updateDate();
-
-                showToast(
-                    "Study plan saved."
-                );
-
-            }
-        );
-
-}
-
-
 /* =========================================================
-   31. GENERAL CONTROLS
+   ADD LINK — MODAL INPUT
 ========================================================= */
 
-function setupGeneralControls() {
+function setupLinks() {
+    $("#addLinkButton")?.addEventListener("click", () => {
+        setValue("linkTitleInput", "");
+        setValue("linkURLInput", "");
+        setValue("linkDescriptionInput", "");
+        openModal("#linkModal");
+        $("#linkTitleInput")?.focus();
+    });
 
-    $("#editStudy")
-        ?.addEventListener(
-            "click",
-            editStudy
+    $("#saveLink")?.addEventListener("click", saveLink);
+}
+
+async function saveLink() {
+    const title = $("#linkTitleInput")?.value.trim();
+    const url = $("#linkURLInput")?.value.trim();
+    const description = $("#linkDescriptionInput")?.value.trim();
+
+    if (!title || !url) return showToast("Title and URL are required.");
+
+    const previous = clone(studyData.attachments);
+    studyData.attachments.unshift({
+        id: generateID("link"),
+        type: "link",
+        name: title,
+        url: normalizeURL(url),
+        description: description || "Study reference.",
+        date: getTodayISO()
+    });
+
+    renderAttachments();
+    updateDate();
+
+    try {
+        await saveStudyData();
+        closeModal("#linkModal");
+        showToast("Link added and saved.");
+    } catch (error) {
+        studyData.attachments = previous;
+        renderAttachments();
+        showToast(error.message || "Unable to save link.");
+    }
+}
+
+/* =========================================================
+   REFLECTION
+========================================================= */
+
+function loadReflection() {
+    setValue("nextStudy", studyData.nextStudy || "");
+}
+
+function setupReflection() {
+    $("#saveReflection")?.addEventListener("click", async () => {
+        const previous = studyData.nextStudy;
+        studyData.nextStudy = $("#nextStudy")?.value.trim() || "";
+        setText("nextFocus", studyData.nextStudy || "—");
+        updateDate();
+
+        try {
+            await saveStudyData();
+            showToast("Study plan saved.");
+        } catch (error) {
+            studyData.nextStudy = previous;
+            loadReflection();
+            setText("nextFocus", previous || "—");
+            showToast(error.message || "Unable to save study plan.");
+        }
+    });
+}
+
+/* =========================================================
+   SUMMARY / NAVIGATION
+========================================================= */
+
+function updateSummary() {
+    setText("summaryConfidence", `${studyData.confidence} / 5`);
+    setText("summaryConcepts", String(studyData.concepts.length));
+    setText(
+        "summaryProblems",
+        String(studyData.problems.filter(item => item.status === "open").length)
+    );
+    setText("knowledgeCount", String(studyData.knowledge.length));
+    setText("conceptsCount", String(studyData.concepts.length));
+    setText("problemsCount", String(studyData.problems.length));
+    setText("resourcesCount", String(studyData.resources.length));
+}
+
+function setupNavigation() {
+    $$("[data-section]").forEach(button => {
+        button.addEventListener("click", () => {
+            const target = document.getElementById(button.dataset.section)
+                || document.getElementById(`${button.dataset.section}Section`);
+            target?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+    });
+}
+
+/* =========================================================
+   UTILITIES
+========================================================= */
+
+function updateDate() {
+    const now = new Date();
+    studyData.updatedAt = now.toISOString();
+    studyData.updatedDate = formatDate(now);
+    setText("studyUpdatedDate", studyData.updatedDate);
+}
+
+function getTodayISO() {
+    return new Date().toISOString().split("T")[0];
+}
+
+function formatDate(value) {
+    if (!value) return "—";
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) return "—";
+
+    return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function getFileType(file) {
+    const name = file.name.toLowerCase();
+    if (file.type.startsWith("image/")) return "IMAGE";
+    if (file.type.startsWith("video/")) return "VIDEO";
+    if (file.type === "application/pdf") return "PDF";
+    if (file.type.includes("word") || /\.(doc|docx)$/.test(name)) return "DOCUMENT";
+    if (file.type.includes("sheet") || /\.(xls|xlsx|csv)$/.test(name)) return "SPREADSHEET";
+    if (file.type.includes("zip") || /\.(zip|rar|7z)$/.test(name)) return "ARCHIVE";
+    return "FILE";
+}
+
+function formatFileSize(bytes) {
+    if (!bytes) return "0 KB";
+    const units = ["B", "KB", "MB", "GB"];
+    const index = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+    return `${(bytes / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+}
+
+function normalizeURL(url) {
+    const value = String(url || "").trim();
+    if (!value) return "";
+    return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+
+function generateID(prefix = "item") {
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function clone(value) {
+    return JSON.parse(JSON.stringify(value));
+}
+
+function setText(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = value ?? "";
+}
+
+function setValue(id, value) {
+    const element = document.getElementById(id);
+    if (element) element.value = value ?? "";
+}
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function escapeAttribute(value) {
+    return escapeHTML(value);
+}
+
+function showToast(message) {
+    const toast = $("#studyToast");
+    if (!toast) return;
+
+    toast.textContent = message;
+    toast.classList.remove("hidden");
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+        toast.classList.add("hidden");
+    }, 2500);
+}
+/* =========================================================
+   STUDY HEADER
+========================================================= */
+
+function setupStudyHeader() {
+
+    const backButton =
+        document.getElementById(
+            "backToWorkspace"
         );
 
 
-    $("#archiveStudy")
-        ?.addEventListener(
-            "click",
-            archiveStudy
-        );
+    if (backButton) {
 
-
-    $("#backToWorkspace")
-        ?.addEventListener(
+        backButton.addEventListener(
             "click",
             () => {
 
                 /*
-                 * study.html:
+                 * Return to the previous page if the user
+                 * came from the Personal Workspace.
+                 */
+
+                if (
+                    window.history.length > 1
+                ) {
+
+                    window.history.back();
+
+                    return;
+
+                }
+
+
+                /*
+                 * Fallback location.
                  *
-                 * personal/
-                 * └── progress/
-                 *     └── study/
-                 *         └── study.html
-                 *
-                 * personal.html:
-                 *
-                 * personal/
-                 * └── personal.html
-                 *
-                 * Therefore:
+                 * Change this path only if your Personal
+                 * Workspace HTML is located somewhere else.
                  */
 
                 window.location.href =
@@ -3150,754 +2854,16 @@ function setupGeneralControls() {
             }
         );
 
-
-    $("#studySettings")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                showToast(
-                    "Settings will be connected later."
-                );
-
-            }
-        );
-
-
-    /*
-     * Escape closes all open modals.
-     */
-
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key === "Escape"
-            ) {
-
-                closeAllModals();
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   32. EDIT STUDY
-========================================================= */
-
-function editStudy() {
-
-    const topic =
-        window.prompt(
-            "Study topic:",
-            studyData.topic
-        );
-
-
-    if (topic === null)
-        return;
-
-
-    const description =
-        window.prompt(
-            "Study description:",
-            studyData.introduction
-        );
-
-
-    if (description === null)
-        return;
-
-
-    studyData.topic =
-        topic.trim();
-
-
-    studyData.introduction =
-        description.trim();
-
-
-    loadStudyInformation();
-
-    updateDate();
-
-    showToast(
-        "Study updated."
-    );
-
-}
-
-
-/* =========================================================
-   33. ARCHIVE
-========================================================= */
-
-function archiveStudy() {
-
-    const confirmed =
-        window.confirm(
-            "Mark this study as completed?"
-        );
-
-
-    if (!confirmed)
-        return;
-
-
-    studyData.status =
-        "completed";
-
-
-    const status =
-        $("#studyStatus");
-
-
-    if (status) {
-
-        status.textContent =
-            getStatusLabel(
-                studyData.status
-            );
-
-    }
-
-
-    updateDate();
-
-    showToast(
-        "Study marked as completed."
-    );
-
-}
-
-
-/* =========================================================
-   34. SUMMARY
-========================================================= */
-
-function updateSummary() {
-
-    const confidence =
-        $("#summaryConfidence");
-
-    const concepts =
-        $("#summaryConcepts");
-
-    const problems =
-        $("#summaryProblems");
-
-
-    if (confidence) {
-
-        confidence.textContent =
-            `${studyData.confidence} / 5`;
-
-    }
-
-
-    if (concepts) {
-
-        concepts.textContent =
-            studyData.concepts.length;
-
-    }
-
-
-    if (problems) {
-
-        problems.textContent =
-            studyData.problems.filter(
-                item =>
-                    item.status === "open"
-            ).length;
-
-    }
-
-
-    updateStudyTime();
-
-}
-
-
-function updateStudyTime() {
-
-    const element =
-        $("#summaryTime");
-
-
-    if (!element)
-        return;
-
-
-    let totalMinutes = 0;
-
-
-    studyData.timeline
-        .filter(
-            item =>
-                item.status ===
-                "completed"
-        )
-        .forEach(
-            item => {
-
-                totalMinutes +=
-                    parseDuration(
-                        item.duration
-                    );
-
-            }
-        );
-
-
-    if (totalMinutes <= 0) {
-
-        element.textContent =
-            "—";
-
-        return;
-
-    }
-
-
-    const hours =
-        Math.floor(
-            totalMinutes / 60
-        );
-
-    const minutes =
-        totalMinutes % 60;
-
-
-    element.textContent =
-        `${hours}h ${minutes}m`;
-
-}
-
-
-/* =========================================================
-   35. DURATION PARSER
-========================================================= */
-
-function parseDuration(value) {
-
-    if (!value)
-        return 0;
-
-
-    const text =
-        String(value)
-            .toLowerCase();
-
-
-    const hoursMatch =
-        text.match(
-            /(\d+(?:\.\d+)?)\s*h/
-        );
-
-
-    const minutesMatch =
-        text.match(
-            /(\d+)\s*m/
-        );
-
-
-    const hours =
-        hoursMatch
-            ? Number(hoursMatch[1])
-            : 0;
-
-
-    const minutes =
-        minutesMatch
-            ? Number(minutesMatch[1])
-            : 0;
-
-
-    return (
-        hours * 60 +
-        minutes
-    );
-
-}
-
-
-/* =========================================================
-   36. NAVIGATION
-========================================================= */
-
-function setupNavigation() {
-
-    $$(".study-nav-item")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const section =
-                        button.dataset.section;
-
-
-                    const target =
-                        document.getElementById(
-                            `${section}Section`
-                        );
-
-
-                    if (!target)
-                        return;
-
-
-                    $$(".study-nav-item")
-                        .forEach(
-                            item =>
-                                item.classList.toggle(
-                                    "active",
-                                    item === button
-                                )
-                        );
-
-
-                    target.scrollIntoView({
-
-                        behavior: "smooth",
-
-                        block: "start"
-
-                    });
-
-                }
-            );
-
-        });
-
-}
-
-
-/* =========================================================
-   37. MODAL HELPERS
-========================================================= */
-
-function openModal(selector) {
-
-    $(selector)
-        ?.classList.remove(
-            "hidden"
-        );
-
-}
-
-
-function closeModal(selector) {
-
-    $(selector)
-        ?.classList.add(
-            "hidden"
-        );
-
-}
-
-
-function closeAllModals() {
-
-    $$(".study-modal")
-        .forEach(
-            modal =>
-                modal.classList.add(
-                    "hidden"
-                )
-        );
-
-}
-
-
-/* =========================================================
-   38. DATE
-========================================================= */
-
-function updateDate() {
-
-    studyData.updatedDate =
-        formatDisplayDate(
-            new Date()
-        );
-
-
-    const element =
-        $("#studyUpdatedDate");
-
-
-    if (element) {
-
-        element.textContent =
-            studyData.updatedDate;
-
     }
 
 }
 
 
-function getTodayISO() {
-
-    const date =
-        new Date();
-
-
-    const year =
-        date.getFullYear();
-
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
-
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(2, "0");
-
-
-    return `${year}-${month}-${day}`;
-
-}
-
-
-function formatDisplayDate(date) {
-
-    return date
-        .toLocaleDateString(
-            "en-GB",
-            {
-                day: "2-digit",
-                month: "short",
-                year: "numeric"
-            }
-        );
-
-}
-
-
 /* =========================================================
-   39. FILE TYPE
+   LIVE STUDY CLOCK
 ========================================================= */
 
-function getFileType(file) {
-
-    const name =
-        file.name.toLowerCase();
-
-
-    if (
-        file.type.startsWith(
-            "image/"
-        )
-    )
-        return "IMAGE";
-
-
-    if (
-        file.type.startsWith(
-            "video/"
-        )
-    )
-        return "VIDEO";
-
-
-    if (
-        file.type ===
-        "application/pdf"
-    )
-        return "PDF";
-
-
-    if (
-        file.type.includes("word") ||
-        name.endsWith(".doc") ||
-        name.endsWith(".docx")
-    )
-        return "DOCUMENT";
-
-
-    if (
-        file.type.includes("sheet") ||
-        name.endsWith(".xls") ||
-        name.endsWith(".xlsx") ||
-        name.endsWith(".csv")
-    )
-        return "SPREADSHEET";
-
-
-    if (
-        file.type.includes("zip") ||
-        name.endsWith(".zip") ||
-        name.endsWith(".rar")
-    )
-        return "ARCHIVE";
-
-
-    return "FILE";
-
-}
-
-
-/* =========================================================
-   40. FILE SIZE
-========================================================= */
-
-function formatFileSize(bytes) {
-
-    if (!bytes)
-        return "0 KB";
-
-
-    const units = [
-        "B",
-        "KB",
-        "MB",
-        "GB"
-    ];
-
-
-    const index =
-        Math.floor(
-            Math.log(bytes) /
-            Math.log(1024)
-        );
-
-
-    const size =
-        bytes /
-        Math.pow(
-            1024,
-            index
-        );
-
-
-    return `${size.toFixed(
-        index === 0 ? 0 : 1
-    )} ${units[index]}`;
-
-}
-
-
-/* =========================================================
-   41. URL
-========================================================= */
-
-function normalizeURL(url) {
-
-    if (
-        /^https?:\/\//i.test(
-            url
-        )
-    ) {
-
-        return url;
-
-    }
-
-
-    return `https://${url}`;
-
-}
-
-
-/* =========================================================
-   42. INPUT
-========================================================= */
-
-function clearInput(selector) {
-
-    const element =
-        $(selector);
-
-
-    if (element)
-        element.value = "";
-
-}
-
-
-/* =========================================================
-   43. ID
-========================================================= */
-
-function generateID(prefix) {
-
-    return (
-
-        prefix +
-        "-" +
-        Date.now().toString(36) +
-        "-" +
-        Math.random()
-            .toString(36)
-            .substring(2, 8)
-
-    );
-
-}
-
-
-/* =========================================================
-   44. HTML ESCAPING
-========================================================= */
-
-function escapeHTML(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    )
-        return "";
-
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-function escapeAttribute(value) {
-
-    return escapeHTML(
-        value
-    );
-
-}
-
-
-/* =========================================================
-   45. TOAST
-========================================================= */
-
-let toastTimer;
-
-
-function showToast(message) {
-
-    const toast =
-        $("#studyToast");
-
-
-    if (!toast)
-        return;
-
-
-    toast.textContent =
-        message;
-
-
-    toast.classList.remove(
-        "hidden"
-    );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(
-            () => {
-
-                toast.classList.add(
-                    "hidden"
-                );
-
-            },
-            2400
-        );
-
-}
-
-
-/* =========================================================
-   46. FINAL EVENT BINDING
-========================================================= */
-
-/*
- * Attachment buttons are dynamically generated,
- * therefore we use event delegation here.
- */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        const openButton =
-            event.target.closest(
-                "[data-open-attachment]"
-            );
-
-
-        const deleteButton =
-            event.target.closest(
-                "[data-delete-attachment]"
-            );
-
-
-        if (openButton) {
-
-            openAttachment(
-                openButton.dataset.openAttachment
-            );
-
-        }
-
-
-        if (deleteButton) {
-
-            deleteAttachment(
-                deleteButton.dataset.deleteAttachment
-            );
-
-        }
-
-    }
-);
-
-/* =========================================================
-   LIVE DATE & CLOCK
-========================================================= */
-
-function updateLiveClock() {
-
-    const now = new Date();
-
+function initializeStudyClock() {
 
     const dateElement =
         document.getElementById(
@@ -3911,54 +2877,402 @@ function updateLiveClock() {
         );
 
 
-    if (!dateElement || !clockElement)
+    if (
+        !dateElement &&
+        !clockElement
+    ) {
+
         return;
 
-
-    const date =
-        now.toLocaleDateString(
-            "en-GB",
-            {
-                day: "2-digit",
-                month: "short",
-                year: "numeric"
-            }
-        );
+    }
 
 
-    const time =
-        now.toLocaleTimeString(
-            "en-US",
-            {
-                hour: "2-digit",
-                minute: "2-digit",
-                second: "2-digit",
-                hour12: true
-            }
-        );
+    function updateStudyClock() {
+
+        const now =
+            new Date();
 
 
-    dateElement.textContent =
-        date.toUpperCase();
+        /*
+         * Date
+         */
+
+        if (dateElement) {
+
+            dateElement.textContent =
+                now
+                    .toLocaleDateString(
+                        "en-GB",
+                        {
+                            day:
+                                "2-digit",
+
+                            month:
+                                "short",
+
+                            year:
+                                "numeric"
+                        }
+                    )
+                    .toUpperCase();
+
+        }
 
 
-    clockElement.textContent =
-        time;
+        /*
+         * Time
+         */
+
+        if (clockElement) {
+
+            clockElement.textContent =
+                now.toLocaleTimeString(
+                    "en-IN",
+                    {
+                        hour:
+                            "2-digit",
+
+                        minute:
+                            "2-digit",
+
+                        second:
+                            "2-digit",
+
+                        hour12:
+                            true
+                    }
+                );
+
+        }
+
+    }
+
+
+    /*
+     * Show immediately.
+     */
+
+    updateStudyClock();
+
+
+    /*
+     * Update every second.
+     */
+
+    setInterval(
+        updateStudyClock,
+        1000
+    );
 
 }
 
-
-/* Start clock immediately */
-
-updateLiveClock();
-
-
-/* Update every second */
-
-setInterval(
-    updateLiveClock,
-    1000
-);
 /* =========================================================
-   END
+   DELETE FILE FROM GOOGLE DRIVE
 ========================================================= */
+
+async function deleteFileFromGoogleDrive(
+    driveFileId
+) {
+
+    if (!currentWorkId) {
+
+        throw new Error(
+            "Study ID is missing."
+        );
+
+    }
+
+
+    if (!driveFileId) {
+
+        throw new Error(
+            "Google Drive file ID is missing."
+        );
+
+    }
+
+
+    const {
+
+        data: {
+            session
+        },
+
+        error:
+            sessionError
+
+    } =
+
+        await window.sb
+            .auth
+            .getSession();
+
+
+    if (
+        sessionError ||
+        !session
+    ) {
+
+        throw new Error(
+            "You must be logged in to delete files."
+        );
+
+    }
+
+
+    const response =
+        await fetch(
+
+            `${SUPABASE_FUNCTIONS_URL}/delete-rigid-file`,
+
+            {
+
+                method:
+                    "POST",
+
+                headers: {
+
+                    "Authorization":
+                        `Bearer ${session.access_token}`,
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                body:
+                    JSON.stringify({
+
+                        work_id:
+                            currentWorkId,
+
+                        drive_file_id:
+                            driveFileId
+
+                    })
+
+            }
+
+        );
+
+
+    let result;
+
+
+    try {
+
+        result =
+            await response.json();
+
+    }
+
+    catch {
+
+        throw new Error(
+            "Invalid response from file deletion service."
+        );
+
+    }
+
+
+    if (
+        !response.ok ||
+        !result.success
+    ) {
+
+        throw new Error(
+
+            result?.error ||
+
+            "Unable to delete file."
+
+        );
+
+    }
+
+
+    return true;
+
+}
+
+/* =========================================================
+   DELETE OBJECTIVE
+========================================================= */
+
+async function deleteObjective() {
+
+    const currentObjective =
+        studyData.objective;
+
+
+    /*
+     * Check whether an objective exists.
+     */
+
+    if (
+        !currentObjective ||
+        !currentObjective.trim()
+    ) {
+
+        showToast(
+            "There is no objective to delete."
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * Ask for confirmation.
+     */
+
+    const confirmed =
+        window.confirm(
+            "Are you sure you want to delete the objective?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        /*
+         * Remove the objective.
+         */
+
+        studyData.objective = "";
+
+
+        /*
+         * Permanently save the updated data.
+         */
+
+        await saveStudyData();
+
+
+        /*
+         * Reload/update the displayed
+         * Study information.
+         */
+
+        loadStudyInformation();
+
+
+        showToast(
+            "Objective deleted successfully."
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unable to delete objective:",
+            error
+        );
+
+
+        showToast(
+
+            error.message ||
+
+            "Unable to delete objective."
+
+        );
+
+    }
+
+}
+
+/* =========================================================
+   DELETE ARRAY ITEM
+========================================================= */
+
+async function deleteStudyArrayItem(
+    arrayName,
+    id,
+    renderFunction,
+    successMessage,
+    confirmationMessage
+) {
+
+    const confirmed =
+        window.confirm(
+            confirmationMessage
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    const previous =
+        clone(
+            studyData[arrayName]
+        );
+
+
+    try {
+
+        studyData[arrayName] =
+            studyData[arrayName].filter(
+                item =>
+                    String(item.id) !==
+                    String(id)
+            );
+
+
+        renderFunction();
+
+
+        updateSummary();
+
+        updateDate();
+
+
+        await saveStudyData();
+
+
+        showToast(
+            successMessage
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            `Unable to delete ${arrayName}:`,
+            error
+        );
+
+
+        studyData[arrayName] =
+            previous;
+
+
+        renderFunction();
+
+        updateSummary();
+
+
+        showToast(
+
+            error.message ||
+
+            "Unable to delete item."
+
+        );
+
+    }
+
+}

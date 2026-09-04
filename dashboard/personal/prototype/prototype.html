@@ -1,24 +1,26 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
+  
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>Prototype | RiGiD</title>
+<title>Prototype | RiGiD</title>
 
-    <link
-        rel="stylesheet"
-        href="prototype.css"
-    >
+<link
+    rel="stylesheet"
+    href="prototype.css"
+>
+  
 
 </head>
-
 
 <body>
 
@@ -28,121 +30,125 @@
 
 <header class="prototype-header">
 
-    <div class="prototype-brand">
+  
+<div class="prototype-brand">
 
-        <div class="prototype-brand-top">
+    <div class="prototype-brand-top">
 
-            <span class="prototype-badge">
-                PROTOTYPE
-            </span>
-
-            <span
-                class="prototype-status"
-                id="prototypeStatus"
-            >
-                ● BUILDING
-            </span>
-
-            <span
-                class="prototype-version"
-                id="prototypeVersion"
-            >
-                V2
-            </span>
-
-        </div>
+        <span class="prototype-badge">
+            PROTOTYPE
+        </span>
 
 
-        <h1 id="prototypeTitle">
-            Smart Renewable Energy Prototype
-        </h1>
-
-
-        <p
-            class="prototype-description"
-            id="prototypeDescription"
+        <button
+            class="prototype-status"
+            id="prototypeStatus"
+            type="button"
         >
-            Physical implementation of the proposed
-            system for functional testing and validation.
-        </p>
+            ● BUILDING
+        </button>
 
 
-        <div
-            class="prototype-tags"
-            id="prototypeTags"
+        <span
+            class="prototype-version"
+            id="prototypeVersion"
         >
-
-            <span>HARDWARE</span>
-            <span>R&amp;D</span>
-            <span>TESTING</span>
-            <span>ENERGY</span>
-
-        </div>
+            V2
+        </span>
 
     </div>
 
 
-    <div class="prototype-live">
+    <h1 id="prototypeTitle">
+        
+    </h1>
 
-        <div class="prototype-date">
 
-            <span id="prototypeDate">
-                23 AUG 2026
-            </span>
+    <p
+        class="prototype-description"
+        id="prototypeDescription"
+    >
+        Physical implementation of the proposed
+        system for functional testing and validation.
+    </p>
 
-            <strong id="prototypeClock">
-                05:30:00 PM
+
+    <div
+        class="prototype-tags"
+        id="prototypeTags"
+    >
+
+        <span>HARDWARE</span>
+        <span>R&amp;D</span>
+        <span>TESTING</span>
+        <span>ENERGY</span>
+
+    </div>
+
+</div>
+
+
+<div class="prototype-live">
+
+    <div class="prototype-date">
+
+        <span id="prototypeDate">
+            23 AUG 2026
+        </span>
+
+        <strong id="prototypeClock">
+            05:30:00 PM
+        </strong>
+
+    </div>
+
+
+    <div class="prototype-meta">
+
+        <div>
+
+            <label>
+                OWNER
+            </label>
+
+            <strong id="prototypeOwner">
+                You
             </strong>
 
         </div>
 
 
-        <div class="prototype-meta">
+        <div>
 
-            <div>
+            <label>
+                STARTED
+            </label>
 
-                <label>
-                    OWNER
-                </label>
+            <strong id="prototypeStarted">
+                01 AUG 2026
+            </strong>
 
-                <strong>
-                    You
-                </strong>
-
-            </div>
+        </div>
 
 
-            <div>
+        <div>
 
-                <label>
-                    STARTED
-                </label>
+            <label>
+                LAST UPDATED
+            </label>
 
-                <strong>
-                    01 AUG 2026
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <label>
-                    LAST UPDATED
-                </label>
-
-                <strong>
-                    23 AUG 2026
-                </strong>
-
-            </div>
+            <strong id="prototypeLastUpdated">
+                23 AUG 2026
+            </strong>
 
         </div>
 
     </div>
 
-</header>
+</div>
+  
 
+</header>
 
 <!-- =====================================================
      PROTOTYPE NAVIGATION
@@ -150,60 +156,73 @@
 
 <nav class="prototype-navigation">
 
-    <button
-        class="prototype-nav-item active"
-        data-section="prototypeOverview"
-    >
-        Overview
-    </button>
+  
+<button
+    class="prototype-nav-item active"
+    data-section="prototypeOverview"
+    type="button"
+>
+    Overview
+</button>
 
-    <button
-        class="prototype-nav-item"
-        data-section="prototypeDesign"
-    >
-        Design
-    </button>
 
-    <button
-        class="prototype-nav-item"
-        data-section="prototypeBuild"
-    >
-        Build
-    </button>
+<button
+    class="prototype-nav-item"
+    data-section="prototypeDesign"
+    type="button"
+>
+    Design
+</button>
 
-    <button
-        class="prototype-nav-item"
-        data-section="prototypeComponents"
-    >
-        Components
-    </button>
 
-    <button
-        class="prototype-nav-item"
-        data-section="prototypeTesting"
-    >
-        Testing
-    </button>
+<button
+    class="prototype-nav-item"
+    data-section="prototypeBuild"
+    type="button"
+>
+    Build
+</button>
 
-    <button
-        class="prototype-nav-item"
-        data-section="prototypeIterations"
-    >
-        Iterations
-    </button>
 
-    <button
-        class="prototype-nav-item"
-        data-section="prototypeFiles"
-    >
-        Files
-    </button>
+<button
+    class="prototype-nav-item"
+    data-section="prototypeComponents"
+    type="button"
+>
+    Components
+</button>
+
+
+<button
+    class="prototype-nav-item"
+    data-section="prototypeTesting"
+    type="button"
+>
+    Testing
+</button>
+
+
+<button
+    class="prototype-nav-item"
+    data-section="prototypeIterations"
+    type="button"
+>
+    Iterations
+</button>
+
+
+<button
+    class="prototype-nav-item"
+    data-section="prototypeFiles"
+    type="button"
+>
+    Files
+</button>
+  
 
 </nav>
 
-
 <main class="prototype-container">
-
 
 <!-- =====================================================
      OVERVIEW
@@ -214,206 +233,178 @@
     class="prototype-section"
 >
 
-    <div class="section-heading">
+  
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                PROTOTYPE OVERVIEW
-            </span>
+        <span class="section-label">
+            PROTOTYPE OVERVIEW
+        </span>
 
-            <h2>
-                Prototype Control Center
-            </h2>
-
-        </div>
-
-        <button
-            class="outline-button"
-            id="editPrototype"
-        >
-            Edit
-        </button>
+        <h2>
+            Prototype Control Center
+        </h2>
 
     </div>
 
 
-    <div class="overview-grid">
+    <button
+        class="outline-button"
+        id="editPrototype"
+        type="button"
+    >
+        Edit
+    </button>
+
+</div>
 
 
-        <!-- PROGRESS -->
 
-        <article class="prototype-card progress-card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        DEVELOPMENT PROGRESS
-                    </span>
-
-                    <h3>
-                        Prototype completion
-                    </h3>
-
-                </div>
-
-                <strong
-                    id="prototypeProgress"
-                    class="progress-percentage"
-                >
-                    68%
-                </strong>
-
-            </div>
+<div class="overview-grid">
 
 
-            <div class="progress-track">
+    <!-- PROGRESS -->
 
-                <span
-                    id="prototypeProgressBar"
-                    style="width:68%"
-                ></span>
-
-            </div>
-
-
-            <div class="progress-footer">
-
-                <span>
-                    Click to update
-                </span>
-
-                <span id="prototypeProgressStatus">
-                    Build phase
-                </span>
-
-            </div>
-
-        </article>
-
-
-        <!-- CURRENT VERSION -->
-
-        <article class="prototype-card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        CURRENT VERSION
-                    </span>
-
-                    <h3>
-                        Active prototype
-                    </h3>
-
-                </div>
-
-                <button
-                    class="text-button"
-                    id="editVersion"
-                >
-                    Edit
-                </button>
-
-            </div>
-
-
-            <div class="version-display">
-
-                <strong id="currentVersion">
-                    V2
-                </strong>
-
-                <div>
-
-                    <span>
-                        Improved enclosure
-                    </span>
-
-                    <small>
-                        Updated after V1 testing
-                    </small>
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-        <!-- NEXT ACTION -->
-
-        <article class="prototype-card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        NEXT ACTION
-                    </span>
-
-                    <h3>
-                        Immediate work
-                    </h3>
-
-                </div>
-
-                <button
-                    class="text-button"
-                    id="editPrototypeNext"
-                >
-                    Edit
-                </button>
-
-            </div>
-
-
-            <div
-                class="next-action"
-                id="prototypeNextAction"
-            >
-
-                <strong>
-                    Complete thermal testing
-                </strong>
-
-                <span>
-                    Due: 27 AUG
-                </span>
-
-            </div>
-
-        </article>
-
-    </div>
-
-
-    <!-- OBJECTIVE -->
-
-    <article class="prototype-card objective-card">
+    <article class="prototype-card progress-card">
 
         <div class="card-header">
 
             <div>
 
                 <span class="card-label">
-                    PURPOSE
+                    DEVELOPMENT PROGRESS
                 </span>
 
                 <h3>
-                    Prototype Objective
+                    Prototype completion
                 </h3>
 
             </div>
 
+
+            <button
+                id="editPrototypeProgress"
+                class="progress-percentage"
+                type="button"
+            >
+                <strong id="prototypeProgress">
+                    68%
+                </strong>
+            </button>
+
+        </div>
+
+
+        <div class="progress-track">
+
+            <span
+                id="prototypeProgressBar"
+                style="width:68%"
+            ></span>
+
+        </div>
+
+
+        <div class="progress-footer">
+
+            <button
+                id="updatePrototypeProgress"
+                class="text-button"
+                type="button"
+            >
+                Update progress
+            </button>
+
+
+            <span id="prototypeProgressStatus">
+                Build phase
+            </span>
+
+        </div>
+
+    </article>
+
+
+
+    <!-- CURRENT VERSION -->
+
+    <article class="prototype-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <span class="card-label">
+                    CURRENT VERSION
+                </span>
+
+                <h3>
+                    Active prototype
+                </h3>
+
+            </div>
+
+
             <button
                 class="text-button"
-                id="editObjective"
+                id="editVersion"
+                type="button"
+            >
+                Edit
+            </button>
+
+        </div>
+
+
+        <div class="version-display">
+
+            <strong id="currentVersion">
+                V2
+            </strong>
+
+
+            <div>
+
+                <span id="currentVersionTitle">
+                    Improved enclosure
+                </span>
+
+                <small id="currentVersionDescription">
+                    Updated after V1 testing
+                </small>
+
+            </div>
+
+        </div>
+
+    </article>
+
+
+
+    <!-- NEXT ACTION -->
+
+    <article class="prototype-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <span class="card-label">
+                    NEXT ACTION
+                </span>
+
+                <h3>
+                    Immediate work
+                </h3>
+
+            </div>
+
+
+            <button
+                class="text-button"
+                id="editPrototypeNext"
+                type="button"
             >
                 Edit
             </button>
@@ -422,22 +413,72 @@
 
 
         <div
-            id="prototypeObjective"
-            class="editable-content"
+            class="next-action"
+            id="prototypeNextAction"
         >
 
-            <p>
-                Describe what this prototype is intended
-                to demonstrate, test or validate.
-            </p>
+            <strong id="prototypeNextActionTitle">
+                Complete thermal testing
+            </strong>
+
+            <span id="prototypeNextActionDue">
+                Due: 27 AUG
+            </span>
 
         </div>
 
     </article>
 
+</div>
+
+
+
+<!-- OBJECTIVE -->
+
+<article class="prototype-card objective-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <span class="card-label">
+                PURPOSE
+            </span>
+
+            <h3>
+                Prototype Objective
+            </h3>
+
+        </div>
+
+
+        <button
+            class="text-button"
+            id="editObjective"
+            type="button"
+        >
+            Edit
+        </button>
+
+    </div>
+
+
+    <div
+        id="prototypeObjective"
+        class="editable-content"
+    >
+
+        <p>
+            Describe what this prototype is intended
+            to demonstrate, test or validate.
+        </p>
+
+    </div>
+
+</article>
+  
+
 </section>
-
-
 
 <!-- =====================================================
      DESIGN
@@ -448,165 +489,98 @@
     class="prototype-section"
 >
 
-    <div class="section-heading">
+  
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                DESIGN
-            </span>
+        <span class="section-label">
+            DESIGN
+        </span>
 
-            <h2>
-                Design &amp; Specifications
-            </h2>
-
-        </div>
-
-        <button
-            class="outline-button"
-            id="editDesign"
-        >
-            Edit
-        </button>
+        <h2>
+            Design &amp; Specifications
+        </h2>
 
     </div>
 
 
-    <div class="design-grid">
+    <button
+        class="outline-button"
+        id="editDesign"
+        type="button"
+    >
+        Edit
+    </button>
+
+</div>
 
 
-        <article class="prototype-card">
 
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        CONCEPT
-                    </span>
-
-                    <h3>
-                        Design Concept
-                    </h3>
-
-                </div>
-
-            </div>
+<div class="design-grid">
 
 
-            <div
-                id="designConcept"
-                class="editable-content"
-            >
+    <!-- DESIGN CONCEPT -->
 
-                <p>
-                    Record the engineering concept behind
-                    this prototype and explain why this
-                    architecture was selected.
-                </p>
-
-            </div>
-
-        </article>
-
-
-        <article class="prototype-card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        SPECIFICATIONS
-                    </span>
-
-                    <h3>
-                        Key Parameters
-                    </h3>
-
-                </div>
-
-                <button
-                    class="text-button"
-                    id="addSpecification"
-                >
-                    + Add
-                </button>
-
-            </div>
-
-
-            <div
-                class="specification-list"
-                id="specificationList"
-            >
-
-                <div class="specification-row">
-
-                    <span>
-                        Rated Power
-                    </span>
-
-                    <strong>
-                        1.2 kW
-                    </strong>
-
-                </div>
-
-
-                <div class="specification-row">
-
-                    <span>
-                        Rated Voltage
-                    </span>
-
-                    <strong>
-                        48 V
-                    </strong>
-
-                </div>
-
-
-                <div class="specification-row">
-
-                    <span>
-                        Rated Speed
-                    </span>
-
-                    <strong>
-                        850 RPM
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </article>
-
-    </div>
-
-
-    <!-- DESIGN NOTES -->
-
-    <article class="prototype-card design-notes-card">
+    <article class="prototype-card">
 
         <div class="card-header">
 
             <div>
 
                 <span class="card-label">
-                    ENGINEERING NOTES
+                    CONCEPT
                 </span>
 
                 <h3>
-                    Design Decisions
+                    Design Concept
                 </h3>
 
             </div>
 
+        </div>
+
+
+        <div
+            id="designConcept"
+            class="editable-content"
+        >
+
+            <p>
+                Record the engineering concept behind
+                this prototype and explain why this
+                architecture was selected.
+            </p>
+
+        </div>
+
+    </article>
+
+
+
+    <!-- SPECIFICATIONS -->
+
+    <article class="prototype-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <span class="card-label">
+                    SPECIFICATIONS
+                </span>
+
+                <h3>
+                    Key Parameters
+                </h3>
+
+            </div>
+
+
             <button
                 class="text-button"
-                id="addDesignDecision"
+                id="addSpecification"
+                type="button"
             >
                 + Add
             </button>
@@ -615,21 +589,45 @@
 
 
         <div
-            class="design-decision-list"
-            id="designDecisionList"
+            class="specification-list"
+            id="specificationList"
         >
 
-            <div class="design-decision">
+            <div class="specification-row">
+
+                <span>
+                    Rated Power
+                </span>
 
                 <strong>
-                    Why was this design selected?
+                    1.2 kW
                 </strong>
 
-                <p>
-                    Record important design decisions,
-                    alternatives considered and the
-                    reasoning behind the final choice.
-                </p>
+            </div>
+
+
+            <div class="specification-row">
+
+                <span>
+                    Rated Voltage
+                </span>
+
+                <strong>
+                    48 V
+                </strong>
+
+            </div>
+
+
+            <div class="specification-row">
+
+                <span>
+                    Rated Speed
+                </span>
+
+                <strong>
+                    850 RPM
+                </strong>
 
             </div>
 
@@ -637,9 +635,65 @@
 
     </article>
 
+</div>
+
+
+
+<!-- DESIGN DECISIONS -->
+
+<article class="prototype-card design-notes-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <span class="card-label">
+                ENGINEERING NOTES
+            </span>
+
+            <h3>
+                Design Decisions
+            </h3>
+
+        </div>
+
+
+        <button
+            class="text-button"
+            id="addDesignDecision"
+            type="button"
+        >
+            + Add
+        </button>
+
+    </div>
+
+
+    <div
+        class="design-decision-list"
+        id="designDecisionList"
+    >
+
+        <div class="design-decision">
+
+            <strong>
+                Why was this design selected?
+            </strong>
+
+            <p>
+                Record important design decisions,
+                alternatives considered and the
+                reasoning behind the final choice.
+            </p>
+
+        </div>
+
+    </div>
+
+</article>
+  
+
 </section>
-
-
 
 <!-- =====================================================
      BUILD LOG
@@ -650,166 +704,120 @@
     class="prototype-section"
 >
 
-    <div class="section-heading">
+  
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                FABRICATION
-            </span>
+        <span class="section-label">
+            FABRICATION
+        </span>
 
-            <h2>
-                Build Log
-            </h2>
-
-        </div>
-
-        <button
-            class="primary-button"
-            id="addBuildEntry"
-        >
-            + Build Entry
-        </button>
+        <h2>
+            Build Log
+        </h2>
 
     </div>
+
+
+    <button
+        class="primary-button"
+        id="addBuildEntry"
+        type="button"
+    >
+        + Build Entry
+    </button>
+
+</div>
+
+
+
+<div class="build-layout">
 
 
     <div
-        class="build-layout"
+        class="build-progress-card"
+        id="buildProgressCard"
     >
 
-        <div
-            class="build-progress-card"
-        >
+        <div class="card-header">
 
-            <span class="card-label">
-                BUILD STAGE
-            </span>
+            <div>
 
-            <strong>
-                Hardware Assembly
-            </strong>
-
-            <div class="build-stage-track">
-
-                <span
-                    style="width:72%"
-                ></span>
-
-            </div>
-
-
-            <div class="build-stage-labels">
-
-                <span>
-                    Design
+                <span class="card-label">
+                    BUILD STATUS
                 </span>
 
-                <span>
-                    Fabrication
-                </span>
-
-                <span>
-                    Assembly
-                </span>
-
-                <span>
-                    Testing
-                </span>
+                <h3>
+                    Fabrication Progress
+                </h3>
 
             </div>
 
         </div>
 
 
-        <div
-            class="build-log"
-            id="buildLog"
-        >
+        <div class="build-progress-display">
 
-            <article class="build-entry">
+            <strong id="buildProgressPercentage">
+                68%
+            </strong>
 
-                <div class="build-entry-date">
-                    23 AUG
-                </div>
+            <span id="buildProgressLabel">
+                Current build progress
+            </span>
 
-                <div class="build-entry-content">
-
-                    <div class="build-entry-top">
-
-                        <span class="build-status ongoing">
-                            IN PROGRESS
-                        </span>
-
-                        <button
-                            class="timeline-edit"
-                            type="button"
-                        >
-                            ✎
-                        </button>
-
-                    </div>
-
-                    <h3>
-                        Power electronics assembly
-                    </h3>
-
-                    <p>
-                        Converter, protection stage and
-                        controller integration underway.
-                    </p>
-
-                </div>
-
-            </article>
+        </div>
 
 
-            <article class="build-entry">
+        <div class="progress-track">
 
-                <div class="build-entry-date">
-                    21 AUG
-                </div>
-
-                <div class="build-entry-content">
-
-                    <div class="build-entry-top">
-
-                        <span class="build-status completed">
-                            COMPLETED
-                        </span>
-
-                        <button
-                            class="timeline-edit"
-                            type="button"
-                        >
-                            ✎
-                        </button>
-
-                    </div>
-
-                    <h3>
-                        Mechanical frame completed
-                    </h3>
-
-                    <p>
-                        Main frame fabricated and prepared
-                        for subsystem installation.
-                    </p>
-
-                </div>
-
-            </article>
+            <span
+                id="buildProgressBar"
+                style="width:68%"
+            ></span>
 
         </div>
 
     </div>
 
+
+
+    <div
+        class="build-log-list"
+        id="buildLogList"
+    >
+
+        <article class="build-log-entry">
+
+            <div class="build-log-date">
+                23 AUG 2026
+            </div>
+
+            <div class="build-log-content">
+
+                <strong>
+                    Improved enclosure assembly
+                </strong>
+
+                <p>
+                    Revised the enclosure and improved
+                    internal component arrangement.
+                </p>
+
+            </div>
+
+        </article>
+
+    </div>
+
+</div>
+  
+
 </section>
 
-
-
 <!-- =====================================================
-     COMPONENTS / BOM
+     COMPONENTS
 ===================================================== -->
 
 <section
@@ -817,201 +825,68 @@
     class="prototype-section"
 >
 
-    <div class="section-heading">
+  
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                BILL OF MATERIALS
-            </span>
+        <span class="section-label">
+            HARDWARE
+        </span>
 
-            <h2>
-                Components
-            </h2>
-
-        </div>
-
-        <button
-            class="outline-button"
-            id="addComponent"
-        >
-            + Component
-        </button>
+        <h2>
+            Components &amp; Materials
+        </h2>
 
     </div>
 
 
-    <div class="component-summary">
-
-        <div class="component-summary-card">
-
-            <strong id="componentTotal">
-                8
-            </strong>
-
-            <span>
-                Total Components
-            </span>
-
-        </div>
-
-
-        <div class="component-summary-card">
-
-            <strong id="componentReady">
-                6
-            </strong>
-
-            <span>
-                Available
-            </span>
-
-        </div>
-
-
-        <div class="component-summary-card">
-
-            <strong id="componentPending">
-                2
-            </strong>
-
-            <span>
-                Pending
-            </span>
-
-        </div>
-
-    </div>
-
-
-    <div
-        class="component-table-wrapper"
+    <button
+        class="primary-button"
+        id="addComponent"
+        type="button"
     >
+        + Component
+    </button>
 
-        <table class="component-table">
-
-            <thead>
-
-                <tr>
-
-                    <th>
-                        Component
-                    </th>
-
-                    <th>
-                        Specification
-                    </th>
-
-                    <th>
-                        Qty
-                    </th>
-
-                    <th>
-                        Status
-                    </th>
-
-                    <th>
-                        Notes
-                    </th>
-
-                </tr>
-
-            </thead>
+</div>
 
 
-            <tbody
-                id="componentTableBody"
-            >
 
-                <tr>
+<div
+    class="component-grid"
+    id="prototypeComponentList"
+>
 
-                    <td>
-                        BLDC Generator
-                    </td>
+    <article class="component-card">
 
-                    <td>
-                        1.2 kW / 850 RPM
-                    </td>
+        <div class="component-card-top">
 
-                    <td>
-                        1
-                    </td>
+            <strong>
+                Power Electronics Module
+            </strong>
 
-                    <td>
-                        <span class="component-status ready">
-                            READY
-                        </span>
-                    </td>
+            <span>
+                ACTIVE
+            </span>
 
-                    <td>
-                        Generator received
-                    </td>
+        </div>
 
-                </tr>
+        <p>
+            Main power conversion and protection
+            electronics.
+        </p>
 
+        <small>
+            Quantity: 1
+        </small>
 
-                <tr>
+    </article>
 
-                    <td>
-                        Controller
-                    </td>
-
-                    <td>
-                        ESP32
-                    </td>
-
-                    <td>
-                        1
-                    </td>
-
-                    <td>
-                        <span class="component-status ready">
-                            READY
-                        </span>
-                    </td>
-
-                    <td>
-                        Main control unit
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>
-                        MOSFET Power Stage
-                    </td>
-
-                    <td>
-                        3-phase
-                    </td>
-
-                    <td>
-                        1
-                    </td>
-
-                    <td>
-                        <span class="component-status pending">
-                            PENDING
-                        </span>
-                    </td>
-
-                    <td>
-                        Waiting for delivery
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
+</div>
+  
 
 </section>
-
-
 
 <!-- =====================================================
      TESTING
@@ -1022,302 +897,309 @@
     class="prototype-section"
 >
 
-    <div class="section-heading">
+  
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                VALIDATION
-            </span>
+        <span class="section-label">
+            VALIDATION
+        </span>
 
-            <h2>
-                Testing &amp; Measurements
-            </h2>
+        <h2>
+            Testing &amp; Measurements
+        </h2>
+
+    </div>
+
+
+    <button
+        class="primary-button"
+        id="addPrototypeTest"
+        type="button"
+    >
+        + Test
+    </button>
+
+</div>
+
+
+
+<div class="test-summary-grid">
+
+    <article class="test-summary-card">
+
+        <strong id="prototypeTestTotal">
+            7
+        </strong>
+
+        <span>
+            TESTS
+        </span>
+
+    </article>
+
+
+    <article class="test-summary-card passed">
+
+        <strong id="prototypeTestPassed">
+            5
+        </strong>
+
+        <span>
+            PASSED
+        </span>
+
+    </article>
+
+
+    <article class="test-summary-card failed">
+
+        <strong id="prototypeTestFailed">
+            1
+        </strong>
+
+        <span>
+            FAILED
+        </span>
+
+    </article>
+
+
+    <article class="test-summary-card pending">
+
+        <strong id="prototypeTestPending">
+            1
+        </strong>
+
+        <span>
+            PENDING
+        </span>
+
+    </article>
+
+</div>
+
+
+
+<div
+    class="prototype-test-list"
+    id="prototypeTestList"
+>
+
+    <article class="prototype-test passed">
+
+        <div class="test-result-icon">
+            ✓
+        </div>
+
+        <div class="prototype-test-info">
+
+            <strong>
+                No-load functional test
+            </strong>
+
+            <p>
+                Prototype starts and all major
+                subsystems respond correctly.
+            </p>
 
         </div>
 
+        <span class="test-result-badge passed">
+            PASSED
+        </span>
+
+    </article>
+
+
+    <article class="prototype-test failed">
+
+        <div class="test-result-icon">
+            !
+        </div>
+
+        <div class="prototype-test-info">
+
+            <strong>
+                Thermal test
+            </strong>
+
+            <p>
+                Temperature increased beyond the
+                expected operating range.
+            </p>
+
+        </div>
+
+        <span class="test-result-badge failed">
+            FAILED
+        </span>
+
+    </article>
+
+
+    <article class="prototype-test pending">
+
+        <div class="test-result-icon">
+            •
+        </div>
+
+        <div class="prototype-test-info">
+
+            <strong>
+                Full-load endurance
+            </strong>
+
+            <p>
+                To be performed after thermal
+                improvements.
+            </p>
+
+        </div>
+
+        <span class="test-result-badge pending">
+            PENDING
+        </span>
+
+    </article>
+
+</div>
+
+
+
+<!-- MEASUREMENTS -->
+
+<article class="prototype-card measurements-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <span class="card-label">
+                MEASUREMENTS
+            </span>
+
+            <h3>
+                Test Data
+            </h3>
+
+        </div>
+
+
         <button
-            class="primary-button"
-            id="addPrototypeTest"
+            class="text-button"
+            id="addMeasurement"
+            type="button"
         >
-            + Test
+            + Measurement
         </button>
 
     </div>
 
 
-    <div class="test-summary-grid">
+    <div class="measurement-table-wrapper">
 
-        <article class="test-summary-card">
+        <table class="measurement-table">
 
-            <strong>
-                7
-            </strong>
+            <thead>
 
-            <span>
-                TESTS
-            </span>
+                <tr>
 
-        </article>
+                    <th>
+                        Parameter
+                    </th>
 
+                    <th>
+                        Expected
+                    </th>
 
-        <article class="test-summary-card passed">
+                    <th>
+                        Measured
+                    </th>
 
-            <strong>
-                5
-            </strong>
+                    <th>
+                        Unit
+                    </th>
 
-            <span>
-                PASSED
-            </span>
+                    <th>
+                        Result
+                    </th>
 
-        </article>
+                </tr>
 
-
-        <article class="test-summary-card failed">
-
-            <strong>
-                1
-            </strong>
-
-            <span>
-                FAILED
-            </span>
-
-        </article>
+            </thead>
 
 
-        <article class="test-summary-card pending">
+            <tbody id="measurementTableBody">
 
-            <strong>
-                1
-            </strong>
+                <tr>
 
-            <span>
-                PENDING
-            </span>
+                    <td>
+                        Output Voltage
+                    </td>
 
-        </article>
+                    <td>
+                        48
+                    </td>
 
-    </div>
+                    <td>
+                        47.8
+                    </td>
 
+                    <td>
+                        V
+                    </td>
 
-    <div
-        class="prototype-test-list"
-        id="prototypeTestList"
-    >
+                    <td>
 
-        <article class="prototype-test passed">
+                        <span class="measurement-pass">
+                            PASS
+                        </span>
 
-            <div class="test-result-icon">
-                ✓
-            </div>
+                    </td>
 
-            <div class="prototype-test-info">
-
-                <strong>
-                    No-load functional test
-                </strong>
-
-                <p>
-                    Prototype starts and all major
-                    subsystems respond correctly.
-                </p>
-
-            </div>
-
-            <span class="test-result-badge passed">
-                PASSED
-            </span>
-
-        </article>
+                </tr>
 
 
-        <article class="prototype-test failed">
+                <tr>
 
-            <div class="test-result-icon">
-                !
-            </div>
+                    <td>
+                        Output Current
+                    </td>
 
-            <div class="prototype-test-info">
+                    <td>
+                        20
+                    </td>
 
-                <strong>
-                    Thermal test
-                </strong>
+                    <td>
+                        18.6
+                    </td>
 
-                <p>
-                    Temperature increased beyond the
-                    expected operating range.
-                </p>
+                    <td>
+                        A
+                    </td>
 
-            </div>
+                    <td>
 
-            <span class="test-result-badge failed">
-                FAILED
-            </span>
+                        <span class="measurement-pass">
+                            PASS
+                        </span>
 
-        </article>
+                    </td>
 
+                </tr>
 
-        <article class="prototype-test pending">
+            </tbody>
 
-            <div class="test-result-icon">
-                •
-            </div>
-
-            <div class="prototype-test-info">
-
-                <strong>
-                    Full-load endurance
-                </strong>
-
-                <p>
-                    To be performed after thermal
-                    improvements.
-                </p>
-
-            </div>
-
-            <span class="test-result-badge pending">
-                PENDING
-            </span>
-
-        </article>
+        </table>
 
     </div>
 
-
-    <!-- MEASUREMENT TABLE -->
-
-    <article class="prototype-card measurements-card">
-
-        <div class="card-header">
-
-            <div>
-
-                <span class="card-label">
-                    MEASUREMENTS
-                </span>
-
-                <h3>
-                    Test Data
-                </h3>
-
-            </div>
-
-            <button
-                class="text-button"
-                id="addMeasurement"
-            >
-                + Measurement
-            </button>
-
-        </div>
-
-
-        <div
-            class="measurement-table-wrapper"
-        >
-
-            <table class="measurement-table">
-
-                <thead>
-
-                    <tr>
-
-                        <th>
-                            Parameter
-                        </th>
-
-                        <th>
-                            Expected
-                        </th>
-
-                        <th>
-                            Measured
-                        </th>
-
-                        <th>
-                            Unit
-                        </th>
-
-                        <th>
-                            Result
-                        </th>
-
-                    </tr>
-
-                </thead>
-
-
-                <tbody
-                    id="measurementTableBody"
-                >
-
-                    <tr>
-
-                        <td>
-                            Output Voltage
-                        </td>
-
-                        <td>
-                            48
-                        </td>
-
-                        <td>
-                            47.8
-                        </td>
-
-                        <td>
-                            V
-                        </td>
-
-                        <td>
-                            <span class="measurement-pass">
-                                PASS
-                            </span>
-                        </td>
-
-                    </tr>
-
-
-                    <tr>
-
-                        <td>
-                            Output Current
-                        </td>
-
-                        <td>
-                            20
-                        </td>
-
-                        <td>
-                            18.6
-                        </td>
-
-                        <td>
-                            A
-                        </td>
-
-                        <td>
-                            <span class="measurement-pass">
-                                PASS
-                            </span>
-                        </td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </article>
+</article>
+  
 
 </section>
-
-
 
 <!-- =====================================================
      ITERATIONS
@@ -1328,129 +1210,136 @@
     class="prototype-section"
 >
 
-    <div class="section-heading">
+  
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                DEVELOPMENT HISTORY
-            </span>
+        <span class="section-label">
+            DEVELOPMENT HISTORY
+        </span>
 
-            <h2>
-                Prototype Iterations
-            </h2>
+        <h2>
+            Prototype Iterations
+        </h2>
+
+    </div>
+
+
+    <button
+        class="primary-button"
+        id="addIteration"
+        type="button"
+    >
+        + Iteration
+    </button>
+
+</div>
+
+
+
+<div
+    class="iteration-list"
+    id="iterationList"
+>
+
+    <article class="iteration-card current">
+
+        <div class="iteration-version">
+            V2
+        </div>
+
+
+        <div class="iteration-content">
+
+            <div class="iteration-top">
+
+                <strong>
+                    Current Prototype
+                </strong>
+
+                <span>
+                    23 AUG 2026
+                </span>
+
+            </div>
+
+
+            <p>
+                Improved enclosure, revised wiring
+                and updated power electronics.
+            </p>
+
+
+            <div class="iteration-changes">
+
+                <span>
+                    + Better thermal management
+                </span>
+
+                <span>
+                    + Improved wiring
+                </span>
+
+                <span>
+                    + New protection stage
+                </span>
+
+            </div>
 
         </div>
 
-        <button
-            class="primary-button"
-            id="addIteration"
-        >
-            + Iteration
-        </button>
-
-    </div>
+    </article>
 
 
-    <div
-        class="iteration-list"
-        id="iterationList"
-    >
+    <article class="iteration-card">
 
-        <article class="iteration-card current">
-
-            <div class="iteration-version">
-                V2
-            </div>
-
-            <div class="iteration-content">
-
-                <div class="iteration-top">
-
-                    <strong>
-                        Current Prototype
-                    </strong>
-
-                    <span>
-                        23 AUG 2026
-                    </span>
-
-                </div>
-
-                <p>
-                    Improved enclosure, revised wiring
-                    and updated power electronics.
-                </p>
+        <div class="iteration-version">
+            V1
+        </div>
 
 
-                <div class="iteration-changes">
+        <div class="iteration-content">
 
-                    <span>
-                        + Better thermal management
-                    </span>
+            <div class="iteration-top">
 
-                    <span>
-                        + Improved wiring
-                    </span>
+                <strong>
+                    First Prototype
+                </strong>
 
-                    <span>
-                        + New protection stage
-                    </span>
-
-                </div>
+                <span>
+                    18 AUG 2026
+                </span>
 
             </div>
 
-        </article>
+
+            <p>
+                Initial working prototype used for
+                subsystem-level validation.
+            </p>
 
 
-        <article class="iteration-card">
+            <div class="iteration-changes">
 
-            <div class="iteration-version">
-                V1
-            </div>
+                <span>
+                    Initial architecture
+                </span>
 
-            <div class="iteration-content">
-
-                <div class="iteration-top">
-
-                    <strong>
-                        First Prototype
-                    </strong>
-
-                    <span>
-                        18 AUG 2026
-                    </span>
-
-                </div>
-
-                <p>
-                    Initial working prototype used for
-                    subsystem-level validation.
-                </p>
-
-
-                <div class="iteration-changes">
-
-                    <span>
-                        Initial architecture
-                    </span>
-
-                    <span>
-                        Initial hardware
-                    </span>
-
-                </div>
+                <span>
+                    Initial hardware
+                </span>
 
             </div>
 
-        </article>
+        </div>
 
-    </div>
+    </article>
+
+</div>
+  
 
 </section>
-
-
 
 <!-- =====================================================
      FAILURES / MODIFICATIONS
@@ -1458,127 +1347,138 @@
 
 <section class="prototype-section">
 
-    <div class="two-column-grid">
+  
+<div class="two-column-grid">
 
 
-        <article class="prototype-card">
+    <!-- FAILURES -->
 
-            <div class="card-header">
+    <article class="prototype-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <span class="card-label">
+                    LEARNING FROM FAILURE
+                </span>
+
+                <h3>
+                    Problems &amp; Failures
+                </h3>
+
+            </div>
+
+
+            <button
+                class="text-button"
+                id="addFailure"
+                type="button"
+            >
+                + Add
+            </button>
+
+        </div>
+
+
+        <div
+            class="failure-list"
+            id="failureList"
+        >
+
+            <div class="failure-item">
+
+                <span class="failure-icon">
+                    !
+                </span>
+
 
                 <div>
 
-                    <span class="card-label">
-                        LEARNING FROM FAILURE
-                    </span>
+                    <strong>
+                        Excessive thermal rise
+                    </strong>
 
-                    <h3>
-                        Problems &amp; Failures
-                    </h3>
+                    <p>
+                        Temperature increased during
+                        extended operation.
+                    </p>
 
                 </div>
 
-                <button
-                    class="text-button"
-                    id="addFailure"
-                >
-                    + Add
-                </button>
+            </div>
+
+        </div>
+
+    </article>
+
+
+
+    <!-- MODIFICATIONS -->
+
+    <article class="prototype-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <span class="card-label">
+                    MODIFICATIONS
+                </span>
+
+                <h3>
+                    Changes Made
+                </h3>
 
             </div>
 
 
-            <div
-                class="failure-list"
-                id="failureList"
+            <button
+                class="text-button"
+                id="addModification"
+                type="button"
             >
+                + Add
+            </button>
 
-                <div class="failure-item">
-
-                    <span class="failure-icon">
-                        !
-                    </span>
-
-                    <div>
-
-                        <strong>
-                            Excessive thermal rise
-                        </strong>
-
-                        <p>
-                            Temperature increased during
-                            extended operation.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </article>
+        </div>
 
 
-        <article class="prototype-card">
+        <div
+            class="modification-list"
+            id="modificationList"
+        >
 
-            <div class="card-header">
+            <div class="modification-item">
+
+                <span class="modification-number">
+                    01
+                </span>
+
 
                 <div>
 
-                    <span class="card-label">
-                        MODIFICATIONS
-                    </span>
+                    <strong>
+                        Improved heat dissipation
+                    </strong>
 
-                    <h3>
-                        Changes Made
-                    </h3>
-
-                </div>
-
-                <button
-                    class="text-button"
-                    id="addModification"
-                >
-                    + Add
-                </button>
-
-            </div>
-
-
-            <div
-                class="modification-list"
-                id="modificationList"
-            >
-
-                <div class="modification-item">
-
-                    <span class="modification-number">
-                        01
-                    </span>
-
-                    <div>
-
-                        <strong>
-                            Improved heat dissipation
-                        </strong>
-
-                        <p>
-                            Added additional thermal
-                            management to the enclosure.
-                        </p>
-
-                    </div>
+                    <p>
+                        Added additional thermal
+                        management to the enclosure.
+                    </p>
 
                 </div>
 
             </div>
 
-        </article>
+        </div>
 
-    </div>
+    </article>
+
+</div>
+  
 
 </section>
-
-
 
 <!-- =====================================================
      MEDIA / FILES
@@ -1589,187 +1489,199 @@
     class="prototype-section"
 >
 
-    <div class="section-heading">
+  
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                RESOURCES
-            </span>
-
-            <h2>
-                Images, Videos &amp; Files
-            </h2>
-
-        </div>
-
-        <div class="heading-actions">
-
-            <button
-                class="outline-button"
-                id="addPrototypeLink"
-            >
-                + Link
-            </button>
-
-            <button
-                class="primary-button"
-                id="uploadPrototypeFile"
-            >
-                + Upload
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <div
-        class="prototype-upload-zone"
-        id="prototypeUploadZone"
-    >
-
-        <strong>
-            Add prototype resources
-        </strong>
-
-        <p>
-            Upload photographs, videos, CAD files,
-            schematics, PDFs, documents, datasets,
-            source files or any other project material.
-        </p>
-
-        <span>
-            Drag &amp; drop or click to browse
+        <span class="section-label">
+            RESOURCES
         </span>
 
-    </div>
-
-
-    <input
-        type="file"
-        id="prototypeFileInput"
-        multiple
-        hidden
-    >
-
-
-    <!-- IMAGE PREVIEW -->
-
-    <div
-        class="prototype-media-grid"
-        id="prototypeMediaGrid"
-    >
-
-        <article class="prototype-media-card image-card">
-
-            <div class="media-placeholder">
-                IMAGE
-            </div>
-
-            <div class="media-info">
-
-                <strong>
-                    Prototype_V2_Front.jpg
-                </strong>
-
-                <span>
-                    Prototype photograph
-                </span>
-
-            </div>
-
-        </article>
-
-
-        <article class="prototype-media-card">
-
-            <div class="media-placeholder video">
-                VIDEO
-            </div>
-
-            <div class="media-info">
-
-                <strong>
-                    First_Run_Test.mp4
-                </strong>
-
-                <span>
-                    Initial test video
-                </span>
-
-            </div>
-
-        </article>
+        <h2>
+            Images, Videos &amp; Files
+        </h2>
 
     </div>
 
 
-    <!-- FILES -->
+    <div class="heading-actions">
 
-    <div
-        class="prototype-file-list"
-        id="prototypeFileList"
-    >
-
-        <article class="prototype-file">
-
-            <div class="prototype-file-icon">
-                CAD
-            </div>
-
-            <div class="prototype-file-info">
-
-                <strong>
-                    Prototype_V2.step
-                </strong>
-
-                <span>
-                    CAD · 8.2 MB
-                </span>
-
-            </div>
-
-            <button
-                type="button"
-            >
-                Open
-            </button>
-
-        </article>
+        <button
+            class="outline-button"
+            id="addPrototypeLink"
+            type="button"
+        >
+            + Link
+        </button>
 
 
-        <article class="prototype-file">
-
-            <div class="prototype-file-icon">
-                PDF
-            </div>
-
-            <div class="prototype-file-info">
-
-                <strong>
-                    Test_Report_V1.pdf
-                </strong>
-
-                <span>
-                    PDF · 2.1 MB
-                </span>
-
-            </div>
-
-            <button
-                type="button"
-            >
-                Open
-            </button>
-
-        </article>
+        <button
+            class="primary-button"
+            id="uploadPrototypeFile"
+            type="button"
+        >
+            + Upload
+        </button>
 
     </div>
+
+</div>
+
+
+
+<div
+    class="prototype-upload-zone"
+    id="prototypeUploadZone"
+    tabindex="0"
+    role="button"
+>
+
+    <strong>
+        Add prototype resources
+    </strong>
+
+    <p>
+        Upload photographs, videos, CAD files,
+        schematics, PDFs, documents, datasets,
+        source files or any other project material.
+    </p>
+
+    <span>
+        Drag &amp; drop or click to browse
+    </span>
+
+</div>
+
+
+
+<input
+    type="file"
+    id="prototypeFileInput"
+    multiple
+    hidden
+>
+
+
+
+<!-- MEDIA -->
+
+<div
+    class="prototype-media-grid"
+    id="prototypeMediaGrid"
+>
+
+    <article class="prototype-media-card image-card">
+
+        <div class="media-placeholder">
+            IMAGE
+        </div>
+
+
+        <div class="media-info">
+
+            <strong>
+                Prototype_V2_Front.jpg
+            </strong>
+
+            <span>
+                Prototype photograph
+            </span>
+
+        </div>
+
+    </article>
+
+
+    <article class="prototype-media-card">
+
+        <div class="media-placeholder video">
+            VIDEO
+        </div>
+
+
+        <div class="media-info">
+
+            <strong>
+                First_Run_Test.mp4
+            </strong>
+
+            <span>
+                Initial test video
+            </span>
+
+        </div>
+
+    </article>
+
+</div>
+
+
+
+<!-- FILE LIST -->
+
+<div
+    class="prototype-file-list"
+    id="prototypeFileList"
+>
+
+    <article class="prototype-file">
+
+        <div class="prototype-file-icon">
+            CAD
+        </div>
+
+
+        <div class="prototype-file-info">
+
+            <strong>
+                Prototype_V2.step
+            </strong>
+
+            <span>
+                CAD · 8.2 MB
+            </span>
+
+        </div>
+
+
+        <button type="button">
+            Open
+        </button>
+
+    </article>
+
+
+    <article class="prototype-file">
+
+        <div class="prototype-file-icon">
+            PDF
+        </div>
+
+
+        <div class="prototype-file-info">
+
+            <strong>
+                Test_Report_V1.pdf
+            </strong>
+
+            <span>
+                PDF · 2.1 MB
+            </span>
+
+        </div>
+
+
+        <button type="button">
+            Open
+        </button>
+
+    </article>
+
+</div>
+  
 
 </section>
-
-
 
 <!-- =====================================================
      FUTURE IMPROVEMENTS
@@ -1777,93 +1689,96 @@
 
 <section class="prototype-section">
 
-    <div class="section-heading">
+  
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                NEXT ITERATION
-            </span>
+        <span class="section-label">
+            NEXT ITERATION
+        </span>
 
-            <h2>
-                Future Improvements
-            </h2>
-
-        </div>
-
-        <button
-            class="outline-button"
-            id="addImprovement"
-        >
-            + Improvement
-        </button>
+        <h2>
+            Future Improvements
+        </h2>
 
     </div>
 
 
-    <div
-        class="improvement-grid"
-        id="improvementGrid"
+    <button
+        class="outline-button"
+        id="addImprovement"
+        type="button"
     >
+        + Improvement
+    </button>
 
-        <article class="improvement-card">
-
-            <span>
-                HIGH PRIORITY
-            </span>
-
-            <h3>
-                Improve thermal performance
-            </h3>
-
-            <p>
-                Reduce temperature rise during continuous
-                operation.
-            </p>
-
-        </article>
+</div>
 
 
-        <article class="improvement-card">
 
-            <span>
-                MEDIUM PRIORITY
-            </span>
+<div
+    class="improvement-grid"
+    id="improvementGrid"
+>
 
-            <h3>
-                Reduce prototype size
-            </h3>
+    <article class="improvement-card">
 
-            <p>
-                Optimize the enclosure and internal
-                component arrangement.
-            </p>
+        <span>
+            HIGH PRIORITY
+        </span>
 
-        </article>
+        <h3>
+            Improve thermal performance
+        </h3>
+
+        <p>
+            Reduce temperature rise during continuous
+            operation.
+        </p>
+
+    </article>
 
 
-        <article class="improvement-card">
+    <article class="improvement-card">
 
-            <span>
-                FUTURE
-            </span>
+        <span>
+            MEDIUM PRIORITY
+        </span>
 
-            <h3>
-                Automate data acquisition
-            </h3>
+        <h3>
+            Reduce prototype size
+        </h3>
 
-            <p>
-                Integrate automated measurement and
-                logging for future testing.
-            </p>
+        <p>
+            Optimize the enclosure and internal
+            component arrangement.
+        </p>
 
-        </article>
+    </article>
 
-    </div>
+
+    <article class="improvement-card">
+
+        <span>
+            FUTURE
+        </span>
+
+        <h3>
+            Automate data acquisition
+        </h3>
+
+        <p>
+            Integrate automated measurement and
+            logging for future testing.
+        </p>
+
+    </article>
+
+</div>
+  
 
 </section>
-
-
 
 <!-- =====================================================
      FINAL PROTOTYPE OUTCOME
@@ -1871,55 +1786,860 @@
 
 <section class="prototype-section">
 
-    <div class="section-heading">
+  
+<div class="section-heading">
+
+    <div>
+
+        <span class="section-label">
+            FINAL RESULT
+        </span>
+
+        <h2>
+            Prototype Outcome
+        </h2>
+
+    </div>
+
+</div>
+
+
+
+<article class="prototype-card outcome-card">
+
+    <textarea
+        id="prototypeOutcome"
+        placeholder="Record the final prototype performance, what worked, what failed, measured results and what was ultimately achieved."
+    ></textarea>
+
+
+    <div class="card-footer">
+
+        <span>
+            Complete this when the prototype reaches
+            its final stage.
+        </span>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeOutcome"
+            type="button"
+        >
+            Save Outcome
+        </button>
+
+    </div>
+
+</article>
+  
+
+</section>
+
+</main>
+
+<!-- =====================================================
+     PROTOTYPE DETAILS MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeDetailsModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
 
         <div>
 
             <span class="section-label">
-                FINAL RESULT
+                PROTOTYPE
             </span>
 
             <h2>
-                Prototype Outcome
+                Edit Prototype
             </h2>
 
         </div>
 
+
+        <button
+            id="closePrototypeDetailsModal"
+            type="button"
+        >
+            ×
+        </button>
+
     </div>
 
 
-    <article class="prototype-card outcome-card">
+    <div class="modal-grid">
 
-        <textarea
-            id="prototypeOutcome"
-            placeholder="Record the final prototype performance, what worked, what failed, measured results and what was ultimately achieved."
-        ></textarea>
+        <label class="full">
+
+            Prototype Title
+
+            <input
+                type="text"
+                id="prototypeDetailsTitle"
+                placeholder="Enter prototype title"
+            >
+
+        </label>
 
 
-        <div class="card-footer">
+        <label class="full">
 
-            <span>
-                Complete this when the prototype reaches
-                its final stage.
+            Description
+
+            <textarea
+                id="prototypeDetailsDescription"
+                placeholder="Describe this prototype"
+            ></textarea>
+
+        </label>
+
+
+        <label>
+
+            Status
+
+            <select id="prototypeDetailsStatus">
+
+                <option value="planning">
+                    Planning
+                </option>
+
+                <option value="designing">
+                    Designing
+                </option>
+
+                <option value="building">
+                    Building
+                </option>
+
+                <option value="testing">
+                    Testing
+                </option>
+
+                <option value="completed">
+                    Completed
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label>
+
+            Version
+
+            <input
+                type="text"
+                id="prototypeDetailsVersion"
+                placeholder="V1"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Tags
+
+            <input
+                type="text"
+                id="prototypeDetailsTags"
+                placeholder="Separate tags with commas"
+            >
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeDetails"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeDetails"
+            type="button"
+        >
+            Save Changes
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
+
+<!-- =====================================================
+     PROGRESS MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeProgressModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                DEVELOPMENT PROGRESS
             </span>
 
-            <button
-                class="primary-button"
-                id="savePrototypeOutcome"
-            >
-                Save Outcome
-            </button>
+            <h2>
+                Update Progress
+            </h2>
 
         </div>
 
-    </article>
 
-</section>
+        <button
+            id="closePrototypeProgressModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
 
 
-</main>
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Completion Percentage
+
+            <input
+                type="number"
+                id="prototypeProgressInput"
+                min="0"
+                max="100"
+                step="1"
+                placeholder="0 - 100"
+            >
+
+        </label>
 
 
+        <label class="full">
+
+            Current Phase
+
+            <select id="prototypeProgressPhase">
+
+                <option value="Planning phase">
+                    Planning phase
+                </option>
+
+                <option value="Design phase">
+                    Design phase
+                </option>
+
+                <option value="Build phase">
+                    Build phase
+                </option>
+
+                <option value="Testing phase">
+                    Testing phase
+                </option>
+
+                <option value="Completed">
+                    Completed
+                </option>
+
+            </select>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeProgress"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeProgress"
+            type="button"
+        >
+            Update Progress
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
+
+<!-- =====================================================
+     VERSION MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeVersionModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                CURRENT VERSION
+            </span>
+
+            <h2>
+                Edit Version
+            </h2>
+
+        </div>
+
+
+        <button
+            id="closePrototypeVersionModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label>
+
+            Version
+
+            <input
+                type="text"
+                id="prototypeVersionInput"
+                placeholder="V2"
+            >
+
+        </label>
+
+
+        <label>
+
+            Version Title
+
+            <input
+                type="text"
+                id="prototypeVersionTitleInput"
+                placeholder="Version title"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Version Description
+
+            <textarea
+                id="prototypeVersionDescriptionInput"
+                placeholder="What changed in this version?"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeVersion"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeVersion"
+            type="button"
+        >
+            Save Version
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
+
+<!-- =====================================================
+     NEXT ACTION MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeNextActionModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                NEXT ACTION
+            </span>
+
+            <h2>
+                Update Next Action
+            </h2>
+
+        </div>
+
+
+        <button
+            id="closePrototypeNextActionModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Action
+
+            <input
+                type="text"
+                id="prototypeNextActionInput"
+                placeholder="What needs to be done next?"
+            >
+
+        </label>
+
+
+        <label>
+
+            Due Date
+
+            <input
+                type="date"
+                id="prototypeNextActionDate"
+            >
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeNextAction"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeNextAction"
+            type="button"
+        >
+            Save Action
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
+
+<!-- =====================================================
+     OBJECTIVE MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeObjectiveModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                PURPOSE
+            </span>
+
+            <h2>
+                Edit Prototype Objective
+            </h2>
+
+        </div>
+
+
+        <button
+            id="closePrototypeObjectiveModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Objective
+
+            <textarea
+                id="prototypeObjectiveInput"
+                placeholder="What should this prototype demonstrate, test or validate?"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeObjective"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeObjective"
+            type="button"
+        >
+            Save Objective
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
+
+<!-- =====================================================
+     DESIGN MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeDesignModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                DESIGN
+            </span>
+
+            <h2>
+                Edit Design Concept
+            </h2>
+
+        </div>
+
+
+        <button
+            id="closePrototypeDesignModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Design Concept
+
+            <textarea
+                id="prototypeDesignConceptInput"
+                placeholder="Explain the engineering concept and selected architecture"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeDesign"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeDesign"
+            type="button"
+        >
+            Save Design
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
+
+<!-- =====================================================
+     SPECIFICATION MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeSpecificationModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                SPECIFICATIONS
+            </span>
+
+            <h2>
+                Add Specification
+            </h2>
+
+        </div>
+
+
+        <button
+            id="closePrototypeSpecificationModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label>
+
+            Parameter
+
+            <input
+                type="text"
+                id="prototypeSpecificationName"
+                placeholder="Rated Power"
+            >
+
+        </label>
+
+
+        <label>
+
+            Value
+
+            <input
+                type="text"
+                id="prototypeSpecificationValue"
+                placeholder="1.2 kW"
+            >
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeSpecification"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeSpecification"
+            type="button"
+        >
+            Add Specification
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
+
+<!-- =====================================================
+     DESIGN DECISION MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeDesignDecisionModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                ENGINEERING NOTES
+            </span>
+
+            <h2>
+                Add Design Decision
+            </h2>
+
+        </div>
+
+
+        <button
+            id="closePrototypeDesignDecisionModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Decision
+
+            <input
+                type="text"
+                id="prototypeDesignDecisionTitle"
+                placeholder="What decision was made?"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Reasoning
+
+            <textarea
+                id="prototypeDesignDecisionDescription"
+                placeholder="Why was this decision made?"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeDesignDecision"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeDesignDecision"
+            type="button"
+        >
+            Add Decision
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
 
 <!-- =====================================================
      BUILD ENTRY MODAL
@@ -1930,121 +2650,245 @@
     id="buildModal"
 >
 
-    <div class="modal-panel">
+  
+<div class="modal-panel">
 
-        <div class="modal-header">
+    <div class="modal-header">
 
-            <div>
+        <div>
 
-                <span class="section-label">
-                    BUILD LOG
-                </span>
+            <span class="section-label">
+                BUILD LOG
+            </span>
 
-                <h2>
-                    Add Build Entry
-                </h2>
-
-            </div>
-
-            <button
-                id="closeBuildModal"
-                type="button"
-            >
-                ×
-            </button>
+            <h2>
+                Add Build Entry
+            </h2>
 
         </div>
 
 
-        <div class="modal-grid">
+        <button
+            id="closeBuildModal"
+            type="button"
+        >
+            ×
+        </button>
 
-            <label>
-
-                Date
-
-                <input
-                    type="date"
-                    id="buildDate"
-                >
-
-            </label>
+    </div>
 
 
-            <label>
+    <div class="modal-grid">
 
-                Status
+        <label class="full">
 
-                <select id="buildStatus">
+            Build Activity
 
-                    <option value="planned">
-                        Planned
-                    </option>
-
-                    <option value="ongoing">
-                        In Progress
-                    </option>
-
-                    <option value="completed">
-                        Completed
-                    </option>
-
-                </select>
-
-            </label>
-
-
-            <label class="full">
-
-                Title
-
-                <input
-                    type="text"
-                    id="buildTitle"
-                    placeholder="What was built?"
-                >
-
-            </label>
-
-
-            <label class="full">
-
-                Description
-
-                <textarea
-                    id="buildDescription"
-                    placeholder="Describe the work completed..."
-                ></textarea>
-
-            </label>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button
-                class="outline-button"
-                id="cancelBuild"
-                type="button"
+            <input
+                type="text"
+                id="buildEntryTitle"
+                placeholder="What was built or completed?"
             >
-                Cancel
-            </button>
 
-            <button
-                class="primary-button"
-                id="saveBuild"
-                type="button"
+        </label>
+
+
+        <label>
+
+            Date
+
+            <input
+                type="date"
+                id="buildEntryDate"
             >
-                Save Entry
-            </button>
 
-        </div>
+        </label>
+
+
+        <label>
+
+            Progress
+
+            <input
+                type="number"
+                id="buildEntryProgress"
+                min="0"
+                max="100"
+                placeholder="0 - 100"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Details
+
+            <textarea
+                id="buildEntryDescription"
+                placeholder="Describe the build activity and result"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelBuildEntry"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="saveBuildEntry"
+            type="button"
+        >
+            Add Entry
+        </button>
 
     </div>
 
 </div>
+  
+
+</div>
+
+<!-- =====================================================
+     COMPONENT MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeComponentModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                HARDWARE
+            </span>
+
+            <h2>
+                Add Component
+            </h2>
+
+        </div>
 
 
+        <button
+            id="closePrototypeComponentModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Component Name
+
+            <input
+                type="text"
+                id="prototypeComponentName"
+                placeholder="Component name"
+            >
+
+        </label>
+
+
+        <label>
+
+            Quantity
+
+            <input
+                type="number"
+                id="prototypeComponentQuantity"
+                min="1"
+                step="1"
+                placeholder="1"
+            >
+
+        </label>
+
+
+        <label>
+
+            Status
+
+            <select id="prototypeComponentStatus">
+
+                <option value="active">
+                    Active
+                </option>
+
+                <option value="planned">
+                    Planned
+                </option>
+
+                <option value="removed">
+                    Removed
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="prototypeComponentDescription"
+                placeholder="Component purpose or specification"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeComponent"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeComponent"
+            type="button"
+        >
+            Add Component
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
 
 <!-- =====================================================
      TEST MODAL
@@ -2055,121 +2899,697 @@
     id="prototypeTestModal"
 >
 
-    <div class="modal-panel">
+  
+<div class="modal-panel">
 
-        <div class="modal-header">
+    <div class="modal-header">
 
-            <div>
+        <div>
 
-                <span class="section-label">
-                    VALIDATION
-                </span>
+            <span class="section-label">
+                VALIDATION
+            </span>
 
-                <h2>
-                    Add Test
-                </h2>
-
-            </div>
-
-            <button
-                id="closePrototypeTestModal"
-                type="button"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="modal-grid">
-
-            <label class="full">
-
-                Test Name
-
-                <input
-                    type="text"
-                    id="prototypeTestName"
-                    placeholder="Test name"
-                >
-
-            </label>
-
-
-            <label>
-
-                Result
-
-                <select id="prototypeTestResult">
-
-                    <option value="passed">
-                        Passed
-                    </option>
-
-                    <option value="failed">
-                        Failed
-                    </option>
-
-                    <option value="pending">
-                        Pending
-                    </option>
-
-                </select>
-
-            </label>
-
-
-            <label>
-
-                Date
-
-                <input
-                    type="date"
-                    id="prototypeTestDate"
-                >
-
-            </label>
-
-
-            <label class="full">
-
-                Description
-
-                <textarea
-                    id="prototypeTestDescription"
-                    placeholder="What was tested and what happened?"
-                ></textarea>
-
-            </label>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button
-                class="outline-button"
-                id="cancelPrototypeTest"
-                type="button"
-            >
-                Cancel
-            </button>
-
-            <button
-                class="primary-button"
-                id="savePrototypeTest"
-                type="button"
-            >
+            <h2>
                 Add Test
-            </button>
+            </h2>
 
         </div>
+
+
+        <button
+            id="closePrototypeTestModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Test Name
+
+            <input
+                type="text"
+                id="prototypeTestName"
+                placeholder="Test name"
+            >
+
+        </label>
+
+
+        <label>
+
+            Result
+
+            <select id="prototypeTestResult">
+
+                <option value="passed">
+                    Passed
+                </option>
+
+                <option value="failed">
+                    Failed
+                </option>
+
+                <option value="pending">
+                    Pending
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label>
+
+            Date
+
+            <input
+                type="date"
+                id="prototypeTestDate"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="prototypeTestDescription"
+                placeholder="What was tested and what happened?"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeTest"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeTest"
+            type="button"
+        >
+            Add Test
+        </button>
 
     </div>
 
 </div>
+  
+
+</div>
+
+<!-- =====================================================
+     MEASUREMENT MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeMeasurementModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                MEASUREMENTS
+            </span>
+
+            <h2>
+                Add Measurement
+            </h2>
+
+        </div>
 
 
+        <button
+            id="closePrototypeMeasurementModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Parameter
+
+            <input
+                type="text"
+                id="prototypeMeasurementParameter"
+                placeholder="Output Voltage"
+            >
+
+        </label>
+
+
+        <label>
+
+            Expected Value
+
+            <input
+                type="text"
+                id="prototypeMeasurementExpected"
+                placeholder="48"
+            >
+
+        </label>
+
+
+        <label>
+
+            Measured Value
+
+            <input
+                type="text"
+                id="prototypeMeasurementMeasured"
+                placeholder="47.8"
+            >
+
+        </label>
+
+
+        <label>
+
+            Unit
+
+            <input
+                type="text"
+                id="prototypeMeasurementUnit"
+                placeholder="V"
+            >
+
+        </label>
+
+
+        <label>
+
+            Result
+
+            <select id="prototypeMeasurementResult">
+
+                <option value="PASS">
+                    Pass
+                </option>
+
+                <option value="CHECK">
+                    Check
+                </option>
+
+                <option value="FAIL">
+                    Fail
+                </option>
+
+            </select>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeMeasurement"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeMeasurement"
+            type="button"
+        >
+            Add Measurement
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
+
+<!-- =====================================================
+     ITERATION MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeIterationModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                DEVELOPMENT HISTORY
+            </span>
+
+            <h2>
+                Add Prototype Iteration
+            </h2>
+
+        </div>
+
+
+        <button
+            id="closePrototypeIterationModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label>
+
+            Version
+
+            <input
+                type="text"
+                id="prototypeIterationVersion"
+                placeholder="V3"
+            >
+
+        </label>
+
+
+        <label>
+
+            Date
+
+            <input
+                type="date"
+                id="prototypeIterationDate"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Iteration Title
+
+            <input
+                type="text"
+                id="prototypeIterationTitle"
+                placeholder="Iteration title"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="prototypeIterationDescription"
+                placeholder="Describe what changed"
+            ></textarea>
+
+        </label>
+
+
+        <label class="full">
+
+            Changes
+
+            <textarea
+                id="prototypeIterationChanges"
+                placeholder="Enter one change per line"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeIteration"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeIteration"
+            type="button"
+        >
+            Add Iteration
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
+
+<!-- =====================================================
+     FAILURE MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeFailureModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                LEARNING FROM FAILURE
+            </span>
+
+            <h2>
+                Add Failure
+            </h2>
+
+        </div>
+
+
+        <button
+            id="closePrototypeFailureModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Failure / Problem
+
+            <input
+                type="text"
+                id="prototypeFailureTitle"
+                placeholder="What went wrong?"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="prototypeFailureDescription"
+                placeholder="Describe the problem and what was observed"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeFailure"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeFailure"
+            type="button"
+        >
+            Add Failure
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
+
+<!-- =====================================================
+     MODIFICATION MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeModificationModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                MODIFICATIONS
+            </span>
+
+            <h2>
+                Add Modification
+            </h2>
+
+        </div>
+
+
+        <button
+            id="closePrototypeModificationModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Modification
+
+            <input
+                type="text"
+                id="prototypeModificationTitle"
+                placeholder="What was changed?"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="prototypeModificationDescription"
+                placeholder="Describe the modification and reason"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeModification"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeModification"
+            type="button"
+        >
+            Add Modification
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
+
+<!-- =====================================================
+     IMPROVEMENT MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    id="prototypeImprovementModal"
+>
+
+  
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                NEXT ITERATION
+            </span>
+
+            <h2>
+                Add Improvement
+            </h2>
+
+        </div>
+
+
+        <button
+            id="closePrototypeImprovementModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label>
+
+            Priority
+
+            <select id="prototypeImprovementPriority">
+
+                <option value="HIGH PRIORITY">
+                    High Priority
+                </option>
+
+                <option value="MEDIUM PRIORITY">
+                    Medium Priority
+                </option>
+
+                <option value="LOW PRIORITY">
+                    Low Priority
+                </option>
+
+                <option value="FUTURE">
+                    Future
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label class="full">
+
+            Improvement
+
+            <input
+                type="text"
+                id="prototypeImprovementTitle"
+                placeholder="What should be improved?"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="prototypeImprovementDescription"
+                placeholder="Describe the expected improvement"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeImprovement"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeImprovement"
+            type="button"
+        >
+            Add Improvement
+        </button>
+
+    </div>
+
+</div>
+  
+
+</div>
 
 <!-- =====================================================
      LINK MODAL
@@ -2180,99 +3600,101 @@
     id="prototypeLinkModal"
 >
 
-    <div class="modal-panel">
+  
+<div class="modal-panel">
 
-        <div class="modal-header">
+    <div class="modal-header">
 
-            <div>
+        <div>
 
-                <span class="section-label">
-                    RESOURCE
-                </span>
+            <span class="section-label">
+                RESOURCE
+            </span>
 
-                <h2>
-                    Add Link
-                </h2>
-
-            </div>
-
-            <button
-                id="closePrototypeLinkModal"
-                type="button"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="modal-grid">
-
-            <label class="full">
-
-                Title
-
-                <input
-                    type="text"
-                    id="prototypeLinkTitle"
-                    placeholder="Resource title"
-                >
-
-            </label>
-
-
-            <label class="full">
-
-                URL
-
-                <input
-                    type="url"
-                    id="prototypeLinkURL"
-                    placeholder="https://..."
-                >
-
-            </label>
-
-
-            <label class="full">
-
-                Description
-
-                <textarea
-                    id="prototypeLinkDescription"
-                    placeholder="Why is this useful?"
-                ></textarea>
-
-            </label>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button
-                class="outline-button"
-                id="cancelPrototypeLink"
-                type="button"
-            >
-                Cancel
-            </button>
-
-            <button
-                class="primary-button"
-                id="savePrototypeLink"
-                type="button"
-            >
+            <h2>
                 Add Link
-            </button>
+            </h2>
 
         </div>
+
+
+        <button
+            id="closePrototypeLinkModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Title
+
+            <input
+                type="text"
+                id="prototypeLinkTitle"
+                placeholder="Resource title"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            URL
+
+            <input
+                type="url"
+                id="prototypeLinkURL"
+                placeholder="https://..."
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="prototypeLinkDescription"
+                placeholder="Why is this useful?"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelPrototypeLink"
+            type="button"
+        >
+            Cancel
+        </button>
+
+
+        <button
+            class="primary-button"
+            id="savePrototypeLink"
+            type="button"
+        >
+            Add Link
+        </button>
 
     </div>
 
 </div>
+  
 
-
+</div>
 
 <!-- =====================================================
      TOAST
@@ -2281,10 +3703,14 @@
 <div
     class="prototype-toast hidden"
     id="prototypeToast"
+    role="status"
+    aria-live="polite"
 ></div>
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-
-
+<!-- RiGiD Supabase Client -->
+<script src="../../../supabase-client.js"></script>
 <script
     src="prototype.js"
 ></script>

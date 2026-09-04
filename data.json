@@ -30,7 +30,7 @@
     "name": "Priya Menon",
     "date": "2026-08-06",
     "category": "Testing",
-    "content": "Ran the bench test for the buck-boost converter across the full duty cycle sweep. Efficiency holds above 92% from 20%-80% load.\n\n```\nD=0.35  Vin=48V  Vout=60V  Eff=93.1%\nD=0.50  Vin=48V  Vout=60V  Eff=94.4%\n```",
+    "content": "Ran the bench test for the buck-boost converter across the full duty cycle sweep. Efficiency holds above 92% from 20%-80% load.\n\n \nD=0.35  Vin=48V  Vout=60V  Eff=93.1%\nD=0.50  Vin=48V  Vout=60V  Eff=94.4%\n ",
     "files": [],
     "timestamp": "2026-08-06T09:40:00"
   }

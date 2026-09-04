@@ -702,8 +702,8 @@ function renderSelectedForums(
 
             <h3>
               ${escapeHTML(
-                forum.name
-              )}
+        forum.name
+      )}
             </h3>
 
           </div>
@@ -712,8 +712,8 @@ function renderSelectedForums(
             type="button"
             class="remove-forum-btn"
             data-forum-id="${escapeHTML(
-              forum.id
-            )}"
+        forum.id
+      )}"
           >
             ×
           </button>
@@ -730,12 +730,11 @@ function renderSelectedForums(
             </span>
           </label>
 
-          ${
-            forumTeams.length > 0
+          ${forumTeams.length > 0
 
-              ? forumTeams
-                .map(
-                  team => `
+          ? forumTeams
+            .map(
+              team => `
 
                     <label
                       class="selection-option"
@@ -744,34 +743,34 @@ function renderSelectedForums(
                       <input
                         type="checkbox"
                         name="${escapeHTML(
-                          teamInputName
-                        )}"
+                teamInputName
+              )}"
                         value="${escapeHTML(
-                          team.id
-                        )}"
+                team.id
+              )}"
                         data-forum-id="${escapeHTML(
-                          forum.id
-                        )}"
+                forum.id
+              )}"
                       >
 
                       <span>
                         ${escapeHTML(
-                          team.name
-                        )}
+                team.name
+              )}
                       </span>
 
                     </label>
 
                   `
-                )
-                .join("")
+            )
+            .join("")
 
-              : `
+          : `
                 <p class="selection-empty">
                   No teams available.
                 </p>
               `
-          }
+        }
 
         </div>
 
@@ -785,12 +784,11 @@ function renderSelectedForums(
             </span>
           </label>
 
-          ${
-            forumDomains.length > 0
+          ${forumDomains.length > 0
 
-              ? forumDomains
-                .map(
-                  domain => `
+          ? forumDomains
+            .map(
+              domain => `
 
                     <label
                       class="selection-option"
@@ -799,34 +797,34 @@ function renderSelectedForums(
                       <input
                         type="checkbox"
                         name="${escapeHTML(
-                          domainInputName
-                        )}"
+                domainInputName
+              )}"
                         value="${escapeHTML(
-                          domain.id
-                        )}"
+                domain.id
+              )}"
                         data-forum-id="${escapeHTML(
-                          forum.id
-                        )}"
+                forum.id
+              )}"
                       >
 
                       <span>
                         ${escapeHTML(
-                          domain.name
-                        )}
+                domain.name
+              )}
                       </span>
 
                     </label>
 
                   `
-                )
-                .join("")
+            )
+            .join("")
 
-              : `
+          : `
                 <p class="selection-empty">
                   No domains available.
                 </p>
               `
-          }
+        }
 
         </div>
 
@@ -908,13 +906,13 @@ function collectSelections(
     container
 
       ? Array.from(
-          container.querySelectorAll(
-            `input[name="${teamInputName}"]:checked`
-          )
-        ).map(
-          input =>
-            input.value
+        container.querySelectorAll(
+          `input[name="${teamInputName}"]:checked`
         )
+      ).map(
+        input =>
+          input.value
+      )
 
       : [];
 
@@ -923,13 +921,13 @@ function collectSelections(
     container
 
       ? Array.from(
-          container.querySelectorAll(
-            `input[name="${domainInputName}"]:checked`
-          )
-        ).map(
-          input =>
-            input.value
+        container.querySelectorAll(
+          `input[name="${domainInputName}"]:checked`
         )
+      ).map(
+        input =>
+          input.value
+      )
 
       : [];
 
@@ -3765,23 +3763,15 @@ async function useDifferentGoogleAccount() {
 /* =========================================================================
    EXISTING SESSION
    ========================================================================= */
+/* =========================================================================
+   ENSURE PERMANENT GOOGLE DRIVE CONNECTION
+   ========================================================================= */
 
-async function checkExistingSession() {
+async function ensureGoogleDriveConnection(
+  session
+) {
 
   try {
-
-    const {
-      data: {
-        session
-      }
-    } =
-      await sb.auth.getSession();
-
-
-    if (!session) {
-      return;
-    }
-
 
     const {
       data: {
@@ -3792,13 +3782,224 @@ async function checkExistingSession() {
 
 
     if (!user) {
+
+      return {
+        connected: false,
+        redirected: false
+      };
+
+    }
+
+
+    /* -----------------------------------------------------
+       CHECK EXISTING DRIVE CONNECTION
+    ----------------------------------------------------- */
+
+    const {
+      data: connection,
+      error: connectionError
+    } =
+      await sb
+        .from(
+          "google_drive_connections"
+        )
+        .select(
+          `
+          user_id,
+          google_refresh_token,
+          root_folder_id
+          `
+        )
+        .eq(
+          "user_id",
+          user.id
+        )
+        .maybeSingle();
+
+
+    if (
+      connectionError
+    ) {
+
+      console.error(
+        "Google Drive connection check failed:",
+        connectionError
+      );
+
+      return {
+        connected: false,
+        redirected: false
+      };
+
+    }
+
+
+    /* -----------------------------------------------------
+       PERMANENT CONNECTION ALREADY EXISTS
+    ----------------------------------------------------- */
+
+    if (
+      connection &&
+      connection.google_refresh_token &&
+      connection.root_folder_id
+    ) {
+
+      console.log(
+        "Permanent Google Drive connection already exists."
+      );
+
+      return {
+        connected: true,
+        redirected: false
+      };
+
+    }
+
+
+    console.log(
+      "No permanent Google Drive connection. Starting authorization..."
+    );
+
+
+    /* -----------------------------------------------------
+       START PERMANENT DRIVE AUTHORIZATION
+    ----------------------------------------------------- */
+
+    const response =
+      await fetch(
+
+        "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/connect-google-drive",
+
+        {
+
+          method:
+            "POST",
+
+          headers: {
+
+            "Authorization":
+              `Bearer ${session.access_token}`,
+
+            "Content-Type":
+              "application/json"
+
+          }
+
+        }
+
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if (
+
+      !response.ok ||
+
+      !result.success ||
+
+      !result.authorization_url
+
+    ) {
+
+      console.error(
+        "Unable to start permanent Google Drive connection:",
+        result
+      );
+
+      return {
+        connected: false,
+        redirected: false
+      };
+
+    }
+
+
+    /*
+     * Redirect the user immediately.
+     */
+
+    window.location.href =
+      result.authorization_url;
+
+
+    return {
+      connected: false,
+      redirected: true
+    };
+
+  }
+
+  catch (
+  error
+  ) {
+
+    console.error(
+      "ensureGoogleDriveConnection error:",
+      error
+    );
+
+    return {
+      connected: false,
+      redirected: false
+    };
+
+  }
+
+}
+
+async function checkExistingSession() {
+
+  try {
+
+    /* =================================================
+       GET CURRENT SESSION
+    ================================================= */
+
+    const {
+      data: {
+        session
+      }
+    } =
+      await sb.auth.getSession();
+
+
+    if (
+      !session
+    ) {
+
       return;
+
+    }
+
+
+    /* =================================================
+       GET CURRENT USER
+    ================================================= */
+
+    const {
+      data: {
+        user
+      }
+    } =
+      await sb.auth.getUser();
+
+
+    if (
+      !user
+    ) {
+
+      return;
+
     }
 
 
     console.log(
       "Existing session:",
       {
+
         id:
           user.id,
 
@@ -3807,6 +4008,7 @@ async function checkExistingSession() {
 
         provider:
           user.app_metadata?.provider
+
       }
     );
 
@@ -3815,9 +4017,9 @@ async function checkExistingSession() {
       user.app_metadata?.provider;
 
 
-    /* =====================================================
+    /* =================================================
        GOOGLE EXISTING SESSION
-       ===================================================== */
+    ================================================= */
 
     if (
       provider === "google"
@@ -3826,10 +4028,6 @@ async function checkExistingSession() {
       el("tabSignup")
         ?.click();
 
-
-      /*
-       * Check Google provider token
-       */
 
       console.log(
         "Existing Google session provider token:",
@@ -3847,10 +4045,6 @@ async function checkExistingSession() {
       );
 
 
-      /*
-       * TEMPORARY GOOGLE DRIVE TEST
-       */
-
       if (
         session.provider_token
       ) {
@@ -3858,13 +4052,15 @@ async function checkExistingSession() {
         try {
 
           console.log(
-            "Testing Google Drive connection..."
+            "Creating/checking RiGiD Drive..."
           );
 
 
           const driveResponse =
             await fetch(
+
               "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/google-drive",
+
               {
 
                 method:
@@ -3884,11 +4080,16 @@ async function checkExistingSession() {
                   JSON.stringify({
 
                     access_token:
-                      session.provider_token
+                      session.provider_token,
+
+                    refresh_token:
+                      session.provider_refresh_token ||
+                      null
 
                   })
 
               }
+
             );
 
 
@@ -3915,7 +4116,9 @@ async function checkExistingSession() {
 
         }
 
-        catch (driveError) {
+        catch (
+        driveError
+        ) {
 
           console.error(
             "RiGiD Drive request failed:",
@@ -3929,15 +4132,11 @@ async function checkExistingSession() {
       else {
 
         console.warn(
-          "Google provider token is not available in the existing session."
+          "Google provider token is not available."
         );
 
       }
 
-
-      /*
-       * Continue normal RiGiD Google-user setup
-       */
 
       await setupGoogleUser(
         user
@@ -3949,9 +4148,9 @@ async function checkExistingSession() {
     }
 
 
-    /* =====================================================
+    /* =================================================
        EMAIL USER
-       ===================================================== */
+    ================================================= */
 
     if (
       user.email_confirmed_at
@@ -3967,7 +4166,9 @@ async function checkExistingSession() {
 
   }
 
-  catch (error) {
+  catch (
+  error
+  ) {
 
     console.error(
       "checkExistingSession:",
@@ -4013,108 +4214,7 @@ function initAuthStateListener() {
         ) {
 
           console.log(
-            "RiGiD session:",
-            session
-          );
-
-
-          console.log(
-            "Google provider token:",
-            session.provider_token
-              ? "AVAILABLE"
-              : "NOT AVAILABLE"
-          );
-
-
-          console.log(
-            "Google provider refresh token:",
-            session.provider_refresh_token
-              ? "AVAILABLE"
-              : "NOT AVAILABLE"
-          );
-
-
-          /*
-           * TEMPORARY DRIVE TEST
-           *
-           * This is intentionally retained for testing.
-           * We will replace this with the final secure
-           * token architecture later.
-           */
-
-          if (
-            session.provider_token
-          ) {
-
-            try {
-
-              const driveResponse =
-                await fetch(
-                  "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/google-drive",
-                  {
-
-                    method:
-                      "POST",
-
-                    headers: {
-
-                      "Authorization":
-                        `Bearer ${session.access_token}`,
-
-                      "Content-Type":
-                        "application/json"
-
-                    },
-
-                    body:
-                      JSON.stringify({
-
-                        access_token:
-                          session.provider_token
-
-                      })
-
-                  }
-                );
-
-
-              const driveResult =
-                await driveResponse.json();
-
-
-              console.log(
-                "RiGiD Drive result:",
-                driveResult
-              );
-
-            }
-
-            catch (driveError) {
-
-              console.error(
-                "RiGiD Drive request failed:",
-                driveError
-              );
-
-            }
-
-          }
-
-
-          /*
-           * Small delay prevents race conditions
-           * immediately after OAuth redirect.
-           */
-
-          setTimeout(
-            () => {
-
-              setupGoogleUser(
-                session.user
-              );
-
-            },
-            300
+            "Google SIGNED_IN event received."
           );
 
         }

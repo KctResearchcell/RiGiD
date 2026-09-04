@@ -5908,3 +5908,302 @@ body.light-theme .team-index {
 .forum-content {
     margin-top: 8px;
 }
+
+/* =========================================================
+   SUPPORT REPORTS
+========================================================= */
+
+.support-reports-section {
+    margin-top: 24px;
+}
+
+
+/* REPORT LIST */
+
+.support-reports-section .pending-list {
+    display: grid;
+    gap: 8px;
+}
+
+
+/* INDIVIDUAL REPORT */
+
+.support-report-row {
+    display: grid;
+    grid-template-columns: 180px minmax(250px, 1fr) 125px 270px;
+    align-items: center;
+    gap: 18px;
+
+    padding: 11px 15px;
+
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.018);
+
+    min-height: 58px;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease;
+}
+
+
+.support-report-row:hover {
+    border-color: rgba(255,255,255,.13);
+    background: rgba(255,255,255,.028);
+}
+
+
+/* MEMBER */
+
+.support-report-name {
+    font-size: 14px;
+    font-weight: 600;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+.support-report-email {
+    margin-top: 3px;
+
+    font-size: 11px;
+    opacity: .48;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* MESSAGE */
+
+.support-report-message {
+    font-size: 13px;
+    line-height: 1.4;
+
+    opacity: .82;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* DATE */
+
+.support-report-date {
+    font-size: 11px;
+    line-height: 1.5;
+
+    opacity: .48;
+
+    white-space: nowrap;
+}
+
+
+/* STATUS */
+
+.support-report-status {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    white-space: nowrap;
+}
+
+
+.support-report-status label {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    font-size: 12px;
+
+    cursor: pointer;
+
+    opacity: .68;
+
+    transition:
+        opacity .2s ease;
+}
+
+
+.support-report-status label:hover {
+    opacity: 1;
+}
+
+
+.support-report-status input {
+    width: 14px;
+    height: 14px;
+
+    margin: 0;
+
+    cursor: pointer;
+}
+
+
+/* EMPTY STATE */
+
+.support-reports-empty {
+    padding: 22px 15px;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    opacity: .42;
+
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 10px;
+
+    background: rgba(255,255,255,.015);
+}
+
+
+/* =========================================================
+   PENDING REQUESTS - CLEANER APPEARANCE
+========================================================= */
+
+.pending-section {
+    background: transparent !important;
+}
+
+
+.pending-section .pending-item {
+    background: rgba(255,255,255,.018) !important;
+
+    border: 1px solid rgba(255,255,255,.07) !important;
+
+    border-radius: 10px !important;
+}
+
+
+.pending-section .pending-item:hover {
+    background: rgba(255,255,255,.028) !important;
+
+    border-color: rgba(255,255,255,.13) !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .support-report-row {
+        grid-template-columns:
+            170px
+            minmax(200px, 1fr)
+            110px;
+    }
+
+    .support-report-status {
+        grid-column: 1 / -1;
+
+        justify-content: flex-start;
+
+        padding-top: 4px;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .support-report-row {
+        grid-template-columns: 1fr;
+
+        gap: 8px;
+
+        padding: 12px;
+    }
+
+    .support-report-date {
+        display: flex;
+        gap: 8px;
+    }
+
+    .support-report-status {
+        justify-content: flex-start;
+
+        flex-wrap: wrap;
+    }
+
+}
+
+/* =========================================================
+   PENDING REQUESTS ONLY
+========================================================= */
+
+.pending-section:not(.support-reports-section) {
+    background: rgba(255, 184, 77, 0.045) !important;
+
+    border: 1px solid rgba(255, 184, 77, 0.16) !important;
+
+    border-radius: 14px;
+
+    padding: 20px;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+
+/* Pending request cards only */
+
+.pending-section:not(.support-reports-section) .pending-item {
+    background: rgba(255, 184, 77, 0.035) !important;
+
+    border: 1px solid rgba(255, 184, 77, 0.10) !important;
+
+    border-radius: 10px !important;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease;
+}
+
+
+.pending-section:not(.support-reports-section) .pending-item:hover {
+    background: rgba(255, 184, 77, 0.065) !important;
+
+    border-color: rgba(255, 184, 77, 0.22) !important;
+}
+
+
+/* Pending heading */
+
+.pending-section:not(.support-reports-section) .forum-code {
+    color: #e7ad55;
+}
+
+
+/* Pending badge */
+
+.pending-section:not(.support-reports-section) .pending-badge {
+    background: rgba(255, 184, 77, 0.10);
+
+    border: 1px solid rgba(255, 184, 77, 0.20);
+
+    color: #e7ad55;
+}
+
+
+/* =========================================================
+   REPORTS SECTION - NO PENDING COLOUR
+========================================================= */
+
+.support-reports-section {
+    background: transparent !important;
+
+    border: none !important;
+
+    box-shadow: none !important;
+}

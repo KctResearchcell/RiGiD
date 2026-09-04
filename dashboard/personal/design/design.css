@@ -4207,3 +4207,53 @@ a {
     }
 
 }
+
+/* =========================================================
+   DELETE BUTTON
+========================================================= */
+
+.design-delete-button {
+
+    width: 22px;
+    height: 22px;
+
+    flex-shrink: 0;
+
+    border: none;
+    border-radius: 5px;
+
+    background: transparent;
+
+    color: #777487;
+
+    font-size: 18px;
+    line-height: 20px;
+
+    cursor: pointer;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        background 0.15s ease,
+        color 0.15s ease;
+
+}
+
+
+.design-delete-button:hover {
+
+    background:
+        rgba(
+            239,
+            68,
+            68,
+            0.12
+        );
+
+    color:
+        #ef4444;
+
+}

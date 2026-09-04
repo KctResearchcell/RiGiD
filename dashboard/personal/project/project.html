@@ -1,24 +1,26 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
+ 
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>Project | RiGiD</title>
+<title>Project | RiGiD</title>
 
-    <link
-        rel="stylesheet"
-        href="project.css"
-    >
+<link
+    rel="stylesheet"
+    href="project.css"
+>
+ 
 
 </head>
-
 
 <body>
 
@@ -28,121 +30,110 @@
 
 <header class="project-header">
 
-    <div class="project-brand">
+ 
+<div class="project-brand">
 
-        <div class="project-brand-left">
+    <div class="project-brand-left">
 
-            <div class="project-badge">
-                PROJECT
-            </div>
-
-            <div
-                class="project-status"
-                id="projectStatus"
-            >
-                ● IN PROGRESS
-            </div>
-
-            <div
-                class="project-priority"
-                id="projectPriority"
-            >
-                HIGH PRIORITY
-            </div>
-
+        <div class="project-badge">
+            PROJECT
         </div>
 
-
-        <h1 id="projectTitle">
-            Smart Renewable Energy System
-        </h1>
-
-
-        <p
-            class="project-description"
-            id="projectDescription"
+        <div
+            class="project-status"
+            id="projectStatus"
         >
-            Development, integration and validation of
-            an intelligent renewable energy system.
-        </p>
-
+            ● LOADING
+        </div>
 
         <div
-            class="project-tags"
-            id="projectTags"
+            class="project-priority"
+            id="projectPriority"
         >
-
-            <span>RENEWABLE ENERGY</span>
-            <span>HARDWARE</span>
-            <span>IoT</span>
-            <span>R&amp;D</span>
-
+            LOADING
         </div>
 
     </div>
 
 
-    <div class="project-live">
+    <h1 id="projectTitle">
+        Loading Project...
+    </h1>
 
-        <div class="live-date">
 
-            <span id="liveDate">
-                23 AUG 2026
-            </span>
+    <p
+        class="project-description"
+        id="projectDescription"
+    >
+        Loading project information...
+    </p>
 
-            <strong id="liveClock">
-                05:30:00 PM
+
+    <div
+        class="project-tags"
+        id="projectTags"
+    ></div>
+
+</div>
+
+
+<div class="project-live">
+
+    <div class="live-date">
+
+        <span id="liveDate"></span>
+
+        <strong id="liveClock"></strong>
+
+    </div>
+
+
+    <div class="project-meta">
+
+        <div>
+
+            <label>
+                OWNER
+            </label>
+
+            <strong id="projectOwner">
+                -
             </strong>
 
         </div>
 
 
-        <div class="project-meta">
+        <div>
 
-            <div>
+            <label>
+                STARTED
+            </label>
 
-                <label>
-                    OWNER
-                </label>
+            <strong id="projectStarted">
+                -
+            </strong>
 
-                <strong>
-                    You
-                </strong>
-
-            </div>
+        </div>
 
 
-            <div>
+        <div>
 
-                <label>
-                    STARTED
-                </label>
+            <label>
+                TARGET
+            </label>
 
-                <strong>
-                    01 AUG 2026
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <label>
-                    TARGET
-                </label>
-
-                <strong>
-                    30 SEP 2026
-                </strong>
-
-            </div>
+            <strong id="projectTarget">
+                -
+            </strong>
 
         </div>
 
     </div>
 
-</header>
+</div>
+ 
 
+</header>
 
 <!-- =====================================================
      PROJECT NAVIGATION
@@ -150,60 +141,78 @@
 
 <nav class="project-navigation">
 
-    <button
-        class="project-nav-item active"
-        data-section="projectOverview"
-    >
-        Overview
-    </button>
+ 
+<button
+    class="project-nav-item active"
+    data-section="projectOverview"
+    type="button"
+>
+    Overview
+</button>
 
-    <button
-        class="project-nav-item"
-        data-section="projectTasks"
-    >
-        Tasks
-    </button>
+<button
+    class="project-nav-item"
+    data-section="projectTasks"
+    type="button"
+>
+    Tasks
+</button>
 
-    <button
-        class="project-nav-item"
-        data-section="projectMilestones"
-    >
-        Milestones
-    </button>
+<button
+    class="project-nav-item"
+    data-section="projectMilestones"
+    type="button"
+>
+    Milestones
+</button>
 
-    <button
-        class="project-nav-item"
-        data-section="projectTimeline"
-    >
-        Timeline
-    </button>
+<button
+    class="project-nav-item"
+    data-section="projectTimeline"
+    type="button"
+>
+    Timeline
+</button>
 
-    <button
-        class="project-nav-item"
-        data-section="projectTesting"
-    >
-        Testing
-    </button>
+<button
+    class="project-nav-item"
+    data-section="projectTesting"
+    type="button"
+>
+    Testing
+</button>
 
-    <button
-        class="project-nav-item"
-        data-section="projectFiles"
-    >
-        Files
-    </button>
+<button
+    class="project-nav-item"
+    data-section="projectFiles"
+    type="button"
+>
+    Files
+</button>
 
-    <button
-        class="project-nav-item"
-        data-section="projectHistory"
-    >
-        History
-    </button>
+<button
+    class="project-nav-item"
+    data-section="projectHistory"
+    type="button"
+>
+    History
+</button>
+ 
 
 </nav>
 
-
 <main class="project-container">
 
+<!-- =====================================================
+     LOADING STATE
+===================================================== -->
+
+<div
+    class="project-loading"
+    id="projectLoading"
+>
+    Loading project...
+</div>
 
 <!-- =====================================================
      OVERVIEW
@@ -214,203 +223,118 @@
     class="project-section"
 >
 
-    <div class="section-heading">
+ 
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                PROJECT OVERVIEW
-            </span>
+        <span class="section-label">
+            PROJECT OVERVIEW
+        </span>
 
-            <h2>
-                Command Center
-            </h2>
-
-        </div>
-
-        <button
-            class="outline-button"
-            id="editProject"
-        >
-            Edit
-        </button>
+        <h2>
+            Command Center
+        </h2>
 
     </div>
 
+    <button
+        class="outline-button"
+        id="editProject"
+        type="button"
+    >
+        Edit
+    </button>
 
-    <div class="overview-grid">
-
-
-        <!-- PROGRESS -->
-
-        <article class="project-card progress-card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        OVERALL PROGRESS
-                    </span>
-
-                    <h3>
-                        Project completion
-                    </h3>
-
-                </div>
-
-                <strong
-                    class="progress-percentage"
-                    id="projectProgress"
-                >
-                    62%
-                </strong>
-
-            </div>
+</div>
 
 
-            <div class="progress-track">
-
-                <span
-                    id="projectProgressBar"
-                    style="width:62%"
-                ></span>
-
-            </div>
+<div class="overview-grid">
 
 
-            <div class="progress-footer">
+    <!-- PROGRESS -->
 
-                <span>
-                    Click to update progress
-                </span>
-
-                <span id="progressStatus">
-                    On track
-                </span>
-
-            </div>
-
-        </article>
-
-
-        <!-- CURRENT WORK -->
-
-        <article class="project-card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        CURRENT WORK
-                    </span>
-
-                    <h3>
-                        What is happening now?
-                    </h3>
-
-                </div>
-
-                <button
-                    class="text-button"
-                    id="editCurrentWork"
-                >
-                    Edit
-                </button>
-
-            </div>
-
-
-            <div
-                class="current-work"
-                id="currentWork"
-            >
-
-                <strong>
-                    Integrating power electronics
-                </strong>
-
-                <p>
-                    Complete the converter integration
-                    before moving to system-level testing.
-                </p>
-
-            </div>
-
-        </article>
-
-
-        <!-- NEXT ACTION -->
-
-        <article class="project-card next-action-card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        NEXT ACTION
-                    </span>
-
-                    <h3>
-                        What should happen next?
-                    </h3>
-
-                </div>
-
-                <button
-                    class="text-button"
-                    id="editNextAction"
-                >
-                    Edit
-                </button>
-
-            </div>
-
-
-            <div
-                class="next-action"
-                id="nextAction"
-            >
-
-                <strong>
-                    Validate converter output
-                </strong>
-
-                <span>
-                    Due: 26 AUG 2026
-                </span>
-
-            </div>
-
-        </article>
-
-
-    </div>
-
-
-    <!-- PROJECT DESCRIPTION -->
-
-    <article class="project-card description-card">
+    <article class="project-card progress-card">
 
         <div class="card-header">
 
             <div>
 
                 <span class="card-label">
-                    OBJECTIVE
+                    OVERALL PROGRESS
                 </span>
 
                 <h3>
-                    Project Description
+                    Project completion
+                </h3>
+
+            </div>
+
+            <strong
+                class="progress-percentage"
+                id="projectProgress"
+            >
+                0%
+            </strong>
+
+        </div>
+
+
+        <div
+            class="progress-track"
+            id="projectProgressTrack"
+            title="Click to update progress"
+        >
+
+            <span
+                id="projectProgressBar"
+                style="width:0%"
+            ></span>
+
+        </div>
+
+
+        <div class="progress-footer">
+
+            <button
+                class="text-button"
+                id="editProgress"
+                type="button"
+            >
+                Update progress
+            </button>
+
+            <span id="progressStatus">
+                -
+            </span>
+
+        </div>
+
+    </article>
+
+
+    <!-- CURRENT WORK -->
+
+    <article class="project-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <span class="card-label">
+                    CURRENT WORK
+                </span>
+
+                <h3>
+                    What is happening now?
                 </h3>
 
             </div>
 
             <button
                 class="text-button"
-                id="editDescription"
+                id="editCurrentWork"
+                type="button"
             >
                 Edit
             </button>
@@ -419,23 +343,117 @@
 
 
         <div
-            class="editable-content"
-            id="descriptionContent"
+            class="current-work"
+            id="currentWork"
         >
 
-            <p>
-                Describe what the project is trying to
-                achieve, why it is being developed and
-                what the final expected outcome is.
+            <strong id="currentWorkTitle">
+                No current work recorded
+            </strong>
+
+            <p id="currentWorkDescription">
+                Add the work currently being performed.
             </p>
 
         </div>
 
     </article>
 
+
+    <!-- NEXT ACTION -->
+
+    <article class="project-card next-action-card">
+
+        <div class="card-header">
+
+            <div>
+
+                <span class="card-label">
+                    NEXT ACTION
+                </span>
+
+                <h3>
+                    What should happen next?
+                </h3>
+
+            </div>
+
+            <button
+                class="text-button"
+                id="editNextAction"
+                type="button"
+            >
+                Edit
+            </button>
+
+        </div>
+
+
+        <div
+            class="next-action"
+            id="nextAction"
+        >
+
+            <strong id="nextActionTitle">
+                No next action recorded
+            </strong>
+
+            <span id="nextActionDue">
+                No due date
+            </span>
+
+        </div>
+
+    </article>
+
+
+</div>
+
+
+<!-- PROJECT DESCRIPTION -->
+
+<article class="project-card description-card">
+
+    <div class="card-header">
+
+        <div>
+
+            <span class="card-label">
+                OBJECTIVE
+            </span>
+
+            <h3>
+                Project Description
+            </h3>
+
+        </div>
+
+        <button
+            class="text-button"
+            id="editDescription"
+            type="button"
+        >
+            Edit
+        </button>
+
+    </div>
+
+
+    <div
+        class="editable-content"
+        id="descriptionContent"
+    >
+
+        <p>
+            No project objective has been added yet.
+        </p>
+
+    </div>
+
+</article>
+ 
+
 </section>
-
-
 
 <!-- =====================================================
      TASKS
@@ -446,332 +464,117 @@
     class="project-section"
 >
 
-    <div class="section-heading">
+ 
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                EXECUTION
-            </span>
+        <span class="section-label">
+            EXECUTION
+        </span>
 
-            <h2>
-                Tasks
-            </h2>
-
-        </div>
-
-        <button
-            class="primary-button"
-            id="addTask"
-        >
-            + Task
-        </button>
+        <h2>
+            Tasks
+        </h2>
 
     </div>
 
+    <button
+        class="primary-button"
+        id="addTask"
+        type="button"
+    >
+        + Task
+    </button>
+
+</div>
+
+
+<div class="task-layout">
 
     <div
-        class="task-layout"
+        class="task-board"
+        id="taskBoard"
     >
 
-        <div
-            class="task-board"
-            id="taskBoard"
-        >
 
-            <div class="task-column">
+        <div class="task-column">
 
-                <div class="task-column-header">
+            <div class="task-column-header">
 
-                    <strong>
-                        TODO
-                    </strong>
+                <strong>
+                    TODO
+                </strong>
 
-                    <span id="todoCount">
-                        2
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="task-list"
-                    id="todoTasks"
-                >
-
-                    <article
-                        class="task-card"
-                        data-status="todo"
-                    >
-
-                        <div class="task-top">
-
-                            <span class="task-priority high">
-                                HIGH
-                            </span>
-
-                            <button
-                                class="task-menu"
-                            >
-                                ⋯
-                            </button>
-
-                        </div>
-
-                        <h3>
-                            Finalize converter design
-                        </h3>
-
-                        <p>
-                            Complete component selection,
-                            ratings and schematic.
-                        </p>
-
-                        <div class="task-footer">
-
-                            <span>
-                                26 AUG
-                            </span>
-
-                            <span>
-                                Navin
-                            </span>
-
-                        </div>
-
-                    </article>
-
-
-                    <article
-                        class="task-card"
-                        data-status="todo"
-                    >
-
-                        <div class="task-top">
-
-                            <span class="task-priority medium">
-                                MEDIUM
-                            </span>
-
-                            <button
-                                class="task-menu"
-                            >
-                                ⋯
-                            </button>
-
-                        </div>
-
-                        <h3>
-                            Prepare test procedure
-                        </h3>
-
-                        <p>
-                            Define measurements and
-                            acceptance criteria.
-                        </p>
-
-                        <div class="task-footer">
-
-                            <span>
-                                28 AUG
-                            </span>
-
-                            <span>
-                                Navin
-                            </span>
-
-                        </div>
-
-                    </article>
-
-                </div>
+                <span id="todoCount">
+                    0
+                </span>
 
             </div>
 
 
-            <div class="task-column">
-
-                <div class="task-column-header">
-
-                    <strong>
-                        IN PROGRESS
-                    </strong>
-
-                    <span id="progressTaskCount">
-                        1
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="task-list"
-                    id="progressTasks"
-                >
-
-                    <article
-                        class="task-card"
-                        data-status="progress"
-                    >
-
-                        <div class="task-top">
-
-                            <span class="task-priority high">
-                                HIGH
-                            </span>
-
-                            <button
-                                class="task-menu"
-                            >
-                                ⋯
-                            </button>
-
-                        </div>
-
-                        <h3>
-                            Integrate power stage
-                        </h3>
-
-                        <p>
-                            Connect converter, controller
-                            and protection stage.
-                        </p>
-
-                        <div class="task-footer">
-
-                            <span>
-                                25 AUG
-                            </span>
-
-                            <span>
-                                Navin
-                            </span>
-
-                        </div>
-
-                    </article>
-
-                </div>
-
-            </div>
-
-
-            <div class="task-column">
-
-                <div class="task-column-header">
-
-                    <strong>
-                        DONE
-                    </strong>
-
-                    <span id="doneTaskCount">
-                        2
-                    </span>
-
-                </div>
-
-
-                <div
-                    class="task-list"
-                    id="doneTasks"
-                >
-
-                    <article
-                        class="task-card completed"
-                        data-status="done"
-                    >
-
-                        <div class="task-top">
-
-                            <span class="task-priority done">
-                                DONE
-                            </span>
-
-                            <button
-                                class="task-menu"
-                            >
-                                ⋯
-                            </button>
-
-                        </div>
-
-                        <h3>
-                            Define project architecture
-                        </h3>
-
-                        <p>
-                            Initial system architecture
-                            and block diagram completed.
-                        </p>
-
-                        <div class="task-footer">
-
-                            <span>
-                                20 AUG
-                            </span>
-
-                            <span>
-                                Navin
-                            </span>
-
-                        </div>
-
-                    </article>
-
-
-                    <article
-                        class="task-card completed"
-                        data-status="done"
-                    >
-
-                        <div class="task-top">
-
-                            <span class="task-priority done">
-                                DONE
-                            </span>
-
-                            <button
-                                class="task-menu"
-                            >
-                                ⋯
-                            </button>
-
-                        </div>
-
-                        <h3>
-                            Select major components
-                        </h3>
-
-                        <p>
-                            Initial component shortlist
-                            completed.
-                        </p>
-
-                        <div class="task-footer">
-
-                            <span>
-                                21 AUG
-                            </span>
-
-                            <span>
-                                Navin
-                            </span>
-
-                        </div>
-
-                    </article>
-
-                </div>
-
-            </div>
+            <div
+                class="task-list"
+                id="todoTasks"
+            ></div>
 
         </div>
 
+
+
+        <div class="task-column">
+
+            <div class="task-column-header">
+
+                <strong>
+                    IN PROGRESS
+                </strong>
+
+                <span id="progressTaskCount">
+                    0
+                </span>
+
+            </div>
+
+
+            <div
+                class="task-list"
+                id="progressTasks"
+            ></div>
+
+        </div>
+
+
+
+        <div class="task-column">
+
+            <div class="task-column-header">
+
+                <strong>
+                    DONE
+                </strong>
+
+                <span id="doneTaskCount">
+                    0
+                </span>
+
+            </div>
+
+
+            <div
+                class="task-list"
+                id="doneTasks"
+            ></div>
+
+        </div>
+
+
     </div>
 
+</div>
+ 
+
 </section>
-
-
 
 <!-- =====================================================
      MILESTONES
@@ -782,158 +585,39 @@
     class="project-section"
 >
 
-    <div class="section-heading">
+ 
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                MAJOR TARGETS
-            </span>
+        <span class="section-label">
+            MAJOR TARGETS
+        </span>
 
-            <h2>
-                Milestones
-            </h2>
-
-        </div>
-
-        <button
-            class="outline-button"
-            id="addMilestone"
-        >
-            + Milestone
-        </button>
+        <h2>
+            Milestones
+        </h2>
 
     </div>
 
-
-    <div
-        class="milestone-grid"
-        id="milestoneGrid"
+    <button
+        class="outline-button"
+        id="addMilestone"
+        type="button"
     >
+        + Milestone
+    </button>
 
-        <article class="milestone-card completed">
-
-            <div class="milestone-top">
-
-                <span>
-                    MILESTONE 01
-                </span>
-
-                <strong>
-                    100%
-                </strong>
-
-            </div>
-
-            <h3>
-                System Architecture
-            </h3>
-
-            <p>
-                Finalize the complete project architecture.
-            </p>
-
-            <div class="milestone-bar">
-                <span style="width:100%"></span>
-            </div>
-
-            <div class="milestone-footer">
-                <span>
-                    Completed
-                </span>
-
-                <span>
-                    20 AUG
-                </span>
-            </div>
-
-        </article>
+</div>
 
 
-        <article class="milestone-card active">
-
-            <div class="milestone-top">
-
-                <span>
-                    MILESTONE 02
-                </span>
-
-                <strong>
-                    70%
-                </strong>
-
-            </div>
-
-            <h3>
-                Hardware Integration
-            </h3>
-
-            <p>
-                Integrate the main hardware and
-                power electronics subsystems.
-            </p>
-
-            <div class="milestone-bar">
-                <span style="width:70%"></span>
-            </div>
-
-            <div class="milestone-footer">
-                <span>
-                    In Progress
-                </span>
-
-                <span>
-                    30 AUG
-                </span>
-            </div>
-
-        </article>
-
-
-        <article class="milestone-card planned">
-
-            <div class="milestone-top">
-
-                <span>
-                    MILESTONE 03
-                </span>
-
-                <strong>
-                    0%
-                </strong>
-
-            </div>
-
-            <h3>
-                Testing &amp; Validation
-            </h3>
-
-            <p>
-                Validate performance against the
-                defined project requirements.
-            </p>
-
-            <div class="milestone-bar">
-                <span style="width:0%"></span>
-            </div>
-
-            <div class="milestone-footer">
-                <span>
-                    Planned
-                </span>
-
-                <span>
-                    10 SEP
-                </span>
-            </div>
-
-        </article>
-
-    </div>
+<div
+    class="milestone-grid"
+    id="milestoneGrid"
+></div>
+ 
 
 </section>
-
-
 
 <!-- =====================================================
      PROJECT TIMELINE
@@ -944,156 +628,39 @@
     class="project-section"
 >
 
-    <div class="section-heading">
+ 
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                PROJECT JOURNEY
-            </span>
+        <span class="section-label">
+            PROJECT JOURNEY
+        </span>
 
-            <h2>
-                Timeline
-            </h2>
-
-        </div>
-
-        <button
-            class="outline-button"
-            id="addTimeline"
-        >
-            + Timeline
-        </button>
+        <h2>
+            Timeline
+        </h2>
 
     </div>
 
-
-    <div
-        class="project-timeline"
-        id="projectTimelineList"
+    <button
+        class="outline-button"
+        id="addTimeline"
+        type="button"
     >
+        + Timeline
+    </button>
 
-        <article class="timeline-item">
-
-            <div class="timeline-date">
-                20 AUG
-            </div>
-
-            <div class="timeline-point completed"></div>
-
-            <div class="timeline-card">
-
-                <div class="timeline-top">
-
-                    <span class="timeline-status completed">
-                        COMPLETED
-                    </span>
-
-                    <button
-                        class="timeline-edit"
-                        type="button"
-                    >
-                        ✎
-                    </button>
-
-                </div>
-
-                <h3>
-                    Project initiated
-                </h3>
-
-                <p>
-                    Defined the problem, objectives and
-                    initial system architecture.
-                </p>
-
-            </div>
-
-        </article>
+</div>
 
 
-        <article class="timeline-item">
-
-            <div class="timeline-date">
-                24 AUG
-            </div>
-
-            <div class="timeline-point ongoing"></div>
-
-            <div class="timeline-card">
-
-                <div class="timeline-top">
-
-                    <span class="timeline-status ongoing">
-                        ONGOING
-                    </span>
-
-                    <button
-                        class="timeline-edit"
-                        type="button"
-                    >
-                        ✎
-                    </button>
-
-                </div>
-
-                <h3>
-                    Hardware integration
-                </h3>
-
-                <p>
-                    Integrate the major hardware modules
-                    and verify subsystem operation.
-                </p>
-
-            </div>
-
-        </article>
-
-
-        <article class="timeline-item">
-
-            <div class="timeline-date">
-                30 AUG
-            </div>
-
-            <div class="timeline-point planned"></div>
-
-            <div class="timeline-card">
-
-                <div class="timeline-top">
-
-                    <span class="timeline-status planned">
-                        PLANNED
-                    </span>
-
-                    <button
-                        class="timeline-edit"
-                        type="button"
-                    >
-                        ✎
-                    </button>
-
-                </div>
-
-                <h3>
-                    First integrated test
-                </h3>
-
-                <p>
-                    Run the first complete system test and
-                    document failures and observations.
-                </p>
-
-            </div>
-
-        </article>
-
-    </div>
+<div
+    class="project-timeline"
+    id="projectTimelineList"
+></div>
+ 
 
 </section>
-
-
 
 <!-- =====================================================
      TEAM / COLLABORATORS
@@ -1101,102 +668,39 @@
 
 <section class="project-section">
 
-    <div class="section-heading">
+ 
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                TEAM
-            </span>
+        <span class="section-label">
+            TEAM
+        </span>
 
-            <h2>
-                Collaborators
-            </h2>
-
-        </div>
-
-        <button
-            class="outline-button"
-            id="addCollaborator"
-        >
-            + Member
-        </button>
+        <h2>
+            Collaborators
+        </h2>
 
     </div>
 
-
-    <div
-        class="collaborator-grid"
-        id="collaboratorGrid"
+    <button
+        class="outline-button"
+        id="addCollaborator"
+        type="button"
     >
+        + Member
+    </button>
 
-        <article class="collaborator-card">
-
-            <div class="member-avatar">
-                N
-            </div>
-
-            <div>
-
-                <strong>
-                    You
-                </strong>
-
-                <span>
-                    Project Owner
-                </span>
-
-            </div>
-
-        </article>
+</div>
 
 
-        <article class="collaborator-card">
-
-            <div class="member-avatar">
-                A
-            </div>
-
-            <div>
-
-                <strong>
-                    Team Member
-                </strong>
-
-                <span>
-                    Electronics
-                </span>
-
-            </div>
-
-        </article>
-
-
-        <article class="collaborator-card">
-
-            <div class="member-avatar">
-                R
-            </div>
-
-            <div>
-
-                <strong>
-                    Team Member
-                </strong>
-
-                <span>
-                    Mechanical
-                </span>
-
-            </div>
-
-        </article>
-
-    </div>
+<div
+    class="collaborator-grid"
+    id="collaboratorGrid"
+></div>
+ 
 
 </section>
-
-
 
 <!-- =====================================================
      TESTING & VALIDATION
@@ -1207,196 +711,144 @@
     class="project-section"
 >
 
-    <div class="section-heading">
+ 
+<div class="section-heading">
+
+    <div>
+
+        <span class="section-label">
+            VALIDATION
+        </span>
+
+        <h2>
+            Testing &amp; Validation
+        </h2>
+
+    </div>
+
+    <button
+        class="outline-button"
+        id="addTest"
+        type="button"
+    >
+        + Test
+    </button>
+
+</div>
+
+
+<div class="testing-grid">
+
+
+    <article class="test-summary-card">
+
+        <div
+            class="test-summary-number"
+            id="totalTests"
+        >
+            0
+        </div>
 
         <div>
 
-            <span class="section-label">
-                VALIDATION
+            <span>
+                TESTS
             </span>
 
-            <h2>
-                Testing &amp; Validation
-            </h2>
+            <strong>
+                Total
+            </strong>
 
         </div>
 
-        <button
-            class="outline-button"
-            id="addTest"
+    </article>
+
+
+
+    <article class="test-summary-card passed">
+
+        <div
+            class="test-summary-number"
+            id="passedTests"
         >
-            + Test
-        </button>
+            0
+        </div>
 
-    </div>
+        <div>
 
-
-    <div class="testing-grid">
-
-        <article class="test-summary-card">
-
-            <div class="test-summary-number">
-                6
-            </div>
-
-            <div>
-                <span>
-                    TESTS
-                </span>
-
-                <strong>
-                    Total
-                </strong>
-            </div>
-
-        </article>
-
-
-        <article class="test-summary-card passed">
-
-            <div class="test-summary-number">
-                4
-            </div>
-
-            <div>
-                <span>
-                    PASSED
-                </span>
-
-                <strong>
-                    66.7%
-                </strong>
-            </div>
-
-        </article>
-
-
-        <article class="test-summary-card failed">
-
-            <div class="test-summary-number">
-                1
-            </div>
-
-            <div>
-                <span>
-                    FAILED
-                </span>
-
-                <strong>
-                    Needs action
-                </strong>
-            </div>
-
-        </article>
-
-
-        <article class="test-summary-card pending">
-
-            <div class="test-summary-number">
-                1
-            </div>
-
-            <div>
-                <span>
-                    PENDING
-                </span>
-
-                <strong>
-                    Upcoming
-                </strong>
-            </div>
-
-        </article>
-
-    </div>
-
-
-    <div
-        class="test-list"
-        id="testList"
-    >
-
-        <article class="test-card passed">
-
-            <div class="test-indicator">
-                ✓
-            </div>
-
-            <div class="test-info">
-
-                <strong>
-                    Power stage voltage test
-                </strong>
-
-                <p>
-                    Verify expected output voltage
-                    under nominal conditions.
-                </p>
-
-            </div>
-
-            <span class="test-result passed">
+            <span>
                 PASSED
             </span>
 
-        </article>
+            <strong id="passedTestPercentage">
+                0%
+            </strong>
+
+        </div>
+
+    </article>
 
 
-        <article class="test-card failed">
 
-            <div class="test-indicator">
-                !
-            </div>
+    <article class="test-summary-card failed">
 
-            <div class="test-info">
+        <div
+            class="test-summary-number"
+            id="failedTests"
+        >
+            0
+        </div>
 
-                <strong>
-                    Thermal test
-                </strong>
+        <div>
 
-                <p>
-                    Temperature exceeded the expected
-                    operating range.
-                </p>
-
-            </div>
-
-            <span class="test-result failed">
+            <span>
                 FAILED
             </span>
 
-        </article>
+            <strong>
+                Needs action
+            </strong>
+
+        </div>
+
+    </article>
 
 
-        <article class="test-card pending">
 
-            <div class="test-indicator">
-                •
-            </div>
+    <article class="test-summary-card pending">
 
-            <div class="test-info">
+        <div
+            class="test-summary-number"
+            id="pendingTests"
+        >
+            0
+        </div>
 
-                <strong>
-                    Full-load validation
-                </strong>
+        <div>
 
-                <p>
-                    Planned after hardware integration.
-                </p>
-
-            </div>
-
-            <span class="test-result pending">
+            <span>
                 PENDING
             </span>
 
-        </article>
+            <strong>
+                Upcoming
+            </strong>
 
-    </div>
+        </div>
+
+    </article>
+
+
+</div>
+
+
+<div
+    class="test-list"
+    id="testList"
+></div>
+ 
 
 </section>
-
-
 
 <!-- =====================================================
      ITERATION / VERSION HISTORY
@@ -1407,99 +859,39 @@
     class="project-section"
 >
 
-    <div class="section-heading">
+ 
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                ITERATIONS
-            </span>
+        <span class="section-label">
+            ITERATIONS
+        </span>
 
-            <h2>
-                Version History
-            </h2>
-
-        </div>
-
-        <button
-            class="outline-button"
-            id="addVersion"
-        >
-            + Version
-        </button>
+        <h2>
+            Version History
+        </h2>
 
     </div>
 
-
-    <div
-        class="version-grid"
-        id="versionGrid"
+    <button
+        class="outline-button"
+        id="addVersion"
+        type="button"
     >
+        + Version
+    </button>
 
-        <article class="version-card current">
-
-            <div class="version-number">
-                V2
-            </div>
-
-            <div class="version-info">
-
-                <div class="version-top">
-
-                    <strong>
-                        Current Prototype
-                    </strong>
-
-                    <span>
-                        24 AUG 2026
-                    </span>
-
-                </div>
-
-                <p>
-                    Improved power stage, updated enclosure
-                    and revised control architecture.
-                </p>
-
-            </div>
-
-        </article>
+</div>
 
 
-        <article class="version-card">
-
-            <div class="version-number">
-                V1
-            </div>
-
-            <div class="version-info">
-
-                <div class="version-top">
-
-                    <strong>
-                        Initial Prototype
-                    </strong>
-
-                    <span>
-                        18 AUG 2026
-                    </span>
-
-                </div>
-
-                <p>
-                    First working prototype used for
-                    subsystem testing.
-                </p>
-
-            </div>
-
-        </article>
-
-    </div>
+<div
+    class="version-grid"
+    id="versionGrid"
+></div>
+ 
 
 </section>
-
-
 
 <!-- =====================================================
      PROBLEMS / DECISIONS
@@ -1507,118 +899,85 @@
 
 <section class="project-section">
 
-    <div class="issue-grid">
+ 
+<div class="issue-grid">
 
 
-        <article class="project-card">
+    <article class="project-card">
 
-            <div class="card-header">
+        <div class="card-header">
 
-                <div>
+            <div>
 
-                    <span class="card-label">
-                        ISSUES
-                    </span>
+                <span class="card-label">
+                    ISSUES
+                </span>
 
-                    <h3>
-                        Problems &amp; Blockers
-                    </h3>
-
-                </div>
-
-                <button
-                    class="text-button"
-                    id="addIssue"
-                >
-                    + Add
-                </button>
+                <h3>
+                    Problems &amp; Blockers
+                </h3>
 
             </div>
 
-
-            <div
-                class="issue-list"
-                id="issueList"
+            <button
+                class="text-button"
+                id="addIssue"
+                type="button"
             >
+                + Add
+            </button>
 
-                <div class="issue-item">
-
-                    <span class="issue-dot"></span>
-
-                    <div>
-
-                        <strong>
-                            Thermal rise
-                        </strong>
-
-                        <p>
-                            Investigate excessive temperature
-                            during continuous operation.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </article>
+        </div>
 
 
-        <article class="project-card">
+        <div
+            class="issue-list"
+            id="issueList"
+        ></div>
 
-            <div class="card-header">
+    </article>
 
-                <div>
 
-                    <span class="card-label">
-                        DECISIONS
-                    </span>
 
-                    <h3>
-                        Important Decisions
-                    </h3>
+    <article class="project-card">
 
-                </div>
+        <div class="card-header">
 
-                <button
-                    class="text-button"
-                    id="addDecision"
-                >
-                    + Add
-                </button>
+            <div>
+
+                <span class="card-label">
+                    DECISIONS
+                </span>
+
+                <h3>
+                    Important Decisions
+                </h3>
 
             </div>
 
-
-            <div
-                class="decision-list"
-                id="decisionList"
+            <button
+                class="text-button"
+                id="addDecision"
+                type="button"
             >
+                + Add
+            </button>
 
-                <div class="decision-item">
-
-                    <strong>
-                        Use active rectification
-                    </strong>
-
-                    <p>
-                        Selected to improve control over
-                        generator-side power conversion.
-                    </p>
-
-                </div>
-
-            </div>
-
-        </article>
+        </div>
 
 
-    </div>
+        <div
+            class="decision-list"
+            id="decisionList"
+        ></div>
+
+    </article>
+
+
+</div>
+ 
 
 </section>
-
-
 
 <!-- =====================================================
      FILES & LINKS
@@ -1629,214 +988,129 @@
     class="project-section"
 >
 
-    <div class="section-heading">
+ 
+<div class="section-heading">
 
-        <div>
+    <div>
 
-            <span class="section-label">
-                RESOURCES
-            </span>
-
-            <h2>
-                Files &amp; Links
-            </h2>
-
-        </div>
-
-        <div class="heading-actions">
-
-            <button
-                class="outline-button"
-                id="addProjectLink"
-            >
-                + Link
-            </button>
-
-            <button
-                class="primary-button"
-                id="uploadProjectFile"
-            >
-                + Upload
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <div
-        class="project-upload-zone"
-        id="projectUploadZone"
-    >
-
-        <strong>
-            Add project resources
-        </strong>
-
-        <p>
-            Upload images, videos, PDFs, documents,
-            CAD files, source code, datasets, ZIP files
-            or any other project file.
-        </p>
-
-        <span>
-            Drag &amp; drop or click to browse
+        <span class="section-label">
+            RESOURCES
         </span>
 
-    </div>
-
-
-    <input
-        type="file"
-        id="projectFileInput"
-        multiple
-        hidden
-    >
-
-
-    <div
-        class="attachment-grid"
-        id="projectAttachmentGrid"
-    >
-
-        <article class="attachment-card">
-
-            <div class="attachment-icon">
-                PDF
-            </div>
-
-            <div class="attachment-info">
-
-                <strong>
-                    Project_Requirements.pdf
-                </strong>
-
-                <span>
-                    PDF · 1.4 MB
-                </span>
-
-                <small>
-                    Initial requirements
-                </small>
-
-            </div>
-
-            <button type="button">
-                Open
-            </button>
-
-        </article>
-
-
-        <article class="attachment-card">
-
-            <div class="attachment-icon">
-                CAD
-            </div>
-
-            <div class="attachment-info">
-
-                <strong>
-                    Prototype_v2.step
-                </strong>
-
-                <span>
-                    CAD · 8.2 MB
-                </span>
-
-                <small>
-                    Current mechanical model
-                </small>
-
-            </div>
-
-            <button type="button">
-                Open
-            </button>
-
-        </article>
+        <h2>
+            Files &amp; Links
+        </h2>
 
     </div>
 
-</section>
-
-
-
-<!-- =====================================================
-     FUTURE WORK / OUTCOME
-===================================================== -->
-
-<section class="project-section">
-
-    <div class="section-heading">
-
-        <div>
-
-            <span class="section-label">
-                NEXT STAGE
-            </span>
-
-            <h2>
-                Future Work
-            </h2>
-
-        </div>
+    <div class="heading-actions">
 
         <button
             class="outline-button"
-            id="addFutureWork"
+            id="addProjectLink"
+            type="button"
         >
-            + Add
+            + Link
+        </button>
+
+        <button
+            class="primary-button"
+            id="uploadProjectFile"
+            type="button"
+        >
+            + Upload
         </button>
 
     </div>
 
-
-    <div
-        class="future-grid"
-        id="futureWorkGrid"
-    >
-
-        <article class="future-card">
-
-            <span>
-                NEXT
-            </span>
-
-            <h3>
-                Complete hardware integration
-            </h3>
-
-            <p>
-                Finish remaining subsystem connections
-                and prepare for integrated testing.
-            </p>
-
-        </article>
+</div>
 
 
-        <article class="future-card">
+<div
+    class="project-upload-zone"
+    id="projectUploadZone"
+    role="button"
+    tabindex="0"
+>
 
-            <span>
-                AFTER TESTING
-            </span>
+    <strong>
+        Add project resources
+    </strong>
 
-            <h3>
-                Optimize system efficiency
-            </h3>
+    <p>
+        Upload images, videos, PDFs, documents,
+        CAD files, source code, datasets, ZIP files
+        or any other project file.
+    </p>
 
-            <p>
-                Use measured results to improve the
-                control strategy and power stage.
-            </p>
+    <span>
+        Drag &amp; drop or click to browse
+    </span>
 
-        </article>
+</div>
 
-    </div>
+
+<input
+    type="file"
+    id="projectFileInput"
+    multiple
+    hidden
+>
+
+
+<div
+    class="attachment-grid"
+    id="projectAttachmentGrid"
+></div>
+
+
+<div
+    class="project-link-list"
+    id="projectLinkList"
+></div>
+ 
 
 </section>
 
+<!-- =====================================================
+     FUTURE WORK
+===================================================== -->
 
+<section class="project-section">
+
+ 
+<div class="section-heading">
+
+    <div>
+
+        <span class="section-label">
+            NEXT STAGE
+        </span>
+
+        <h2>
+            Future Work
+        </h2>
+
+    </div>
+
+    <button
+        class="outline-button"
+        id="addFutureWork"
+        type="button"
+    >
+        + Add
+    </button>
+
+</div>
+
+
+<div
+    class="future-grid"
+    id="futureWorkGrid"
+></div>
+ 
+
+</section>
 
 <!-- =====================================================
      OUTCOME
@@ -1844,54 +1118,603 @@
 
 <section class="project-section">
 
-    <div class="section-heading">
+ 
+<div class="section-heading">
+
+    <div>
+
+        <span class="section-label">
+            FINAL OUTCOME
+        </span>
+
+        <h2>
+            What did the project achieve?
+        </h2>
+
+    </div>
+
+</div>
+
+
+<article class="project-card outcome-card">
+
+    <textarea
+        id="projectOutcome"
+        placeholder="When the project is complete, record what was achieved, the final performance, important results and what you learned."
+    ></textarea>
+
+
+    <div class="card-footer">
+
+        <span>
+            Complete this when the project reaches its final stage.
+        </span>
+
+        <button
+            class="primary-button"
+            id="saveOutcome"
+            type="button"
+        >
+            Save Outcome
+        </button>
+
+    </div>
+
+</article>
+ 
+
+</section>
+
+</main>
+
+<!-- =====================================================
+     PROJECT DETAILS MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="projectDetailsModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
 
         <div>
 
             <span class="section-label">
-                FINAL OUTCOME
+                PROJECT
             </span>
 
             <h2>
-                What did the project achieve?
+                Edit Project
             </h2>
 
         </div>
 
+        <button
+            id="closeProjectDetailsModal"
+            type="button"
+        >
+            ×
+        </button>
+
     </div>
 
 
-    <article class="project-card outcome-card">
+    <div class="modal-grid">
 
-        <textarea
-            id="projectOutcome"
-            placeholder="When the project is complete, record what was achieved, the final performance, important results and what you learned."
-        ></textarea>
+        <label class="full">
+
+            Project Title
+
+            <input
+                type="text"
+                id="editProjectTitle"
+                placeholder="Project title"
+            >
+
+        </label>
 
 
-        <div class="card-footer">
+        <label class="full">
 
-            <span>
-                Complete this when the project reaches its final stage.
+            Short Description
+
+            <textarea
+                id="editProjectDescription"
+                placeholder="Briefly describe the project..."
+            ></textarea>
+
+        </label>
+
+
+        <label>
+
+            Status
+
+            <select id="editProjectStatus">
+
+                <option value="planned">
+                    Planned
+                </option>
+
+                <option value="in-progress">
+                    In Progress
+                </option>
+
+                <option value="on-hold">
+                    On Hold
+                </option>
+
+                <option value="completed">
+                    Completed
+                </option>
+
+                <option value="cancelled">
+                    Cancelled
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label>
+
+            Priority
+
+            <select id="editProjectPriority">
+
+                <option value="low">
+                    Low
+                </option>
+
+                <option value="medium">
+                    Medium
+                </option>
+
+                <option value="high">
+                    High
+                </option>
+
+                <option value="critical">
+                    Critical
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label>
+
+            Start Date
+
+            <input
+                type="date"
+                id="editProjectStartDate"
+            >
+
+        </label>
+
+
+        <label>
+
+            Target Date
+
+            <input
+                type="date"
+                id="editProjectTargetDate"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Tags
+
+            <input
+                type="text"
+                id="editProjectTags"
+                placeholder="Example: Renewable Energy, Hardware, IoT"
+            >
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelProjectDetails"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveProjectDetails"
+            type="button"
+        >
+            Save Changes
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     PROGRESS MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="progressModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                PROGRESS
             </span>
 
-            <button
-                class="primary-button"
-                id="saveOutcome"
-            >
-                Save Outcome
-            </button>
+            <h2>
+                Update Project Progress
+            </h2>
 
         </div>
 
-    </article>
+        <button
+            id="closeProgressModal"
+            type="button"
+        >
+            ×
+        </button>
 
-</section>
+    </div>
 
 
-</main>
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Completion Percentage
+
+            <input
+                type="number"
+                id="editProjectProgress"
+                min="0"
+                max="100"
+                placeholder="0"
+            >
+
+        </label>
 
 
+        <label class="full">
+
+            Progress Status
+
+            <select id="editProgressStatus">
+
+                <option value="on-track">
+                    On Track
+                </option>
+
+                <option value="at-risk">
+                    At Risk
+                </option>
+
+                <option value="delayed">
+                    Delayed
+                </option>
+
+                <option value="ahead">
+                    Ahead of Schedule
+                </option>
+
+            </select>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelProgress"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveProgress"
+            type="button"
+        >
+            Save Progress
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     CURRENT WORK MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="currentWorkModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                CURRENT WORK
+            </span>
+
+            <h2>
+                Update Current Work
+            </h2>
+
+        </div>
+
+        <button
+            id="closeCurrentWorkModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Work Title
+
+            <input
+                type="text"
+                id="editCurrentWorkTitle"
+                placeholder="What are you currently working on?"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="editCurrentWorkDescription"
+                placeholder="Describe the current work..."
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelCurrentWork"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveCurrentWork"
+            type="button"
+        >
+            Save
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     NEXT ACTION MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="nextActionModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                NEXT ACTION
+            </span>
+
+            <h2>
+                Update Next Action
+            </h2>
+
+        </div>
+
+        <button
+            id="closeNextActionModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Next Action
+
+            <input
+                type="text"
+                id="editNextActionTitle"
+                placeholder="What should happen next?"
+            >
+
+        </label>
+
+
+        <label>
+
+            Due Date
+
+            <input
+                type="date"
+                id="editNextActionDue"
+            >
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelNextAction"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveNextAction"
+            type="button"
+        >
+            Save
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     DESCRIPTION MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="descriptionModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                OBJECTIVE
+            </span>
+
+            <h2>
+                Edit Project Description
+            </h2>
+
+        </div>
+
+        <button
+            id="closeDescriptionModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Project Objective / Description
+
+            <textarea
+                id="editDescriptionContent"
+                placeholder="Describe what the project is trying to achieve..."
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelDescription"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveDescription"
+            type="button"
+        >
+            Save
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
 
 <!-- =====================================================
      TASK MODAL
@@ -1902,144 +1725,382 @@
     id="taskModal"
 >
 
-    <div class="modal-panel">
+ 
+<div class="modal-panel">
 
-        <div class="modal-header">
+    <div class="modal-header">
 
-            <div>
+        <div>
 
-                <span class="section-label">
-                    TASK
-                </span>
+            <span class="section-label">
+                TASK
+            </span>
 
-                <h2>
-                    Add Project Task
-                </h2>
-
-            </div>
-
-            <button
-                id="closeTaskModal"
-                type="button"
-            >
-                ×
-            </button>
+            <h2 id="taskModalHeading">
+                Add Project Task
+            </h2>
 
         </div>
 
+        <button
+            id="closeTaskModal"
+            type="button"
+        >
+            ×
+        </button>
 
-        <div class="modal-grid">
-
-            <label>
-
-                Task
-
-                <input
-                    type="text"
-                    id="taskTitle"
-                    placeholder="What needs to be done?"
-                >
-
-            </label>
+    </div>
 
 
-            <label>
+    <div class="modal-grid">
 
-                Priority
+        <label class="full">
 
-                <select id="taskPriority">
+            Task
 
-                    <option value="high">
-                        High
-                    </option>
-
-                    <option value="medium">
-                        Medium
-                    </option>
-
-                    <option value="low">
-                        Low
-                    </option>
-
-                </select>
-
-            </label>
-
-
-            <label>
-
-                Due Date
-
-                <input
-                    type="date"
-                    id="taskDate"
-                >
-
-            </label>
-
-
-            <label>
-
-                Status
-
-                <select id="taskStatus">
-
-                    <option value="todo">
-                        To Do
-                    </option>
-
-                    <option value="progress">
-                        In Progress
-                    </option>
-
-                    <option value="done">
-                        Done
-                    </option>
-
-                </select>
-
-            </label>
-
-
-            <label class="full">
-
-                Description
-
-                <textarea
-                    id="taskDescription"
-                    placeholder="Describe the task..."
-                ></textarea>
-
-            </label>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button
-                class="outline-button"
-                id="cancelTask"
-                type="button"
+            <input
+                type="text"
+                id="taskTitle"
+                placeholder="What needs to be done?"
             >
-                Cancel
-            </button>
 
-            <button
-                class="primary-button"
-                id="saveTask"
-                type="button"
+        </label>
+
+
+        <label>
+
+            Priority
+
+            <select id="taskPriority">
+
+                <option value="high">
+                    High
+                </option>
+
+                <option value="medium">
+                    Medium
+                </option>
+
+                <option value="low">
+                    Low
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label>
+
+            Due Date
+
+            <input
+                type="date"
+                id="taskDate"
             >
-                Add Task
-            </button>
 
-        </div>
+        </label>
+
+
+        <label>
+
+            Status
+
+            <select id="taskStatus">
+
+                <option value="todo">
+                    To Do
+                </option>
+
+                <option value="progress">
+                    In Progress
+                </option>
+
+                <option value="done">
+                    Done
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label>
+
+            Assigned To
+
+            <input
+                type="text"
+                id="taskAssignee"
+                placeholder="Name"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="taskDescription"
+                placeholder="Describe the task..."
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelTask"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveTask"
+            type="button"
+        >
+            Save Task
+        </button>
 
     </div>
 
 </div>
+ 
+
+</div>
+
+<!-- =====================================================
+     TASK ACTION MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="taskActionModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                TASK
+            </span>
+
+            <h2>
+                Manage Task
+            </h2>
+
+        </div>
+
+        <button
+            id="closeTaskActionModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
 
 
+    <div class="modal-actions task-action-buttons">
+
+        <button
+            class="outline-button"
+            id="editSelectedTask"
+            type="button"
+        >
+            Edit Task
+        </button>
+
+        <button
+            class="outline-button"
+            id="moveTaskToTodo"
+            type="button"
+        >
+            Move to To Do
+        </button>
+
+        <button
+            class="outline-button"
+            id="moveTaskToProgress"
+            type="button"
+        >
+            Move to In Progress
+        </button>
+
+        <button
+            class="outline-button"
+            id="moveTaskToDone"
+            type="button"
+        >
+            Mark Done
+        </button>
+
+        <button
+            class="outline-button"
+            id="deleteSelectedTask"
+            type="button"
+        >
+            Delete Task
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     MILESTONE MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="milestoneModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                MILESTONE
+            </span>
+
+            <h2 id="milestoneModalHeading">
+                Add Milestone
+            </h2>
+
+        </div>
+
+        <button
+            id="closeMilestoneModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Title
+
+            <input
+                type="text"
+                id="milestoneTitle"
+                placeholder="Milestone title"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="milestoneDescription"
+                placeholder="Describe this milestone..."
+            ></textarea>
+
+        </label>
+
+
+        <label>
+
+            Progress
+
+            <input
+                type="number"
+                id="milestoneProgress"
+                min="0"
+                max="100"
+                value="0"
+            >
+
+        </label>
+
+
+        <label>
+
+            Status
+
+            <select id="milestoneStatus">
+
+                <option value="planned">
+                    Planned
+                </option>
+
+                <option value="active">
+                    In Progress
+                </option>
+
+                <option value="completed">
+                    Completed
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label>
+
+            Target Date
+
+            <input
+                type="date"
+                id="milestoneDate"
+            >
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelMilestone"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveMilestone"
+            type="button"
+        >
+            Save Milestone
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
 
 <!-- =====================================================
      TIMELINE MODAL
@@ -2050,121 +2111,658 @@
     id="timelineModal"
 >
 
-    <div class="modal-panel">
+ 
+<div class="modal-panel">
 
-        <div class="modal-header">
+    <div class="modal-header">
 
-            <div>
+        <div>
 
-                <span class="section-label">
-                    TIMELINE
-                </span>
+            <span class="section-label">
+                TIMELINE
+            </span>
 
-                <h2>
-                    Timeline Entry
-                </h2>
-
-            </div>
-
-            <button
-                id="closeTimelineModal"
-                type="button"
-            >
-                ×
-            </button>
+            <h2 id="timelineModalHeading">
+                Timeline Entry
+            </h2>
 
         </div>
 
+        <button
+            id="closeTimelineModal"
+            type="button"
+        >
+            ×
+        </button>
 
-        <div class="modal-grid">
-
-            <label>
-
-                Date
-
-                <input
-                    type="date"
-                    id="timelineDate"
-                >
-
-            </label>
+    </div>
 
 
-            <label>
+    <div class="modal-grid">
 
-                Status
+        <label>
 
-                <select id="timelineStatus">
+            Date
 
-                    <option value="planned">
-                        Planned
-                    </option>
-
-                    <option value="ongoing">
-                        Ongoing
-                    </option>
-
-                    <option value="completed">
-                        Completed
-                    </option>
-
-                </select>
-
-            </label>
-
-
-            <label class="full">
-
-                Title
-
-                <input
-                    type="text"
-                    id="timelineTitle"
-                    placeholder="What happened?"
-                >
-
-            </label>
-
-
-            <label class="full">
-
-                Description
-
-                <textarea
-                    id="timelineDescription"
-                    placeholder="Describe the work or event..."
-                ></textarea>
-
-            </label>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button
-                class="outline-button"
-                id="cancelTimeline"
-                type="button"
+            <input
+                type="date"
+                id="timelineDate"
             >
-                Cancel
-            </button>
 
-            <button
-                class="primary-button"
-                id="saveTimeline"
-                type="button"
+        </label>
+
+
+        <label>
+
+            Status
+
+            <select id="timelineStatus">
+
+                <option value="planned">
+                    Planned
+                </option>
+
+                <option value="ongoing">
+                    Ongoing
+                </option>
+
+                <option value="completed">
+                    Completed
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label class="full">
+
+            Title
+
+            <input
+                type="text"
+                id="timelineTitle"
+                placeholder="What happened?"
             >
-                Save
-            </button>
 
-        </div>
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="timelineDescription"
+                placeholder="Describe the work or event..."
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelTimeline"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveTimeline"
+            type="button"
+        >
+            Save
+        </button>
 
     </div>
 
 </div>
+ 
+
+</div>
+
+<!-- =====================================================
+     COLLABORATOR MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="collaboratorModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                TEAM MEMBER
+            </span>
+
+            <h2>
+                Add Collaborator
+            </h2>
+
+        </div>
+
+        <button
+            id="closeCollaboratorModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
 
 
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Name
+
+            <input
+                type="text"
+                id="collaboratorName"
+                placeholder="Member name"
+            >
+
+        </label>
+
+
+        <label>
+
+            Role
+
+            <input
+                type="text"
+                id="collaboratorRole"
+                placeholder="Example: Electronics"
+            >
+
+        </label>
+
+
+        <label>
+
+            Initials
+
+            <input
+                type="text"
+                id="collaboratorInitials"
+                maxlength="3"
+                placeholder="ABC"
+            >
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelCollaborator"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveCollaborator"
+            type="button"
+        >
+            Add Member
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     TEST MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="testModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                TEST
+            </span>
+
+            <h2>
+                Add Test
+            </h2>
+
+        </div>
+
+        <button
+            id="closeTestModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Test Name
+
+            <input
+                type="text"
+                id="testTitle"
+                placeholder="Test name"
+            >
+
+        </label>
+
+
+        <label>
+
+            Result
+
+            <select id="testResult">
+
+                <option value="pending">
+                    Pending
+                </option>
+
+                <option value="passed">
+                    Passed
+                </option>
+
+                <option value="failed">
+                    Failed
+                </option>
+
+            </select>
+
+        </label>
+
+
+        <label>
+
+            Test Date
+
+            <input
+                type="date"
+                id="testDate"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Description / Observation
+
+            <textarea
+                id="testDescription"
+                placeholder="Describe the test and its result..."
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelTest"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveTest"
+            type="button"
+        >
+            Save Test
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     VERSION MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="versionModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                VERSION
+            </span>
+
+            <h2>
+                Add Version
+            </h2>
+
+        </div>
+
+        <button
+            id="closeVersionModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label>
+
+            Version Number
+
+            <input
+                type="text"
+                id="versionNumber"
+                placeholder="Example: V3"
+            >
+
+        </label>
+
+
+        <label>
+
+            Date
+
+            <input
+                type="date"
+                id="versionDate"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Version Title
+
+            <input
+                type="text"
+                id="versionTitle"
+                placeholder="Example: Improved Prototype"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Changes
+
+            <textarea
+                id="versionDescription"
+                placeholder="Describe what changed in this version..."
+            ></textarea>
+
+        </label>
+
+
+        <label>
+
+            <input
+                type="checkbox"
+                id="versionCurrent"
+            >
+
+            Current Version
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelVersion"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveVersion"
+            type="button"
+        >
+            Save Version
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     ISSUE MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="issueModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                ISSUE
+            </span>
+
+            <h2>
+                Add Problem / Blocker
+            </h2>
+
+        </div>
+
+        <button
+            id="closeIssueModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Issue Title
+
+            <input
+                type="text"
+                id="issueTitle"
+                placeholder="What is the problem?"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="issueDescription"
+                placeholder="Describe the problem or blocker..."
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelIssue"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveIssue"
+            type="button"
+        >
+            Add Issue
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     DECISION MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="decisionModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                DECISION
+            </span>
+
+            <h2>
+                Add Important Decision
+            </h2>
+
+        </div>
+
+        <button
+            id="closeDecisionModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <div class="modal-grid">
+
+        <label class="full">
+
+            Decision
+
+            <input
+                type="text"
+                id="decisionTitle"
+                placeholder="What was decided?"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Reason / Context
+
+            <textarea
+                id="decisionDescription"
+                placeholder="Why was this decision made?"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelDecision"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveDecision"
+            type="button"
+        >
+            Add Decision
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
 
 <!-- =====================================================
      LINK MODAL
@@ -2175,99 +2773,268 @@
     id="projectLinkModal"
 >
 
-    <div class="modal-panel">
+ 
+<div class="modal-panel">
 
-        <div class="modal-header">
+    <div class="modal-header">
 
-            <div>
+        <div>
 
-                <span class="section-label">
-                    RESOURCE
-                </span>
+            <span class="section-label">
+                RESOURCE
+            </span>
 
-                <h2>
-                    Add Project Link
-                </h2>
-
-            </div>
-
-            <button
-                id="closeProjectLinkModal"
-                type="button"
-            >
-                ×
-            </button>
+            <h2>
+                Add Project Link
+            </h2>
 
         </div>
 
+        <button
+            id="closeProjectLinkModal"
+            type="button"
+        >
+            ×
+        </button>
 
-        <div class="modal-grid">
-
-            <label class="full">
-
-                Title
-
-                <input
-                    type="text"
-                    id="projectLinkTitle"
-                    placeholder="Resource title"
-                >
-
-            </label>
+    </div>
 
 
-            <label class="full">
+    <div class="modal-grid">
 
-                URL
+        <label class="full">
 
-                <input
-                    type="url"
-                    id="projectLinkURL"
-                    placeholder="https://..."
-                >
+            Title
 
-            </label>
-
-
-            <label class="full">
-
-                Description
-
-                <textarea
-                    id="projectLinkDescription"
-                    placeholder="Why is this link useful?"
-                ></textarea>
-
-            </label>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button
-                class="outline-button"
-                id="cancelProjectLink"
-                type="button"
+            <input
+                type="text"
+                id="projectLinkTitle"
+                placeholder="Resource title"
             >
-                Cancel
-            </button>
 
-            <button
-                class="primary-button"
-                id="saveProjectLink"
-                type="button"
+        </label>
+
+
+        <label class="full">
+
+            URL
+
+            <input
+                type="url"
+                id="projectLinkURL"
+                placeholder="https://..."
             >
-                Add Link
-            </button>
 
-        </div>
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="projectLinkDescription"
+                placeholder="Why is this link useful?"
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelProjectLink"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveProjectLink"
+            type="button"
+        >
+            Add Link
+        </button>
 
     </div>
 
 </div>
+ 
+
+</div>
+
+<!-- =====================================================
+     FUTURE WORK MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="futureWorkModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                FUTURE WORK
+            </span>
+
+            <h2>
+                Add Future Work
+            </h2>
+
+        </div>
+
+        <button
+            id="closeFutureWorkModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
 
 
+    <div class="modal-grid">
+
+        <label>
+
+            Stage
+
+            <input
+                type="text"
+                id="futureWorkStage"
+                placeholder="Example: NEXT"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Title
+
+            <input
+                type="text"
+                id="futureWorkTitle"
+                placeholder="What should happen in the future?"
+            >
+
+        </label>
+
+
+        <label class="full">
+
+            Description
+
+            <textarea
+                id="futureWorkDescription"
+                placeholder="Describe the future work..."
+            ></textarea>
+
+        </label>
+
+    </div>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelFutureWork"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="saveFutureWork"
+            type="button"
+        >
+            Add Future Work
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
+
+<!-- =====================================================
+     CONFIRM DELETE MODAL
+===================================================== -->
+
+<div
+    class="project-modal hidden"
+    id="confirmModal"
+>
+
+ 
+<div class="modal-panel">
+
+    <div class="modal-header">
+
+        <div>
+
+            <span class="section-label">
+                CONFIRM ACTION
+            </span>
+
+            <h2 id="confirmModalTitle">
+                Confirm
+            </h2>
+
+        </div>
+
+        <button
+            id="closeConfirmModal"
+            type="button"
+        >
+            ×
+        </button>
+
+    </div>
+
+
+    <p id="confirmModalMessage">
+        Are you sure you want to continue?
+    </p>
+
+
+    <div class="modal-actions">
+
+        <button
+            class="outline-button"
+            id="cancelConfirm"
+            type="button"
+        >
+            Cancel
+        </button>
+
+        <button
+            class="primary-button"
+            id="confirmAction"
+            type="button"
+        >
+            Confirm
+        </button>
+
+    </div>
+
+</div>
+ 
+
+</div>
 
 <!-- =====================================================
      TOAST
@@ -2278,11 +3045,21 @@
     id="projectToast"
 ></div>
 
+<!-- =====================================================
+     SCRIPTS
+===================================================== -->
 
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-<script
-    src="project.js"
-></script>
+<!-- RiGiD Supabase Client -->
+<script src="../../../supabase-client.js"></script>
+
+<!-- Project Page -->
+<script src="project.js"></script>
+
+</body>
+</html>
 
 </body>
 

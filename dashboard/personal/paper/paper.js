@@ -1,4599 +1,2998 @@
 /* =========================================================
-   RiGiD — PAPER PAGE
+   RiGiD — PAPER WORKSPACE
    paper.js
 
-   FRONTEND VERSION
-   ---------------------------------------------------------
-   Backend / Supabase integration can be connected later.
+   Direct Supabase backend version
 
-   Current data is stored in memory only.
+   Backend flow:
+   Supabase Auth
+        ↓
+   get-rigid-work-data
+        ↓
+   Paper page data
+        ↓
+   User changes
+        ↓
+   update-rigid-work-data
 ========================================================= */
 
 
 /* =========================================================
-   01. PAPER DATA
+   CONFIG
 ========================================================= */
 
-const paperData = {
-
-    id: "paper-001",
-
-    title:
-        "Advancements in Outdoor Air Filtration: A Review of Existing Techniques and Technologies",
-
-    description:
-        "Review and analysis of existing outdoor air purification and filtration technologies.",
-
-    status:
-        "draft",
-
-    stage:
-        "draft",
-
-    source:
-        "Self",
-
-    target:
-        "Journal / Conference",
-
-    deadline:
-        "",
-
-    createdDate:
-        "18 Aug 2026",
-
-    updatedDate:
-        "23 Aug 2026",
-
-    authors: [
-        "You"
-    ],
-
-    tags: [
-        "AIR FILTRATION",
-        "HEPA",
-        "ESP",
-        "OUTDOOR AIR QUALITY"
-    ],
-
-
-    /* -----------------------------------------------------
-       LEARNING
-    ----------------------------------------------------- */
-
-    learning: [
-
-        "Existing outdoor air purification techniques include mechanical filtration, electrostatic precipitation, ionization, photocatalysis and hybrid systems.",
-
-        "The effectiveness of an outdoor filtration system depends on particle size, airflow, energy consumption, maintenance and environmental conditions."
-
-    ],
-
-
-    findings: [
-
-        {
-            id: "finding-1",
-
-            text:
-                "Different air purification technologies have different strengths and limitations depending on the pollutant and operating environment."
-        },
-
-        {
-            id: "finding-2",
-
-            text:
-                "Energy consumption and maintenance are important considerations for practical outdoor deployment."
-        },
-
-        {
-            id: "finding-3",
-
-            text:
-                "Hybrid approaches may provide better overall performance than relying on a single purification technique."
-        }
-
-    ],
-
-
-    methodology:
-        "Record how the authors selected, compared and evaluated the technologies. Note the experimental setup, parameters, datasets and evaluation criteria.",
-
-
-    questions: [
-
-        {
-            id: "question-1",
-
-            text:
-                "How does outdoor airflow affect the efficiency of filtration systems?",
-
-            status:
-                "open"
-        },
-
-        {
-            id: "question-2",
-
-            text:
-                "What is the most practical technology for continuous outdoor deployment?",
-
-            status:
-                "open"
-        }
-
-    ],
-
-
-    /* -----------------------------------------------------
-       PAPER WRITING SECTIONS
-    ----------------------------------------------------- */
-
-    sections: [
-
-        {
-            id: "abstract",
-
-            number: "01",
-
-            title: "Abstract",
-
-            status: "completed",
-
-            content:
-                "Write a concise summary of the research problem, methodology, major findings and conclusion."
-        },
-
-        {
-            id: "introduction",
-
-            number: "02",
-
-            title: "Introduction",
-
-            status: "completed",
-
-            content:
-                "Introduce outdoor air pollution, the need for air filtration and the motivation for reviewing existing technologies."
-        },
-
-        {
-            id: "literature",
-
-            number: "03",
-
-            title: "Literature Review",
-
-            status: "completed",
-
-            content:
-                "Organize existing research on HEPA filtration, electrostatic precipitation, ionization, photocatalysis and related technologies."
-        },
-
-        {
-            id: "methodology",
-
-            number: "04",
-
-            title: "Methodology",
-
-            status: "in-progress",
-
-            content:
-                "Describe how papers and technologies were identified, classified, compared and evaluated."
-        },
-
-        {
-            id: "results",
-
-            number: "05",
-
-            title: "Results",
-
-            status: "not-started",
-
-            content:
-                "Present the comparison and findings obtained from the literature review."
-        },
-
-        {
-            id: "discussion",
-
-            number: "06",
-
-            title: "Discussion",
-
-            status: "not-started",
-
-            content:
-                "Interpret the findings and discuss the advantages, limitations and practical implications."
-        },
-
-        {
-            id: "conclusion",
-
-            number: "07",
-
-            title: "Conclusion",
-
-            status: "not-started",
-
-            content:
-                "Summarize the major conclusions and identify future research opportunities."
-        },
-
-        {
-            id: "references",
-
-            number: "08",
-
-            title: "References",
-
-            status: "not-started",
-
-            content:
-                "Maintain the complete bibliography and citation information."
-        }
-
-    ],
-
-
-    /* -----------------------------------------------------
-       REFERENCES
-    ----------------------------------------------------- */
-
-    references: [],
-
-
-    /* -----------------------------------------------------
-       VERSION HISTORY
-    ----------------------------------------------------- */
-
-    versions: [
-
-        {
-            id: "version-1",
-
-            version: "V1",
-
-            title:
-                "Initial Outline",
-
-            description:
-                "Initial structure and major sections created.",
-
-            date:
-                "18 Aug 2026",
-
-            status:
-                "Archived",
-
-            size:
-                "—"
-        },
-
-        {
-            id: "version-2",
-
-            version: "V2",
-
-            title:
-                "Literature Review Draft",
-
-            description:
-                "Added existing outdoor filtration technologies and comparison notes.",
-
-            date:
-                "22 Aug 2026",
-
-            status:
-                "Current",
-
-            size:
-                "—"
-        }
-
-    ],
-
-
-    /* -----------------------------------------------------
-       TIMELINE
-    ----------------------------------------------------- */
-
-    timeline: [
-
-        {
-            id: "timeline-1",
-
-            date:
-                "2026-08-18",
-
-            title:
-                "Create paper outline",
-
-            description:
-                "Define the major sections and research direction.",
-
-            duration:
-                "1 hour",
-
-            status:
-                "completed",
-
-            priority:
-                "normal"
-        },
-
-        {
-            id: "timeline-2",
-
-            date:
-                "2026-08-24",
-
-            title:
-                "Complete literature review",
-
-            description:
-                "Organize the existing literature and identify research gaps.",
-
-            duration:
-                "3 hours",
-
-            status:
-                "ongoing",
-
-            priority:
-                "high"
-        },
-
-        {
-            id: "timeline-3",
-
-            date:
-                "2026-08-27",
-
-            title:
-                "Complete methodology",
-
-            description:
-                "Finalize the methodology and technology comparison framework.",
-
-            duration:
-                "2 hours",
-
-            status:
-                "planned",
-
-            priority:
-                "high"
-        },
-
-        {
-            id: "timeline-4",
-
-            date:
-                "2026-08-30",
-
-            title:
-                "Prepare results",
-
-            description:
-                "Create tables and comparisons for the reviewed technologies.",
-
-            duration:
-                "3 hours",
-
-            status:
-                "planned",
-
-            priority:
-                "normal"
-        },
-
-        {
-            id: "timeline-5",
-
-            date:
-                "2026-09-03",
-
-            title:
-                "First complete draft",
-
-            description:
-                "Complete all paper sections and prepare the first full draft.",
-
-            duration:
-                "4 hours",
-
-            status:
-                "planned",
-
-            priority:
-                "high"
-        }
-
-    ],
-
-
-    /* -----------------------------------------------------
-       FUTURE WORK
-    ----------------------------------------------------- */
-
-    futureWork: [],
-
-
-    /* -----------------------------------------------------
-       ATTACHMENTS
-    ----------------------------------------------------- */
-
-    attachments: [],
-
-
-    /* -----------------------------------------------------
-       FEEDBACK
-    ----------------------------------------------------- */
-
-    feedback: [
-
-        {
-            id:
-                "feedback-1",
-
-            person:
-                "Self Review",
-
-            type:
-                "SELF",
-
-            date:
-                "23 Aug 2026",
-
-            content:
-                "Need stronger comparison between technologies and clearer identification of research gaps."
-        }
-
-    ],
-
-
-    /* -----------------------------------------------------
-       NEXT ACTION
-    ----------------------------------------------------- */
-
-    nextAction:
-        "Complete the literature review and identify the major research gaps."
-
-};
+const SUPABASE_FUNCTIONS_URL =
+    "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1";
 
 
 /* =========================================================
-   02. GLOBAL STATE
+   DOM HELPERS
 ========================================================= */
 
-let activeSectionId =
-    paperData.sections[0].id;
+const $ = selector => document.querySelector(selector);
 
-let editingTimelineId =
-    null;
+const $$ = selector => Array.from(document.querySelectorAll(selector));
 
+function getElement(id) {
+    return document.getElementById(id);
+}
 
-/* =========================================================
-   03. DOM HELPERS
-========================================================= */
+function getInputValue(id) {
+    const element = getElement(id);
+    if (!element) return "";
+    return String(element.value || "").trim();
+}
 
-const $ = selector =>
-    document.querySelector(selector);
+function setInputValue(id, value) {
+    const element = getElement(id);
+    if (!element) return;
+    element.value = value ?? "";
+}
 
-
-const $$ = selector =>
-    document.querySelectorAll(selector);
-
-
-/* =========================================================
-   04. INITIALIZATION
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    initializePaper
-);
-
-
-function initializePaper() {
-
-    loadPaperInformation();
-
-    renderAuthors();
-
-    renderTags();
-
-    renderLearning();
-
-    renderFindings();
-
-    renderMethodology();
-
-    renderQuestions();
-
-    renderPaperSections();
-
-    renderReferences();
-
-    renderVersions();
-
-    renderTimeline();
-
-    renderFutureWork();
-
-    renderAttachments();
-
-    renderFeedback();
-
-    loadNextAction();
-
-    updatePaperSummary();
-
-    updateLiveClock();
-
-    setupNavigation();
-
-    setupLearning();
-
-    setupFindings();
-
-    setupMethodology();
-
-    setupQuestions();
-
-    setupWritingWorkspace();
-
-    setupReferences();
-
-    setupVersions();
-
-    setupTimeline();
-
-    setupFutureWork();
-
-    setupUploads();
-
-    setupLinks();
-
-    setupFeedback();
-
-    setupPaperControls();
-
+function setText(id, value) {
+    const element = getElement(id);
+    if (!element) return;
+    element.textContent = value ?? "";
 }
 
 
 /* =========================================================
-   05. PAPER INFORMATION
+   STATE
+========================================================= */
+
+let paperData = null;
+let currentWorkId = null;
+let isSaving = false;
+let toastTimer = null;
+
+/* Dynamic Paper Section State */
+let activeSectionId = null;
+let editingPaperSectionId = null;
+let deletingPaperSectionId = null;
+
+/* Other Editing State */
+let editingLearningIndex = null;
+let editingFindingId = null;
+let editingQuestionId = null;
+let editingReferenceId = null;
+let editingTimelineId = null;
+let editingFutureWorkId = null;
+let editingFeedbackId = null;
+
+
+/* =========================================================
+   INITIALIZATION
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", initializePaper);
+
+async function initializePaper() {
+    currentWorkId = getPaperIdFromURL();
+
+    if (!currentWorkId) {
+        showToast("Paper ID is missing.");
+        return;
+    }
+
+    try {
+        await loadPaperData();
+        normalizePaperData();
+        initializePaperPage();
+        showToast("Paper loaded.");
+    }
+    catch (error) {
+        console.error("Paper initialization error:", error);
+        showToast(error.message || "Unable to load Paper.");
+    }
+}
+
+
+/* =========================================================
+   GET PAPER / WORK ID
+========================================================= */
+
+function getPaperIdFromURL() {
+    const params = new URLSearchParams(window.location.search);
+
+    return (
+        params.get("work_id") ||
+        params.get("id") ||
+        params.get("work") ||
+        params.get("paper")
+    );
+}
+
+
+/* =========================================================
+   LOAD PAPER DATA
+========================================================= */
+
+async function loadPaperData() {
+    if (!window.sb) {
+        throw new Error("Supabase client is unavailable.");
+    }
+
+    const { data: { session }, error: sessionError } =
+        await window.sb.auth.getSession();
+
+    if (sessionError || !session) {
+        throw new Error("You must be logged in.");
+    }
+
+    const response = await fetch(
+        `${SUPABASE_FUNCTIONS_URL}/get-rigid-work-data`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${session.access_token}`
+            },
+            body: JSON.stringify({ work_id: currentWorkId })
+        }
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to load Paper data.");
+    }
+
+    paperData = convertRigidDataToPaperData(result.data, result.work);
+
+    console.log("RiGiD Paper loaded:", paperData);
+}
+
+
+/* =========================================================
+   SAVE PAPER DATA
+========================================================= */
+
+async function savePaperData() {
+    if (isSaving) return;
+
+    if (!currentWorkId) {
+        throw new Error("Paper ID is missing.");
+    }
+
+    if (!paperData) {
+        throw new Error("Paper data is not loaded.");
+    }
+
+    if (!window.sb) {
+        throw new Error("Supabase client is unavailable.");
+    }
+
+    isSaving = true;
+
+    try {
+        const { data: { session }, error: sessionError } =
+            await window.sb.auth.getSession();
+
+        if (sessionError || !session) {
+            throw new Error("You must be logged in to save this Paper.");
+        }
+
+        const rigidData = convertPaperDataToRigidData(paperData);
+
+        const response = await fetch(
+            `${SUPABASE_FUNCTIONS_URL}/update-rigid-work-data`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({
+                    work_id: currentWorkId,
+                    data: rigidData
+                })
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.error || "Unable to save Paper data.");
+        }
+
+        paperData.updatedAt = new Date().toISOString();
+        paperData.updatedDate = formatRigidDate(paperData.updatedAt);
+
+        setText("paperUpdated", paperData.updatedDate);
+
+        return result;
+    }
+    finally {
+        isSaving = false;
+    }
+}
+
+
+/* =========================================================
+   CONVERT RiGiD DATA → PAPER DATA
+========================================================= */
+
+function convertRigidDataToPaperData(data = {}, work = {}) {
+    const workspace = data?.workspace || {};
+    const paper = data?.paper || {};
+
+    return {
+        id: workspace.id || work?.id || currentWorkId,
+        title: workspace.title || work?.title || "Untitled Paper",
+        description: paper.description || "",
+        status: workspace.status || "draft",
+        stage: paper.stage || workspace.status || "draft",
+        type: paper.type || "Research Paper",
+        source: paper.source || "",
+        target: paper.target || "",
+        deadline: paper.deadline || "",
+        createdAt: workspace.createdAt || null,
+        updatedAt: workspace.updatedAt || null,
+        createdDate: formatRigidDate(workspace.createdAt),
+        updatedDate: formatRigidDate(workspace.updatedAt),
+        authors: Array.isArray(paper.authors) ? paper.authors : [],
+        tags: Array.isArray(paper.tags) ? paper.tags : [],
+        learning: Array.isArray(paper.learning) ? paper.learning : [],
+        findings: Array.isArray(paper.findings) ? paper.findings : [],
+        methodology: paper.methodology || "",
+        questions: Array.isArray(paper.questions) ? paper.questions : [],
+        sections: Array.isArray(paper.sections) ? paper.sections : [],
+        references: Array.isArray(paper.references) ? paper.references : [],
+        versions: Array.isArray(paper.versions) ? paper.versions : [],
+        timeline: Array.isArray(data?.tasks) ? data.tasks : [],
+        futureWork: Array.isArray(data?.futureWork) ? data.futureWork : [],
+        attachments: Array.isArray(data?.attachments) ? data.attachments : [],
+        feedback: Array.isArray(paper.feedback) ? paper.feedback : [],
+        nextAction: paper.nextAction || ""
+    };
+}
+
+
+/* =========================================================
+   CONVERT PAPER DATA → RiGiD DATA
+========================================================= */
+
+function convertPaperDataToRigidData(paper) {
+    const now = new Date().toISOString();
+
+    return {
+        version: 1,
+
+        workspace: {
+            id: paper.id || currentWorkId,
+            type: "paper",
+            title: paper.title || "Untitled Paper",
+            status: paper.status || "draft",
+            createdAt: paper.createdAt || now,
+            updatedAt: now
+        },
+
+        paper: {
+            description: paper.description || "",
+            stage: paper.stage || paper.status || "draft",
+            type: paper.type || "Research Paper",
+            source: paper.source || "",
+            target: paper.target || "",
+            deadline: paper.deadline || "",
+            authors: Array.isArray(paper.authors) ? paper.authors : [],
+            tags: Array.isArray(paper.tags) ? paper.tags : [],
+            learning: Array.isArray(paper.learning) ? paper.learning : [],
+            findings: Array.isArray(paper.findings) ? paper.findings : [],
+            methodology: paper.methodology || "",
+            questions: Array.isArray(paper.questions) ? paper.questions : [],
+            sections: Array.isArray(paper.sections) ? paper.sections : [],
+            references: Array.isArray(paper.references) ? paper.references : [],
+            versions: Array.isArray(paper.versions) ? paper.versions : [],
+            feedback: Array.isArray(paper.feedback) ? paper.feedback : [],
+            nextAction: paper.nextAction || ""
+        },
+
+        tasks: Array.isArray(paper.timeline) ? paper.timeline : [],
+        futureWork: Array.isArray(paper.futureWork) ? paper.futureWork : [],
+        attachments: Array.isArray(paper.attachments) ? paper.attachments : []
+    };
+}
+
+
+/* =========================================================
+   NORMALIZE PAPER DATA
+========================================================= */
+
+function normalizePaperData() {
+    if (!paperData) return;
+
+    const arrayFields = [
+        "authors", "tags", "learning", "findings", "questions",
+        "sections", "references", "versions", "timeline",
+        "futureWork", "attachments", "feedback"
+    ];
+
+    arrayFields.forEach(field => {
+        if (!Array.isArray(paperData[field])) {
+            paperData[field] = [];
+        }
+    });
+
+    paperData.title = paperData.title || "Untitled Paper";
+    paperData.description = paperData.description || "";
+    paperData.status = paperData.status || "draft";
+    paperData.stage = paperData.stage || paperData.status;
+    paperData.type = paperData.type || "Research Paper";
+    paperData.methodology = paperData.methodology || "";
+    paperData.nextAction = paperData.nextAction || "";
+
+    paperData.createdDate = formatRigidDate(paperData.createdAt);
+    paperData.updatedDate = formatRigidDate(paperData.updatedAt);
+
+    paperData.sections = paperData.sections.map(section => ({
+        id: section.id || generateID("section"),
+        title: section.title || "Untitled Section",
+        description: section.description || "",
+        status: normalizeSectionStatus(section.status),
+        content: section.content || ""
+    }));
+
+    paperData.findings = paperData.findings.map(finding => {
+        if (typeof finding === "string") {
+            return { id: generateID("finding"), text: finding };
+        }
+        return {
+            id: finding.id || generateID("finding"),
+            text: finding.text || finding.content || ""
+        };
+    });
+
+    paperData.questions = paperData.questions.map(question => {
+        if (typeof question === "string") {
+            return { id: generateID("question"), text: question, status: "open" };
+        }
+        return {
+            id: question.id || generateID("question"),
+            text: question.text || question.content || "",
+            status: question.status || "open"
+        };
+    });
+
+    paperData.learning = paperData.learning.map(item => {
+        if (typeof item === "string") {
+            return {
+                id: generateID("learning"),
+                text: item,
+                createdAt: new Date().toISOString()
+            };
+        }
+        return {
+            id: item.id || generateID("learning"),
+            text: item.text || item.content || "",
+            createdAt: item.createdAt || new Date().toISOString()
+        };
+    });
+
+    paperData.references = paperData.references.map(reference => ({
+        id: reference.id || generateID("reference"),
+        title: reference.title || "Untitled Reference",
+        authors: reference.authors || "",
+        year: reference.year || "",
+        doi: reference.doi || reference.url || "",
+        notes: reference.notes || ""
+    }));
+
+    paperData.timeline = paperData.timeline.map(item => ({
+        id: item.id || generateID("timeline"),
+        title: item.title || "Untitled Task",
+        description: item.description || "",
+        date: item.date || getTodayISO(),
+        status: item.status || "planned",
+        duration: item.duration || "",
+        priority: item.priority || "normal"
+    }));
+
+    paperData.futureWork = paperData.futureWork.map(item => ({
+        id: item.id || generateID("future"),
+        title: item.title || "Untitled Future Work",
+        description: item.description || ""
+    }));
+
+    paperData.feedback = paperData.feedback.map(item => ({
+        id: item.id || generateID("feedback"),
+        author: item.author || "Anonymous",
+        date: item.date || "",
+        type: item.type || "mentor",
+        text: item.text || "",
+        createdAt: item.createdAt || new Date().toISOString()
+    }));
+
+    if (!paperData.sections.some(section => section.id === activeSectionId)) {
+        activeSectionId = paperData.sections[0]?.id || null;
+    }
+}
+
+
+/* =========================================================
+   PAGE INITIALIZATION
+========================================================= */
+
+function initializePaperPage() {
+    // SETUP BUTTONS FIRST
+    setupTopNavigation();
+    setupModalControls();
+    setupPaperInformation();
+    setupLearning();
+    setupFindings();
+    setupMethodology();
+    setupQuestions();
+    setupWritingWorkspace();
+    setupReferences();
+    setupVersions();
+    setupTimeline();
+    setupFutureWork();
+    setupUploads();
+    setupLinks();
+    setupFeedback();
+    setupPaperControls();
+
+    // THEN RENDER DATA
+    loadPaperInformation();
+    renderAuthors();
+    renderTags();
+    renderLearning();
+    renderFindings();
+    renderMethodology();
+    renderQuestions();
+    renderPaperSections();
+    renderReferences();
+    renderVersions();
+    renderTimeline();
+    renderFutureWork();
+    renderAttachments();
+    renderFeedback();
+    loadNextAction();
+    updatePaperSummary();
+    startLiveClock();
+}
+
+
+/* =========================================================
+   RENDER EVERYTHING
+========================================================= */
+
+function renderEverything() {
+    loadPaperInformation();
+    renderAuthors();
+    renderTags();
+    renderLearning();
+    renderFindings();
+    renderMethodology();
+    renderQuestions();
+    renderPaperSections();
+    renderReferences();
+    renderVersions();
+    renderTimeline();
+    renderFutureWork();
+    renderAttachments();
+    renderFeedback();
+    loadNextAction();
+    updatePaperSummary();
+}
+
+
+/* =========================================================
+   PAPER INFORMATION
 ========================================================= */
 
 function loadPaperInformation() {
-
-    const title =
-        $("#paperTitle");
-
-    const description =
-        $("#paperDescription");
-
-    const status =
-        $("#paperStatus");
-
-    const stage =
-        $("#paperStage");
-
-    const source =
-        $("#paperSource");
-
-    const target =
-        $("#paperTarget");
-
-    const deadline =
-        $("#paperDeadline");
-
-    const updated =
-        $("#paperUpdated");
+    setText("paperTitle", paperData.title);
+    setText("paperDescription", paperData.description);
+    setText("paperStatus", formatStatus(paperData.status));
+    setText("paperType", (paperData.type || "Research Paper").toUpperCase());
+    setText("paperSource", paperData.source || "—");
+    setText("paperTarget", paperData.target || "—");
+    setText(
+        "paperDeadline",
+        paperData.deadline ? formatRigidDate(paperData.deadline) : "—"
+    );
+    setText("paperUpdated", paperData.updatedDate || "—");
+}
 
 
-    if (title)
-        title.textContent =
-            paperData.title;
+function setupPaperInformation() {
+    $("#editPaper")?.addEventListener("click", openPaperInformationModal);
+    $("#savePaperInfo")?.addEventListener("click", savePaperInformation);
+}
 
 
-    if (description)
-        description.textContent =
-            paperData.description;
+function openPaperInformationModal() {
+    const modal = $("#paperInformationModal");
+
+    if (!modal) {
+        showToast("Paper information modal is unavailable.");
+        return;
+    }
+
+    setInputValue("paperInfoTitle", paperData.title);
+    setInputValue("paperInfoDescription", paperData.description);
+    setInputValue("paperInfoType", paperData.type);
+    setInputValue("paperInfoStatus", paperData.status);
+    setInputValue("paperInfoSource", paperData.source);
+    setInputValue("paperInfoTarget", paperData.target);
+    setInputValue("paperInfoDeadline", paperData.deadline);
+
+    openModal("#paperInformationModal");
+}
 
 
-    if (status)
-        status.textContent =
-            getPaperStatusLabel(
-                paperData.status
-            );
+async function savePaperInformation() {
+    const title = getInputValue("paperInfoTitle");
 
+    if (!title) {
+        showToast("Enter a paper title.");
+        return;
+    }
 
-    if (stage)
-        stage.textContent =
-            getStageNumber(
-                paperData.stage
-            );
+    const previous = clone({
+        title: paperData.title,
+        description: paperData.description,
+        status: paperData.status,
+        stage: paperData.stage,
+        type: paperData.type,
+        source: paperData.source,
+        target: paperData.target,
+        deadline: paperData.deadline
+    });
 
+    paperData.title = title;
+    paperData.description = getInputValue("paperInfoDescription");
+    paperData.status = getInputValue("paperInfoStatus") || paperData.status;
+    paperData.stage = paperData.status;
+    paperData.type = getInputValue("paperInfoType") || paperData.type;
+    paperData.source = getInputValue("paperInfoSource");
+    paperData.target = getInputValue("paperInfoTarget");
+    paperData.deadline = getInputValue("paperInfoDeadline");
 
-    if (source)
-        source.textContent =
-            paperData.source;
+    touchPaperData();
+    loadPaperInformation();
 
-
-    if (target)
-        target.textContent =
-            paperData.target;
-
-
-    if (deadline)
-        deadline.textContent =
-            paperData.deadline ||
-            "Not set";
-
-
-    if (updated)
-        updated.textContent =
-            paperData.updatedDate;
-
-
-    const stageLabel =
-        $("#stageLabel");
-
-
-    if (stageLabel)
-        stageLabel.textContent =
-            capitalize(
-                paperData.stage
-            );
-
+    try {
+        await savePaperData();
+        closeModal("#paperInformationModal");
+        showToast("Paper information saved.");
+    }
+    catch (error) {
+        Object.assign(paperData, previous);
+        loadPaperInformation();
+        showToast(error.message || "Unable to save paper information.");
+    }
 }
 
 
 /* =========================================================
-   06. STATUS
-========================================================= */
-
-function getPaperStatusLabel(status) {
-
-    const labels = {
-
-        draft:
-            "● DRAFT",
-
-        review:
-            "● UNDER REVIEW",
-
-        submitted:
-            "● SUBMITTED",
-
-        published:
-            "● PUBLISHED"
-
-    };
-
-
-    return labels[status]
-        || "● DRAFT";
-
-}
-
-
-function getStageNumber(stage) {
-
-    const stages = {
-
-        idea: "STAGE 01",
-
-        outline: "STAGE 02",
-
-        draft: "STAGE 03",
-
-        review: "STAGE 04",
-
-        published: "STAGE 05"
-
-    };
-
-
-    return stages[stage]
-        || "STAGE 03";
-
-}
-
-
-/* =========================================================
-   07. AUTHORS
+   AUTHORS (display only — no author-editing UI in this page)
 ========================================================= */
 
 function renderAuthors() {
+    const names = paperData.authors
+        .map(author => (typeof author === "string" ? author : author?.name))
+        .filter(Boolean);
 
-    const container =
-        $("#authorList");
-
-
-    if (!container)
-        return;
-
-
-    container.innerHTML = "";
-
-
-    paperData.authors.forEach(
-        (author, index) => {
-
-            const chip =
-                document.createElement("span");
-
-            chip.className =
-                "author-chip";
-
-
-            chip.innerHTML = `
-
-                ${escapeHTML(author)}
-
-                ${
-                    index > 0
-                    ?
-                    `
-                    <button
-                        type="button"
-                        data-remove-author="${index}"
-                        style="
-                            margin-left:5px;
-                            border:0;
-                            background:transparent;
-                            color:inherit;
-                            cursor:pointer;
-                        "
-                    >
-                        ×
-                    </button>
-                    `
-                    :
-                    ""
-                }
-
-            `;
-
-
-            container.appendChild(
-                chip
-            );
-
-        }
-    );
-
-
-    $$("[data-remove-author]")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const index =
-                        Number(
-                            button.dataset.removeAuthor
-                        );
-
-
-                    paperData.authors
-                        .splice(
-                            index,
-                            1
-                        );
-
-
-                    renderAuthors();
-
-                    updatePaperDate();
-
-                }
-            );
-
-        });
-
+    setText("paperAuthors", names.length ? names.join(", ") : "You");
 }
 
 
 /* =========================================================
-   08. TAGS
+   TAGS (display + remove — no "add tag" control in this page)
 ========================================================= */
 
 function renderTags() {
+    const container = $("#paperTags");
 
-    const container =
-        $("#paperTags");
-
-
-    if (!container)
-        return;
-
+    if (!container) return;
 
     container.innerHTML = "";
 
+    if (!paperData.tags.length) {
+        container.innerHTML = `<div class="empty-state">No tags added.</div>`;
+        return;
+    }
 
-    paperData.tags.forEach(
-        tag => {
+    paperData.tags.forEach((tag, index) => {
+        const item = document.createElement("span");
+        item.className = "paper-tag";
+        item.innerHTML = `
+            ${escapeHTML(tag)}
+            <button type="button" data-delete-tag="${index}" title="Remove tag">×</button>
+        `;
+        container.appendChild(item);
+    });
 
-            const element =
-                document.createElement("span");
+    $$("[data-delete-tag]").forEach(button => {
+        button.addEventListener("click", () => {
+            deleteTag(Number(button.dataset.deleteTag));
+        });
+    });
+}
 
-            element.textContent =
-                tag;
 
+async function deleteTag(index) {
+    const previous = clone(paperData.tags);
 
-            container.appendChild(
-                element
-            );
+    paperData.tags.splice(index, 1);
 
-        }
-    );
+    touchPaperData();
+    renderTags();
 
+    try {
+        await savePaperData();
+        showToast("Tag removed.");
+    }
+    catch (error) {
+        paperData.tags = previous;
+        renderTags();
+        showToast(error.message || "Unable to remove tag.");
+    }
 }
 
 
 /* =========================================================
-   09. LEARNING
+   LEARNING
 ========================================================= */
 
 function renderLearning() {
+    const container = $("#learningContent");
 
-    const container =
-        $("#learningContent");
-
-
-    if (!container)
-        return;
-
+    if (!container) return;
 
     container.innerHTML = "";
 
+    if (!paperData.learning.length) {
+        container.innerHTML = `<div class="empty-state">No learnings added yet.</div>`;
+        return;
+    }
 
-    paperData.learning.forEach(
-        item => {
+    paperData.learning.forEach((learning, index) => {
+        const item = document.createElement("article");
+        item.className = "learning-item";
+        item.innerHTML = `
+            <p>${escapeHTML(learning.text)}</p>
+            <div class="learning-actions">
+                <button type="button" data-edit-learning="${index}">Edit</button>
+                <button type="button" data-delete-learning="${index}">×</button>
+            </div>
+        `;
+        container.appendChild(item);
+    });
 
-            const p =
-                document.createElement("p");
+    $$("[data-edit-learning]").forEach(button => {
+        button.addEventListener("click", () => {
+            openLearningModal(Number(button.dataset.editLearning));
+        });
+    });
 
-            p.textContent =
-                item;
-
-
-            container.appendChild(
-                p
-            );
-
-        }
-    );
-
+    $$("[data-delete-learning]").forEach(button => {
+        button.addEventListener("click", () => {
+            deleteLearning(Number(button.dataset.deleteLearning));
+        });
+    });
 }
 
 
 function setupLearning() {
-
-    $("#editLearning")
-        ?.addEventListener(
-            "click",
-            editLearning
-        );
-
-
-    $("#addLearning")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                const result =
-                    window.prompt(
-                        "What did you learn from this paper?"
-                    );
-
-
-                if (!result)
-                    return;
-
-
-                paperData.learning.push(
-                    result.trim()
-                );
-
-
-                renderLearning();
-
-                updatePaperDate();
-
-                showToast(
-                    "Learning added."
-                );
-
-            }
-        );
-
+    $("#addLearning")?.addEventListener("click", () => openLearningModal(null));
+    $("#saveLearning")?.addEventListener("click", saveLearning);
 }
 
 
-function editLearning() {
+function openLearningModal(index = null) {
+    editingLearningIndex = index;
 
-    const current =
-        paperData.learning.join(
-            "\n\n"
-        );
+    const item = Number.isInteger(index) ? paperData.learning[index] : null;
 
+    setText("learningModalTitle", item ? "Edit Learning" : "Add Learning");
+    setInputValue("learningInput", item?.text || "");
 
-    const result =
-        window.prompt(
-            "Edit your learning notes:",
-            current
-        );
+    openModal("#learningModal");
+}
 
 
-    if (result === null)
+async function saveLearning() {
+    const text = getInputValue("learningInput");
+
+    if (!text) {
+        showToast("Enter what you learned.");
         return;
+    }
 
+    const previous = clone(paperData.learning);
 
-    paperData.learning =
-        result
-            .split(/\n\s*\n/)
-            .map(
-                item =>
-                    item.trim()
-            )
-            .filter(Boolean);
+    if (Number.isInteger(editingLearningIndex) && paperData.learning[editingLearningIndex]) {
+        paperData.learning[editingLearningIndex].text = text;
+    }
+    else {
+        paperData.learning.unshift({
+            id: generateID("learning"),
+            text,
+            createdAt: new Date().toISOString()
+        });
+    }
 
-
+    touchPaperData();
     renderLearning();
 
-    updatePaperDate();
+    try {
+        await savePaperData();
+        closeModal("#learningModal");
+        editingLearningIndex = null;
+        showToast("Learning saved.");
+    }
+    catch (error) {
+        paperData.learning = previous;
+        renderLearning();
+        showToast(error.message || "Unable to save learning.");
+    }
+}
 
-    showToast(
-        "Learning updated."
-    );
 
+async function deleteLearning(index) {
+    const previous = clone(paperData.learning);
+
+    paperData.learning.splice(index, 1);
+
+    touchPaperData();
+    renderLearning();
+
+    try {
+        await savePaperData();
+        showToast("Learning removed.");
+    }
+    catch (error) {
+        paperData.learning = previous;
+        renderLearning();
+        showToast(error.message || "Unable to remove learning.");
+    }
 }
 
 
 /* =========================================================
-   10. FINDINGS
+   FINDINGS
 ========================================================= */
 
 function renderFindings() {
+    const container = $("#findingsList");
 
-    const container =
-        $("#findingsList");
-
-
-    if (!container)
-        return;
-
+    if (!container) return;
 
     container.innerHTML = "";
 
+    if (!paperData.findings.length) {
+        container.innerHTML = `<div class="empty-state">No findings added yet.</div>`;
+        return;
+    }
 
-    paperData.findings.forEach(
-        (finding, index) => {
+    paperData.findings.forEach(finding => {
+        const item = document.createElement("article");
+        item.className = "finding-item";
+        item.innerHTML = `
+            <p>${escapeHTML(finding.text)}</p>
+            <div class="finding-actions">
+                <button type="button" data-edit-finding="${escapeAttribute(finding.id)}">Edit</button>
+                <button type="button" data-delete-finding="${escapeAttribute(finding.id)}">×</button>
+            </div>
+        `;
+        container.appendChild(item);
+    });
 
-            const item =
-                document.createElement("div");
+    $$("[data-edit-finding]").forEach(button => {
+        button.addEventListener("click", () => {
+            openFindingModal(button.dataset.editFinding);
+        });
+    });
 
-            item.className =
-                "finding-item";
-
-
-            item.innerHTML = `
-
-                <span class="finding-number">
-                    ${String(index + 1).padStart(2, "0")}
-                </span>
-
-                <p>
-                    ${escapeHTML(finding.text)}
-                </p>
-
-            `;
-
-
-            container.appendChild(
-                item
-            );
-
-        }
-    );
-
+    $$("[data-delete-finding]").forEach(button => {
+        button.addEventListener("click", () => {
+            deleteFinding(button.dataset.deleteFinding);
+        });
+    });
 }
 
 
 function setupFindings() {
-
-    $("#addFinding")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                const result =
-                    window.prompt(
-                        "Add an important finding:"
-                    );
+    $("#addFinding")?.addEventListener("click", () => openFindingModal(null));
+    $("#saveFinding")?.addEventListener("click", saveFinding);
+}
 
 
-                if (!result)
-                    return;
+function openFindingModal(id = null) {
+    editingFindingId = id;
+
+    const finding = id
+        ? paperData.findings.find(item => item.id === id)
+        : null;
+
+    setText("findingModalTitle", finding ? "Edit Finding" : "Add Finding");
+    setInputValue("findingInput", finding?.text || "");
+
+    openModal("#findingModal");
+}
 
 
-                paperData.findings.push({
+async function saveFinding() {
+    const text = getInputValue("findingInput");
 
-                    id:
-                        generateID("finding"),
+    if (!text) {
+        showToast("Enter a finding.");
+        return;
+    }
 
-                    text:
-                        result.trim()
+    const previous = clone(paperData.findings);
 
-                });
+    if (editingFindingId) {
+        const finding = paperData.findings.find(item => item.id === editingFindingId);
+        if (finding) finding.text = text;
+    }
+    else {
+        paperData.findings.unshift({ id: generateID("finding"), text });
+    }
+
+    touchPaperData();
+    renderFindings();
+
+    try {
+        await savePaperData();
+        closeModal("#findingModal");
+        editingFindingId = null;
+        showToast("Finding saved.");
+    }
+    catch (error) {
+        paperData.findings = previous;
+        renderFindings();
+        showToast(error.message || "Unable to save finding.");
+    }
+}
 
 
-                renderFindings();
+async function deleteFinding(id) {
+    const previous = clone(paperData.findings);
 
-                updatePaperDate();
+    paperData.findings = paperData.findings.filter(item => item.id !== id);
 
-                showToast(
-                    "Finding added."
-                );
+    touchPaperData();
+    renderFindings();
 
-            }
-        );
-
+    try {
+        await savePaperData();
+        showToast("Finding removed.");
+    }
+    catch (error) {
+        paperData.findings = previous;
+        renderFindings();
+        showToast(error.message || "Unable to remove finding.");
+    }
 }
 
 
 /* =========================================================
-   11. METHODOLOGY
+   METHODOLOGY
 ========================================================= */
 
 function renderMethodology() {
+    const container = $("#methodologyContent");
 
-    const container =
-        $("#methodologyContent");
+    if (!container) return;
 
+    container.innerHTML = "";
 
-    if (!container)
+    if (!paperData.methodology) {
+        container.innerHTML = `<div class="empty-state">No methodology notes added yet.</div>`;
         return;
+    }
 
-
-    container.innerHTML = `
-
-        <p>
-            ${escapeHTML(
-                paperData.methodology
-            )}
-        </p>
-
-    `;
-
+    const paragraph = document.createElement("p");
+    paragraph.textContent = paperData.methodology;
+    container.appendChild(paragraph);
 }
 
 
 function setupMethodology() {
+    $("#editMethodology")?.addEventListener("click", () => {
+        setInputValue("methodologyInput", paperData.methodology);
+        openModal("#methodologyModal");
+    });
 
-    $("#editMethodology")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                const result =
-                    window.prompt(
-                        "Methodology notes:",
-                        paperData.methodology
-                    );
+    $("#saveMethodology")?.addEventListener("click", saveMethodology);
+}
 
 
-                if (result === null)
-                    return;
+async function saveMethodology() {
+    const previous = paperData.methodology;
 
+    paperData.methodology = getInputValue("methodologyInput");
 
-                paperData.methodology =
-                    result.trim();
+    touchPaperData();
+    renderMethodology();
 
-
-                renderMethodology();
-
-                updatePaperDate();
-
-                showToast(
-                    "Methodology updated."
-                );
-
-            }
-        );
-
+    try {
+        await savePaperData();
+        closeModal("#methodologyModal");
+        showToast("Methodology saved.");
+    }
+    catch (error) {
+        paperData.methodology = previous;
+        renderMethodology();
+        showToast(error.message || "Unable to save methodology.");
+    }
 }
 
 
 /* =========================================================
-   12. QUESTIONS
+   QUESTIONS & GAPS
 ========================================================= */
 
 function renderQuestions() {
+    const container = $("#questionList");
 
-    const container =
-        $("#questionList");
-
-
-    if (!container)
-        return;
-
+    if (!container) return;
 
     container.innerHTML = "";
 
+    if (!paperData.questions.length) {
+        container.innerHTML = `<div class="empty-state">No questions or gaps added.</div>`;
+        return;
+    }
 
-    paperData.questions.forEach(
-        question => {
+    paperData.questions.forEach(question => {
+        const item = document.createElement("article");
+        item.className = `question-item ${escapeHTML(question.status)}`;
+        item.innerHTML = `
+            <div>
+                <p>${escapeHTML(question.text)}</p>
+                <span>${escapeHTML(formatStatus(question.status))}</span>
+            </div>
+            <div class="question-actions">
+                <button type="button" data-toggle-question="${escapeAttribute(question.id)}">
+                    ${question.status === "resolved" ? "Reopen" : "Resolve"}
+                </button>
+                <button type="button" data-edit-question="${escapeAttribute(question.id)}">Edit</button>
+                <button type="button" data-delete-question="${escapeAttribute(question.id)}">×</button>
+            </div>
+        `;
+        container.appendChild(item);
+    });
 
-            const item =
-                document.createElement("div");
-
-            item.className =
-                "question-item";
-
-
-            item.innerHTML = `
-
-                <span>
-                    ${question.status === "open"
-                        ? "OPEN"
-                        : "DONE"}
-                </span>
-
-                <p>
-                    ${escapeHTML(question.text)}
-                </p>
-
-                ${
-                    question.status === "open"
-                    ?
-                    `
-                    <button
-                        type="button"
-                        data-resolve-question="${question.id}"
-                        style="
-                            margin-left:auto;
-                            border:0;
-                            background:transparent;
-                            color:#b991ff;
-                            font-size:7px;
-                            cursor:pointer;
-                        "
-                    >
-                        Resolve
-                    </button>
-                    `
-                    :
-                    ""
-                }
-
-            `;
-
-
-            container.appendChild(
-                item
-            );
-
-        }
-    );
-
-
-    $$("[data-resolve-question]")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    const question =
-                        paperData.questions.find(
-                            item =>
-                                item.id ===
-                                button.dataset.resolveQuestion
-                        );
-
-
-                    if (!question)
-                        return;
-
-
-                    question.status =
-                        "resolved";
-
-
-                    renderQuestions();
-
-                    updatePaperSummary();
-
-                    updatePaperDate();
-
-                    showToast(
-                        "Question resolved."
-                    );
-
-                }
-            );
-
+    $$("[data-toggle-question]").forEach(button => {
+        button.addEventListener("click", () => {
+            toggleQuestionStatus(button.dataset.toggleQuestion);
         });
+    });
 
+    $$("[data-edit-question]").forEach(button => {
+        button.addEventListener("click", () => {
+            openQuestionModal(button.dataset.editQuestion);
+        });
+    });
+
+    $$("[data-delete-question]").forEach(button => {
+        button.addEventListener("click", () => {
+            deleteQuestion(button.dataset.deleteQuestion);
+        });
+    });
 }
 
 
 function setupQuestions() {
-
-    $("#addQuestion")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                const result =
-                    window.prompt(
-                        "What question or research gap did you find?"
-                    );
-
-
-                if (!result)
-                    return;
-
-
-                paperData.questions.push({
-
-                    id:
-                        generateID("question"),
-
-                    text:
-                        result.trim(),
-
-                    status:
-                        "open"
-
-                });
-
-
-                renderQuestions();
-
-                updatePaperSummary();
-
-                updatePaperDate();
-
-                showToast(
-                    "Question added."
-                );
-
-            }
-        );
-
+    $("#addQuestion")?.addEventListener("click", () => openQuestionModal(null));
+    $("#saveQuestion")?.addEventListener("click", saveQuestion);
 }
 
 
-/* =========================================================
-   13. PAPER WRITING SECTIONS
-========================================================= */
+function openQuestionModal(id = null) {
+    editingQuestionId = id;
 
-function renderPaperSections() {
+    const question = id
+        ? paperData.questions.find(item => item.id === id)
+        : null;
 
-    const container =
-        $("#paperSectionList");
+    setText("questionModalTitle", question ? "Edit Question or Gap" : "Add Question or Gap");
+    setInputValue("questionInput", question?.text || "");
+
+    openModal("#questionModal");
+}
 
 
-    if (!container)
+async function saveQuestion() {
+    const text = getInputValue("questionInput");
+
+    if (!text) {
+        showToast("Enter a question or research gap.");
         return;
+    }
+
+    const previous = clone(paperData.questions);
+
+    if (editingQuestionId) {
+        const question = paperData.questions.find(item => item.id === editingQuestionId);
+        if (question) question.text = text;
+    }
+    else {
+        paperData.questions.push({
+            id: generateID("question"),
+            text,
+            status: "open"
+        });
+    }
+
+    touchPaperData();
+    renderQuestions();
+
+    try {
+        await savePaperData();
+        closeModal("#questionModal");
+        editingQuestionId = null;
+        showToast("Question saved.");
+    }
+    catch (error) {
+        paperData.questions = previous;
+        renderQuestions();
+        showToast(error.message || "Unable to save question.");
+    }
+}
 
 
-    container.innerHTML = "";
+async function toggleQuestionStatus(id) {
+    const previous = clone(paperData.questions);
+
+    const question = paperData.questions.find(item => item.id === id);
+
+    if (!question) return;
+
+    question.status = question.status === "resolved" ? "open" : "resolved";
+
+    touchPaperData();
+    renderQuestions();
+
+    try {
+        await savePaperData();
+        showToast(question.status === "resolved" ? "Question resolved." : "Question reopened.");
+    }
+    catch (error) {
+        paperData.questions = previous;
+        renderQuestions();
+        showToast(error.message || "Unable to update question.");
+    }
+}
 
 
-    paperData.sections.forEach(
-        section => {
+async function deleteQuestion(id) {
+    const previous = clone(paperData.questions);
 
-            const button =
-                document.createElement("button");
+    paperData.questions = paperData.questions.filter(item => item.id !== id);
 
-            button.type =
-                "button";
+    touchPaperData();
+    renderQuestions();
 
-            button.className =
-                "paper-writing-section";
-
-
-            if (
-                section.id ===
-                activeSectionId
-            ) {
-
-                button.classList.add(
-                    "active"
-                );
-
-            }
-
-
-            if (
-                section.status ===
-                "completed"
-            ) {
-
-                button.classList.add(
-                    "completed"
-                );
-
-            }
-
-
-            button.innerHTML = `
-
-                <span class="section-number">
-                    ${section.number}
-                </span>
-
-                <strong>
-                    ${escapeHTML(section.title)}
-                </strong>
-
-                <span class="section-check">
-                    ${
-                        section.status ===
-                        "completed"
-                        ?
-                        "✓"
-                        :
-                        ""
-                    }
-                </span>
-
-            `;
-
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    setActiveSection(
-                        section.id
-                    );
-
-                }
-            );
-
-
-            container.appendChild(
-                button
-            );
-
-        }
-    );
-
-
-    updateWritingProgress();
-
+    try {
+        await savePaperData();
+        showToast("Question removed.");
+    }
+    catch (error) {
+        paperData.questions = previous;
+        renderQuestions();
+        showToast(error.message || "Unable to remove question.");
+    }
 }
 
 
 /* =========================================================
-   14. ACTIVE SECTION
+   SHARED DATA HELPERS
 ========================================================= */
 
-function setActiveSection(id) {
-
-    saveActiveEditor();
-
-
-    activeSectionId =
-        id;
-
-
-    const section =
-        getActiveSection();
-
-
-    if (!section)
-        return;
-
-
-    $("#activeSectionTitle")
-        .textContent =
-        section.title;
-
-
-    $("#paperEditor")
-        .value =
-        section.content;
-
-
-    renderPaperSections();
-
-    updateWordCount();
-
+function touchPaperData() {
+    paperData.updatedAt = new Date().toISOString();
+    paperData.updatedDate = formatRigidDate(paperData.updatedAt);
+    setText("paperUpdated", paperData.updatedDate);
 }
 
+function clone(value) {
+    if (typeof structuredClone === "function") {
+        return structuredClone(value);
+    }
+    return JSON.parse(JSON.stringify(value));
+}
 
-/* =========================================================
-   15. ACTIVE SECTION DATA
-========================================================= */
-
-function getActiveSection() {
-
-    return paperData.sections.find(
-        section =>
-            section.id ===
-            activeSectionId
+function generateID(prefix = "item") {
+    return (
+        `${prefix}-` +
+        Date.now().toString(36) +
+        "-" +
+        Math.random().toString(36).slice(2, 8)
     );
+}
 
+function normalizeSectionStatus(status) {
+    const allowed = ["not-started", "in-progress", "completed"];
+    return allowed.includes(status) ? status : "not-started";
+}
+
+function formatStatus(status) {
+    return String(status || "")
+        .replaceAll("-", " ")
+        .replace(/\b\w/g, character => character.toUpperCase());
+}
+
+function formatRigidDate(value) {
+    if (!value) return "—";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return "—";
+
+    return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function getTodayISO() {
+    return new Date().toISOString().slice(0, 10);
+}
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function escapeAttribute(value) {
+    return escapeHTML(value);
 }
 
 
 /* =========================================================
-   16. WRITING WORKSPACE
+   WRITING WORKSPACE / USER-CREATED PAPER SECTIONS
 ========================================================= */
 
 function setupWritingWorkspace() {
+    // Open the "add section" modal from any of its three entry points
+    $("#addPaperSection")?.addEventListener("click", () => openPaperSectionModal(null));
+    $("#addPaperSectionSide")?.addEventListener("click", () => openPaperSectionModal(null));
+    $("#addFirstPaperSection")?.addEventListener("click", () => openPaperSectionModal(null));
 
-    setActiveSection(
-        activeSectionId
-    );
+    $("#savePaperSection")?.addEventListener("click", savePaperSection);
 
+    // Manual "save draft" for whatever is currently in the editor
+    $("#saveDraft")?.addEventListener("click", saveActiveSectionContent);
 
-    $("#paperEditor")
-        ?.addEventListener(
-            "input",
-            () => {
+    // Toolbar controls that act on the currently selected section
+    $("#renameActiveSection")?.addEventListener("click", renameActiveSection);
+    $("#moveActiveSectionUp")?.addEventListener("click", () => {
+        if (activeSectionId) movePaperSection(activeSectionId, -1);
+    });
+    $("#moveActiveSectionDown")?.addEventListener("click", () => {
+        if (activeSectionId) movePaperSection(activeSectionId, 1);
+    });
+    $("#deleteActiveSection")?.addEventListener("click", () => {
+        if (activeSectionId) openDeleteSectionModal(activeSectionId);
+    });
 
-                updateWordCount();
+    // Delete-section confirmation modal
+    $("#confirmDeletePaperSection")?.addEventListener("click", confirmDeletePaperSection);
 
-            }
-        );
+    // New version / draft upload
+    $("#newVersion")?.addEventListener("click", createNewVersion);
+    $("#newVersionFromWorkspace")?.addEventListener("click", createNewVersion);
 
-
-    $("#saveDraft")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                saveActiveEditor();
-
-                updatePaperDate();
-
-                showToast(
-                    "Draft saved."
-                );
-
-            }
-        );
-
-
-    $("#newVersion")
-        ?.addEventListener(
-            "click",
-            createVersion
-        );
-
-
-    $("#editorBold")
-        ?.addEventListener(
-            "click",
-            () =>
-                insertFormatting("bold")
-        );
-
-
-    $("#editorItalic")
-        ?.addEventListener(
-            "click",
-            () =>
-                insertFormatting("italic")
-        );
-
-
-    $("#editorList")
-        ?.addEventListener(
-            "click",
-            () =>
-                insertFormatting("list")
-        );
-
+    const draftInput = $("#draftFileInput");
+    $("#uploadDraft")?.addEventListener("click", () => draftInput?.click());
+    draftInput?.addEventListener("change", async event => {
+        const files = Array.from(event.target.files || []);
+        if (!files.length) return;
+        await uploadDraftFiles(files);
+        draftInput.value = "";
+    });
 }
 
 
-function saveActiveEditor() {
+function renderPaperSections() {
+    const list = $("#paperSectionList");
+    const empty = $("#paperSectionEmpty");
 
-    const editor =
-        $("#paperEditor");
+    if (!list) return;
 
+    list.innerHTML = "";
 
-    const section =
-        getActiveSection();
+    if (!paperData.sections.length) {
+        if (empty) {
+            empty.hidden = false;
+            empty.classList.remove("hidden");
+        }
 
+        activeSectionId = null;
 
-    if (!editor || !section)
+        renderActiveSectionEditor();
+        updatePaperSummary();
         return;
-
-
-    section.content =
-        editor.value;
-
-
-    /*
-     * A section becomes "completed"
-     * when the user has entered meaningful
-     * content and explicitly saves it.
-     */
-
-    if (
-        section.content.trim().length >= 20 &&
-        section.status === "not-started"
-    ) {
-
-        section.status =
-            "in-progress";
-
     }
 
-
-    updateWritingProgress();
-
-    updatePaperSummary();
-
-}
-
-
-/* =========================================================
-   17. WORD COUNT
-========================================================= */
-
-function updateWordCount() {
-
-    const editor =
-        $("#paperEditor");
-
-
-    const counter =
-        $("#wordCount");
-
-
-    if (!editor || !counter)
-        return;
-
-
-    const text =
-        editor.value.trim();
-
-
-    const count =
-        text
-            ? text.split(/\s+/).length
-            : 0;
-
-
-    counter.textContent =
-        `${count} word${count === 1 ? "" : "s"}`;
-
-
-    updateTotalWordCount();
-
-}
-
-
-/* =========================================================
-   18. TOTAL WORD COUNT
-========================================================= */
-
-function updateTotalWordCount() {
-
-    const total =
-        paperData.sections.reduce(
-            (sum, section) => {
-
-                return (
-                    sum +
-                    countWords(
-                        section.content
-                    )
-                );
-
-            },
-            0
-        );
-
-
-    const element =
-        $("#summaryWords");
-
-
-    if (element)
-        element.textContent =
-            total;
-
-}
-
-
-/* =========================================================
-   19. WRITING PROGRESS
-========================================================= */
-
-function updateWritingProgress() {
-
-    const total =
-        paperData.sections.length;
-
-
-    const completed =
-        paperData.sections.filter(
-            section =>
-                section.status ===
-                "completed"
-        ).length;
-
-
-    const percentage =
-        Math.round(
-            (completed / total) * 100
-        );
-
-
-    const progress =
-        $("#writingProgressFill");
-
-
-    const writingPercentage =
-        $("#writingPercentage");
-
-
-    const sectionProgress =
-        $("#sectionProgress");
-
-
-    if (progress)
-        progress.style.width =
-            `${percentage}%`;
-
-
-    if (writingPercentage)
-        writingPercentage.textContent =
-            `${percentage}%`;
-
-
-    if (sectionProgress)
-        sectionProgress.textContent =
-            `${completed} / ${total}`;
-
-
-    const completion =
-        $("#paperCompletion");
-
-
-    if (completion)
-        completion.textContent =
-            `${percentage}%`;
-
-
-    updatePaperSummary();
-
-}
-
-
-/* =========================================================
-   20. EDITOR FORMATTING
-========================================================= */
-
-function insertFormatting(type) {
-
-    const editor =
-        $("#paperEditor");
-
-
-    if (!editor)
-        return;
-
-
-    const start =
-        editor.selectionStart;
-
-
-    const end =
-        editor.selectionEnd;
-
-
-    const selected =
-        editor.value.substring(
-            start,
-            end
-        );
-
-
-    let replacement =
-        selected;
-
-
-    if (type === "bold") {
-
-        replacement =
-            `**${selected || "bold text"}**`;
-
+    if (empty) {
+        empty.hidden = true;
+        empty.classList.add("hidden");
     }
 
-
-    if (type === "italic") {
-
-        replacement =
-            `*${selected || "italic text"}*`;
-
+    if (!paperData.sections.some(section => section.id === activeSectionId)) {
+        activeSectionId = paperData.sections[0].id;
     }
 
+    paperData.sections.forEach((section, index) => {
+        const item = document.createElement("div");
+        item.className = "paper-section-item";
 
-    if (type === "list") {
+        if (section.id === activeSectionId) {
+            item.classList.add("active");
+        }
 
-        replacement =
-            selected
-                ? selected
-                    .split("\n")
-                    .map(
-                        line =>
-                            `• ${line}`
-                    )
-                    .join("\n")
-                : "• ";
-
-    }
-
-
-    editor.setRangeText(
-        replacement,
-        start,
-        end,
-        "end"
-    );
-
-
-    editor.focus();
-
-    updateWordCount();
-
-}
-
-
-/* =========================================================
-   21. REFERENCES
-========================================================= */
-
-function renderReferences() {
-
-    const container =
-        $("#referenceList");
-
-
-    if (!container)
-        return;
-
-
-    container.innerHTML = "";
-
-
-    if (
-        paperData.references.length === 0
-    ) {
-
-        container.innerHTML = `
-
-            <div class="reference-item">
-
-                <span class="reference-number">
-                    —
+        item.innerHTML = `
+            <button type="button" class="paper-section-select" data-select-section="${escapeAttribute(section.id)}">
+                <span class="section-order">${index + 1}</span>
+                <span class="section-info">
+                    <strong>${escapeHTML(section.title)}</strong>
+                    <small>${escapeHTML(formatStatus(section.status))}</small>
                 </span>
-
-                <div>
-
-                    <h3>
-                        No references added yet
-                    </h3>
-
-                    <p>
-                        Add papers, books, websites or other sources.
-                    </p>
-
-                </div>
-
+            </button>
+            <div class="section-item-actions">
+                <button type="button" title="Move up" data-move-section-up="${escapeAttribute(section.id)}" ${index === 0 ? "disabled" : ""}>↑</button>
+                <button type="button" title="Move down" data-move-section-down="${escapeAttribute(section.id)}" ${index === paperData.sections.length - 1 ? "disabled" : ""}>↓</button>
+                <button type="button" title="Edit section" data-edit-section="${escapeAttribute(section.id)}">Edit</button>
             </div>
-
         `;
 
-    }
+        list.appendChild(item);
+    });
+
+    $$("[data-select-section]").forEach(button => {
+        button.addEventListener("click", () => {
+            selectPaperSection(button.dataset.selectSection);
+        });
+    });
+
+    $$("[data-move-section-up]").forEach(button => {
+        button.addEventListener("click", () => {
+            movePaperSection(button.dataset.moveSectionUp, -1);
+        });
+    });
+
+    $$("[data-move-section-down]").forEach(button => {
+        button.addEventListener("click", () => {
+            movePaperSection(button.dataset.moveSectionDown, 1);
+        });
+    });
+
+    $$("[data-edit-section]").forEach(button => {
+        button.addEventListener("click", () => {
+            openPaperSectionModal(button.dataset.editSection);
+        });
+    });
+
+    renderActiveSectionEditor();
+    updatePaperSummary();
+}
 
 
-    paperData.references.forEach(
-        (reference, index) => {
-
-            const item =
-                document.createElement("article");
-
-            item.className =
-                "reference-item";
+function selectPaperSection(id) {
+    activeSectionId = id;
+    renderPaperSections();
+}
 
 
-            item.innerHTML = `
+function renderActiveSectionEditor() {
+    const section = paperData.sections.find(item => item.id === activeSectionId);
 
-                <span class="reference-number">
-                    [${index + 1}]
-                </span>
+    const editor = $("#paperEditor");
+    const statusSelect = $("#activeSectionStatus");
+    const renameBtn = $("#renameActiveSection");
+    const upBtn = $("#moveActiveSectionUp");
+    const downBtn = $("#moveActiveSectionDown");
+    const deleteBtn = $("#deleteActiveSection");
+    const description = $("#activeSectionDescription");
 
-                <div>
+    if (!section) {
+        setText("activeSectionTitle", "Select a section");
+        if (description) description.textContent = "Select a paper section to start writing.";
 
-                    <h3>
-                        ${escapeHTML(reference.title)}
-                    </h3>
-
-                    <p>
-                        ${escapeHTML(reference.authors)}
-                        ·
-                        ${escapeHTML(reference.year)}
-                    </p>
-
-                    ${
-                        reference.notes
-                        ?
-                        `
-                        <p>
-                            ${escapeHTML(reference.notes)}
-                        </p>
-                        `
-                        :
-                        ""
-                    }
-
-                </div>
-
-                ${
-                    reference.url
-                    ?
-                    `
-                    <a
-                        class="reference-open"
-                        href="${escapeAttribute(
-                            normalizeURL(
-                                reference.url
-                            )
-                        )}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Open
-                    </a>
-                    `
-                    :
-                    `
-                    <button
-                        class="small-action"
-                        data-delete-reference="${reference.id}"
-                        type="button"
-                    >
-                        Delete
-                    </button>
-                    `
-                }
-
-            `;
-
-
-            container.appendChild(
-                item
-            );
-
+        if (editor) {
+            editor.value = "";
+            editor.disabled = true;
         }
-    );
-
-
-    $$("[data-delete-reference]")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    paperData.references =
-                        paperData.references.filter(
-                            item =>
-                                item.id !==
-                                button.dataset.deleteReference
-                        );
-
-
-                    renderReferences();
-
-                    updatePaperSummary();
-
-                    updatePaperDate();
-
-                }
-            );
-
+        if (statusSelect) statusSelect.disabled = true;
+        [renameBtn, upBtn, downBtn, deleteBtn].forEach(button => {
+            if (button) button.disabled = true;
         });
 
+        setText("wordCount", "0 words");
+        setText("editorSaveState", "Select a section to start writing");
 
-    updateReferenceCount();
+        return;
+    }
 
+    setText("activeSectionTitle", section.title);
+    if (description) description.textContent = section.description || "";
+
+    if (statusSelect) {
+        statusSelect.disabled = false;
+        statusSelect.value = section.status;
+
+        // Strip any previously attached listener before re-binding
+        const freshStatus = statusSelect.cloneNode(true);
+        statusSelect.replaceWith(freshStatus);
+        freshStatus.addEventListener("change", event => {
+            updateActiveSectionStatus(event.target.value);
+        });
+    }
+
+    const index = paperData.sections.findIndex(item => item.id === section.id);
+
+    if (renameBtn) renameBtn.disabled = false;
+    if (upBtn) upBtn.disabled = index <= 0;
+    if (downBtn) downBtn.disabled = index >= paperData.sections.length - 1;
+    if (deleteBtn) deleteBtn.disabled = false;
+
+    if (editor) {
+        editor.disabled = false;
+
+        const freshEditor = editor.cloneNode(true);
+        editor.replaceWith(freshEditor);
+
+        freshEditor.value = section.content;
+
+        freshEditor.addEventListener("input", () => {
+            updateSectionWordCount();
+            setText("editorSaveState", "Unsaved changes");
+        });
+    }
+
+    updateSectionWordCount();
+    setText("editorSaveState", "Saved");
 }
 
 
-function setupReferences() {
+function updateSectionWordCount() {
+    const input = $("#paperEditor");
 
-    $("#addReference")
-        ?.addEventListener(
-            "click",
-            () => {
+    if (!input) return;
 
-                clearInput(
-                    "#referenceTitle"
-                );
+    const text = String(input.value || "").trim();
+    const count = text ? text.split(/\s+/).length : 0;
 
-                clearInput(
-                    "#referenceAuthors"
-                );
-
-                clearInput(
-                    "#referenceYear"
-                );
-
-                clearInput(
-                    "#referenceDOI"
-                );
-
-                clearInput(
-                    "#referenceNotes"
-                );
-
-                openModal(
-                    "#referenceModal"
-                );
-
-            }
-        );
-
-
-    $("#closeReferenceModal")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal(
-                    "#referenceModal"
-                )
-        );
-
-
-    $("#cancelReference")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal(
-                    "#referenceModal"
-                )
-        );
-
-
-    $("#saveReference")
-        ?.addEventListener(
-            "click",
-            saveReference
-        );
-
+    setText("wordCount", `${count} words`);
 }
 
 
-function saveReference() {
+function openPaperSectionModal(id = null) {
+    editingPaperSectionId = id;
 
-    const title =
-        $("#referenceTitle")
-            ?.value.trim();
+    const section = id
+        ? paperData.sections.find(item => item.id === id)
+        : null;
 
+    setText("paperSectionModalTitle", section ? "Edit Paper Section" : "Add Paper Section");
+    setInputValue("paperSectionName", section?.title || "");
+    setInputValue("paperSectionPurpose", section?.description || "");
+    setInputValue("paperSectionStatus", section?.status || "not-started");
+
+    openModal("#paperSectionModal");
+}
+
+
+async function savePaperSection() {
+    const title = getInputValue("paperSectionName");
 
     if (!title) {
-
-        showToast(
-            "Reference title is required."
-        );
-
+        showToast("Enter a section title.");
         return;
-
     }
 
+    const previous = clone(paperData.sections);
 
-    paperData.references.push({
+    const description = getInputValue("paperSectionPurpose");
+    const status = normalizeSectionStatus(getInputValue("paperSectionStatus"));
 
-        id:
-            generateID("reference"),
+    if (editingPaperSectionId) {
+        const section = paperData.sections.find(item => item.id === editingPaperSectionId);
+        if (section) {
+            section.title = title;
+            section.description = description;
+            section.status = status;
+        }
+    }
+    else {
+        const newSection = {
+            id: generateID("section"),
+            title,
+            description,
+            status,
+            content: ""
+        };
 
-        title,
+        paperData.sections.push(newSection);
+        activeSectionId = newSection.id;
+    }
 
-        authors:
-            $("#referenceAuthors")
-                ?.value.trim()
-                || "Unknown authors",
+    touchPaperData();
+    renderPaperSections();
 
-        year:
-            $("#referenceYear")
-                ?.value.trim()
-                || "Year not specified",
+    try {
+        await savePaperData();
+        closeModal("#paperSectionModal");
+        editingPaperSectionId = null;
+        showToast("Paper section saved.");
+    }
+    catch (error) {
+        paperData.sections = previous;
+        renderPaperSections();
+        showToast(error.message || "Unable to save paper section.");
+    }
+}
 
-        url:
-            $("#referenceDOI")
-                ?.value.trim()
-                || "",
 
-        notes:
-            $("#referenceNotes")
-                ?.value.trim()
-                || ""
+function renameActiveSection() {
+    const section = paperData.sections.find(item => item.id === activeSectionId);
+    if (!section) return;
 
+    const newTitle = window.prompt("Rename section:", section.title);
+
+    if (newTitle === null) return;
+
+    const trimmed = newTitle.trim();
+    if (!trimmed) {
+        showToast("Section title can't be empty.");
+        return;
+    }
+
+    section.title = trimmed;
+
+    touchPaperData();
+    renderPaperSections();
+
+    savePaperData()
+        .then(() => showToast("Section renamed."))
+        .catch(error => showToast(error.message || "Unable to rename section."));
+}
+
+
+function openDeleteSectionModal(id) {
+    const section = paperData.sections.find(item => item.id === id);
+    if (!section) return;
+
+    deletingPaperSectionId = id;
+
+    setText(
+        "deletePaperSectionText",
+        `Delete "${section.title}"? This section and its content will be permanently removed.`
+    );
+
+    openModal("#deletePaperSectionModal");
+}
+
+
+async function confirmDeletePaperSection() {
+    if (!deletingPaperSectionId) {
+        closeModal("#deletePaperSectionModal");
+        return;
+    }
+
+    const id = deletingPaperSectionId;
+
+    closeModal("#deletePaperSectionModal");
+
+    await deletePaperSection(id);
+
+    deletingPaperSectionId = null;
+}
+
+
+async function deletePaperSection(id) {
+    const previous = clone(paperData.sections);
+
+    const index = paperData.sections.findIndex(item => item.id === id);
+
+    if (index < 0) return;
+
+    paperData.sections.splice(index, 1);
+
+    if (activeSectionId === id) {
+        activeSectionId =
+            paperData.sections[Math.max(0, index - 1)]?.id ||
+            paperData.sections[0]?.id ||
+            null;
+    }
+
+    touchPaperData();
+    renderPaperSections();
+
+    try {
+        await savePaperData();
+        showToast("Paper section deleted.");
+    }
+    catch (error) {
+        paperData.sections = previous;
+
+        if (!paperData.sections.some(item => item.id === activeSectionId)) {
+            activeSectionId = id;
+        }
+
+        renderPaperSections();
+        showToast(error.message || "Unable to delete paper section.");
+    }
+}
+
+
+async function movePaperSection(id, direction) {
+    const previous = clone(paperData.sections);
+
+    const index = paperData.sections.findIndex(item => item.id === id);
+
+    if (index < 0) return;
+
+    const newIndex = index + direction;
+
+    if (newIndex < 0 || newIndex >= paperData.sections.length) return;
+
+    [paperData.sections[index], paperData.sections[newIndex]] =
+        [paperData.sections[newIndex], paperData.sections[index]];
+
+    touchPaperData();
+    renderPaperSections();
+
+    try {
+        await savePaperData();
+    }
+    catch (error) {
+        paperData.sections = previous;
+        renderPaperSections();
+        showToast(error.message || "Unable to reorder sections.");
+    }
+}
+
+
+async function updateActiveSectionStatus(status) {
+    const previous = clone(paperData.sections);
+
+    const section = paperData.sections.find(item => item.id === activeSectionId);
+
+    if (!section) return;
+
+    section.status = normalizeSectionStatus(status);
+
+    touchPaperData();
+    renderPaperSections();
+
+    try {
+        await savePaperData();
+        showToast("Section status updated.");
+    }
+    catch (error) {
+        paperData.sections = previous;
+        renderPaperSections();
+        showToast(error.message || "Unable to update section.");
+    }
+}
+
+
+async function saveActiveSectionContent() {
+    const section = paperData.sections.find(item => item.id === activeSectionId);
+
+    if (!section) {
+        showToast("Select or create a section first.");
+        return;
+    }
+
+    const previous = section.content;
+
+    section.content = getInputValue("paperEditor");
+
+    if (section.content.trim() && section.status === "not-started") {
+        section.status = "in-progress";
+    }
+
+    touchPaperData();
+    renderPaperSections();
+
+    try {
+        await savePaperData();
+        setText("editorSaveState", "Saved");
+        showToast("Section content saved.");
+    }
+    catch (error) {
+        section.content = previous;
+        renderPaperSections();
+        showToast(error.message || "Unable to save section content.");
+    }
+}
+
+
+/* =========================================================
+   REFERENCES
+========================================================= */
+
+function setupReferences() {
+    $("#addReference")?.addEventListener("click", () => openReferenceModal(null));
+    $("#saveReference")?.addEventListener("click", saveReference);
+}
+
+
+function renderReferences() {
+    const container = $("#referenceList");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (!paperData.references.length) {
+        container.innerHTML = `<div class="empty-state">No references added yet.</div>`;
+        return;
+    }
+
+    paperData.references.forEach(reference => {
+        const item = document.createElement("article");
+        item.className = "reference-item";
+        item.innerHTML = `
+            <div class="reference-content">
+                <h4>${escapeHTML(reference.title || "Untitled Reference")}</h4>
+                <p>${escapeHTML(reference.authors || "")}</p>
+                ${reference.year ? `<span>${escapeHTML(reference.year)}</span>` : ""}
+                ${reference.doi ? `
+                    <a href="${escapeAttribute(reference.doi)}" target="_blank" rel="noopener">Open source</a>
+                ` : ""}
+            </div>
+            <div class="reference-actions">
+                <button type="button" data-edit-reference="${escapeAttribute(reference.id)}">Edit</button>
+                <button type="button" data-delete-reference="${escapeAttribute(reference.id)}">×</button>
+            </div>
+        `;
+        container.appendChild(item);
     });
 
+    $$("[data-edit-reference]").forEach(button => {
+        button.addEventListener("click", () => {
+            openReferenceModal(button.dataset.editReference);
+        });
+    });
 
+    $$("[data-delete-reference]").forEach(button => {
+        button.addEventListener("click", () => {
+            deleteReference(button.dataset.deleteReference);
+        });
+    });
+}
+
+
+function openReferenceModal(id = null) {
+    editingReferenceId = id;
+
+    const reference = id
+        ? paperData.references.find(item => item.id === id)
+        : null;
+
+    setInputValue("referenceTitle", reference?.title || "");
+    setInputValue("referenceAuthors", reference?.authors || "");
+    setInputValue("referenceYear", reference?.year || "");
+    setInputValue("referenceDOI", reference?.doi || "");
+    setInputValue("referenceNotes", reference?.notes || "");
+
+    openModal("#referenceModal");
+}
+
+
+async function saveReference() {
+    const title = getInputValue("referenceTitle");
+
+    if (!title) {
+        showToast("Enter a reference title.");
+        return;
+    }
+
+    const previous = clone(paperData.references);
+
+    const referenceData = {
+        title,
+        authors: getInputValue("referenceAuthors"),
+        year: getInputValue("referenceYear"),
+        doi: getInputValue("referenceDOI"),
+        notes: getInputValue("referenceNotes")
+    };
+
+    if (editingReferenceId) {
+        const reference = paperData.references.find(item => item.id === editingReferenceId);
+        if (reference) Object.assign(reference, referenceData);
+    }
+    else {
+        paperData.references.unshift({ id: generateID("reference"), ...referenceData });
+    }
+
+    touchPaperData();
     renderReferences();
 
-    updatePaperSummary();
-
-    updatePaperDate();
-
-    closeModal(
-        "#referenceModal"
-    );
-
-
-    showToast(
-        "Reference added."
-    );
-
+    try {
+        await savePaperData();
+        closeModal("#referenceModal");
+        editingReferenceId = null;
+        showToast("Reference saved.");
+    }
+    catch (error) {
+        paperData.references = previous;
+        renderReferences();
+        showToast(error.message || "Unable to save reference.");
+    }
 }
 
 
-function updateReferenceCount() {
+async function deleteReference(id) {
+    const previous = clone(paperData.references);
 
-    const count =
-        paperData.references.length;
+    paperData.references = paperData.references.filter(item => item.id !== id);
 
+    touchPaperData();
+    renderReferences();
 
-    $("#referenceCount")
-        ?.replaceChildren(
-            document.createTextNode(
-                count
-            )
-        );
-
-
-    $("#summaryReferences")
-        ?.replaceChildren(
-            document.createTextNode(
-                count
-            )
-        );
-
+    try {
+        await savePaperData();
+        showToast("Reference removed.");
+    }
+    catch (error) {
+        paperData.references = previous;
+        renderReferences();
+        showToast(error.message || "Unable to remove reference.");
+    }
 }
 
 
 /* =========================================================
-   22. VERSION HISTORY
+   VERSIONS (no dedicated modal in this page —
+   "New Version" prompts for a name; "Upload Draft"
+   uploads a file straight into the versions list)
 ========================================================= */
-
-function renderVersions() {
-
-    const container =
-        $("#versionGrid");
-
-
-    if (!container)
-        return;
-
-
-    container.innerHTML = "";
-
-
-    paperData.versions.forEach(
-        version => {
-
-            const card =
-                document.createElement("article");
-
-            card.className =
-                "version-card";
-
-
-            card.innerHTML = `
-
-                <div class="version-top">
-
-                    <span class="version-number">
-                        ${escapeHTML(version.version)}
-                    </span>
-
-                    <span class="version-status">
-                        ${escapeHTML(version.status.toUpperCase())}
-                    </span>
-
-                </div>
-
-                <h3>
-                    ${escapeHTML(version.title)}
-                </h3>
-
-                <p>
-                    ${escapeHTML(version.description)}
-                </p>
-
-                <div class="version-meta">
-
-                    <span>
-                        ${escapeHTML(version.date)}
-                    </span>
-
-                    <span>
-                        ${escapeHTML(version.size)}
-                    </span>
-
-                </div>
-
-            `;
-
-
-            container.appendChild(
-                card
-            );
-
-        }
-    );
-
-
-    updateVersionCount();
-
-}
-
 
 function setupVersions() {
-
-    $("#newVersion")
-        ?.addEventListener(
-            "click",
-            createVersion
-        );
-
-
-    $("#uploadDraft")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                $("#draftFileInput")
-                    ?.click();
-
-            }
-        );
-
-
-    $("#draftFileInput")
-        ?.addEventListener(
-            "change",
-            event => {
-
-                Array.from(
-                    event.target.files
-                )
-                .forEach(
-                    file =>
-                        addDraftVersion(
-                            file
-                        )
-                );
-
-
-                event.target.value = "";
-
-            }
-        );
-
+    // Wired in setupWritingWorkspace() since the buttons
+    // ("newVersion", "newVersionFromWorkspace", "uploadDraft")
+    // live in both the Writing and Versions sections.
 }
 
 
-function createVersion() {
+function renderVersions() {
+    const container = $("#versionGrid");
 
-    saveActiveEditor();
-
-
-    const nextNumber =
-        paperData.versions.length + 1;
-
-
-    paperData.versions
-        .forEach(
-            version => {
-
-                version.status =
-                    "Archived";
-
-            }
-        );
-
-
-    paperData.versions.unshift({
-
-        id:
-            generateID("version"),
-
-        version:
-            `V${nextNumber}`,
-
-        title:
-            "New Draft",
-
-        description:
-            "New paper version created from the current workspace.",
-
-        date:
-            formatDisplayDate(
-                new Date()
-            ),
-
-        status:
-            "Current",
-
-        size:
-            "—"
-
-    });
-
-
-    renderVersions();
-
-    updatePaperDate();
-
-    showToast(
-        `Version V${nextNumber} created.`
-    );
-
-}
-
-
-function addDraftVersion(file) {
-
-    const nextNumber =
-        paperData.versions.length + 1;
-
-
-    paperData.versions
-        .forEach(
-            version => {
-
-                version.status =
-                    "Archived";
-
-            }
-        );
-
-
-    paperData.versions.unshift({
-
-        id:
-            generateID("version"),
-
-        version:
-            `V${nextNumber}`,
-
-        title:
-            file.name,
-
-        description:
-            "Uploaded paper draft.",
-
-        date:
-            formatDisplayDate(
-                new Date()
-            ),
-
-        status:
-            "Current",
-
-        size:
-            formatFileSize(
-                file.size
-            )
-
-    });
-
-
-    renderVersions();
-
-    updatePaperDate();
-
-    showToast(
-        "Draft uploaded."
-    );
-
-}
-
-
-function updateVersionCount() {
-
-    const count =
-        paperData.versions.length;
-
-
-    $("#draftCount")
-        ?.replaceChildren(
-            document.createTextNode(
-                count
-            )
-        );
-
-
-    $("#summaryVersions")
-        ?.replaceChildren(
-            document.createTextNode(
-                count
-            )
-        );
-
-}
-
-
-/* =========================================================
-   23. TIMELINE
-========================================================= */
-
-function renderTimeline() {
-
-    const container =
-        $("#paperTimeline");
-
-
-    if (!container)
-        return;
-
+    if (!container) return;
 
     container.innerHTML = "";
 
+    if (!paperData.versions.length) {
+        container.innerHTML = `<div class="empty-state">No versions saved yet.</div>`;
+        return;
+    }
 
-    const sorted =
-        [...paperData.timeline]
-            .sort(
-                (a, b) =>
-                    new Date(a.date) -
-                    new Date(b.date)
-            );
+    paperData.versions.forEach(version => {
+        const item = document.createElement("article");
+        item.className = "version-item";
 
+        const isFile = version.isFile;
 
-    sorted.forEach(
-        entry => {
+        item.innerHTML = `
+            <div>
+                <strong>${escapeHTML(version.name)}</strong>
+                <small>${escapeHTML(formatRigidDate(version.createdAt))}</small>
+                ${isFile
+                    ? `<p>${escapeHTML(version.mimeType || "File")}${version.size ? ` · ${formatFileSize(version.size)}` : ""}</p>`
+                    : `<p>Snapshot of ${version.snapshot?.length || 0} section(s)</p>`
+                }
+                ${isFile && version.url ? `<a href="${escapeAttribute(version.url)}" target="_blank" rel="noopener">Open</a>` : ""}
+                ${isFile && version.downloadUrl ? `<a href="${escapeAttribute(version.downloadUrl)}" target="_blank" rel="noopener">Download</a>` : ""}
+            </div>
+            <button type="button" data-delete-version="${escapeAttribute(version.id)}">×</button>
+        `;
 
-            const item =
-                document.createElement("article");
+        container.appendChild(item);
+    });
 
-            item.className =
-                "paper-timeline-item";
-
-
-            item.innerHTML = `
-
-                <div class="paper-timeline-point"></div>
-
-                <div class="paper-timeline-date">
-                    ${formatTimelineDate(entry.date)}
-                </div>
-
-                <div class="paper-timeline-card">
-
-                    <div class="paper-timeline-top">
-
-                        <span
-                            class="paper-timeline-status ${escapeHTML(entry.status)}"
-                        >
-                            ${escapeHTML(
-                                entry.status.toUpperCase()
-                            )}
-                        </span>
-
-                        <div class="paper-timeline-actions">
-
-                            <button
-                                type="button"
-                                data-edit-paper-timeline="${entry.id}"
-                                title="Edit"
-                            >
-                                ✎
-                            </button>
-
-                            <button
-                                type="button"
-                                data-delete-paper-timeline="${entry.id}"
-                                title="Delete"
-                            >
-                                ×
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <h3>
-                        ${escapeHTML(entry.title)}
-                    </h3>
-
-                    <p>
-                        ${escapeHTML(entry.description)}
-                    </p>
-
-                    <span class="paper-timeline-duration">
-                        ${escapeHTML(entry.duration)}
-                    </span>
-
-                </div>
-
-            `;
-
-
-            container.appendChild(
-                item
-            );
-
-        }
-    );
-
-
-    bindTimelineActions();
-
+    $$("[data-delete-version]").forEach(button => {
+        button.addEventListener("click", () => {
+            deleteVersion(button.dataset.deleteVersion);
+        });
+    });
 }
 
 
-function bindTimelineActions() {
+async function createNewVersion() {
+    const suggestedName = `Version ${paperData.versions.length + 1}`;
+    const name = window.prompt("Version name:", suggestedName);
 
-    $$("[data-edit-paper-timeline]")
-        .forEach(button => {
+    if (name === null) return;
 
-            button.addEventListener(
-                "click",
-                () =>
-                    editTimeline(
-                        button.dataset.editPaperTimeline
-                    )
-            );
+    const trimmed = name.trim() || suggestedName;
 
-        });
+    const previous = clone(paperData.versions);
+
+    paperData.versions.unshift({
+        id: generateID("version"),
+        name: trimmed,
+        isFile: false,
+        createdAt: new Date().toISOString(),
+        snapshot: clone(paperData.sections)
+    });
+
+    touchPaperData();
+    renderVersions();
+
+    try {
+        await savePaperData();
+        showToast("Version saved.");
+    }
+    catch (error) {
+        paperData.versions = previous;
+        renderVersions();
+        showToast(error.message || "Unable to save version.");
+    }
+}
 
 
-    $$("[data-delete-paper-timeline]")
-        .forEach(button => {
+async function uploadDraftFiles(files) {
+    for (const file of files) {
+        await uploadSingleDraftFile(file);
+    }
+}
 
-            button.addEventListener(
-                "click",
-                () =>
-                    deleteTimeline(
-                        button.dataset.deletePaperTimeline
-                    )
-            );
 
-        });
+async function uploadSingleDraftFile(file) {
+    if (!currentWorkId) {
+        showToast("Paper ID is missing.");
+        return;
+    }
 
+    if (!window.sb) {
+        showToast("Supabase client is unavailable.");
+        return;
+    }
+
+    const pendingId = generateID("version");
+
+    const pendingRecord = {
+        id: pendingId,
+        name: file.name,
+        isFile: true,
+        mimeType: file.type || "application/octet-stream",
+        size: file.size,
+        createdAt: new Date().toISOString(),
+        uploadStatus: "uploading",
+        url: ""
+    };
+
+    paperData.versions.unshift(pendingRecord);
+    renderVersions();
+
+    try {
+        const { data: { session }, error: sessionError } =
+            await window.sb.auth.getSession();
+
+        if (sessionError || !session) {
+            throw new Error("You must be logged in to upload files.");
+        }
+
+        const formData = new FormData();
+        formData.append("work_id", currentWorkId);
+        formData.append("file", file, file.name);
+
+        const response = await fetch(
+            `${SUPABASE_FUNCTIONS_URL}/upload-rigid-file`,
+            {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${session.access_token}` },
+                body: formData
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.error || "Unable to upload draft file.");
+        }
+
+        const uploaded = result.file || {};
+
+        const index = paperData.versions.findIndex(item => item.id === pendingId);
+
+        const finalRecord = {
+            id: pendingId,
+            driveFileId: uploaded.id || "",
+            name: uploaded.name || file.name,
+            isFile: true,
+            mimeType: uploaded.mimeType || file.type || "application/octet-stream",
+            size: Number(uploaded.size || file.size || 0),
+            url: uploaded.webViewLink || "",
+            downloadUrl: uploaded.webContentLink || "",
+            createdAt: uploaded.createdAt || pendingRecord.createdAt,
+            uploadStatus: "uploaded"
+        };
+
+        if (index === -1) {
+            paperData.versions.unshift(finalRecord);
+        }
+        else {
+            paperData.versions[index] = finalRecord;
+        }
+
+        touchPaperData();
+        renderVersions();
+
+        await savePaperData();
+
+        showToast(`"${finalRecord.name}" uploaded.`);
+    }
+    catch (error) {
+        paperData.versions = paperData.versions.filter(item => item.id !== pendingId);
+        renderVersions();
+        showToast(error.message || `Unable to upload "${file.name}".`);
+    }
+}
+
+
+async function deleteVersion(id) {
+    const previous = clone(paperData.versions);
+
+    paperData.versions = paperData.versions.filter(item => item.id !== id);
+
+    touchPaperData();
+    renderVersions();
+
+    try {
+        await savePaperData();
+        showToast("Version removed.");
+    }
+    catch (error) {
+        paperData.versions = previous;
+        renderVersions();
+        showToast(error.message || "Unable to remove version.");
+    }
 }
 
 
 /* =========================================================
-   24. TIMELINE SETUP
+   TIMELINE
 ========================================================= */
 
 function setupTimeline() {
-
-    $("#addTimeline")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                editingTimelineId =
-                    null;
-
-                resetTimelineForm();
-
-                $("#paperTimelineDate").value =
-                    getTodayISO();
-
-                openModal(
-                    "#paperTimelineModal"
-                );
-
-            }
-        );
-
-
-    $("#closePaperTimelineModal")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal(
-                    "#paperTimelineModal"
-                )
-        );
-
-
-    $("#cancelPaperTimeline")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal(
-                    "#paperTimelineModal"
-                )
-        );
-
-
-    $("#savePaperTimeline")
-        ?.addEventListener(
-            "click",
-            saveTimeline
-        );
-
+    $("#addPaperTimeline")?.addEventListener("click", () => openTimelineModal(null));
+    $("#savePaperTimeline")?.addEventListener("click", saveTimelineItem);
 }
 
 
-function saveTimeline() {
+function renderTimeline() {
+    const container = $("#paperTimelineList");
 
-    const date =
-        $("#paperTimelineDate")
-            ?.value;
+    if (!container) return;
 
+    container.innerHTML = "";
 
-    const status =
-        $("#paperTimelineStatus")
-            ?.value;
-
-
-    const title =
-        $("#paperTimelineTitle")
-            ?.value.trim();
-
-
-    const description =
-        $("#paperTimelineDescription")
-            ?.value.trim();
-
-
-    const duration =
-        $("#paperTimelineDuration")
-            ?.value.trim();
-
-
-    const priority =
-        $("#paperTimelinePriority")
-            ?.value;
-
-
-    if (!date || !title) {
-
-        showToast(
-            "Date and task are required."
-        );
-
+    if (!paperData.timeline.length) {
+        container.innerHTML = `<div class="empty-state">No timeline items added.</div>`;
         return;
-
     }
 
+    paperData.timeline.forEach(item => {
+        const element = document.createElement("article");
+        element.className = `timeline-item ${escapeHTML(item.status || "planned")}`;
+        element.innerHTML = `
+            <div class="timeline-date">${escapeHTML(formatRigidDate(item.date))}</div>
+            <div class="timeline-content">
+                <strong>${escapeHTML(item.title || "Untitled Task")}</strong>
+                ${item.description ? `<p>${escapeHTML(item.description)}</p>` : ""}
+                <small>
+                    ${escapeHTML(formatStatus(item.status || "planned"))}
+                    ${item.priority && item.priority !== "normal" ? ` · ${escapeHTML(formatStatus(item.priority))} priority` : ""}
+                    ${item.duration ? ` · ${escapeHTML(item.duration)}` : ""}
+                </small>
+            </div>
+            <div class="timeline-actions">
+                <button type="button" data-edit-timeline="${escapeAttribute(item.id)}">Edit</button>
+                <button type="button" data-delete-timeline="${escapeAttribute(item.id)}">×</button>
+            </div>
+        `;
+        container.appendChild(element);
+    });
+
+    $$("[data-edit-timeline]").forEach(button => {
+        button.addEventListener("click", () => {
+            openTimelineModal(button.dataset.editTimeline);
+        });
+    });
+
+    $$("[data-delete-timeline]").forEach(button => {
+        button.addEventListener("click", () => {
+            deleteTimelineItem(button.dataset.deleteTimeline);
+        });
+    });
+}
+
+
+function openTimelineModal(id = null) {
+    editingTimelineId = id;
+
+    const item = id
+        ? paperData.timeline.find(entry => entry.id === id)
+        : null;
+
+    setText("paperTimelineModalTitle", item ? "Edit Timeline Entry" : "Add Timeline Entry");
+    setInputValue("paperTimelineTitle", item?.title || "");
+    setInputValue("paperTimelineDescription", item?.description || "");
+    setInputValue("paperTimelineDate", item?.date || getTodayISO());
+    setInputValue("paperTimelineStatus", item?.status || "planned");
+    setInputValue("paperTimelineDuration", item?.duration || "");
+    setInputValue("paperTimelinePriority", item?.priority || "normal");
+
+    openModal("#paperTimelineModal");
+}
+
+
+async function saveTimelineItem() {
+    const title = getInputValue("paperTimelineTitle");
+
+    if (!title) {
+        showToast("Enter a timeline title.");
+        return;
+    }
+
+    const previous = clone(paperData.timeline);
+
+    const timelineData = {
+        title,
+        description: getInputValue("paperTimelineDescription"),
+        date: getInputValue("paperTimelineDate") || getTodayISO(),
+        status: getInputValue("paperTimelineStatus") || "planned",
+        duration: getInputValue("paperTimelineDuration"),
+        priority: getInputValue("paperTimelinePriority") || "normal"
+    };
 
     if (editingTimelineId) {
-
-        const entry =
-            paperData.timeline.find(
-                item =>
-                    item.id ===
-                    editingTimelineId
-            );
-
-
-        if (entry) {
-
-            entry.date =
-                date;
-
-            entry.status =
-                status;
-
-            entry.title =
-                title;
-
-            entry.description =
-                description ||
-                "Paper task.";
-
-            entry.duration =
-                duration ||
-                "Not specified";
-
-            entry.priority =
-                priority;
-
-        }
-
-
-        showToast(
-            "Timeline updated."
-        );
-
+        const item = paperData.timeline.find(entry => entry.id === editingTimelineId);
+        if (item) Object.assign(item, timelineData);
     }
-
     else {
-
-        paperData.timeline.push({
-
-            id:
-                generateID("timeline"),
-
-            date,
-
-            status,
-
-            title,
-
-            description:
-                description ||
-                "Paper task.",
-
-            duration:
-                duration ||
-                "Not specified",
-
-            priority
-
-        });
-
-
-        showToast(
-            "Timeline added."
-        );
-
+        paperData.timeline.push({ id: generateID("timeline"), ...timelineData });
     }
 
+    paperData.timeline.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    syncFutureWork();
-
+    touchPaperData();
     renderTimeline();
 
-    renderFutureWork();
-
-    updatePaperDate();
-
-    closeModal(
-        "#paperTimelineModal"
-    );
-
-    resetTimelineForm();
-
+    try {
+        await savePaperData();
+        closeModal("#paperTimelineModal");
+        editingTimelineId = null;
+        showToast("Timeline saved.");
+    }
+    catch (error) {
+        paperData.timeline = previous;
+        renderTimeline();
+        showToast(error.message || "Unable to save timeline.");
+    }
 }
 
 
-/* =========================================================
-   25. EDIT TIMELINE
-========================================================= */
+async function deleteTimelineItem(id) {
+    const previous = clone(paperData.timeline);
 
-function editTimeline(id) {
+    paperData.timeline = paperData.timeline.filter(item => item.id !== id);
 
-    const entry =
-        paperData.timeline.find(
-            item =>
-                item.id === id
-        );
-
-
-    if (!entry)
-        return;
-
-
-    editingTimelineId =
-        id;
-
-
-    $("#paperTimelineDate").value =
-        entry.date;
-
-
-    $("#paperTimelineStatus").value =
-        entry.status;
-
-
-    $("#paperTimelineTitle").value =
-        entry.title;
-
-
-    $("#paperTimelineDescription").value =
-        entry.description;
-
-
-    $("#paperTimelineDuration").value =
-        entry.duration || "";
-
-
-    $("#paperTimelinePriority").value =
-        entry.priority || "normal";
-
-
-    openModal(
-        "#paperTimelineModal"
-    );
-
-}
-
-
-/* =========================================================
-   26. DELETE TIMELINE
-========================================================= */
-
-function deleteTimeline(id) {
-
-    if (
-        !window.confirm(
-            "Delete this timeline entry?"
-        )
-    )
-        return;
-
-
-    paperData.timeline =
-        paperData.timeline.filter(
-            item =>
-                item.id !== id
-        );
-
-
-    syncFutureWork();
-
+    touchPaperData();
     renderTimeline();
 
-    renderFutureWork();
-
-    updatePaperDate();
-
-    showToast(
-        "Timeline entry deleted."
-    );
-
-}
-
-
-function resetTimelineForm() {
-
-    clearInput(
-        "#paperTimelineDate"
-    );
-
-    clearInput(
-        "#paperTimelineTitle"
-    );
-
-    clearInput(
-        "#paperTimelineDescription"
-    );
-
-    clearInput(
-        "#paperTimelineDuration"
-    );
-
-
-    if (
-        $("#paperTimelineStatus")
-    )
-        $("#paperTimelineStatus").value =
-            "planned";
-
-
-    if (
-        $("#paperTimelinePriority")
-    )
-        $("#paperTimelinePriority").value =
-            "normal";
-
+    try {
+        await savePaperData();
+        showToast("Timeline item removed.");
+    }
+    catch (error) {
+        paperData.timeline = previous;
+        renderTimeline();
+        showToast(error.message || "Unable to remove timeline item.");
+    }
 }
 
 
 /* =========================================================
-   27. FUTURE WORK
+   FUTURE WORK (no dedicated modal in this page — uses
+   simple prompts for title / description)
 ========================================================= */
 
-function syncFutureWork() {
-
-    paperData.futureWork =
-        paperData.timeline
-            .filter(
-                item =>
-                    item.status ===
-                    "planned"
-            )
-            .map(
-                item => ({
-
-                    id:
-                        item.id,
-
-                    date:
-                        item.date,
-
-                    title:
-                        item.title,
-
-                    description:
-                        item.description,
-
-                    priority:
-                        item.priority
-
-                })
-            );
-
+function setupFutureWork() {
+    $("#addFutureWork")?.addEventListener("click", () => openFutureWorkPrompt(null));
 }
 
 
 function renderFutureWork() {
+    const container = $("#futureWorkList");
 
-    const container =
-        $("#futureWorkList");
-
-
-    if (!container)
-        return;
-
-
-    syncFutureWork();
-
+    if (!container) return;
 
     container.innerHTML = "";
 
+    if (!paperData.futureWork.length) {
+        container.innerHTML = `<div class="empty-state">No future work added.</div>`;
+        return;
+    }
 
-    paperData.futureWork
-        .sort(
-            (a, b) =>
-                new Date(a.date) -
-                new Date(b.date)
-        )
-        .forEach(
-            item => {
+    paperData.futureWork.forEach(item => {
+        const element = document.createElement("article");
+        element.className = "future-work-item";
+        element.innerHTML = `
+            <div>
+                <strong>${escapeHTML(item.title || "Untitled Future Work")}</strong>
+                ${item.description ? `<p>${escapeHTML(item.description)}</p>` : ""}
+            </div>
+            <div>
+                <button type="button" data-edit-future-work="${escapeAttribute(item.id)}">Edit</button>
+                <button type="button" data-delete-future-work="${escapeAttribute(item.id)}">×</button>
+            </div>
+        `;
+        container.appendChild(element);
+    });
 
-                const element =
-                    document.createElement("div");
+    $$("[data-edit-future-work]").forEach(button => {
+        button.addEventListener("click", () => {
+            openFutureWorkPrompt(button.dataset.editFutureWork);
+        });
+    });
 
-                element.className =
-                    "future-work-item";
-
-
-                element.innerHTML = `
-
-                    <div class="future-date">
-                        ${formatTimelineDate(item.date)}
-                    </div>
-
-                    <div>
-
-                        <strong>
-                            ${escapeHTML(item.title)}
-                        </strong>
-
-                        <p>
-                            ${escapeHTML(item.description)}
-                        </p>
-
-                    </div>
-
-                `;
-
-
-                container.appendChild(
-                    element
-                );
-
-            }
-        );
-
-
-    const count =
-        $("#futureCount");
-
-
-    if (count)
-        count.textContent =
-            String(
-                paperData.futureWork.length
-            ).padStart(2, "0");
-
+    $$("[data-delete-future-work]").forEach(button => {
+        button.addEventListener("click", () => {
+            deleteFutureWork(button.dataset.deleteFutureWork);
+        });
+    });
 }
 
 
-function setupFutureWork() {
+async function openFutureWorkPrompt(id = null) {
+    editingFutureWorkId = id;
 
-    $("#addFutureWork")
-        ?.addEventListener(
-            "click",
-            () => {
+    const existing = id
+        ? paperData.futureWork.find(entry => entry.id === id)
+        : null;
 
-                editingTimelineId =
-                    null;
+    const title = window.prompt("Future work title:", existing?.title || "");
 
-                resetTimelineForm();
+    if (title === null) return;
 
-                $("#paperTimelineDate").value =
-                    getTodayISO();
+    const trimmedTitle = title.trim();
+
+    if (!trimmedTitle) {
+        showToast("Enter future work.");
+        return;
+    }
+
+    const description = window.prompt(
+        "Description (optional):",
+        existing?.description || ""
+    );
+
+    if (description === null) return;
+
+    await saveFutureWork({
+        title: trimmedTitle,
+        description: description.trim()
+    });
+}
 
 
-                $("#paperTimelineStatus").value =
-                    "planned";
+async function saveFutureWork(futureWorkData) {
+    const previous = clone(paperData.futureWork);
+
+    if (editingFutureWorkId) {
+        const item = paperData.futureWork.find(entry => entry.id === editingFutureWorkId);
+        if (item) Object.assign(item, futureWorkData);
+    }
+    else {
+        paperData.futureWork.push({ id: generateID("future"), ...futureWorkData });
+    }
+
+    touchPaperData();
+    renderFutureWork();
+
+    try {
+        await savePaperData();
+        editingFutureWorkId = null;
+        showToast("Future work saved.");
+    }
+    catch (error) {
+        paperData.futureWork = previous;
+        renderFutureWork();
+        showToast(error.message || "Unable to save future work.");
+    }
+}
 
 
-                openModal(
-                    "#paperTimelineModal"
-                );
+async function deleteFutureWork(id) {
+    const previous = clone(paperData.futureWork);
 
-            }
-        );
+    paperData.futureWork = paperData.futureWork.filter(item => item.id !== id);
 
+    touchPaperData();
+    renderFutureWork();
+
+    try {
+        await savePaperData();
+        showToast("Future work removed.");
+    }
+    catch (error) {
+        paperData.futureWork = previous;
+        renderFutureWork();
+        showToast(error.message || "Unable to remove future work.");
+    }
 }
 
 
 /* =========================================================
-   28. UPLOADS
+   ATTACHMENTS
+
+   Files are uploaded through the "upload-rigid-file"
+   Supabase Edge Function, which stores them in the
+   paper's Google Drive "Attachments" folder and returns
+   the Drive file metadata. That metadata (not the raw
+   file) is what gets saved into paperData.attachments
+   through update-rigid-work-data.
+
+   Links are stored as attachment records too, but with
+   type "link" and no Drive file behind them.
 ========================================================= */
 
 function setupUploads() {
+    const fileInput = $("#paperFileInput");
+    const uploadButton = $("#uploadPaperFile");
+    const uploadZone = $("#paperUploadZone");
 
-    const input =
-        $("#paperFileInput");
+    uploadButton?.addEventListener("click", () => fileInput?.click());
 
-    const button =
-        $("#uploadPaperFile");
+    fileInput?.addEventListener("change", async event => {
+        const files = Array.from(event.target.files || []);
+        if (!files.length) return;
+        await uploadAttachments(files);
+        fileInput.value = "";
+    });
 
-    const zone =
-        $("#paperUploadZone");
+    if (!uploadZone) return;
 
-
-    button?.addEventListener(
-        "click",
-        () =>
-            input?.click()
-    );
-
-
-    zone?.addEventListener(
-        "click",
-        () =>
-            input?.click()
-    );
-
-
-    input?.addEventListener(
-        "change",
-        event => {
-
-            handleFiles(
-                event.target.files
-            );
-
-            event.target.value = "";
-
-        }
-    );
-
-
-    zone?.addEventListener(
-        "dragover",
-        event => {
-
+    ["dragenter", "dragover"].forEach(eventName => {
+        uploadZone.addEventListener(eventName, event => {
             event.preventDefault();
+            event.stopPropagation();
+            uploadZone.classList.add("drag-active");
+        });
+    });
 
-            zone.classList.add(
-                "dragging"
-            );
-
-        }
-    );
-
-
-    zone?.addEventListener(
-        "dragleave",
-        () =>
-            zone.classList.remove(
-                "dragging"
-            )
-    );
-
-
-    zone?.addEventListener(
-        "drop",
-        event => {
-
+    ["dragleave", "dragend"].forEach(eventName => {
+        uploadZone.addEventListener(eventName, event => {
             event.preventDefault();
+            event.stopPropagation();
+            uploadZone.classList.remove("drag-active");
+        });
+    });
 
-            zone.classList.remove(
-                "dragging"
-            );
+    uploadZone.addEventListener("drop", async event => {
+        event.preventDefault();
+        event.stopPropagation();
+        uploadZone.classList.remove("drag-active");
 
+        const files = Array.from(event.dataTransfer?.files || []);
+        if (!files.length) return;
 
-            handleFiles(
-                event.dataTransfer.files
-            );
+        await uploadAttachments(files);
+    });
 
-        }
-    );
-
+    uploadZone.addEventListener("click", () => fileInput?.click());
 }
 
 
-function handleFiles(files) {
+async function uploadAttachments(files) {
+    for (const file of files) {
+        await uploadSingleAttachment(file);
+    }
+}
 
-    if (!files?.length)
+
+async function uploadSingleAttachment(file) {
+    if (!currentWorkId) {
+        showToast("Paper ID is missing.");
         return;
+    }
 
+    if (!window.sb) {
+        showToast("Supabase client is unavailable.");
+        return;
+    }
 
-    Array.from(files)
-        .forEach(
-            file => {
+    const pendingId = generateID("attachment");
 
-                const url =
-                    URL.createObjectURL(
-                        file
-                    );
+    const pendingRecord = {
+        id: pendingId,
+        name: file.name,
+        type: "file",
+        mimeType: file.type || "application/octet-stream",
+        size: file.size,
+        createdAt: new Date().toISOString(),
+        uploadStatus: "uploading",
+        url: ""
+    };
 
+    paperData.attachments.push(pendingRecord);
+    renderAttachments();
 
-                paperData.attachments.unshift({
+    try {
+        const { data: { session }, error: sessionError } =
+            await window.sb.auth.getSession();
 
-                    id:
-                        generateID("file"),
+        if (sessionError || !session) {
+            throw new Error("You must be logged in to upload files.");
+        }
 
-                    type:
-                        "file",
+        const formData = new FormData();
+        formData.append("work_id", currentWorkId);
+        formData.append("file", file, file.name);
 
-                    name:
-                        file.name,
-
-                    fileType:
-                        getFileType(file),
-
-                    size:
-                        formatFileSize(
-                            file.size
-                        ),
-
-                    url,
-
-                    description:
-                        ""
-
-                });
-
+        const response = await fetch(
+            `${SUPABASE_FUNCTIONS_URL}/upload-rigid-file`,
+            {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${session.access_token}` },
+                body: formData
             }
         );
 
+        const result = await response.json();
 
-    renderAttachments();
-
-    updatePaperDate();
-
-    showToast(
-        `${files.length} file${files.length > 1 ? "s" : ""} added.`
-    );
-
-}
-
-
-/* =========================================================
-   29. ATTACHMENTS
-========================================================= */
-
-function renderAttachments() {
-
-    const container =
-        $("#paperAttachmentGrid");
-
-
-    if (!container)
-        return;
-
-
-    container.innerHTML = "";
-
-
-    if (
-        paperData.attachments.length === 0
-    ) {
-
-        container.innerHTML = `
-
-            <div
-                class="attachment-card"
-                style="
-                    grid-column:1/-1;
-                    text-align:center;
-                    padding:20px;
-                    color:#71839a;
-                "
-            >
-                No files or links added yet.
-            </div>
-
-        `;
-
-        return;
-
-    }
-
-
-    paperData.attachments.forEach(
-        attachment => {
-
-            if (
-                attachment.type ===
-                "link"
-            ) {
-
-                renderLinkAttachment(
-                    container,
-                    attachment
-                );
-
-            }
-
-            else {
-
-                renderFileAttachment(
-                    container,
-                    attachment
-                );
-
-            }
-
+        if (!response.ok || !result.success) {
+            throw new Error(result.error || "Unable to upload file to Google Drive.");
         }
-    );
 
-}
+        const uploaded = result.file || {};
 
+        const index = paperData.attachments.findIndex(item => item.id === pendingId);
 
-function renderFileAttachment(
-    container,
-    attachment
-) {
+        const finalRecord = {
+            id: pendingId,
+            driveFileId: uploaded.id || "",
+            name: uploaded.name || file.name,
+            type: "file",
+            mimeType: uploaded.mimeType || file.type || "application/octet-stream",
+            size: Number(uploaded.size || file.size || 0),
+            url: uploaded.webViewLink || "",
+            downloadUrl: uploaded.webContentLink || "",
+            folderId: uploaded.folderId || "",
+            createdAt: uploaded.createdAt || pendingRecord.createdAt,
+            uploadStatus: "uploaded"
+        };
 
-    const card =
-        document.createElement("article");
+        if (index === -1) {
+            paperData.attachments.push(finalRecord);
+        }
+        else {
+            paperData.attachments[index] = finalRecord;
+        }
 
-    card.className =
-        "attachment-card";
+        touchPaperData();
+        renderAttachments();
 
+        await savePaperData();
 
-    card.innerHTML = `
-
-        <div class="attachment-preview">
-
-            ${createPreview(attachment)}
-
-        </div>
-
-        <strong>
-            ${escapeHTML(attachment.name)}
-        </strong>
-
-        <p>
-            ${escapeHTML(attachment.fileType)}
-            ·
-            ${escapeHTML(attachment.size)}
-        </p>
-
-        <div class="attachment-actions">
-
-            <button
-                type="button"
-                data-open-paper-attachment="${attachment.id}"
-            >
-                Open
-            </button>
-
-            <button
-                type="button"
-                data-delete-paper-attachment="${attachment.id}"
-            >
-                Delete
-            </button>
-
-        </div>
-
-    `;
-
-
-    container.appendChild(
-        card
-    );
-
-
-    bindAttachmentButtons(
-        card
-    );
-
-}
-
-
-function createPreview(
-    attachment
-) {
-
-    if (
-        attachment.fileType ===
-        "IMAGE"
-    ) {
-
-        return `
-
-            <img
-                src="${escapeAttribute(attachment.url)}"
-                alt="${escapeHTML(attachment.name)}"
-            >
-
-        `;
-
+        showToast(`"${finalRecord.name}" uploaded.`);
     }
-
-
-    if (
-        attachment.fileType ===
-        "VIDEO"
-    ) {
-
-        return `
-
-            <video
-                src="${escapeAttribute(attachment.url)}"
-                muted
-            ></video>
-
-        `;
-
+    catch (error) {
+        paperData.attachments = paperData.attachments.filter(item => item.id !== pendingId);
+        renderAttachments();
+        showToast(error.message || `Unable to upload "${file.name}".`);
     }
-
-
-    return escapeHTML(
-        attachment.fileType
-    );
-
 }
 
 
 /* =========================================================
-   30. LINKS
+   LINKS
 ========================================================= */
 
 function setupLinks() {
-
-    $("#addPaperLink")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                clearInput(
-                    "#paperLinkTitle"
-                );
-
-                clearInput(
-                    "#paperLinkURL"
-                );
-
-                clearInput(
-                    "#paperLinkDescription"
-                );
-
-                openModal(
-                    "#paperLinkModal"
-                );
-
-            }
-        );
-
-
-    $("#closePaperLinkModal")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal(
-                    "#paperLinkModal"
-                )
-        );
-
-
-    $("#cancelPaperLink")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal(
-                    "#paperLinkModal"
-                )
-        );
-
-
-    $("#savePaperLink")
-        ?.addEventListener(
-            "click",
-            savePaperLink
-        );
-
-}
-
-
-function savePaperLink() {
-
-    const title =
-        $("#paperLinkTitle")
-            ?.value.trim();
-
-
-    const url =
-        $("#paperLinkURL")
-            ?.value.trim();
-
-
-    const description =
-        $("#paperLinkDescription")
-            ?.value.trim();
-
-
-    if (!title || !url) {
-
-        showToast(
-            "Title and URL are required."
-        );
-
-        return;
-
-    }
-
-
-    paperData.attachments.unshift({
-
-        id:
-            generateID("link"),
-
-        type:
-            "link",
-
-        name:
-            title,
-
-        url:
-            normalizeURL(url),
-
-        description:
-            description ||
-            "Paper resource."
-
+    $("#addPaperLink")?.addEventListener("click", () => {
+        setInputValue("paperLinkTitle", "");
+        setInputValue("paperLinkURL", "");
+        setInputValue("paperLinkDescription", "");
+        openModal("#paperLinkModal");
     });
 
-
-    renderAttachments();
-
-    updatePaperDate();
-
-    closeModal(
-        "#paperLinkModal"
-    );
-
-
-    showToast(
-        "Link added."
-    );
-
+    $("#savePaperLink")?.addEventListener("click", saveLink);
 }
 
 
-/* =========================================================
-   31. LINK ATTACHMENT
-========================================================= */
+async function saveLink() {
+    const url = getInputValue("paperLinkURL");
 
-function renderLinkAttachment(
-    container,
-    attachment
-) {
-
-    const card =
-        document.createElement("article");
-
-    card.className =
-        "attachment-card";
-
-
-    card.innerHTML = `
-
-        <div
-            class="attachment-preview"
-            style="
-                flex-direction:column;
-                gap:4px;
-            "
-        >
-
-            <span
-                style="
-                    font-size:18px;
-                "
-            >
-                🔗
-            </span>
-
-            <span
-                style="
-                    font-size:6px;
-                "
-            >
-                WEB LINK
-            </span>
-
-        </div>
-
-
-        <strong>
-            ${escapeHTML(attachment.name)}
-        </strong>
-
-
-        <p>
-            ${escapeHTML(
-                attachment.description
-            )}
-        </p>
-
-
-        <div class="attachment-actions">
-
-            <button
-                type="button"
-                data-open-paper-attachment="${attachment.id}"
-            >
-                Open
-            </button>
-
-            <button
-                type="button"
-                data-delete-paper-attachment="${attachment.id}"
-            >
-                Delete
-            </button>
-
-        </div>
-
-    `;
-
-
-    container.appendChild(
-        card
-    );
-
-
-    bindAttachmentButtons(
-        card
-    );
-
-}
-
-
-/* =========================================================
-   32. ATTACHMENT BUTTONS
-========================================================= */
-
-function bindAttachmentButtons(
-    container
-) {
-
-    container
-        .querySelectorAll(
-            "[data-open-paper-attachment]"
-        )
-        .forEach(
-            button => {
-
-                button.addEventListener(
-                    "click",
-                    () =>
-                        openAttachment(
-                            button.dataset
-                                .openPaperAttachment
-                        )
-                );
-
-            }
-        );
-
-
-    container
-        .querySelectorAll(
-            "[data-delete-paper-attachment]"
-        )
-        .forEach(
-            button => {
-
-                button.addEventListener(
-                    "click",
-                    () =>
-                        deleteAttachment(
-                            button.dataset
-                                .deletePaperAttachment
-                        )
-                );
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   33. OPEN / DELETE ATTACHMENT
-========================================================= */
-
-function openAttachment(id) {
-
-    const attachment =
-        paperData.attachments.find(
-            item =>
-                item.id === id
-        );
-
-
-    if (
-        attachment?.url
-    ) {
-
-        window.open(
-            attachment.url,
-            "_blank",
-            "noopener,noreferrer"
-        );
-
+    if (!url) {
+        showToast("Enter a link URL.");
+        return;
     }
 
-}
+    const previous = clone(paperData.attachments);
 
+    paperData.attachments.push({
+        id: generateID("link"),
+        name: getInputValue("paperLinkTitle") || url,
+        description: getInputValue("paperLinkDescription"),
+        type: "link",
+        url,
+        createdAt: new Date().toISOString(),
+        uploadStatus: "uploaded"
+    });
 
-function deleteAttachment(id) {
-
-    const attachment =
-        paperData.attachments.find(
-            item =>
-                item.id === id
-        );
-
-
-    if (!attachment)
-        return;
-
-
-    if (
-        attachment.type === "file" &&
-        attachment.url
-    ) {
-
-        URL.revokeObjectURL(
-            attachment.url
-        );
-
-    }
-
-
-    paperData.attachments =
-        paperData.attachments.filter(
-            item =>
-                item.id !== id
-        );
-
-
+    touchPaperData();
     renderAttachments();
 
-    updatePaperDate();
-
-    showToast(
-        "Attachment deleted."
-    );
-
+    try {
+        await savePaperData();
+        closeModal("#paperLinkModal");
+        showToast("Link saved.");
+    }
+    catch (error) {
+        paperData.attachments = previous;
+        renderAttachments();
+        showToast(error.message || "Unable to save link.");
+    }
 }
 
 
 /* =========================================================
-   34. FEEDBACK
+   RENDER ATTACHMENTS
 ========================================================= */
 
-function renderFeedback() {
+function formatFileSize(bytes) {
+    const size = Number(bytes) || 0;
 
-    const container =
-        $("#feedbackGrid");
+    if (!size) return "";
+
+    const units = ["B", "KB", "MB", "GB"];
+
+    let value = size;
+    let unitIndex = 0;
+
+    while (value >= 1024 && unitIndex < units.length - 1) {
+        value /= 1024;
+        unitIndex++;
+    }
+
+    return `${value.toFixed(value >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
+}
 
 
-    if (!container)
-        return;
+function renderAttachments() {
+    const container = $("#paperAttachmentGrid");
 
+    if (!container) return;
 
     container.innerHTML = "";
 
-
-    paperData.feedback.forEach(
-        feedback => {
-
-            const card =
-                document.createElement("article");
-
-            card.className =
-                "feedback-card";
-
-
-            card.innerHTML = `
-
-                <div class="feedback-top">
-
-                    <span class="feedback-person">
-                        ${escapeHTML(feedback.person)}
-                    </span>
-
-                    <span class="feedback-type">
-                        ${escapeHTML(feedback.type)}
-                    </span>
-
-                </div>
-
-                <p>
-                    ${escapeHTML(feedback.content)}
-                </p>
-
-                <span class="feedback-date">
-                    ${escapeHTML(feedback.date)}
-                </span>
-
-            `;
-
-
-            container.appendChild(
-                card
-            );
-
-        }
-    );
-
-}
-
-
-function setupFeedback() {
-
-    $("#addFeedback")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                clearInput(
-                    "#feedbackPerson"
-                );
-
-                clearInput(
-                    "#feedbackDate"
-                );
-
-                clearInput(
-                    "#feedbackContent"
-                );
-
-
-                $("#feedbackDate").value =
-                    getTodayISO();
-
-
-                openModal(
-                    "#feedbackModal"
-                );
-
-            }
-        );
-
-
-    $("#closeFeedbackModal")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal(
-                    "#feedbackModal"
-                )
-        );
-
-
-    $("#cancelFeedback")
-        ?.addEventListener(
-            "click",
-            () =>
-                closeModal(
-                    "#feedbackModal"
-                )
-        );
-
-
-    $("#saveFeedback")
-        ?.addEventListener(
-            "click",
-            saveFeedback
-        );
-
-}
-
-
-function saveFeedback() {
-
-    const person =
-        $("#feedbackPerson")
-            ?.value.trim();
-
-
-    const date =
-        $("#feedbackDate")
-            ?.value;
-
-
-    const type =
-        $("#feedbackType")
-            ?.value;
-
-
-    const content =
-        $("#feedbackContent")
-            ?.value.trim();
-
-
-    if (!person || !content) {
-
-        showToast(
-            "Reviewer and feedback are required."
-        );
-
+    if (!paperData.attachments.length) {
+        container.innerHTML = `<div class="empty-state">No files or links attached yet.</div>`;
         return;
-
     }
 
+    paperData.attachments.forEach(attachment => {
+        const item = document.createElement("article");
+        item.className = "attachment-card";
 
-    paperData.feedback.unshift({
+        const isLink = attachment.type === "link";
+        const isUploading = attachment.uploadStatus === "uploading";
 
-        id:
-            generateID("feedback"),
+        item.innerHTML = `
+            <div class="attachment-card-icon">${isLink ? "🔗" : "📄"}</div>
+            <div class="attachment-card-body">
+                <strong>${escapeHTML(attachment.name)}</strong>
+                <small>
+                    ${isLink
+                        ? "Link"
+                        : `${escapeHTML(attachment.mimeType || attachment.type || "File")}${attachment.size ? ` · ${formatFileSize(attachment.size)}` : ""}`
+                    }
+                </small>
+                ${isUploading ? `<span class="attachment-status">Uploading…</span>` : ""}
+                ${attachment.description ? `<p>${escapeHTML(attachment.description)}</p>` : ""}
+            </div>
+            <div class="attachment-card-actions">
+                ${attachment.url ? `<a href="${escapeAttribute(attachment.url)}" target="_blank" rel="noopener">Open</a>` : ""}
+                ${attachment.downloadUrl ? `<a href="${escapeAttribute(attachment.downloadUrl)}" target="_blank" rel="noopener">Download</a>` : ""}
+                <button type="button" class="attachment-delete" data-delete-attachment="${escapeAttribute(attachment.id)}" ${isUploading ? "disabled" : ""}>×</button>
+            </div>
+        `;
 
-        person,
-
-        type:
-            String(type || "SELF")
-                .toUpperCase(),
-
-        date:
-            date
-                ? formatDisplayDate(
-                    new Date(
-                        `${date}T00:00:00`
-                    )
-                )
-                : formatDisplayDate(
-                    new Date()
-                ),
-
-        content
-
+        container.appendChild(item);
     });
 
-
-    renderFeedback();
-
-    updatePaperDate();
-
-    closeModal(
-        "#feedbackModal"
-    );
+    $$("[data-delete-attachment]").forEach(button => {
+        button.addEventListener("click", () => {
+            deleteAttachment(button.dataset.deleteAttachment);
+        });
+    });
+}
 
 
-    showToast(
-        "Feedback added."
-    );
+async function deleteAttachment(id) {
+    const attachment = paperData.attachments.find(item => item.id === id);
 
+    if (!attachment) return;
+
+    const confirmed = window.confirm(`Remove "${attachment.name}"?`);
+
+    if (!confirmed) return;
+
+    const previous = clone(paperData.attachments);
+
+    paperData.attachments = paperData.attachments.filter(item => item.id !== id);
+
+    touchPaperData();
+    renderAttachments();
+
+    try {
+        if (attachment.driveFileId) {
+            if (!window.sb) {
+                throw new Error("Supabase client is unavailable.");
+            }
+
+            const { data: { session }, error: sessionError } =
+                await window.sb.auth.getSession();
+
+            if (sessionError || !session) {
+                throw new Error("You must be logged in to remove this file.");
+            }
+
+            const response = await fetch(
+                `${SUPABASE_FUNCTIONS_URL}/delete-rigid-file`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${session.access_token}`
+                    },
+                    body: JSON.stringify({
+                        work_id: currentWorkId,
+                        drive_file_id: attachment.driveFileId
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || "Unable to delete file from Google Drive.");
+            }
+        }
+
+        await savePaperData();
+        showToast("Attachment removed.");
+    }
+    catch (error) {
+        paperData.attachments = previous;
+        renderAttachments();
+        showToast(error.message || "Unable to remove attachment.");
+    }
 }
 
 
 /* =========================================================
-   35. NEXT ACTION
+   FEEDBACK
+========================================================= */
+
+function setupFeedback() {
+    $("#addFeedback")?.addEventListener("click", () => openFeedbackModal(null));
+    $("#saveFeedback")?.addEventListener("click", saveFeedback);
+}
+
+
+function renderFeedback() {
+    const container = $("#feedbackGrid");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (!paperData.feedback.length) {
+        container.innerHTML = `<div class="empty-state">No feedback added yet.</div>`;
+        return;
+    }
+
+    paperData.feedback.forEach(feedback => {
+        const item = document.createElement("article");
+        item.className = "feedback-item";
+        item.innerHTML = `
+            <div>
+                <strong>${escapeHTML(feedback.author || "Anonymous")}</strong>
+                <small>${escapeHTML(formatStatus(feedback.type || "mentor"))}</small>
+                <p>${escapeHTML(feedback.text)}</p>
+                <small>${escapeHTML(feedback.date ? formatRigidDate(feedback.date) : formatRigidDate(feedback.createdAt))}</small>
+            </div>
+            <div>
+                <button type="button" data-edit-feedback="${escapeAttribute(feedback.id)}">Edit</button>
+                <button type="button" data-delete-feedback="${escapeAttribute(feedback.id)}">×</button>
+            </div>
+        `;
+        container.appendChild(item);
+    });
+
+    $$("[data-edit-feedback]").forEach(button => {
+        button.addEventListener("click", () => {
+            openFeedbackModal(button.dataset.editFeedback);
+        });
+    });
+
+    $$("[data-delete-feedback]").forEach(button => {
+        button.addEventListener("click", () => {
+            deleteFeedback(button.dataset.deleteFeedback);
+        });
+    });
+}
+
+
+function openFeedbackModal(id = null) {
+    editingFeedbackId = id;
+
+    const feedback = id
+        ? paperData.feedback.find(item => item.id === id)
+        : null;
+
+    setInputValue("feedbackPerson", feedback?.author || "");
+    setInputValue("feedbackDate", feedback?.date || getTodayISO());
+    setInputValue("feedbackType", feedback?.type || "mentor");
+    setInputValue("feedbackContent", feedback?.text || "");
+
+    openModal("#feedbackModal");
+}
+
+
+async function saveFeedback() {
+    const text = getInputValue("feedbackContent");
+
+    if (!text) {
+        showToast("Enter feedback.");
+        return;
+    }
+
+    const previous = clone(paperData.feedback);
+
+    const feedbackData = {
+        author: getInputValue("feedbackPerson") || "Anonymous",
+        date: getInputValue("feedbackDate"),
+        type: getInputValue("feedbackType") || "mentor",
+        text
+    };
+
+    if (editingFeedbackId) {
+        const feedback = paperData.feedback.find(item => item.id === editingFeedbackId);
+        if (feedback) Object.assign(feedback, feedbackData);
+    }
+    else {
+        paperData.feedback.unshift({
+            id: generateID("feedback"),
+            ...feedbackData,
+            createdAt: new Date().toISOString()
+        });
+    }
+
+    touchPaperData();
+    renderFeedback();
+
+    try {
+        await savePaperData();
+        closeModal("#feedbackModal");
+        editingFeedbackId = null;
+        showToast("Feedback saved.");
+    }
+    catch (error) {
+        paperData.feedback = previous;
+        renderFeedback();
+        showToast(error.message || "Unable to save feedback.");
+    }
+}
+
+
+async function deleteFeedback(id) {
+    const previous = clone(paperData.feedback);
+
+    paperData.feedback = paperData.feedback.filter(item => item.id !== id);
+
+    touchPaperData();
+    renderFeedback();
+
+    try {
+        await savePaperData();
+        showToast("Feedback removed.");
+    }
+    catch (error) {
+        paperData.feedback = previous;
+        renderFeedback();
+        showToast(error.message || "Unable to remove feedback.");
+    }
+}
+
+
+/* =========================================================
+   NEXT ACTION
 ========================================================= */
 
 function loadNextAction() {
-
-    const textarea =
-        $("#nextPaperAction");
-
-
-    if (textarea)
-        textarea.value =
-            paperData.nextAction;
-
+    setInputValue("nextPaperAction", paperData.nextAction || "");
 }
 
 
 function setupPaperControls() {
-
-    $("#saveNextAction")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                const textarea =
-                    $("#nextPaperAction");
-
-
-                if (!textarea)
-                    return;
-
-
-                paperData.nextAction =
-                    textarea.value.trim();
-
-
-                updatePaperDate();
-
-                showToast(
-                    "Next action saved."
-                );
-
-            }
-        );
-
-
-    $("#addAuthor")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                const name =
-                    window.prompt(
-                        "Author / co-author name:"
-                    );
-
-
-                if (!name)
-                    return;
-
-
-                paperData.authors.push(
-                    name.trim()
-                );
-
-
-                renderAuthors();
-
-                updatePaperDate();
-
-            }
-        );
-
-
-    $("#editPaper")
-        ?.addEventListener(
-            "click",
-            editPaper
-        );
-
-
-    $("#archivePaper")
-        ?.addEventListener(
-            "click",
-            archivePaper
-        );
-
-
-    $("#paperSettings")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                showToast(
-                    "Paper settings will be connected later."
-                );
-
-            }
-        );
-
-
-    $("#backToWorkspace")
-        ?.addEventListener(
-            "click",
-            () => {
-
-                /*
-                 * paper.html location:
-                 *
-                 * personal/
-                 *   progress/
-                 *     paper/
-                 *       paper.html
-                 *
-                 * personal.html is two levels up.
-                 */
-
-                window.location.href =
-                    "../../personal.html";
-
-            }
-        );
-
-
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key ===
-                "Escape"
-            ) {
-
-                closeAllModals();
-
-            }
-
+    $("#backToWorkspace")?.addEventListener("click", () => {
+        // Adjust this if the app has a specific workspace URL —
+        // falling back to browser history keeps this safe by default.
+        if (window.history.length > 1) {
+            window.history.back();
         }
-    );
+        else {
+            window.location.href = "index.html";
+        }
+    });
 
+    $("#saveNextAction")?.addEventListener("click", saveNextAction);
+}
+
+
+async function saveNextAction() {
+    const previous = paperData.nextAction;
+
+    paperData.nextAction = getInputValue("nextPaperAction");
+
+    touchPaperData();
+
+    try {
+        await savePaperData();
+        showToast("Next action saved.");
+    }
+    catch (error) {
+        paperData.nextAction = previous;
+        loadNextAction();
+        showToast(error.message || "Unable to save next action.");
+    }
 }
 
 
 /* =========================================================
-   36. EDIT PAPER
-========================================================= */
-
-function editPaper() {
-
-    const title =
-        window.prompt(
-            "Paper title:",
-            paperData.title
-        );
-
-
-    if (title === null)
-        return;
-
-
-    const description =
-        window.prompt(
-            "Paper description:",
-            paperData.description
-        );
-
-
-    if (description === null)
-        return;
-
-
-    const target =
-        window.prompt(
-            "Target journal / conference:",
-            paperData.target
-        );
-
-
-    if (target === null)
-        return;
-
-
-    paperData.title =
-        title.trim();
-
-
-    paperData.description =
-        description.trim();
-
-
-    paperData.target =
-        target.trim();
-
-
-    loadPaperInformation();
-
-    updatePaperDate();
-
-    showToast(
-        "Paper information updated."
-    );
-
-}
-
-
-/* =========================================================
-   37. ARCHIVE / STAGE
-========================================================= */
-
-function archivePaper() {
-
-    if (
-        !window.confirm(
-            "Mark this paper as published?"
-        )
-    )
-        return;
-
-
-    paperData.status =
-        "published";
-
-
-    paperData.stage =
-        "published";
-
-
-    loadPaperInformation();
-
-    updatePaperDate();
-
-    showToast(
-        "Paper marked as published."
-    );
-
-}
-
-
-/* =========================================================
-   38. NAVIGATION
-========================================================= */
-
-function setupNavigation() {
-
-    $$(".paper-nav-item")
-        .forEach(
-            button => {
-
-                button.addEventListener(
-                    "click",
-                    () => {
-
-                        const section =
-                            button.dataset.section;
-
-
-                        const target =
-                            document.getElementById(
-                                `${section}Section`
-                            );
-
-
-                        if (!target)
-                            return;
-
-
-                        $$(".paper-nav-item")
-                            .forEach(
-                                item =>
-                                    item.classList.toggle(
-                                        "active",
-                                        item === button
-                                    )
-                            );
-
-
-                        target.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start"
-                        });
-
-                    }
-                );
-
-            }
-        );
-
-}
-
-
-/* =========================================================
-   39. SUMMARY
+   PAPER SUMMARY / PROGRESS
 ========================================================= */
 
 function updatePaperSummary() {
+    const totalSections = paperData.sections.length;
 
-    updateWritingProgress();
+    const completedSections = paperData.sections.filter(
+        section => section.status === "completed"
+    ).length;
 
-    updateReferenceCount();
+    const totalWords = paperData.sections.reduce((total, section) => {
+        const text = String(section.content || "").trim();
+        if (!text) return total;
+        return total + text.split(/\s+/).length;
+    }, 0);
 
-    updateVersionCount();
+    const progress = totalSections
+        ? Math.round((completedSections / totalSections) * 100)
+        : 0;
 
-    updateQuestionCount();
+    const openQuestions = paperData.questions.filter(
+        question => question.status !== "resolved"
+    ).length;
 
-    updateTotalWordCount();
+    // Progress strip
+    setText("sectionProgress", `${completedSections} / ${totalSections}`);
+    setText("referenceCount", paperData.references.length);
+    setText("draftCount", paperData.versions.length);
+    setText("questionCount", openQuestions);
+    setText("paperCompletion", `${progress}%`);
 
-}
+    // Writing workspace sidebar
+    setText("writingPercentage", `${progress}%`);
+    const progressFill = $("#writingProgressFill");
+    if (progressFill) progressFill.style.width = `${progress}%`;
 
-
-function updateQuestionCount() {
-
-    const count =
-        paperData.questions.filter(
-            question =>
-                question.status ===
-                "open"
-        ).length;
-
-
-    $("#questionCount")
-        ?.replaceChildren(
-            document.createTextNode(
-                count
-            )
-        );
-
-}
-
-
-/* =========================================================
-   40. LIVE CLOCK
-========================================================= */
-
-function updateLiveClock() {
-
-    const dateElement =
-        $("#liveDate");
-
-
-    const clockElement =
-        $("#liveClock");
-
-
-    if (
-        !dateElement ||
-        !clockElement
-    )
-        return;
-
-
-    const now =
-        new Date();
-
-
-    dateElement.textContent =
-        now
-            .toLocaleDateString(
-                "en-GB",
-                {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric"
-                }
-            )
-            .toUpperCase();
-
-
-    clockElement.textContent =
-        now
-            .toLocaleTimeString(
-                "en-US",
-                {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    second: "2-digit",
-                    hour12: true
-                }
-            );
-
-}
-
-
-setInterval(
-    updateLiveClock,
-    1000
-);
-
-
-/* =========================================================
-   41. PAPER DATE
-========================================================= */
-
-function updatePaperDate() {
-
-    paperData.updatedDate =
-        formatDisplayDate(
-            new Date()
-        );
-
-
-    const element =
-        $("#paperUpdated");
-
-
-    if (element)
-        element.textContent =
-            paperData.updatedDate;
-
+    // Bottom summary card
+    setText("summarySections", `${completedSections} / ${totalSections}`);
+    setText("summaryReferences", paperData.references.length);
+    setText("summaryVersions", paperData.versions.length);
+    setText("summaryWords", totalWords);
 }
 
 
 /* =========================================================
-   42. MODALS
+   TOP NAVIGATION
 ========================================================= */
+
+function setupTopNavigation() {
+    $$(".paper-nav-item").forEach(button => {
+        button.addEventListener("click", () => {
+            const sectionKey = button.dataset.section;
+
+            if (!sectionKey) return;
+
+            $$(".paper-nav-item").forEach(item => item.classList.remove("active"));
+            button.classList.add("active");
+
+            const target = document.getElementById(`${sectionKey}Section`);
+
+            target?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+    });
+}
+
+
+/* =========================================================
+   MODAL CONTROLS
+========================================================= */
+
+/* Every modal's close (×) and cancel buttons, mapped to
+   their modal id. Wired generically here since the HTML
+   does not use a shared data-close-modal attribute. */
+const MODAL_CLOSE_BUTTONS = {
+    paperInformationModal: ["closePaperInfoModal", "cancelPaperInfo"],
+    learningModal: ["closeLearningModal", "cancelLearning"],
+    findingModal: ["closeFindingModal", "cancelFinding"],
+    methodologyModal: ["closeMethodologyModal", "cancelMethodology"],
+    questionModal: ["closeQuestionModal", "cancelQuestion"],
+    paperSectionModal: ["closePaperSectionModal", "cancelPaperSection"],
+    deletePaperSectionModal: ["closeDeletePaperSectionModal", "cancelDeletePaperSection"],
+    referenceModal: ["closeReferenceModal", "cancelReference"],
+    paperLinkModal: ["closePaperLinkModal", "cancelPaperLink"],
+    paperTimelineModal: ["closePaperTimelineModal", "cancelPaperTimeline"],
+    feedbackModal: ["closeFeedbackModal", "cancelFeedback"]
+};
+
+function setupModalControls() {
+    Object.entries(MODAL_CLOSE_BUTTONS).forEach(([modalId, buttonIds]) => {
+        buttonIds.forEach(buttonId => {
+            $(`#${buttonId}`)?.addEventListener("click", () => {
+                closeModal(`#${modalId}`);
+            });
+        });
+    });
+
+    // Click on the dark overlay (outside the modal box) closes it
+    $$(".paper-modal").forEach(modal => {
+        modal.addEventListener("click", event => {
+            if (event.target === modal) {
+                closeModal(`#${modal.id}`);
+            }
+        });
+    });
+
+    // Escape key closes any open modal
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape") {
+            $$(".paper-modal.open").forEach(modal => {
+                closeModal(`#${modal.id}`);
+            });
+        }
+    });
+}
+
 
 function openModal(selector) {
+    const modal = document.querySelector(selector);
 
-    $(selector)
-        ?.classList.remove(
-            "hidden"
-        );
+    if (!modal) {
+        console.warn("Modal not found:", selector);
+        return;
+    }
 
+    modal.hidden = false;
+    modal.classList.remove("hidden");
+
+    requestAnimationFrame(() => {
+        modal.classList.add("open");
+    });
+
+    document.body.classList.add("modal-open");
+
+    const firstInput = modal.querySelector("input, textarea, select");
+    setTimeout(() => firstInput?.focus(), 100);
 }
 
 
 function closeModal(selector) {
+    const modal = document.querySelector(selector);
 
-    $(selector)
-        ?.classList.add(
-            "hidden"
-        );
+    if (!modal) return;
 
-}
+    modal.classList.remove("open");
 
+    setTimeout(() => {
+        modal.hidden = true;
+        modal.classList.add("hidden");
+    }, 180);
 
-function closeAllModals() {
-
-    $$(".paper-modal")
-        .forEach(
-            modal =>
-                modal.classList.add(
-                    "hidden"
-                )
-        );
-
-}
-
-
-/* =========================================================
-   43. HELPERS
-========================================================= */
-
-function getTodayISO() {
-
-    const date =
-        new Date();
-
-
-    return [
-
-        date.getFullYear(),
-
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0"),
-
-        String(
-            date.getDate()
-        ).padStart(2, "0")
-
-    ].join("-");
-
-}
-
-
-function formatDisplayDate(date) {
-
-    return date.toLocaleDateString(
-        "en-GB",
-        {
-            day: "2-digit",
-            month: "short",
-            year: "numeric"
-        }
-    );
-
-}
-
-
-function formatTimelineDate(
-    dateString
-) {
-
-    if (!dateString)
-        return "";
-
-
-    const date =
-        new Date(
-            `${dateString}T00:00:00`
-        );
-
-
-    return date
-        .toLocaleDateString(
-            "en-GB",
-            {
-                day: "2-digit",
-                month: "short"
-            }
-        )
-        .toUpperCase();
-
-}
-
-
-function capitalize(value) {
-
-    if (!value)
-        return "";
-
-
-    return (
-        value.charAt(0).toUpperCase() +
-        value.slice(1)
-    );
-
-}
-
-
-function countWords(text) {
-
-    if (!text)
-        return 0;
-
-
-    const trimmed =
-        String(text).trim();
-
-
-    if (!trimmed)
-        return 0;
-
-
-    return trimmed.split(
-        /\s+/
-    ).length;
-
-}
-
-
-function clearInput(selector) {
-
-    const element =
-        $(selector);
-
-
-    if (element)
-        element.value = "";
-
-}
-
-
-function generateID(prefix) {
-
-    return (
-
-        prefix +
-        "-" +
-        Date.now().toString(36) +
-        "-" +
-        Math.random()
-            .toString(36)
-            .substring(2, 8)
-
-    );
-
-}
-
-
-function normalizeURL(url) {
-
-    if (
-        /^https?:\/\//i.test(
-            url
-        )
-    ) {
-
-        return url;
-
+    if (!$(".paper-modal.open")) {
+        document.body.classList.remove("modal-open");
     }
-
-
-    return `https://${url}`;
-
 }
 
 
 /* =========================================================
-   44. FILE HELPERS
+   TOAST
 ========================================================= */
-
-function getFileType(file) {
-
-    const name =
-        file.name.toLowerCase();
-
-
-    if (
-        file.type.startsWith(
-            "image/"
-        )
-    )
-        return "IMAGE";
-
-
-    if (
-        file.type.startsWith(
-            "video/"
-        )
-    )
-        return "VIDEO";
-
-
-    if (
-        file.type ===
-        "application/pdf"
-    )
-        return "PDF";
-
-
-    if (
-        file.type.includes("word") ||
-        name.endsWith(".doc") ||
-        name.endsWith(".docx")
-    )
-        return "DOCUMENT";
-
-
-    if (
-        file.type.includes("sheet") ||
-        name.endsWith(".xls") ||
-        name.endsWith(".xlsx") ||
-        name.endsWith(".csv")
-    )
-        return "SPREADSHEET";
-
-
-    if (
-        name.endsWith(".ppt") ||
-        name.endsWith(".pptx")
-    )
-        return "PRESENTATION";
-
-
-    if (
-        name.endsWith(".zip") ||
-        name.endsWith(".rar")
-    )
-        return "ARCHIVE";
-
-
-    return "FILE";
-
-}
-
-
-function formatFileSize(bytes) {
-
-    if (!bytes)
-        return "0 KB";
-
-
-    const units = [
-        "B",
-        "KB",
-        "MB",
-        "GB"
-    ];
-
-
-    const index =
-        Math.floor(
-            Math.log(bytes) /
-            Math.log(1024)
-        );
-
-
-    const size =
-        bytes /
-        Math.pow(
-            1024,
-            index
-        );
-
-
-    return `${size.toFixed(
-        index === 0 ? 0 : 1
-    )} ${units[index]}`;
-
-}
-
-
-/* =========================================================
-   45. HTML ESCAPING
-========================================================= */
-
-function escapeHTML(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    )
-        return "";
-
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-function escapeAttribute(value) {
-
-    return escapeHTML(
-        value
-    );
-
-}
-
-
-/* =========================================================
-   46. TOAST
-========================================================= */
-
-let toastTimer;
-
 
 function showToast(message) {
+    const toast = $("#paperToast");
 
-    const toast =
-        $("#paperToast");
+    if (!toast) return;
 
+    toast.textContent = message;
+    toast.hidden = false;
+    toast.classList.remove("hidden");
 
-    if (!toast)
-        return;
+    clearTimeout(toastTimer);
 
-
-    toast.textContent =
-        message;
-
-
-    toast.classList.remove(
-        "hidden"
-    );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
-
-    toastTimer =
-        setTimeout(
-            () => {
-
-                toast.classList.add(
-                    "hidden"
-                );
-
-            },
-            2400
-        );
-
+    toastTimer = setTimeout(() => {
+        toast.hidden = true;
+        toast.classList.add("hidden");
+    }, 3500);
 }
 
 
 /* =========================================================
-   47. END
+   LIVE CLOCK
+========================================================= */
+
+function startLiveClock() {
+    const dateEl = $("#liveDate");
+    const clockEl = $("#liveClock");
+
+    if (!dateEl && !clockEl) return;
+
+    function updateClock() {
+        const now = new Date();
+
+        if (dateEl) {
+            dateEl.textContent = now.toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            });
+        }
+
+        if (clockEl) {
+            clockEl.textContent = now.toLocaleTimeString("en-GB", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit"
+            });
+        }
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+
+/* =========================================================
+   END OF PAPER.JS
 ========================================================= */

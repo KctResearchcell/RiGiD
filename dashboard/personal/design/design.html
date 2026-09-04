@@ -5,46 +5,33 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="description"
-        content="RiGiD Design Workspace"
-    >
+    <meta name="description" content="RiGiD Design Workspace">
 
-    <title>RiGiD — Design Workspace</title>
+    <title>
+        RiGiD — Design Workspace
+    </title>
+
 
     <!-- =====================================================
          FONTS
     ====================================================== -->
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
-        rel="stylesheet"
-    >
+        rel="stylesheet">
+
 
     <!-- =====================================================
          DESIGN CSS
     ====================================================== -->
 
-    <link
-        rel="stylesheet"
-        href="design.css"
-    >
+    <link rel="stylesheet" href="design.css">
 
 </head>
 
@@ -65,16 +52,11 @@
 
         <header class="design-header">
 
+
             <div class="header-left">
 
-                <!-- Back -->
 
-                <button
-                    class="back-button"
-                    id="backButton"
-                    type="button"
-                    aria-label="Return to personal workspace"
-                >
+                <button class="back-button" id="backButton" type="button" aria-label="Return to personal workspace">
 
                     <span class="back-icon">
                         ←
@@ -90,8 +72,6 @@
                 <div class="header-divider"></div>
 
 
-                <!-- Page Identity -->
-
                 <div class="page-identity">
 
                     <span class="page-eyebrow">
@@ -104,52 +84,35 @@
 
                 </div>
 
+
             </div>
 
 
             <div class="header-right">
 
-                <!-- Design Status -->
 
-                <span
-                    class="status-badge status-ongoing"
-                    id="designStatus"
-                >
-                    ONGOING
+                <span class="status-badge status-ongoing" id="designStatus">
+                    Loading
                 </span>
 
 
-                <!-- Version -->
-
-                <span
-                    class="version-badge"
-                    id="designVersion"
-                >
-                    v1.4
+                <span class="version-badge" id="designVersion">
+                    —
                 </span>
 
 
-                <!-- Actions -->
-
-                <button
-                    class="header-action"
-                    id="saveButton"
-                    type="button"
-                >
+                <button class="header-action" id="saveButton" type="button">
                     Save
                 </button>
 
 
-                <button
-                    class="header-action"
-                    id="moreButton"
-                    type="button"
-                    aria-label="More options"
-                >
+                <button class="header-action" id="moreButton" type="button" aria-label="More options">
                     ⋮
                 </button>
 
+
             </div>
+
 
         </header>
 
@@ -163,15 +126,14 @@
 
 
             <!-- =================================================
-                 DESIGN HERO / OVERVIEW
+                 DESIGN HERO
             ================================================== -->
 
-            <section
-                class="design-hero"
-                aria-labelledby="designTitle"
-            >
+            <section class="design-hero" aria-labelledby="designTitle">
+
 
                 <div class="hero-main">
+
 
                     <div class="hero-label">
                         DESIGN PROJECT
@@ -180,32 +142,27 @@
 
                     <div class="hero-title-row">
 
+
                         <h2 id="designTitle">
-                            Dual Rotor Housing Design
+                            Loading Design...
                         </h2>
 
-                        <span
-                            class="design-code"
-                            id="designCode"
-                        >
-                            DES-002
+
+                        <span class="design-code" id="designCode">
+                            —
                         </span>
+
 
                     </div>
 
 
-                    <p
-                        class="hero-description"
-                        id="designDescription"
-                    >
-                        Mechanical housing design for the dual-rotor
-                        wind turbine system, including rotor support,
-                        bearing arrangement, shaft alignment and
-                        service accessibility.
+                    <p class="hero-description" id="designDescription">
+                        Loading design information...
                     </p>
 
 
                     <div class="hero-meta">
+
 
                         <div class="meta-item">
 
@@ -214,7 +171,7 @@
                             </span>
 
                             <strong id="startDate">
-                                08 Aug 2026
+                                —
                             </strong>
 
                         </div>
@@ -227,7 +184,7 @@
                             </span>
 
                             <strong id="lastUpdated">
-                                18 Aug 2026
+                                —
                             </strong>
 
                         </div>
@@ -240,7 +197,7 @@
                             </span>
 
                             <strong id="designerName">
-                                Navin
+                                —
                             </strong>
 
                         </div>
@@ -253,19 +210,23 @@
                             </span>
 
                             <strong id="currentVersion">
-                                v1.4
+                                —
                             </strong>
 
                         </div>
 
+
                     </div>
+
 
                 </div>
 
 
-                <!-- Progress -->
+
+                <!-- PROGRESS -->
 
                 <aside class="hero-progress">
+
 
                     <span class="section-label">
                         DESIGN PROGRESS
@@ -274,13 +235,11 @@
 
                     <div class="progress-display">
 
-                        <div
-                            class="progress-ring"
-                            id="progressRing"
-                        >
+
+                        <div class="progress-ring" id="progressRing">
 
                             <span id="progressValue">
-                                72%
+                                0%
                             </span>
 
                         </div>
@@ -289,25 +248,22 @@
                         <div class="progress-info">
 
                             <strong>
-                                In Development
+                                Loading...
                             </strong>
 
                             <span>
-                                Prototype geometry under review
+                                Loading design progress
                             </span>
 
                         </div>
+
 
                     </div>
 
 
                     <div class="progress-bar-container">
 
-                        <div
-                            class="progress-bar"
-                            id="progressBar"
-                            style="width: 72%;"
-                        ></div>
+                        <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
 
                     </div>
 
@@ -315,16 +271,18 @@
                     <div class="progress-footer">
 
                         <span>
-                            72% completed
+                            0% completed
                         </span>
 
                         <span>
-                            4 iterations
+                            0 iterations
                         </span>
 
                     </div>
 
+
                 </aside>
+
 
             </section>
 
@@ -334,13 +292,8 @@
                  QUICK DESIGN SUMMARY
             ================================================== -->
 
-            <section
-                class="summary-grid"
-                aria-label="Design summary"
-            >
+            <section class="summary-grid" aria-label="Design summary">
 
-
-                <!-- Status -->
 
                 <article class="summary-card">
 
@@ -349,17 +302,15 @@
                     </span>
 
                     <strong class="summary-value">
-                        Ongoing
+                        Loading
                     </strong>
 
                     <span class="summary-detail">
-                        Active development
+                        Current design state
                     </span>
 
                 </article>
 
-
-                <!-- Tasks -->
 
                 <article class="summary-card">
 
@@ -367,11 +318,8 @@
                         TASKS
                     </span>
 
-                    <strong
-                        class="summary-value"
-                        id="taskSummary"
-                    >
-                        3 / 6
+                    <strong class="summary-value" id="taskSummary">
+                        0 / 0
                     </strong>
 
                     <span class="summary-detail">
@@ -381,19 +329,14 @@
                 </article>
 
 
-                <!-- Iterations -->
-
                 <article class="summary-card">
 
                     <span class="summary-label">
                         ITERATIONS
                     </span>
 
-                    <strong
-                        class="summary-value"
-                        id="iterationSummary"
-                    >
-                        4
+                    <strong class="summary-value" id="iterationSummary">
+                        0
                     </strong>
 
                     <span class="summary-detail">
@@ -403,19 +346,14 @@
                 </article>
 
 
-                <!-- Files -->
-
                 <article class="summary-card">
 
                     <span class="summary-label">
                         FILES
                     </span>
 
-                    <strong
-                        class="summary-value"
-                        id="fileSummary"
-                    >
-                        8
+                    <strong class="summary-value" id="fileSummary">
+                        0
                     </strong>
 
                     <span class="summary-detail">
@@ -425,19 +363,14 @@
                 </article>
 
 
-                <!-- Risks -->
-
                 <article class="summary-card">
 
                     <span class="summary-label">
                         RISKS
                     </span>
 
-                    <strong
-                        class="summary-value"
-                        id="riskSummary"
-                    >
-                        2
+                    <strong class="summary-value" id="riskSummary">
+                        0
                     </strong>
 
                     <span class="summary-detail">
@@ -445,6 +378,7 @@
                     </span>
 
                 </article>
+
 
             </section>
 
@@ -455,6 +389,7 @@
             ================================================== -->
 
             <section class="section-block">
+
 
                 <div class="section-header">
 
@@ -480,6 +415,7 @@
 
                     <article class="workspace-card">
 
+
                         <div class="card-header">
 
                             <div>
@@ -495,71 +431,25 @@
                             </div>
 
 
-                            <button
-                                class="card-add-button"
-                                type="button"
-                                aria-label="Add requirement"
-                            >
+                            <button class="card-add-button" type="button" data-section="requirements"
+                                aria-label="Add requirement">
                                 +
                             </button>
 
                         </div>
 
 
-                        <ul
-                            class="requirement-list"
-                            id="requirementsList"
-                        >
+                        <ul class="requirement-list" id="requirementList"></ul>
 
-                            <li>
-                                <span class="bullet"></span>
-
-                                <span>
-                                    Support dual rotor assembly
-                                </span>
-                            </li>
-
-                            <li>
-                                <span class="bullet"></span>
-
-                                <span>
-                                    Maintain accurate shaft alignment
-                                </span>
-                            </li>
-
-                            <li>
-                                <span class="bullet"></span>
-
-                                <span>
-                                    Provide adequate bearing support
-                                </span>
-                            </li>
-
-                            <li>
-                                <span class="bullet"></span>
-
-                                <span>
-                                    Minimize overall housing mass
-                                </span>
-                            </li>
-
-                            <li>
-                                <span class="bullet"></span>
-
-                                <span>
-                                    Allow easy maintenance access
-                                </span>
-                            </li>
-
-                        </ul>
 
                     </article>
 
 
 
-                    <!-- DESIGN OBJECTIVES -->
+                    <!-- OBJECTIVES -->
 
                     <article class="workspace-card">
+
 
                         <div class="card-header">
 
@@ -576,74 +466,16 @@
                             </div>
 
 
-                            <button
-                                class="card-add-button"
-                                type="button"
-                                aria-label="Add design objective"
-                            >
+                            <button class="card-add-button" type="button" data-section="objectives"
+                                aria-label="Add design objective">
                                 +
                             </button>
 
                         </div>
 
 
-                        <div
-                            class="objective-list"
-                            id="objectiveList"
-                        >
+                        <div class="objective-list" id="objectiveList"></div>
 
-                            <div class="objective-item">
-
-                                <span class="objective-number">
-                                    01
-                                </span>
-
-                                <span>
-                                    Reduce structural mass
-                                </span>
-
-                            </div>
-
-
-                            <div class="objective-item">
-
-                                <span class="objective-number">
-                                    02
-                                </span>
-
-                                <span>
-                                    Improve rotor alignment
-                                </span>
-
-                            </div>
-
-
-                            <div class="objective-item">
-
-                                <span class="objective-number">
-                                    03
-                                </span>
-
-                                <span>
-                                    Simplify manufacturing
-                                </span>
-
-                            </div>
-
-
-                            <div class="objective-item">
-
-                                <span class="objective-number">
-                                    04
-                                </span>
-
-                                <span>
-                                    Improve serviceability
-                                </span>
-
-                            </div>
-
-                        </div>
 
                     </article>
 
@@ -652,6 +484,7 @@
                     <!-- CONSTRAINTS -->
 
                     <article class="workspace-card">
+
 
                         <div class="card-header">
 
@@ -668,74 +501,16 @@
                             </div>
 
 
-                            <button
-                                class="card-add-button"
-                                type="button"
-                                aria-label="Add constraint"
-                            >
+                            <button class="card-add-button" type="button" data-section="constraints"
+                                aria-label="Add constraint">
                                 +
                             </button>
 
                         </div>
 
 
-                        <ul
-                            class="constraint-list"
-                            id="constraintList"
-                        >
+                        <ul class="constraint-list" id="constraintList"></ul>
 
-                            <li>
-
-                                <span class="constraint-key">
-                                    Space
-                                </span>
-
-                                <span>
-                                    Limited nacelle envelope
-                                </span>
-
-                            </li>
-
-
-                            <li>
-
-                                <span class="constraint-key">
-                                    Mass
-                                </span>
-
-                                <span>
-                                    Low overall structural weight
-                                </span>
-
-                            </li>
-
-
-                            <li>
-
-                                <span class="constraint-key">
-                                    Cost
-                                </span>
-
-                                <span>
-                                    Prototype budget constraint
-                                </span>
-
-                            </li>
-
-
-                            <li>
-
-                                <span class="constraint-key">
-                                    Manufacturing
-                                </span>
-
-                                <span>
-                                    Available workshop processes
-                                </span>
-
-                            </li>
-
-                        </ul>
 
                     </article>
 
@@ -744,6 +519,7 @@
                     <!-- TOOLS -->
 
                     <article class="workspace-card">
+
 
                         <div class="card-header">
 
@@ -760,47 +536,22 @@
                             </div>
 
 
-                            <button
-                                class="card-add-button"
-                                type="button"
-                                aria-label="Add design tool"
-                            >
+                            <button class="card-add-button" type="button" data-section="tools"
+                                aria-label="Add design tool">
                                 +
                             </button>
 
                         </div>
 
 
-                        <div
-                            class="tag-list"
-                            id="toolList"
-                        >
+                        <div class="tag-list" id="toolList"></div>
 
-                            <span class="tool-tag">
-                                SolidWorks
-                            </span>
-
-                            <span class="tool-tag">
-                                AutoCAD
-                            </span>
-
-                            <span class="tool-tag">
-                                Fusion 360
-                            </span>
-
-                            <span class="tool-tag">
-                                MATLAB
-                            </span>
-
-                            <span class="tool-tag">
-                                Simulink
-                            </span>
-
-                        </div>
 
                     </article>
 
+
                 </div>
+
 
             </section>
 
@@ -811,6 +562,7 @@
             ================================================== -->
 
             <section class="section-block">
+
 
                 <div class="section-header">
 
@@ -827,10 +579,7 @@
                     </div>
 
 
-                    <button
-                        class="section-action"
-                        type="button"
-                    >
+                    <button class="section-action" type="button" data-section="specifications">
                         + Add Specification
                     </button>
 
@@ -840,9 +589,10 @@
                 <div class="specification-layout">
 
 
-                    <!-- MAIN SPECIFICATIONS -->
+                    <!-- SPECIFICATIONS -->
 
                     <article class="workspace-card specification-card">
+
 
                         <div class="card-header">
 
@@ -861,115 +611,8 @@
                         </div>
 
 
-                        <div
-                            class="specification-grid"
-                            id="specificationGrid"
-                        >
+                        <div class="specification-grid" id="specificationList"></div>
 
-                            <div class="specification-item">
-
-                                <span>
-                                    Housing Outer Diameter
-                                </span>
-
-                                <strong>
-                                    225 mm
-                                </strong>
-
-                            </div>
-
-
-                            <div class="specification-item">
-
-                                <span>
-                                    Housing Length
-                                </span>
-
-                                <strong>
-                                    100 mm
-                                </strong>
-
-                            </div>
-
-
-                            <div class="specification-item">
-
-                                <span>
-                                    Shaft Diameter
-                                </span>
-
-                                <strong>
-                                    24 mm
-                                </strong>
-
-                            </div>
-
-
-                            <div class="specification-item">
-
-                                <span>
-                                    Shaft Length
-                                </span>
-
-                                <strong>
-                                    50 mm
-                                </strong>
-
-                            </div>
-
-
-                            <div class="specification-item">
-
-                                <span>
-                                    Mounting
-                                </span>
-
-                                <strong>
-                                    Face Mount
-                                </strong>
-
-                            </div>
-
-
-                            <div class="specification-item">
-
-                                <span>
-                                    Material
-                                </span>
-
-                                <strong>
-                                    Aluminium
-                                </strong>
-
-                            </div>
-
-
-                            <div class="specification-item">
-
-                                <span>
-                                    Rotor Arrangement
-                                </span>
-
-                                <strong>
-                                    Dual / Counter-Rotating
-                                </strong>
-
-                            </div>
-
-
-                            <div class="specification-item">
-
-                                <span>
-                                    Current Revision
-                                </span>
-
-                                <strong>
-                                    v1.4
-                                </strong>
-
-                            </div>
-
-                        </div>
 
                     </article>
 
@@ -978,6 +621,7 @@
                     <!-- MATERIALS -->
 
                     <article class="workspace-card">
+
 
                         <div class="card-header">
 
@@ -994,302 +638,58 @@
                             </div>
 
 
-                            <button
-                                class="card-add-button"
-                                type="button"
-                            >
+                            <button class="card-add-button" type="button" data-section="materials"
+                                aria-label="Add material">
                                 +
                             </button>
 
                         </div>
 
 
-                        <div class="material-list">
+                        <div class="material-list" id="materialList"></div>
 
-                            <div class="material-item">
-
-                                <div class="material-symbol">
-                                    AL
-                                </div>
-
-                                <div>
-
-                                    <strong>
-                                        Aluminium
-                                    </strong>
-
-                                    <span>
-                                        Main housing
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="material-item">
-
-                                <div class="material-symbol">
-                                    ST
-                                </div>
-
-                                <div>
-
-                                    <strong>
-                                        Steel
-                                    </strong>
-
-                                    <span>
-                                        Shaft / mounting elements
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-
-                            <div class="material-item">
-
-                                <div class="material-symbol">
-                                    BR
-                                </div>
-
-                                <div>
-
-                                    <strong>
-                                        Bearing Steel
-                                    </strong>
-
-                                    <span>
-                                        Bearing assembly
-                                    </span>
-
-                                </div>
-
-                            </div>
-
-                        </div>
 
                     </article>
 
+
                 </div>
+
 
             </section>
 
 
 
             <!-- =================================================
-                 COMPONENTS / ASSEMBLY
+                 COMPONENTS
             ================================================== -->
 
             <section class="section-block">
+
 
                 <div class="section-header">
 
                     <div>
 
                         <span class="section-label">
-                            ASSEMBLY
+                            DESIGN ARCHITECTURE
                         </span>
 
                         <h3>
-                            Components & Subsystems
+                            Components
                         </h3>
 
                     </div>
 
 
-                    <button
-                        class="section-action"
-                        type="button"
-                    >
+                    <button class="section-action" type="button" data-section="components">
                         + Add Component
                     </button>
 
                 </div>
 
 
-                <div
-                    class="component-grid"
-                    id="componentGrid"
-                >
+                <div class="component-grid" id="componentList"></div>
 
-
-                    <!-- COMPONENT 1 -->
-
-                    <article class="component-card">
-
-                        <div class="component-top">
-
-                            <span class="component-index">
-                                01
-                            </span>
-
-                            <span class="component-status">
-                                DEFINED
-                            </span>
-
-                        </div>
-
-
-                        <h4>
-                            Main Housing
-                        </h4>
-
-
-                        <p>
-                            Primary structural enclosure supporting
-                            the rotating assembly.
-                        </p>
-
-
-                        <div class="component-meta">
-
-                            <span>
-                                Material
-                            </span>
-
-                            <strong>
-                                Aluminium
-                            </strong>
-
-                        </div>
-
-                    </article>
-
-
-
-                    <!-- COMPONENT 2 -->
-
-                    <article class="component-card">
-
-                        <div class="component-top">
-
-                            <span class="component-index">
-                                02
-                            </span>
-
-                            <span class="component-status">
-                                DEFINED
-                            </span>
-
-                        </div>
-
-
-                        <h4>
-                            Bearing Support
-                        </h4>
-
-
-                        <p>
-                            Supports the rotating shaft and maintains
-                            shaft alignment.
-                        </p>
-
-
-                        <div class="component-meta">
-
-                            <span>
-                                Type
-                            </span>
-
-                            <strong>
-                                Modular
-                            </strong>
-
-                        </div>
-
-                    </article>
-
-
-
-                    <!-- COMPONENT 3 -->
-
-                    <article class="component-card">
-
-                        <div class="component-top">
-
-                            <span class="component-index">
-                                03
-                            </span>
-
-                            <span class="component-status">
-                                REVIEW
-                            </span>
-
-                        </div>
-
-
-                        <h4>
-                            Rotor Interface
-                        </h4>
-
-
-                        <p>
-                            Interface between the housing and the
-                            counter-rotating rotor assembly.
-                        </p>
-
-
-                        <div class="component-meta">
-
-                            <span>
-                                Revision
-                            </span>
-
-                            <strong>
-                                v1.2
-                            </strong>
-
-                        </div>
-
-                    </article>
-
-
-
-                    <!-- COMPONENT 4 -->
-
-                    <article class="component-card">
-
-                        <div class="component-top">
-
-                            <span class="component-index">
-                                04
-                            </span>
-
-                            <span class="component-status">
-                                PENDING
-                            </span>
-
-                        </div>
-
-
-                        <h4>
-                            Mounting Assembly
-                        </h4>
-
-
-                        <p>
-                            Face-mounted structure for connecting
-                            the housing to the main system.
-                        </p>
-
-
-                        <div class="component-meta">
-
-                            <span>
-                                Status
-                            </span>
-
-                            <strong>
-                                Under Review
-                            </strong>
-
-                        </div>
-
-                    </article>
-
-                </div>
 
             </section>
 
@@ -1300,6 +700,7 @@
             ================================================== -->
 
             <section class="section-block">
+
 
                 <div class="section-header">
 
@@ -1316,242 +717,15 @@
                     </div>
 
 
-                    <button
-                        class="section-action"
-                        type="button"
-                    >
-                        + New Iteration
+                    <button class="section-action" type="button" data-section="iterations">
+                        + Add Iteration
                     </button>
 
                 </div>
 
 
-                <div
-                    class="iteration-list"
-                    id="iterationList"
-                >
+                <div class="iteration-list" id="iterationList"></div>
 
-
-                    <!-- CURRENT ITERATION -->
-
-                    <article class="iteration-card iteration-current">
-
-                        <div class="iteration-version-column">
-
-                            <span class="iteration-version">
-                                v1.4
-                            </span>
-
-                            <span class="iteration-date">
-                                18 Aug 2026
-                            </span>
-
-                        </div>
-
-
-                        <div class="iteration-content">
-
-                            <div class="iteration-heading">
-
-                                <h4>
-                                    Bearing Housing Revision
-                                </h4>
-
-                                <span class="current-label">
-                                    CURRENT
-                                </span>
-
-                            </div>
-
-
-                            <p>
-                                Increased bearing support area and
-                                improved shaft alignment while
-                                maintaining the existing outer
-                                housing dimensions.
-                            </p>
-
-
-                            <div class="iteration-tags">
-
-                                <span>
-                                    Bearing
-                                </span>
-
-                                <span>
-                                    Alignment
-                                </span>
-
-                                <span>
-                                    Structural
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    </article>
-
-
-
-                    <!-- ITERATION -->
-
-                    <article class="iteration-card">
-
-                        <div class="iteration-version-column">
-
-                            <span class="iteration-version">
-                                v1.3
-                            </span>
-
-                            <span class="iteration-date">
-                                15 Aug 2026
-                            </span>
-
-                        </div>
-
-
-                        <div class="iteration-content">
-
-                            <div class="iteration-heading">
-
-                                <h4>
-                                    Rotor Clearance Update
-                                </h4>
-
-                            </div>
-
-
-                            <p>
-                                Increased the clearance between the
-                                rotating assemblies to reduce the
-                                possibility of mechanical interference.
-                            </p>
-
-
-                            <div class="iteration-tags">
-
-                                <span>
-                                    Clearance
-                                </span>
-
-                                <span>
-                                    Rotor
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    </article>
-
-
-
-                    <!-- ITERATION -->
-
-                    <article class="iteration-card">
-
-                        <div class="iteration-version-column">
-
-                            <span class="iteration-version">
-                                v1.2
-                            </span>
-
-                            <span class="iteration-date">
-                                12 Aug 2026
-                            </span>
-
-                        </div>
-
-
-                        <div class="iteration-content">
-
-                            <div class="iteration-heading">
-
-                                <h4>
-                                    Housing Geometry Revision
-                                </h4>
-
-                            </div>
-
-
-                            <p>
-                                Refined the main housing geometry and
-                                mounting interface based on the first
-                                assembly review.
-                            </p>
-
-
-                            <div class="iteration-tags">
-
-                                <span>
-                                    Geometry
-                                </span>
-
-                                <span>
-                                    Mounting
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    </article>
-
-
-
-                    <!-- ITERATION -->
-
-                    <article class="iteration-card">
-
-                        <div class="iteration-version-column">
-
-                            <span class="iteration-version">
-                                v1.1
-                            </span>
-
-                            <span class="iteration-date">
-                                10 Aug 2026
-                            </span>
-
-                        </div>
-
-
-                        <div class="iteration-content">
-
-                            <div class="iteration-heading">
-
-                                <h4>
-                                    Initial CAD Assembly
-                                </h4>
-
-                            </div>
-
-
-                            <p>
-                                Created the first complete CAD
-                                assembly containing the housing,
-                                shaft and bearing arrangement.
-                            </p>
-
-
-                            <div class="iteration-tags">
-
-                                <span>
-                                    CAD
-                                </span>
-
-                                <span>
-                                    Assembly
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    </article>
-
-                </div>
 
             </section>
 
@@ -1564,9 +738,10 @@
             <section class="two-column-section">
 
 
-                <!-- DESIGN DECISIONS -->
+                <!-- DECISIONS -->
 
                 <article class="workspace-card large-card">
+
 
                     <div class="card-header">
 
@@ -1583,94 +758,16 @@
                         </div>
 
 
-                        <button
-                            class="card-add-button"
-                            type="button"
-                        >
+                        <button class="card-add-button" type="button" data-section="decisions"
+                            aria-label="Add design decision">
                             +
                         </button>
 
                     </div>
 
 
-                    <div
-                        class="decision-list"
-                        id="decisionList"
-                    >
+                    <div class="decision-list" id="decisionList"></div>
 
-
-                        <div class="decision-item">
-
-                            <span class="decision-number">
-                                01
-                            </span>
-
-                            <div>
-
-                                <strong>
-                                    Aluminium housing
-                                </strong>
-
-                                <p>
-                                    Selected to reduce overall
-                                    structural mass while retaining
-                                    sufficient rigidity for the
-                                    prototype.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="decision-item">
-
-                            <span class="decision-number">
-                                02
-                            </span>
-
-                            <div>
-
-                                <strong>
-                                    Modular bearing support
-                                </strong>
-
-                                <p>
-                                    Chosen to simplify maintenance
-                                    and allow bearing replacement
-                                    without redesigning the complete
-                                    housing.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="decision-item">
-
-                            <span class="decision-number">
-                                03
-                            </span>
-
-                            <div>
-
-                                <strong>
-                                    Separate rotor chambers
-                                </strong>
-
-                                <p>
-                                    Used to maintain adequate
-                                    clearance between the two
-                                    counter-rotating assemblies.
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                    </div>
 
                 </article>
 
@@ -1679,6 +776,7 @@
                 <!-- RISKS -->
 
                 <article class="workspace-card">
+
 
                     <div class="card-header">
 
@@ -1689,97 +787,42 @@
                             </span>
 
                             <h4>
-                                Risks & Issues
+                                Risks & Concerns
                             </h4>
 
                         </div>
 
 
-                        <button
-                            class="card-add-button"
-                            type="button"
-                        >
+                        <button class="card-add-button" type="button" data-section="risks" aria-label="Add design risk">
                             +
                         </button>
 
                     </div>
 
 
-                    <div
-                        class="risk-list"
-                        id="riskList"
-                    >
+                    <div class="risk-list" id="riskList"></div>
 
-
-                        <div class="risk-item risk-high">
-
-                            <div class="risk-indicator"></div>
-
-                            <div>
-
-                                <strong>
-                                    Rotor clearance
-                                </strong>
-
-                                <p>
-                                    Final clearance still requires
-                                    verification under maximum
-                                    expected deflection.
-                                </p>
-
-                            </div>
-
-                            <span>
-                                HIGH
-                            </span>
-
-                        </div>
-
-
-                        <div class="risk-item risk-medium">
-
-                            <div class="risk-indicator"></div>
-
-                            <div>
-
-                                <strong>
-                                    Manufacturing tolerance
-                                </strong>
-
-                                <p>
-                                    Final tolerances need to be
-                                    checked against available
-                                    manufacturing capability.
-                                </p>
-
-                            </div>
-
-                            <span>
-                                MED
-                            </span>
-
-                        </div>
-
-                    </div>
 
                 </article>
+
 
             </section>
 
 
 
             <!-- =================================================
-                 TASKS / CHECKLIST
+                 TASKS
             ================================================== -->
 
             <section class="section-block">
+
 
                 <div class="section-header">
 
                     <div>
 
                         <span class="section-label">
-                            EXECUTION
+                            WORK MANAGEMENT
                         </span>
 
                         <h3>
@@ -1789,206 +832,32 @@
                     </div>
 
 
-                    <button
-                        class="section-action"
-                        type="button"
-                    >
+                    <button class="section-action" type="button" data-section="tasks">
                         + Add Task
                     </button>
 
                 </div>
 
 
-                <div class="task-layout">
+                <div class="two-column-section">
 
 
                     <!-- TASK LIST -->
 
-                    <article class="workspace-card task-card">
+                    <article class="workspace-card large-card">
 
-                        <div
-                            class="task-list"
-                            id="taskList"
-                        >
 
+                        <div class="task-list" id="taskList"></div>
 
-                            <label class="task-item completed">
-
-                                <input
-                                    type="checkbox"
-                                    checked
-                                >
-
-                                <span class="task-check"></span>
-
-                                <span class="task-content">
-
-                                    <strong>
-                                        Complete initial CAD model
-                                    </strong>
-
-                                    <small>
-                                        CAD / Geometry
-                                    </small>
-
-                                </span>
-
-                                <span class="task-state">
-                                    DONE
-                                </span>
-
-                            </label>
-
-
-
-                            <label class="task-item completed">
-
-                                <input
-                                    type="checkbox"
-                                    checked
-                                >
-
-                                <span class="task-check"></span>
-
-                                <span class="task-content">
-
-                                    <strong>
-                                        Verify shaft dimensions
-                                    </strong>
-
-                                    <small>
-                                        Mechanical
-                                    </small>
-
-                                </span>
-
-                                <span class="task-state">
-                                    DONE
-                                </span>
-
-                            </label>
-
-
-
-                            <label class="task-item completed">
-
-                                <input
-                                    type="checkbox"
-                                    checked
-                                >
-
-                                <span class="task-check"></span>
-
-                                <span class="task-content">
-
-                                    <strong>
-                                        Define bearing support
-                                    </strong>
-
-                                    <small>
-                                        Assembly
-                                    </small>
-
-                                </span>
-
-                                <span class="task-state">
-                                    DONE
-                                </span>
-
-                            </label>
-
-
-
-                            <label class="task-item">
-
-                                <input
-                                    type="checkbox"
-                                >
-
-                                <span class="task-check"></span>
-
-                                <span class="task-content">
-
-                                    <strong>
-                                        Perform structural analysis
-                                    </strong>
-
-                                    <small>
-                                        Simulation
-                                    </small>
-
-                                </span>
-
-                                <span class="task-state">
-                                    TODO
-                                </span>
-
-                            </label>
-
-
-
-                            <label class="task-item">
-
-                                <input
-                                    type="checkbox"
-                                >
-
-                                <span class="task-check"></span>
-
-                                <span class="task-content">
-
-                                    <strong>
-                                        Verify rotor clearance
-                                    </strong>
-
-                                    <small>
-                                        Mechanical
-                                    </small>
-
-                                </span>
-
-                                <span class="task-state">
-                                    TODO
-                                </span>
-
-                            </label>
-
-
-
-                            <label class="task-item">
-
-                                <input
-                                    type="checkbox"
-                                >
-
-                                <span class="task-check"></span>
-
-                                <span class="task-content">
-
-                                    <strong>
-                                        Prepare manufacturing drawing
-                                    </strong>
-
-                                    <small>
-                                        Documentation
-                                    </small>
-
-                                </span>
-
-                                <span class="task-state">
-                                    TODO
-                                </span>
-
-                            </label>
-
-                        </div>
 
                     </article>
+
 
 
                     <!-- TASK SUMMARY -->
 
                     <article class="workspace-card task-summary-card">
+
 
                         <span class="card-label">
                             TASK SUMMARY
@@ -2001,6 +870,7 @@
 
                         <div class="task-progress">
 
+
                             <div class="task-progress-top">
 
                                 <span>
@@ -2008,7 +878,7 @@
                                 </span>
 
                                 <strong>
-                                    3 / 6
+                                    0 / 0
                                 </strong>
 
                             </div>
@@ -2016,17 +886,16 @@
 
                             <div class="task-progress-track">
 
-                                <div
-                                    class="task-progress-fill"
-                                    style="width: 50%;"
-                                ></div>
+                                <div class="task-progress-fill" style="width: 0%;"></div>
 
                             </div>
+
 
                         </div>
 
 
                         <div class="task-stat-grid">
+
 
                             <div>
 
@@ -2035,7 +904,7 @@
                                 </span>
 
                                 <strong>
-                                    3
+                                    0
                                 </strong>
 
                             </div>
@@ -2048,7 +917,7 @@
                                 </span>
 
                                 <strong>
-                                    3
+                                    0
                                 </strong>
 
                             </div>
@@ -2074,16 +943,20 @@
                                 </span>
 
                                 <strong>
-                                    6
+                                    0
                                 </strong>
 
                             </div>
 
+
                         </div>
+
 
                     </article>
 
+
                 </div>
+
 
             </section>
 
@@ -2094,6 +967,7 @@
             ================================================== -->
 
             <section class="section-block">
+
 
                 <div class="section-header">
 
@@ -2110,180 +984,22 @@
                     </div>
 
 
-                    <button
-                        class="section-action"
-                        type="button"
-                    >
+                    <button class="section-action" type="button" data-section="files">
                         + Upload File
                     </button>
 
                 </div>
 
 
-                <div
-                    class="file-grid"
-                    id="fileGrid"
-                >
+                <div class="file-grid" id="fileGrid"></div>
 
-
-                    <!-- FILE -->
-
-                    <article class="file-card">
-
-                        <div class="file-icon file-cad">
-                            CAD
-                        </div>
-
-
-                        <div class="file-content">
-
-                            <strong>
-                                housing_v1.4.step
-                            </strong>
-
-                            <span>
-                                STEP Model
-                            </span>
-
-                            <small>
-                                4.2 MB · 18 Aug 2026
-                            </small>
-
-                        </div>
-
-
-                        <button
-                            class="file-action"
-                            type="button"
-                            aria-label="Open file"
-                        >
-                            ↗
-                        </button>
-
-                    </article>
-
-
-
-                    <!-- FILE -->
-
-                    <article class="file-card">
-
-                        <div class="file-icon file-cad">
-                            CAD
-                        </div>
-
-
-                        <div class="file-content">
-
-                            <strong>
-                                rotor_housing.sldprt
-                            </strong>
-
-                            <span>
-                                SolidWorks Part
-                            </span>
-
-                            <small>
-                                8.7 MB · 17 Aug 2026
-                            </small>
-
-                        </div>
-
-
-                        <button
-                            class="file-action"
-                            type="button"
-                            aria-label="Open file"
-                        >
-                            ↗
-                        </button>
-
-                    </article>
-
-
-
-                    <!-- FILE -->
-
-                    <article class="file-card">
-
-                        <div class="file-icon file-pdf">
-                            PDF
-                        </div>
-
-
-                        <div class="file-content">
-
-                            <strong>
-                                manufacturing_drawing.pdf
-                            </strong>
-
-                            <span>
-                                Engineering Drawing
-                            </span>
-
-                            <small>
-                                1.8 MB · 16 Aug 2026
-                            </small>
-
-                        </div>
-
-
-                        <button
-                            class="file-action"
-                            type="button"
-                            aria-label="Open file"
-                        >
-                            ↗
-                        </button>
-
-                    </article>
-
-
-
-                    <!-- FILE -->
-
-                    <article class="file-card">
-
-                        <div class="file-icon file-image">
-                            IMG
-                        </div>
-
-
-                        <div class="file-content">
-
-                            <strong>
-                                housing_render.png
-                            </strong>
-
-                            <span>
-                                Design Render
-                            </span>
-
-                            <small>
-                                2.1 MB · 15 Aug 2026
-                            </small>
-
-                        </div>
-
-
-                        <button
-                            class="file-action"
-                            type="button"
-                            aria-label="Open file"
-                        >
-                            ↗
-                        </button>
-
-                    </article>
-
-                </div>
 
             </section>
 
 
 
             <!-- =================================================
-                 REFERENCES
+                 REFERENCES + REVIEW
             ================================================== -->
 
             <section class="two-column-section">
@@ -2292,6 +1008,7 @@
                 <!-- REFERENCES -->
 
                 <article class="workspace-card">
+
 
                     <div class="card-header">
 
@@ -2308,101 +1025,25 @@
                         </div>
 
 
-                        <button
-                            class="card-add-button"
-                            type="button"
-                        >
+                        <button class="card-add-button" type="button" data-section="references"
+                            aria-label="Add reference">
                             +
                         </button>
 
                     </div>
 
 
-                    <div
-                        class="reference-list"
-                        id="referenceList"
-                    >
+                    <div class="reference-list" id="referenceList"></div>
 
-                        <a
-                            href="#"
-                            class="reference-item"
-                        >
-
-                            <span class="reference-icon">
-                                ↗
-                            </span>
-
-                            <span class="reference-content">
-
-                                <strong>
-                                    CAD Repository
-                                </strong>
-
-                                <small>
-                                    GitHub / Project Repository
-                                </small>
-
-                            </span>
-
-                        </a>
-
-
-                        <a
-                            href="#"
-                            class="reference-item"
-                        >
-
-                            <span class="reference-icon">
-                                ↗
-                            </span>
-
-                            <span class="reference-content">
-
-                                <strong>
-                                    Engineering Standard
-                                </strong>
-
-                                <small>
-                                    Design reference document
-                                </small>
-
-                            </span>
-
-                        </a>
-
-
-                        <a
-                            href="#"
-                            class="reference-item"
-                        >
-
-                            <span class="reference-icon">
-                                ↗
-                            </span>
-
-                            <span class="reference-content">
-
-                                <strong>
-                                    Simulation Results
-                                </strong>
-
-                                <small>
-                                    MATLAB / Simulink
-                                </small>
-
-                            </span>
-
-                        </a>
-
-                    </div>
 
                 </article>
 
 
 
-                <!-- DESIGN REVIEW -->
+                <!-- REVIEW -->
 
                 <article class="workspace-card">
+
 
                     <div class="card-header">
 
@@ -2423,6 +1064,7 @@
 
                     <div class="review-grid">
 
+
                         <div class="review-item">
 
                             <span>
@@ -2430,7 +1072,7 @@
                             </span>
 
                             <strong>
-                                18 Aug 2026
+                                —
                             </strong>
 
                         </div>
@@ -2443,7 +1085,7 @@
                             </span>
 
                             <strong>
-                                Team Review
+                                —
                             </strong>
 
                         </div>
@@ -2456,7 +1098,7 @@
                             </span>
 
                             <strong class="review-pending">
-                                Revision Required
+                                —
                             </strong>
 
                         </div>
@@ -2469,10 +1111,11 @@
                             </span>
 
                             <strong>
-                                22 Aug 2026
+                                —
                             </strong>
 
                         </div>
+
 
                     </div>
 
@@ -2484,13 +1127,14 @@
                         </span>
 
                         <p>
-                            Verify rotor clearance and complete
-                            structural analysis before final approval.
+                            No review notes added.
                         </p>
 
                     </div>
 
+
                 </article>
+
 
             </section>
 
@@ -2501,6 +1145,7 @@
             ================================================== -->
 
             <section class="section-block">
+
 
                 <div class="section-header">
 
@@ -2517,150 +1162,15 @@
                     </div>
 
 
-                    <button
-                        class="section-action"
-                        type="button"
-                    >
+                    <button class="section-action" type="button" data-section="tests">
                         + Add Test
                     </button>
 
                 </div>
 
 
-                <div class="validation-grid">
+                <div class="validation-grid" id="testList"></div>
 
-
-                    <!-- TEST 1 -->
-
-                    <article class="validation-card">
-
-                        <div class="validation-header">
-
-                            <span class="validation-number">
-                                TEST 01
-                            </span>
-
-                            <span class="validation-status passed">
-                                PASSED
-                            </span>
-
-                        </div>
-
-
-                        <h4>
-                            Dimensional Verification
-                        </h4>
-
-
-                        <p>
-                            Verify major housing and shaft dimensions
-                            against the defined design specification.
-                        </p>
-
-
-                        <div class="validation-result">
-
-                            <span>
-                                RESULT
-                            </span>
-
-                            <strong>
-                                Within specification
-                            </strong>
-
-                        </div>
-
-                    </article>
-
-
-
-                    <!-- TEST 2 -->
-
-                    <article class="validation-card">
-
-                        <div class="validation-header">
-
-                            <span class="validation-number">
-                                TEST 02
-                            </span>
-
-                            <span class="validation-status pending">
-                                PENDING
-                            </span>
-
-                        </div>
-
-
-                        <h4>
-                            Structural Analysis
-                        </h4>
-
-
-                        <p>
-                            Evaluate housing deformation and stress
-                            under expected operating loads.
-                        </p>
-
-
-                        <div class="validation-result">
-
-                            <span>
-                                RESULT
-                            </span>
-
-                            <strong>
-                                Awaiting simulation
-                            </strong>
-
-                        </div>
-
-                    </article>
-
-
-
-                    <!-- TEST 3 -->
-
-                    <article class="validation-card">
-
-                        <div class="validation-header">
-
-                            <span class="validation-number">
-                                TEST 03
-                            </span>
-
-                            <span class="validation-status pending">
-                                PENDING
-                            </span>
-
-                        </div>
-
-
-                        <h4>
-                            Rotor Clearance Verification
-                        </h4>
-
-
-                        <p>
-                            Confirm sufficient clearance throughout
-                            the expected operating range.
-                        </p>
-
-
-                        <div class="validation-result">
-
-                            <span>
-                                RESULT
-                            </span>
-
-                            <strong>
-                                Awaiting verification
-                            </strong>
-
-                        </div>
-
-                    </article>
-
-                </div>
 
             </section>
 
@@ -2671,6 +1181,7 @@
             ================================================== -->
 
             <section class="section-block">
+
 
                 <div class="section-header">
 
@@ -2688,38 +1199,37 @@
 
 
                     <span class="notes-status">
-                        Local draft
+                        Not saved
                     </span>
 
                 </div>
 
 
-                <textarea
-                    class="design-notes"
-                    id="designNotes"
-                    placeholder="Record observations, design ideas, problems, decisions, test results, manufacturing concerns or future improvements..."
-                >Housing geometry is currently being refined around the bearing support.
-
-Need to verify rotor clearance before finalizing the manufacturing drawing.
-
-Structural analysis should be completed before the next design review.</textarea>
+                <textarea class="design-notes" id="designNotes"
+                    placeholder="Record observations, design ideas, problems, decisions, test results, manufacturing concerns or future improvements..."></textarea>
 
 
                 <div class="notes-footer">
 
+
                     <span>
+
                         Last saved:
+
                         <strong id="notesSaved">
                             Not saved
                         </strong>
+
                     </span>
 
 
                     <span>
-                        Changes will be connected to the design record later
+                        Saved with the Design record
                     </span>
 
+
                 </div>
+
 
             </section>
 
@@ -2730,6 +1240,7 @@ Structural analysis should be completed before the next design review.</textarea
             ================================================== -->
 
             <section class="section-block">
+
 
                 <div class="section-header">
 
@@ -2748,111 +1259,8 @@ Structural analysis should be completed before the next design review.</textarea
                 </div>
 
 
-                <div
-                    class="change-log"
-                    id="changeLog"
-                >
+                <div class="change-log" id="changeLog"></div>
 
-
-                    <div class="change-entry">
-
-                        <div class="change-marker"></div>
-
-                        <div class="change-content">
-
-                            <div class="change-top">
-
-                                <strong>
-                                    Bearing housing revised
-                                </strong>
-
-                                <span>
-                                    18 Aug 2026
-                                </span>
-
-                            </div>
-
-                            <p>
-                                Increased bearing support and
-                                improved shaft alignment.
-                            </p>
-
-                            <small>
-                                v1.4 · Design Revision
-                            </small>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <div class="change-entry">
-
-                        <div class="change-marker"></div>
-
-                        <div class="change-content">
-
-                            <div class="change-top">
-
-                                <strong>
-                                    Rotor clearance updated
-                                </strong>
-
-                                <span>
-                                    15 Aug 2026
-                                </span>
-
-                            </div>
-
-                            <p>
-                                Increased clearance between the
-                                counter-rotating assemblies.
-                            </p>
-
-                            <small>
-                                v1.3 · Mechanical Revision
-                            </small>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <div class="change-entry">
-
-                        <div class="change-marker"></div>
-
-                        <div class="change-content">
-
-                            <div class="change-top">
-
-                                <strong>
-                                    Initial CAD assembly created
-                                </strong>
-
-                                <span>
-                                    10 Aug 2026
-                                </span>
-
-                            </div>
-
-                            <p>
-                                Created the first complete housing
-                                assembly and defined the initial
-                                component arrangement.
-                            </p>
-
-                            <small>
-                                v1.1 · Initial Design
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                </div>
 
             </section>
 
@@ -2864,15 +1272,19 @@ Structural analysis should be completed before the next design review.</textarea
 
             <section class="design-footer-panel">
 
+
                 <div>
+
 
                     <span class="section-label">
                         DESIGN RECORD
                     </span>
 
+
                     <h3>
-                        Dual Rotor Housing Design
+                        Design Workspace
                     </h3>
+
 
                     <p>
                         This workspace contains the requirements,
@@ -2882,34 +1294,31 @@ Structural analysis should be completed before the next design review.</textarea
                         design.
                     </p>
 
+
                 </div>
 
 
                 <div class="footer-actions">
 
-                    <button
-                        class="secondary-button"
-                        type="button"
-                        id="archiveButton"
-                    >
+
+                    <button class="secondary-button" type="button" id="archiveButton">
                         Archive Design
                     </button>
 
 
-                    <button
-                        class="primary-button"
-                        type="button"
-                        id="completeButton"
-                    >
+                    <button class="primary-button" type="button" id="completeButton">
                         Mark as Complete
                     </button>
 
+
                 </div>
+
 
             </section>
 
 
         </main>
+
 
 
         <!-- =================================================
@@ -2918,19 +1327,25 @@ Structural analysis should be completed before the next design review.</textarea
 
         <footer class="design-page-footer">
 
+
             <span>
                 RiGiD
             </span>
+
 
             <span>
                 Design Workspace
             </span>
 
+
             <span>
+
                 <span id="footerVersion">
-                    v1.4
+                    —
                 </span>
+
             </span>
+
 
         </footer>
 
@@ -2938,10 +1353,14 @@ Structural analysis should be completed before the next design review.</textarea
     </div>
 
 
+
     <!-- =====================================================
          DESIGN JAVASCRIPT
     ====================================================== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <!-- RiGiD Supabase Client -->
+    <script src="../../../supabase-client.js"></script>
     <script src="design.js"></script>
 
 

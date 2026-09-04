@@ -5441,3 +5441,46 @@ body.theme-dim .daily-record-panel {
     transform: scale(0.98);
 
 }
+
+.header-quote {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.045em;
+    font-style: italic;
+
+    color: rgb(171, 188, 234);
+
+    text-shadow: 0 0 18px rgba(7, 7, 8, 0.18);
+}
+
+/* =========================================================
+   MATCH CALENDAR HEIGHT WITH DAILY RECORD
+========================================================= */
+
+.work-journal-row .journal-layout {
+    align-items: stretch !important;
+}
+
+.work-journal-row .calendar-panel {
+    height: auto !important;
+    min-height: 100% !important;
+    align-self: stretch !important;
+}
+
+.work-journal-row .daily-record-panel {
+    height: auto !important;
+    align-self: stretch !important;
+}
+
+.work-journal-row .calendar-header {
+    margin-bottom: 40px !important;
+}
+
+.work-journal-row .calendar-legend {
+    margin-top: 30px !important;
+}

@@ -40,7 +40,9 @@ let teams = [];
 let domains = [];
 let profiles = [];
 let tasks = [];
+let workItems = [];
 let pendingRequests = [];
+let supportReports = [];
 
 let selectedForum = "all";
 
@@ -635,7 +637,299 @@ async function loadTasks() {
 
 }
 
+async function loadWorkItems() {
+    const { data, error } = await sb
+        .from("personal_work")
+        .select(`
+            id,
+            profile_id,
+            forum_id,
+            team_id,
+            domain_id,
+            title,
+            description,
+            category,
+            status,
+            start_date,
+            end_date,
+            created_at,
+            updated_at
+        `)
+        .order("created_at", { ascending: false });
 
+    if (error) {
+        console.error("Work loading error:", error);
+        throw error;
+    }
+
+    workItems = data || [];
+
+    console.log("Admin personal_work loaded:", workItems);
+}
+
+async function loadSupportReports() {
+
+    const { data, error } = await sb
+        .from("support_reports")
+        .select(`
+            id,
+            profile_id,
+            message,
+            status,
+            created_at
+        `)
+        .order("created_at", {
+            ascending: false
+        });
+
+    if (error) {
+        console.error("Support reports loading error:", error);
+        throw error;
+    }
+
+    supportReports = data || [];
+
+    console.log(
+        "Admin support reports loaded:",
+        supportReports
+    );
+}
+
+function renderSupportReports() {
+
+    const container =
+        document.getElementById("supportReports");
+
+    const badge =
+        document.getElementById("reportsBadge");
+
+    if (!container) {
+        console.warn("supportReports container not found.");
+        return;
+    }
+
+    if (badge) {
+        badge.textContent = supportReports.length;
+    }
+
+    if (!supportReports.length) {
+
+        container.innerHTML = `
+            <div class="support-reports-empty">
+                No reports or suggestions have been submitted.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = supportReports.map(report => {
+
+        const profile =
+            profiles.find(
+                profile =>
+                    String(profile.id) ===
+                    String(report.profile_id)
+            );
+
+
+        const username =
+            profile?.full_name ||
+            "Unknown member";
+
+
+        const email =
+            profile?.email ||
+            "No email available";
+
+
+        const created =
+            new Date(report.created_at);
+
+
+        const date =
+            created.toLocaleDateString(
+                "en-IN",
+                {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric"
+                }
+            );
+
+
+        const time =
+            created.toLocaleTimeString(
+                "en-IN",
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            );
+
+
+        const status =
+            String(
+                report.status ||
+                "noted"
+            )
+            .toLowerCase();
+
+
+        return `
+
+            <div
+                class="support-report-row"
+                data-report-id="${escapeHTML(report.id)}"
+            >
+
+                <!-- MEMBER -->
+
+                <div class="support-report-member">
+
+                    <div class="support-report-name">
+                        ${escapeHTML(username)}
+                    </div>
+
+                    <div class="support-report-email">
+                        ${escapeHTML(email)}
+                    </div>
+
+                </div>
+
+
+                <!-- REPORT -->
+
+                <div class="support-report-message">
+
+                    ${escapeHTML(
+                        report.message
+                    )}
+
+                </div>
+
+
+                <!-- DATE / TIME -->
+
+                <div class="support-report-date">
+
+                    <div>
+                        ${escapeHTML(date)}
+                    </div>
+
+                    <div>
+                        ${escapeHTML(time)}
+                    </div>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="support-report-status">
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="report-status-${escapeHTML(report.id)}"
+                            value="noted"
+                            ${status === "noted" ? "checked" : ""}
+                            onchange="updateSupportReportStatus('${escapeHTML(report.id)}', 'noted')"
+                        >
+                        <span>Noted</span>
+                    </label>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="report-status-${escapeHTML(report.id)}"
+                            value="solved"
+                            ${status === "solved" ? "checked" : ""}
+                            onchange="updateSupportReportStatus('${escapeHTML(report.id)}', 'solved')"
+                        >
+                        <span>Solved</span>
+                    </label>
+
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="report-status-${escapeHTML(report.id)}"
+                            value="negligible"
+                            ${status === "negligible" ? "checked" : ""}
+                            onchange="updateSupportReportStatus('${escapeHTML(report.id)}', 'negligible')"
+                        >
+                        <span>Negligible</span>
+                    </label>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }).join("");
+}
+
+async function updateSupportReportStatus(reportId, newStatus) {
+
+    try {
+
+        const { error } = await sb
+            .from("support_reports")
+            .update({
+                status: newStatus
+            })
+            .eq("id", reportId);
+
+        if (error) {
+            console.error(
+                "Support report status update error:",
+                error
+            );
+
+            alert("Failed to update report status.");
+
+            // Reload the current data so the UI
+            // returns to the actual database state.
+            await loadSupportReports();
+            renderSupportReports();
+
+            return;
+        }
+
+        // Update local data immediately
+        const report = supportReports.find(
+            item =>
+                String(item.id) ===
+                String(reportId)
+        );
+
+        if (report) {
+            report.status = newStatus;
+        }
+
+        console.log(
+            "Support report status updated:",
+            reportId,
+            newStatus
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Unexpected support report status error:",
+            error
+        );
+
+        alert("Something went wrong while updating the report.");
+
+        await loadSupportReports();
+        renderSupportReports();
+    }
+}
 /* =========================================================
    LOAD ALL DATA
 ========================================================= */
@@ -647,9 +941,12 @@ async function loadAllData() {
         loadTeams(),
         loadDomains(),
         loadProfiles(),
-        loadTasks()
+        loadTasks(),
+        loadWorkItems(),
+        loadSupportReports()
     ]);
 
+    renderSupportReports();
 }
 
 function populateForumFilter() {
@@ -2493,23 +2790,27 @@ function openTeamForm(
                     else {
 
                         const {
+                            data,
                             error
-                        } =
-                            await sb.rpc(
-                                "admin_create_team",
-                                {
-                                    p_forum_id:
-                                        forumId,
+                        } = await sb.rpc(
+                            "admin_create_team",
+                            {
+                                p_forum_id: forumId,
+                                p_name: name,
+                                p_description: description || null
+                            }
+                        );
 
-                                    p_name:
-                                        name,
-
-                                    p_description:
-                                        description || null
-                                }
-                            );
+                        console.log("admin_create_team result:", {
+                            data,
+                            error,
+                            forumId,
+                            name,
+                            description
+                        });
 
                         if (error) {
+                            console.error("admin_create_team FULL ERROR:", error);
                             throw error;
                         }
 
@@ -3722,6 +4023,15 @@ function getFilteredTasks() {
 
 }
 
+function getFilteredWorkItems() {
+    if (selectedForum === "all") {
+        return workItems;
+    }
+
+    return workItems.filter(
+        work => String(work.forum_id) === String(selectedForum)
+    );
+}
 
 /* =========================================================
    UPDATE OVERVIEW
@@ -3729,8 +4039,28 @@ function getFilteredTasks() {
 
 function updateOverview() {
 
-    const filtered =
-        getFilteredTasks();
+    console.log("Updating Admin Overview...");
+    console.log("Total personal_work:", workItems.length);
+    console.log("Selected forum:", selectedForum);
+
+    let filteredWorks = workItems;
+
+    if (selectedForum !== "all") {
+
+        filteredWorks =
+            workItems.filter(
+                work =>
+                    String(work.forum_id) ===
+                    String(selectedForum)
+            );
+
+    }
+
+
+    console.log(
+        "Filtered personal_work:",
+        filteredWorks
+    );
 
 
     TASK_CATEGORIES.forEach(
@@ -3740,12 +4070,48 @@ function updateOverview() {
                 status => {
 
                     const count =
-                        filtered.filter(
-                            task =>
-                                task.category ===
-                                category &&
-                                task.status ===
-                                status
+                        filteredWorks.filter(
+                            work => {
+
+                                const workCategory =
+                                    String(
+                                        work.category ||
+                                        ""
+                                    )
+                                    .toLowerCase()
+                                    .trim();
+
+
+                                const rawStatus =
+                                    String(
+                                        work.status ||
+                                        ""
+                                    )
+                                    .toLowerCase()
+                                    .trim();
+
+
+                                const workStatus =
+                                    (
+                                        rawStatus ===
+                                            "in-progress" ||
+
+                                        rawStatus ===
+                                            "in_progress"
+                                    )
+                                        ? "ongoing"
+                                        : rawStatus;
+
+
+                                return (
+                                    workCategory ===
+                                        category &&
+
+                                    workStatus ===
+                                        status
+                                );
+
+                            }
                         ).length;
 
 
@@ -3755,14 +4121,21 @@ function updateOverview() {
                         )}`;
 
 
-                    if (el(id)) {
+                    const element =
+                        el(id);
 
-                        el(id).textContent =
+
+                    console.log(
+                        `Overview ${id}:`,
+                        count,
+                        element
+                    );
+
+
+                    if (element) {
+
+                        element.textContent =
                             count;
-
-                        el(id).classList.add(
-                            "rigid-number-click"
-                        );
 
                     }
 
@@ -3771,42 +4144,6 @@ function updateOverview() {
 
         }
     );
-
-
-    const label =
-        el("overviewFilterLabel");
-
-
-    if (label) {
-
-        if (
-            selectedForum ===
-            "all"
-        ) {
-
-            label.textContent =
-                "Showing All Forums";
-
-        }
-
-        else {
-
-            const forum =
-                getForum(
-                    selectedForum
-                );
-
-            label.textContent =
-                forum
-                    ? `Showing ${forum.name}`
-                    : "Showing All Forums";
-
-        }
-
-    }
-
-
-    attachOverviewClicks();
 
 }
 
@@ -3833,43 +4170,498 @@ function capitalizeFirst(
 
 function attachOverviewClicks() {
 
-    TASK_CATEGORIES.forEach(
-        category => {
+    TASK_CATEGORIES.forEach(category => {
 
-            TASK_STATUSES.forEach(
-                status => {
+        TASK_STATUSES.forEach(status => {
 
-                    const id =
-                        `${category}${capitalizeFirst(
-                            status
-                        )}`;
+            const id =
+                `${category}${capitalizeFirst(status)}`;
 
-                    const element =
-                        el(id);
+            const element =
+                el(id);
 
-                    if (!element) {
-                        return;
-                    }
+            if (!element) {
+                console.warn(
+                    "Overview element not found:",
+                    id
+                );
+                return;
+            }
 
+            element.style.cursor = "pointer";
 
-                    element.onclick =
-                        () => {
+            element.onclick = function(event) {
 
-                            openTaskList(
-                                category,
-                                status
-                            );
+                event.preventDefault();
+                event.stopPropagation();
 
-                        };
+                console.log(
+                    "Overview clicked:",
+                    category,
+                    status
+                );
 
-                }
-            );
+                openWorkList(
+                    category,
+                    status
+                );
 
-        }
-    );
+            };
+
+        });
+
+    });
 
 }
 
+function openWorkList(category, status) {
+
+    let filteredWorks = workItems;
+
+    if (selectedForum !== "all") {
+        filteredWorks = workItems.filter(
+            work =>
+                String(work.forum_id) ===
+                String(selectedForum)
+        );
+    }
+
+    const works = filteredWorks.filter(work => {
+
+        const workCategory =
+            String(work.category || "")
+                .toLowerCase()
+                .trim();
+
+        const rawStatus =
+            String(work.status || "")
+                .toLowerCase()
+                .trim();
+
+        const workStatus =
+            rawStatus === "in-progress" ||
+            rawStatus === "in_progress"
+                ? "ongoing"
+                : rawStatus;
+
+        return (
+            workCategory === category &&
+            workStatus === status
+        );
+    });
+
+
+    const modal = createModal(
+        "rigidWorkListModal",
+        `${formatCategory(status)} / ${formatCategory(category)}`,
+        `${formatCategory(category)} — ${formatCategory(status)}`
+    );
+
+
+    const content =
+        modal.querySelector(
+            ".rigid-modal-content"
+        );
+
+
+    content.innerHTML = `
+
+        <div class="rigid-count" style="margin-bottom:16px;">
+            ${works.length}
+            ${works.length === 1 ? "work" : "works"}
+        </div>
+
+        <div class="rigid-member-list">
+
+            ${
+                works.length
+                    ? works.map(
+                        work =>
+                            renderWorkPersonRow(work)
+                      ).join("")
+                    : `
+                        <div class="rigid-empty">
+                            No matching work found.
+                        </div>
+                      `
+            }
+
+        </div>
+
+    `;
+}
+
+function renderWorkPersonRow(work) {
+
+    const profile =
+        profiles.find(
+            profile =>
+                String(profile.id) ===
+                String(work.profile_id)
+        );
+
+
+    const forum =
+        getForum(
+            work.forum_id
+        );
+
+
+    const team =
+        getTeam(
+            work.team_id
+        );
+
+
+    const domain =
+        getDomain(
+            work.domain_id
+        );
+
+
+    const memberName =
+        profile?.full_name ||
+        profile?.email ||
+        "Unknown Member";
+
+
+    return `
+
+        <div
+            class="rigid-task-row"
+            style="cursor:default;"
+        >
+
+            <div>
+
+                <strong>
+                    ${escapeHTML(
+                        memberName
+                    )}
+                </strong>
+
+
+                <div
+                    style="
+                        margin-top:6px;
+                        font-size:14px;
+                    "
+                >
+
+                    ${escapeHTML(
+                        work.title ||
+                        "Untitled Work"
+                    )}
+
+                </div>
+
+
+                <div
+                    class="rigid-task-meta"
+                >
+
+                    ${
+                        forum
+                            ? `
+                                <span>
+                                    Forum:
+                                    ${escapeHTML(
+                                        forum.name
+                                    )}
+                                </span>
+                              `
+                            : ""
+                    }
+
+
+                    ${
+                        team
+                            ? `
+                                <span>
+                                    Team:
+                                    ${escapeHTML(
+                                        team.name
+                                    )}
+                                </span>
+                              `
+                            : ""
+                    }
+
+
+                    ${
+                        domain
+                            ? `
+                                <span>
+                                    Domain:
+                                    ${escapeHTML(
+                                        domain.name
+                                    )}
+                                </span>
+                              `
+                            : ""
+                    }
+
+                </div>
+
+            </div>
+
+
+            <div class="rigid-count">
+
+                ${formatDate(
+                    work.created_at
+                )}
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+function renderWorkPersonRow(work) {
+
+    const profile =
+        profiles.find(
+            profile =>
+                String(profile.id) ===
+                String(work.profile_id)
+        );
+
+    const forum =
+        getForum(work.forum_id);
+
+    const team =
+        getTeam(work.team_id);
+
+    const domain =
+        getDomain(work.domain_id);
+
+
+    const personName =
+        profile?.full_name ||
+        profile?.email ||
+        "Unknown member";
+
+
+    return `
+
+        <div class="rigid-task-row">
+
+            <div>
+
+                <strong>
+                    ${escapeHTML(personName)}
+                </strong>
+
+                <div
+                    style="
+                        margin-top:5px;
+                        opacity:.75;
+                    "
+                >
+                    ${escapeHTML(
+                        work.title ||
+                        "Untitled work"
+                    )}
+                </div>
+
+
+                <div class="rigid-task-meta">
+
+                    <span class="rigid-badge">
+                        ${escapeHTML(
+                            formatCategory(
+                                work.category
+                            )
+                        )}
+                    </span>
+
+
+                    ${
+                        forum
+                            ? `
+                                <span>
+                                    Forum:
+                                    ${escapeHTML(
+                                        forum.name
+                                    )}
+                                </span>
+                              `
+                            : ""
+                    }
+
+
+                    ${
+                        team
+                            ? `
+                                <span>
+                                    Team:
+                                    ${escapeHTML(
+                                        team.name
+                                    )}
+                                </span>
+                              `
+                            : ""
+                    }
+
+
+                    ${
+                        domain
+                            ? `
+                                <span>
+                                    Domain:
+                                    ${escapeHTML(
+                                        domain.name
+                                    )}
+                                </span>
+                              `
+                            : ""
+                    }
+
+                </div>
+
+            </div>
+
+
+            <div class="rigid-count">
+
+                ${formatDate(
+                    work.created_at
+                )}
+
+            </div>
+
+        </div>
+
+    `;
+}
+
+function renderWorkRow(work) {
+
+    const forum =
+        getForum(work.forum_id);
+
+    const team =
+        getTeam(work.team_id);
+
+    const domain =
+        getDomain(work.domain_id);
+
+    const profile =
+        profiles.find(
+            profile =>
+                String(profile.id) ===
+                String(work.profile_id)
+        );
+
+
+    return `
+
+        <div class="rigid-task-row">
+
+            <div>
+
+                <strong>
+                    ${escapeHTML(
+                        work.title ||
+                        "Untitled"
+                    )}
+                </strong>
+
+
+                <div class="rigid-task-meta">
+
+                    <span class="rigid-badge">
+                        ${escapeHTML(
+                            formatCategory(
+                                work.category
+                            )
+                        )}
+                    </span>
+
+
+                    <span class="rigid-badge">
+                        ${escapeHTML(
+                            formatCategory(
+                                work.status
+                            )
+                        )}
+                    </span>
+
+
+                    ${forum
+                        ? `
+                            <span>
+                                Forum:
+                                ${escapeHTML(
+                                    forum.name
+                                )}
+                            </span>
+                          `
+                        : ""
+                    }
+
+
+                    ${team
+                        ? `
+                            <span>
+                                Team:
+                                ${escapeHTML(
+                                    team.name
+                                )}
+                            </span>
+                          `
+                        : ""
+                    }
+
+
+                    ${domain
+                        ? `
+                            <span>
+                                Domain:
+                                ${escapeHTML(
+                                    domain.name
+                                )}
+                            </span>
+                          `
+                        : ""
+                    }
+
+
+                    ${profile
+                        ? `
+                            <span>
+                                Member:
+                                ${escapeHTML(
+                                    profile.full_name ||
+                                    profile.email ||
+                                    "Unnamed user"
+                                )}
+                            </span>
+                          `
+                        : ""
+                    }
+
+                </div>
+
+            </div>
+
+
+            <div class="rigid-count">
+
+                ${formatDate(
+                    work.created_at
+                )}
+
+            </div>
+
+        </div>
+
+    `;
+
+}
 
 /* =========================================================
    TASK LIST
@@ -4171,9 +4963,9 @@ async function openTaskDetails(
 
             <p>
                 ${escapeHTML(
-                    task.description ||
-                    "No description."
-                )}
+        task.description ||
+        "No description."
+    )}
             </p>
 
         </div>
@@ -4187,46 +4979,43 @@ async function openTaskDetails(
 
             <p>
                 ${escapeHTML(
-                    formatCategory(
-                        task.category
-                    )
-                )}
+        formatCategory(
+            task.category
+        )
+    )}
 
                 ·
 
                 ${escapeHTML(
-                    formatCategory(
-                        task.status
-                    )
-                )}
+        formatCategory(
+            task.status
+        )
+    )}
             </p>
 
 
             <p style="margin-top:8px">
 
-                ${
-                    forum
-                        ? `Forum: ${escapeHTML(
-                            forum.name
-                        )}<br>`
-                        : ""
-                }
+                ${forum
+            ? `Forum: ${escapeHTML(
+                forum.name
+            )}<br>`
+            : ""
+        }
 
-                ${
-                    team
-                        ? `Team: ${escapeHTML(
-                            team.name
-                        )}<br>`
-                        : ""
-                }
+                ${team
+            ? `Team: ${escapeHTML(
+                team.name
+            )}<br>`
+            : ""
+        }
 
-                ${
-                    domain
-                        ? `Domain: ${escapeHTML(
-                            domain.name
-                        )}`
-                        : ""
-                }
+                ${domain
+            ? `Domain: ${escapeHTML(
+                domain.name
+            )}`
+            : ""
+        }
 
             </p>
 
@@ -4246,11 +5035,10 @@ async function openTaskDetails(
 
             <div class="rigid-member-list">
 
-                ${
-                    members.length
+                ${members.length
 
-                        ? members.map(
-                            profile => `
+            ? members.map(
+                profile => `
 
                                 <div
                                     class="rigid-member-row"
@@ -4264,9 +5052,9 @@ async function openTaskDetails(
                                             class="rigid-member-name"
                                         >
                                             ${escapeHTML(
-                                                profile.full_name ||
-                                                "Unnamed user"
-                                            )}
+                    profile.full_name ||
+                    "Unnamed user"
+                )}
                                         </div>
 
 
@@ -4274,9 +5062,9 @@ async function openTaskDetails(
                                             class="rigid-member-email"
                                         >
                                             ${escapeHTML(
-                                                profile.email ||
-                                                ""
-                                            )}
+                    profile.email ||
+                    ""
+                )}
                                         </div>
 
                                     </div>
@@ -4293,16 +5081,16 @@ async function openTaskDetails(
                                 </div>
 
                             `
-                        ).join("")
+            ).join("")
 
-                        : `
+            : `
 
                             <div class="rigid-empty">
                                 No task members.
                             </div>
 
                         `
-                }
+        }
 
             </div>
 
@@ -5804,6 +6592,8 @@ async function refreshData() {
 
         updateOverview();
 
+        attachOverviewClicks();
+
         await loadPendingRequests();
 
     }
@@ -5912,6 +6702,8 @@ async function initAdmin() {
         await renderForums();
 
         updateOverview();
+
+        attachOverviewClicks();
 
         await loadPendingRequests();
 

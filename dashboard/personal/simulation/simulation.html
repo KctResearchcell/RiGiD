@@ -5,17 +5,11 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Simulation | RiGiD</title>
 
-    <link
-        rel="stylesheet"
-        href="simulation.css"
-    >
+    <link rel="stylesheet" href="simulation.css">
 
 </head>
 
@@ -23,2413 +17,1921 @@
 <body>
 
 
-<!-- =====================================================
+    <!-- =====================================================
      TOP SIMULATION HEADER
 ===================================================== -->
 
-<header class="simulation-header">
+    <header class="simulation-header">
 
-    <div class="simulation-brand">
+        <div class="simulation-header-left">
 
-        <div class="simulation-brand-left">
+            <button class="back-button" id="backToWorkspace" type="button">
+                <span class="back-icon">←</span>
+                <span>Workspace</span>
+            </button>
 
-            <div class="simulation-badge">
-                SIMULATION
+            <div class="simulation-brand">
+
+                <div class="simulation-brand-mark">
+                    S
+                </div>
+
+                <div class="simulation-brand-text">
+
+                    <div class="simulation-brand-name">
+                        R<span>i</span>G<span>i</span>D
+                    </div>
+
+                    <div class="simulation-brand-section">
+                        SIMULATION
+                    </div>
+
+                </div>
             </div>
 
-
-            <div
-                class="simulation-status"
-                id="simulationStatus"
-            >
-                ● IN PROGRESS
-            </div>
 
         </div>
 
 
-        <h1 id="simulationTitle">
-            Loading Simulation...
-        </h1>
+        <nav class="simulation-navigation">
 
 
-        <p
-            class="simulation-description"
-            id="simulationDescription"
-        >
-            Loading simulation information...
-        </p>
+            <button class="simulation-nav-item active" data-section="overviewSection" type="button">
+                Overview
+            </button>
+
+            <button class="simulation-nav-item" data-section="theorySection" type="button">
+                Theory
+            </button>
+
+            <button class="simulation-nav-item" data-section="parametersSection" type="button">
+                Parameters
+            </button>
+
+            <button class="simulation-nav-item" data-section="resultsSection" type="button">
+                Results
+            </button>
+
+            <button class="simulation-nav-item" data-section="timelineSection" type="button">
+                Timeline
+            </button>
+
+            <button class="simulation-nav-item" data-section="filesSection" type="button">
+                Files
+            </button>
+
+        </nav>
 
 
-        <div
-            class="simulation-tags"
-            id="simulationTags"
-        >
+        <div class="simulation-header-right">
+
+            <div class="simulation-live-time">
+
+                <span class="live-date" id="liveDate">
+                    DD MM YYYY
+                </span>
+
+                <span class="live-separator">
+                    •
+                </span>
+
+                <span class="live-clock" id="liveClock">
+                    10:10:00 AM
+                </span>
+
+            </div>
+
+            <button class="header-icon-button" id="simulationSettings" type="button" title="Settings">
+                ⚙
+            </button>
+
         </div>
 
+    </header>
+
+
+    <div class="simulation-page-title-wrap">
+    <div class="simulation-page-title" id="simulationTitle">
+        Untitled Simulation
     </div>
 
-
-    <!-- LIVE INFORMATION -->
-
-    <div class="simulation-live">
-
-        <div class="live-date">
-
-            <span id="liveDate">
-                --
-            </span>
-
-
-            <strong id="liveClock">
-                --
-            </strong>
-
-        </div>
-
-
-        <div class="simulation-meta">
-
-            <div>
-
-                <label>
-                    OWNER
-                </label>
-
-
-                <strong id="simulationOwner">
-                    You
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <label>
-                    CREATED
-                </label>
-
-
-                <strong id="simulationCreated">
-                    --
-                </strong>
-
-            </div>
-
-
-            <div>
-
-                <label>
-                    UPDATED
-                </label>
-
-
-                <strong id="simulationUpdated">
-                    --
-                </strong>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</header>
-
-
-
-<!-- =====================================================
+    <button
+        type="button"
+        id="simulationStatusBadge"
+        class="simulation-status-badge in-progress"
+    >
+        In Progress
+    </button>
+</div>
+    <!-- =====================================================
      SIMULATION NAVIGATION
 ===================================================== -->
 
-<nav class="simulation-navigation">
-
-    <button
-        class="simulation-nav-item active"
-        data-section="overviewSection"
-    >
-        Overview
-    </button>
+    <main class="simulation-container">
 
 
-    <button
-        class="simulation-nav-item"
-        data-section="theorySection"
-    >
-        Theory
-    </button>
-
-
-    <button
-        class="simulation-nav-item"
-        data-section="parametersSection"
-    >
-        Parameters
-    </button>
-
-
-    <button
-        class="simulation-nav-item"
-        data-section="resultsSection"
-    >
-        Results
-    </button>
-
-
-    <button
-        class="simulation-nav-item"
-        data-section="timelineSection"
-    >
-        Timeline
-    </button>
-
-
-    <button
-        class="simulation-nav-item"
-        data-section="filesSection"
-    >
-        Files
-    </button>
-
-</nav>
-
-
-
-<main class="simulation-container">
-
-
-<!-- =====================================================
+        <!-- =====================================================
      OVERVIEW
 ===================================================== -->
 
-<section
-    id="overviewSection"
-    class="simulation-section"
->
+        <section id="overviewSection" class="simulation-section">
 
-    <div class="section-heading">
-
-        <div>
-
-            <span class="section-label">
-                SIMULATION OVERVIEW
-            </span>
-
-
-            <h2>
-                What are you simulating?
-            </h2>
-
-        </div>
-
-
-        <button
-            class="outline-button"
-            id="editSimulation"
-        >
-            Edit Overview
-        </button>
-
-    </div>
-
-
-    <div class="overview-grid">
-
-
-        <!-- DESCRIPTION -->
-
-        <article class="simulation-card">
-
-            <div class="card-header">
+            <div class="section-heading">
 
                 <div>
 
-                    <span class="card-label">
-                        DESCRIPTION
+                    <span class="section-label">
+                        SIMULATION OVERVIEW
                     </span>
 
 
-                    <h3>
-                        Simulation Objective
-                    </h3>
+                    <h2>
+                        What are you simulating?
+                    </h2>
 
                 </div>
 
 
-                <button
-                    class="text-button"
-                    id="editDescription"
-                >
-                    Edit
+                <button class="outline-button" id="editSimulation">
+                    Edit Overview
                 </button>
 
             </div>
 
 
-            <div
-                class="card-content"
-                id="descriptionContent"
-            >
+            <div class="overview-grid">
 
-                <p>
-                    No simulation description added yet.
-                </p>
+
+                <!-- DESCRIPTION -->
+
+                <article class="simulation-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-label">
+                                DESCRIPTION
+                            </span>
+
+
+                            <h3>
+                                Simulation Objective
+                            </h3>
+
+                        </div>
+
+
+                        <button class="text-button" id="editDescription">
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                    <div class="card-content" id="descriptionContent">
+
+                        <p>
+                            No simulation description added yet.
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- SOFTWARE -->
+
+                <article class="simulation-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-label">
+                                SOFTWARE
+                            </span>
+
+
+                            <h3>
+                                Tools Used
+                            </h3>
+
+                        </div>
+
+
+                        <button class="text-button" id="editSoftware">
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                    <div class="software-list" id="softwareList">
+                    </div>
+
+                </article>
+
+
+
+                <!-- STATUS -->
+
+                <article class="simulation-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-label">
+                                STATUS
+                            </span>
+
+
+                            <h3>
+                                Current Progress
+                            </h3>
+
+                        </div>
+
+
+                        <button class="text-button" id="editStatus">
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                    <div class="status-content" id="statusContent">
+
+                        <div class="progress-value" id="progressValue">
+                            0%
+                        </div>
+
+
+                        <div class="progress-track">
+
+                            <div class="progress-fill" id="progressFill"></div>
+
+                        </div>
+
+
+                        <p id="statusText">
+                            In Progress
+                        </p>
+
+                    </div>
+
+                </article>
 
             </div>
 
-        </article>
+        </section>
 
 
 
-        <!-- SOFTWARE -->
-
-        <article class="simulation-card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        SOFTWARE
-                    </span>
-
-
-                    <h3>
-                        Tools Used
-                    </h3>
-
-                </div>
-
-
-                <button
-                    class="text-button"
-                    id="editSoftware"
-                >
-                    Edit
-                </button>
-
-            </div>
-
-
-            <div
-                class="software-list"
-                id="softwareList"
-            >
-            </div>
-
-        </article>
-
-
-
-        <!-- STATUS -->
-
-        <article class="simulation-card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        STATUS
-                    </span>
-
-
-                    <h3>
-                        Current Progress
-                    </h3>
-
-                </div>
-
-
-                <button
-                    class="text-button"
-                    id="editStatus"
-                >
-                    Edit
-                </button>
-
-            </div>
-
-
-            <div
-                class="status-content"
-                id="statusContent"
-            >
-
-                <div
-                    class="progress-value"
-                    id="progressValue"
-                >
-                    0%
-                </div>
-
-
-                <div class="progress-track">
-
-                    <div
-                        class="progress-fill"
-                        id="progressFill"
-                    ></div>
-
-                </div>
-
-
-                <p
-                    id="statusText"
-                >
-                    In Progress
-                </p>
-
-            </div>
-
-        </article>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
+        <!-- =====================================================
      THEORY
 ===================================================== -->
 
-<section
-    id="theorySection"
-    class="simulation-section"
->
+        <section id="theorySection" class="simulation-section">
 
-    <div class="section-heading">
-
-        <div>
-
-            <span class="section-label">
-                THEORY
-            </span>
-
-
-            <h2>
-                Theory & Methodology
-            </h2>
-
-        </div>
-
-
-        <button
-            class="outline-button"
-            id="editTheory"
-        >
-            Edit Theory
-        </button>
-
-    </div>
-
-
-    <div class="theory-grid">
-
-
-        <!-- THEORY -->
-
-        <article class="simulation-card theory-card">
-
-            <div class="card-header">
+            <div class="section-heading">
 
                 <div>
 
-                    <span class="card-label">
-                        APPROACH
+                    <span class="section-label">
+                        THEORY
                     </span>
 
 
-                    <h3>
-                        Simulation Methodology
-                    </h3>
-
-                </div>
-
-            </div>
-
-
-            <div
-                class="editable-content"
-                id="theoryContent"
-            >
-
-                <p>
-                    No theory or methodology added yet.
-                </p>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- EQUATIONS -->
-
-        <article class="simulation-card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        EQUATIONS
-                    </span>
-
-
-                    <h3>
-                        Governing Equations
-                    </h3>
+                    <h2>
+                        Theory & Methodology
+                    </h2>
 
                 </div>
 
 
-                <button
-                    class="text-button"
-                    id="addEquation"
-                >
+                <button class="outline-button" id="editTheory">
+                    Edit Theory
+                </button>
+
+            </div>
+
+
+            <div class="theory-grid">
+
+
+                <!-- THEORY -->
+
+                <article class="simulation-card theory-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-label">
+                                APPROACH
+                            </span>
+
+
+                            <h3>
+                                Simulation Methodology
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="editable-content" id="theoryContent">
+
+                        <p>
+                            No theory or methodology added yet.
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- EQUATIONS -->
+
+                <article class="simulation-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-label">
+                                EQUATIONS
+                            </span>
+
+
+                            <h3>
+                                Governing Equations
+                            </h3>
+
+                        </div>
+
+
+                        <button class="text-button" id="addEquation">
+                            + Add
+                        </button>
+
+                    </div>
+
+
+                    <div class="equation-list" id="equationList">
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+     PARAMETERS
+===================================================== -->
+
+        <section id="parametersSection" class="simulation-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        INPUT PARAMETERS
+                    </span>
+
+
+                    <h2>
+                        Simulation Parameters
+                    </h2>
+
+                </div>
+
+
+                <button class="outline-button" id="addParameter">
+                    + Parameter
+                </button>
+
+            </div>
+
+
+            <div class="parameter-grid" id="parameterGrid">
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+     SIMULATION MODEL
+===================================================== -->
+
+        <section class="simulation-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        MODEL
+                    </span>
+
+
+                    <h2>
+                        Simulation Model
+                    </h2>
+
+                </div>
+
+
+                <button class="outline-button" id="uploadModelImage">
+                    + Add Image
+                </button>
+
+            </div>
+
+
+            <div class="model-layout">
+
+
+                <!-- MODEL IMAGE -->
+
+                <article class="simulation-card model-preview-card">
+
+                    <div class="model-preview" id="modelPreview">
+
+                        <div class="empty-preview" id="emptyModelPreview">
+
+                            <span>
+                                ◇
+                            </span>
+
+
+                            <strong>
+                                Simulation Model Preview
+                            </strong>
+
+
+                            <p>
+                                Upload a screenshot of your
+                                simulation model.
+                            </p>
+
+
+                            <button id="modelImageButton" class="outline-button">
+                                Upload Image
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- MODEL NOTES -->
+
+                <article class="simulation-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-label">
+                                MODEL NOTES
+                            </span>
+
+
+                            <h3>
+                                Architecture
+                            </h3>
+
+                        </div>
+
+
+                        <button class="text-button" id="editModelNotes">
+                            Edit
+                        </button>
+
+                    </div>
+
+
+                    <div class="editable-content" id="modelNotes">
+
+                        <p>
+                            No model architecture notes added yet.
+                        </p>
+
+                    </div>
+
+                </article>
+
+            </div>
+
+
+            <input type="file" id="modelImageInput" accept="image/*" hidden>
+
+        </section>
+
+
+
+        <!-- =====================================================
+     RESULTS
+===================================================== -->
+
+        <section id="resultsSection" class="simulation-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        RESULTS
+                    </span>
+
+
+                    <h2>
+                        What happened?
+                    </h2>
+
+                </div>
+
+
+                <button class="outline-button" id="editResults">
+                    Edit Observations
+                </button>
+
+            </div>
+
+
+            <div class="results-grid">
+
+
+                <!-- OBSERVATIONS -->
+
+                <article class="simulation-card results-summary">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-label">
+                                RESULT SUMMARY
+                            </span>
+
+
+                            <h3>
+                                Observations
+                            </h3>
+
+                        </div>
+
+                    </div>
+
+
+                    <div id="resultsContent" class="editable-content">
+
+                        <p>
+                            No observations recorded yet.
+                        </p>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- KEY RESULTS -->
+
+                <article class="simulation-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-label">
+                                OUTPUT
+                            </span>
+
+
+                            <h3>
+                                Key Results
+                            </h3>
+
+                        </div>
+
+
+                        <button class="text-button" id="addResult">
+                            + Add
+                        </button>
+
+                    </div>
+
+
+                    <div class="result-list" id="resultList">
+                    </div>
+
+                </article>
+
+
+
+                <!-- PROBLEMS -->
+
+                <article class="simulation-card">
+
+                    <div class="card-header">
+
+                        <div>
+
+                            <span class="card-label">
+                                DEBUGGING
+                            </span>
+
+
+                            <h3>
+                                Problems Found
+                            </h3>
+
+                        </div>
+
+
+                        <button class="text-button" id="addProblem">
+                            + Problem
+                        </button>
+
+                    </div>
+
+
+                    <div class="problem-list" id="problemList">
+                    </div>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+     CONCLUSION
+===================================================== -->
+
+        <section class="simulation-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        CONCLUSION
+                    </span>
+
+
+                    <h2>
+                        Simulation Conclusion
+                    </h2>
+
+                </div>
+
+
+                <button class="text-button" id="editConclusion">
+                    Edit
+                </button>
+
+            </div>
+
+
+            <article class="simulation-card conclusion-card">
+
+                <textarea id="conclusionText"
+                    placeholder="What did this simulation prove? What did you learn? What should be changed in the next run?"></textarea>
+
+
+                <div class="card-footer">
+
+                    <span>
+                        Keep this focused on what the simulation actually demonstrated.
+                    </span>
+
+
+                    <button class="primary-button" id="saveConclusion">
+                        Save Conclusion
+                    </button>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+
+        <!-- =====================================================
+     TIMELINE
+===================================================== -->
+
+        <section id="timelineSection" class="simulation-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        WORK PLAN
+                    </span>
+
+
+                    <h2>
+                        Simulation Timeline
+                    </h2>
+
+                </div>
+
+
+                <button class="outline-button" id="addTimeline">
+                    + Timeline
+                </button>
+
+            </div>
+
+
+            <div class="simulation-timeline" id="simulationTimeline">
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================================
+     FUTURE WORK
+===================================================== -->
+
+        <section class="simulation-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-label">
+                        NEXT STEPS
+                    </span>
+
+
+                    <h2>
+                        Future Work
+                    </h2>
+
+                </div>
+
+
+                <button class="outline-button" id="addFutureWork">
                     + Add
                 </button>
 
             </div>
 
 
-            <div
-                class="equation-list"
-                id="equationList"
-            >
+            <div class="future-work-grid" id="futureWorkList">
             </div>
 
-        </article>
-
-    </div>
-
-</section>
+        </section>
 
 
 
-<!-- =====================================================
-     PARAMETERS
+        <!-- =====================================================
+     FILES & LINKS
 ===================================================== -->
 
-<section
-    id="parametersSection"
-    class="simulation-section"
->
+        <section id="filesSection" class="simulation-section">
 
-    <div class="section-heading">
+            <div class="section-heading">
 
-        <div>
+                <div>
 
-            <span class="section-label">
-                INPUT PARAMETERS
-            </span>
-
-
-            <h2>
-                Simulation Parameters
-            </h2>
-
-        </div>
-
-
-        <button
-            class="outline-button"
-            id="addParameter"
-        >
-            + Parameter
-        </button>
-
-    </div>
-
-
-    <div
-        class="parameter-grid"
-        id="parameterGrid"
-    >
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     SIMULATION MODEL
-===================================================== -->
-
-<section
-    class="simulation-section"
->
-
-    <div class="section-heading">
-
-        <div>
-
-            <span class="section-label">
-                MODEL
-            </span>
-
-
-            <h2>
-                Simulation Model
-            </h2>
-
-        </div>
-
-
-        <button
-            class="outline-button"
-            id="uploadModelImage"
-        >
-            + Add Image
-        </button>
-
-    </div>
-
-
-    <div class="model-layout">
-
-
-        <!-- MODEL IMAGE -->
-
-        <article class="simulation-card model-preview-card">
-
-            <div
-                class="model-preview"
-                id="modelPreview"
-            >
-
-                <div
-                    class="empty-preview"
-                    id="emptyModelPreview"
-                >
-
-                    <span>
-                        ◇
+                    <span class="section-label">
+                        RESOURCES
                     </span>
 
 
-                    <strong>
-                        Simulation Model Preview
-                    </strong>
+                    <h2>
+                        Files & Links
+                    </h2>
+
+                </div>
 
 
-                    <p>
-                        Upload a screenshot of your
-                        simulation model.
-                    </p>
+                <div class="heading-actions">
+
+                    <button class="outline-button" id="addSimulationLink">
+                        + Link
+                    </button>
 
 
-                    <button
-                        id="modelImageButton"
-                        class="outline-button"
-                    >
-                        Upload Image
+                    <button class="primary-button" id="uploadSimulationFile">
+                        + Upload
                     </button>
 
                 </div>
 
             </div>
 
-        </article>
 
-
-
-        <!-- MODEL NOTES -->
-
-        <article class="simulation-card">
-
-            <div class="card-header">
+            <div class="simulation-upload-zone" id="simulationUploadZone">
 
                 <div>
 
-                    <span class="card-label">
-                        MODEL NOTES
+                    <strong>
+                        Upload simulation resources
+                    </strong>
+
+
+                    <p>
+                        Images, videos, PDFs, documents,
+                        MATLAB files, Simulink models,
+                        datasets, ZIP files or any other file.
+                    </p>
+
+
+                    <span>
+                        Drag & drop or click to browse
                     </span>
-
-
-                    <h3>
-                        Architecture
-                    </h3>
-
-                </div>
-
-
-                <button
-                    class="text-button"
-                    id="editModelNotes"
-                >
-                    Edit
-                </button>
-
-            </div>
-
-
-            <div
-                class="editable-content"
-                id="modelNotes"
-            >
-
-                <p>
-                    No model architecture notes added yet.
-                </p>
-
-            </div>
-
-        </article>
-
-    </div>
-
-
-    <input
-        type="file"
-        id="modelImageInput"
-        accept="image/*"
-        hidden
-    >
-
-</section>
-
-
-
-<!-- =====================================================
-     RESULTS
-===================================================== -->
-
-<section
-    id="resultsSection"
-    class="simulation-section"
->
-
-    <div class="section-heading">
-
-        <div>
-
-            <span class="section-label">
-                RESULTS
-            </span>
-
-
-            <h2>
-                What happened?
-            </h2>
-
-        </div>
-
-
-        <button
-            class="outline-button"
-            id="editResults"
-        >
-            Edit Observations
-        </button>
-
-    </div>
-
-
-    <div class="results-grid">
-
-
-        <!-- OBSERVATIONS -->
-
-        <article class="simulation-card results-summary">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        RESULT SUMMARY
-                    </span>
-
-
-                    <h3>
-                        Observations
-                    </h3>
 
                 </div>
 
             </div>
 
 
-            <div
-                id="resultsContent"
-                class="editable-content"
-            >
-
-                <p>
-                    No observations recorded yet.
-                </p>
-
-            </div>
-
-        </article>
+            <input type="file" id="simulationFileInput" multiple hidden>
 
 
-
-        <!-- KEY RESULTS -->
-
-        <article class="simulation-card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        OUTPUT
-                    </span>
-
-
-                    <h3>
-                        Key Results
-                    </h3>
-
-                </div>
-
-
-                <button
-                    class="text-button"
-                    id="addResult"
-                >
-                    + Add
-                </button>
-
+            <div class="attachment-grid" id="simulationAttachmentGrid">
             </div>
 
 
-            <div
-                class="result-list"
-                id="resultList"
-            >
+            <div class="link-list" id="simulationLinkList">
             </div>
 
-        </article>
+        </section>
 
 
 
-        <!-- PROBLEMS -->
-
-        <article class="simulation-card">
-
-            <div class="card-header">
-
-                <div>
-
-                    <span class="card-label">
-                        DEBUGGING
-                    </span>
-
-
-                    <h3>
-                        Problems Found
-                    </h3>
-
-                </div>
-
-
-                <button
-                    class="text-button"
-                    id="addProblem"
-                >
-                    + Problem
-                </button>
-
-            </div>
-
-
-            <div
-                class="problem-list"
-                id="problemList"
-            >
-            </div>
-
-        </article>
-
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     CONCLUSION
-===================================================== -->
-
-<section
-    class="simulation-section"
->
-
-    <div class="section-heading">
-
-        <div>
-
-            <span class="section-label">
-                CONCLUSION
-            </span>
-
-
-            <h2>
-                Simulation Conclusion
-            </h2>
-
-        </div>
-
-
-        <button
-            class="text-button"
-            id="editConclusion"
-        >
-            Edit
-        </button>
-
-    </div>
-
-
-    <article class="simulation-card conclusion-card">
-
-        <textarea
-            id="conclusionText"
-            placeholder="What did this simulation prove? What did you learn? What should be changed in the next run?"
-        ></textarea>
-
-
-        <div class="card-footer">
-
-            <span>
-                Keep this focused on what the simulation actually demonstrated.
-            </span>
-
-
-            <button
-                class="primary-button"
-                id="saveConclusion"
-            >
-                Save Conclusion
-            </button>
-
-        </div>
-
-    </article>
-
-</section>
-
-
-
-<!-- =====================================================
-     TIMELINE
-===================================================== -->
-
-<section
-    id="timelineSection"
-    class="simulation-section"
->
-
-    <div class="section-heading">
-
-        <div>
-
-            <span class="section-label">
-                WORK PLAN
-            </span>
-
-
-            <h2>
-                Simulation Timeline
-            </h2>
-
-        </div>
-
-
-        <button
-            class="outline-button"
-            id="addTimeline"
-        >
-            + Timeline
-        </button>
-
-    </div>
-
-
-    <div
-        class="simulation-timeline"
-        id="simulationTimeline"
-    >
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     FUTURE WORK
-===================================================== -->
-
-<section
-    class="simulation-section"
->
-
-    <div class="section-heading">
-
-        <div>
-
-            <span class="section-label">
-                NEXT STEPS
-            </span>
-
-
-            <h2>
-                Future Work
-            </h2>
-
-        </div>
-
-
-        <button
-            class="outline-button"
-            id="addFutureWork"
-        >
-            + Add
-        </button>
-
-    </div>
-
-
-    <div
-        class="future-work-grid"
-        id="futureWorkList"
-    >
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
-     FILES & LINKS
-===================================================== -->
-
-<section
-    id="filesSection"
-    class="simulation-section"
->
-
-    <div class="section-heading">
-
-        <div>
-
-            <span class="section-label">
-                RESOURCES
-            </span>
-
-
-            <h2>
-                Files & Links
-            </h2>
-
-        </div>
-
-
-        <div class="heading-actions">
-
-            <button
-                class="outline-button"
-                id="addSimulationLink"
-            >
-                + Link
-            </button>
-
-
-            <button
-                class="primary-button"
-                id="uploadSimulationFile"
-            >
-                + Upload
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <div
-        class="simulation-upload-zone"
-        id="simulationUploadZone"
-    >
-
-        <div>
-
-            <strong>
-                Upload simulation resources
-            </strong>
-
-
-            <p>
-                Images, videos, PDFs, documents,
-                MATLAB files, Simulink models,
-                datasets, ZIP files or any other file.
-            </p>
-
-
-            <span>
-                Drag & drop or click to browse
-            </span>
-
-        </div>
-
-    </div>
-
-
-    <input
-        type="file"
-        id="simulationFileInput"
-        multiple
-        hidden
-    >
-
-
-    <div
-        class="attachment-grid"
-        id="simulationAttachmentGrid"
-    >
-    </div>
-
-
-    <div
-        class="link-list"
-        id="simulationLinkList"
-    >
-    </div>
-
-</section>
-
-
-
-<!-- =====================================================
+        <!-- =====================================================
      NOTES
 ===================================================== -->
 
-<section
-    class="simulation-section"
->
+        <section class="simulation-section">
 
-    <div class="section-heading">
+            <div class="section-heading">
 
-        <div>
+                <div>
 
-            <span class="section-label">
-                NOTES
-            </span>
+                    <span class="section-label">
+                        NOTES
+                    </span>
 
 
-            <h2>
-                Simulation Notes
-            </h2>
+                    <h2>
+                        Simulation Notes
+                    </h2>
 
-        </div>
+                </div>
 
-    </div>
-
-
-    <article class="simulation-card notes-card">
-
-        <textarea
-            id="simulationNotes"
-            placeholder="Record observations, debugging notes, changes made between runs, solver issues, unexpected behaviour, etc."
-        ></textarea>
+            </div>
 
 
-        <div class="card-footer">
+            <article class="simulation-card notes-card">
 
-            <span>
-                These notes are for your future self.
-            </span>
-
-
-            <button
-                class="primary-button"
-                id="saveSimulationNotes"
-            >
-                Save Notes
-            </button>
-
-        </div>
-
-    </article>
-
-</section>
+                <textarea id="simulationNotes"
+                    placeholder="Record observations, debugging notes, changes made between runs, solver issues, unexpected behaviour, etc."></textarea>
 
 
-</main>
+                <div class="card-footer">
+
+                    <span>
+                        These notes are for your future self.
+                    </span>
+
+
+                    <button class="primary-button" id="saveSimulationNotes">
+                        Save Notes
+                    </button>
+
+                </div>
+
+            </article>
+
+        </section>
+
+
+    </main>
 
 
 
-<!-- =====================================================
+    <!-- =====================================================
      MODAL: EDIT OVERVIEW
 ===================================================== -->
 
-<div
-    class="simulation-modal hidden"
-    id="simulationOverviewModal"
->
+    <div class="simulation-modal hidden" id="simulationOverviewModal">
 
-    <div class="modal-panel">
+        <div class="modal-panel">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2>
-                Edit Simulation Overview
-            </h2>
+                <h2>
+                    Edit Simulation Overview
+                </h2>
 
 
-            <button
-                type="button"
-                data-close-modal="simulationOverviewModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="modal-grid">
-
-
-            <div class="full">
-
-                <label>
-                    Description / Objective
-                </label>
-
-
-                <textarea
-                    id="overviewDescriptionInput"
-                    placeholder="What are you simulating and what is the objective?"
-                ></textarea>
+                <button type="button" data-close-modal="simulationOverviewModal">
+                    ×
+                </button>
 
             </div>
 
 
-            <div>
-
-                <label>
-                    Status
-                </label>
+            <div class="modal-grid">
 
 
-                <select
-                    id="overviewStatusInput"
-                >
+                <div class="full">
 
-                    <option value="planned">
-                        Planned
-                    </option>
+                    <label>
+                        Description / Objective
+                    </label>
 
-                    <option value="in-progress">
-                        In Progress
-                    </option>
 
-                    <option value="completed">
-                        Completed
-                    </option>
+                    <textarea id="overviewDescriptionInput"
+                        placeholder="What are you simulating and what is the objective?"></textarea>
 
-                    <option value="paused">
-                        Paused
-                    </option>
+                </div>
 
-                </select>
+
+                <div>
+
+                    <label>
+                        Status
+                    </label>
+
+
+                    <select id="overviewStatusInput">
+
+                        <option value="planned">
+                            Planned
+                        </option>
+
+                        <option value="in-progress">
+                            In Progress
+                        </option>
+
+                        <option value="completed">
+                            Completed
+                        </option>
+
+                        <option value="paused">
+                            Paused
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Progress (%)
+                    </label>
+
+
+                    <input type="number" id="overviewProgressInput" min="0" max="100" placeholder="0">
+
+                </div>
+
+
+                <div class="full">
+
+                    <label>
+                        Tags
+                    </label>
+
+
+                    <input type="text" id="overviewTagsInput" placeholder="MATLAB, Simulink, Power Electronics">
+
+                </div>
 
             </div>
 
 
-            <div>
+            <div class="modal-actions">
 
-                <label>
-                    Progress (%)
-                </label>
+                <button class="outline-button" type="button" data-close-modal="simulationOverviewModal">
+                    Cancel
+                </button>
 
 
-                <input
-                    type="number"
-                    id="overviewProgressInput"
-                    min="0"
-                    max="100"
-                    placeholder="0"
-                >
+                <button class="primary-button" id="saveSimulationOverview">
+                    Save
+                </button>
 
             </div>
-
-
-            <div class="full">
-
-                <label>
-                    Tags
-                </label>
-
-
-                <input
-                    type="text"
-                    id="overviewTagsInput"
-                    placeholder="MATLAB, Simulink, Power Electronics"
-                >
-
-            </div>
-
-        </div>
-
-
-        <div class="modal-actions">
-
-            <button
-                class="outline-button"
-                type="button"
-                data-close-modal="simulationOverviewModal"
-            >
-                Cancel
-            </button>
-
-
-            <button
-                class="primary-button"
-                id="saveSimulationOverview"
-            >
-                Save
-            </button>
 
         </div>
 
     </div>
 
-</div>
 
 
-
-<!-- =====================================================
+    <!-- =====================================================
      MODAL: SOFTWARE
 ===================================================== -->
 
-<div
-    class="simulation-modal hidden"
-    id="softwareModal"
->
+    <div class="simulation-modal hidden" id="softwareModal">
 
-    <div class="modal-panel">
+        <div class="modal-panel">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2>
-                Tools & Software
-            </h2>
+                <h2>
+                    Tools & Software
+                </h2>
 
 
-            <button
-                type="button"
-                data-close-modal="softwareModal"
-            >
-                ×
-            </button>
+                <button type="button" data-close-modal="softwareModal">
+                    ×
+                </button>
 
-        </div>
+            </div>
 
 
-        <label>
-            Software / Tools
-        </label>
+            <label>
+                Software / Tools
+            </label>
 
 
-        <textarea
-            id="softwareInput"
-            placeholder="MATLAB&#10;Simulink&#10;Simscape"
-        ></textarea>
+            <textarea id="softwareInput" placeholder="MATLAB&#10;Simulink&#10;Simscape"></textarea>
 
 
-        <div class="modal-actions">
+            <div class="modal-actions">
 
-            <button
-                class="outline-button"
-                type="button"
-                data-close-modal="softwareModal"
-            >
-                Cancel
-            </button>
+                <button class="outline-button" type="button" data-close-modal="softwareModal">
+                    Cancel
+                </button>
 
 
-            <button
-                class="primary-button"
-                id="saveSoftware"
-            >
-                Save
-            </button>
+                <button class="primary-button" id="saveSoftware">
+                    Save
+                </button>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
 
-
-<!-- =====================================================
+    <!-- =====================================================
      MODAL: THEORY
 ===================================================== -->
 
-<div
-    class="simulation-modal hidden"
-    id="theoryModal"
->
+    <div class="simulation-modal hidden" id="theoryModal">
 
-    <div class="modal-panel">
+        <div class="modal-panel">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2>
-                Theory & Methodology
-            </h2>
+                <h2>
+                    Theory & Methodology
+                </h2>
 
 
-            <button
-                type="button"
-                data-close-modal="theoryModal"
-            >
-                ×
-            </button>
+                <button type="button" data-close-modal="theoryModal">
+                    ×
+                </button>
 
-        </div>
+            </div>
 
 
-        <label>
-            Theory / Methodology
-        </label>
+            <label>
+                Theory / Methodology
+            </label>
 
 
-        <textarea
-            id="theoryInput"
-            placeholder="Explain the theory, assumptions, methodology and approach used in this simulation."
-        ></textarea>
+            <textarea id="theoryInput"
+                placeholder="Explain the theory, assumptions, methodology and approach used in this simulation."></textarea>
 
 
-        <div class="modal-actions">
+            <div class="modal-actions">
 
-            <button
-                class="outline-button"
-                type="button"
-                data-close-modal="theoryModal"
-            >
-                Cancel
-            </button>
+                <button class="outline-button" type="button" data-close-modal="theoryModal">
+                    Cancel
+                </button>
 
 
-            <button
-                class="primary-button"
-                id="saveTheory"
-            >
-                Save
-            </button>
+                <button class="primary-button" id="saveTheory">
+                    Save
+                </button>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
 
-
-<!-- =====================================================
+    <!-- =====================================================
      MODAL: EQUATION
 ===================================================== -->
 
-<div
-    class="simulation-modal hidden"
-    id="equationModal"
->
+    <div class="simulation-modal hidden" id="equationModal">
 
-    <div class="modal-panel">
+        <div class="modal-panel">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2 id="equationModalTitle">
-                Add Equation
-            </h2>
+                <h2 id="equationModalTitle">
+                    Add Equation
+                </h2>
 
 
-            <button
-                type="button"
-                data-close-modal="equationModal"
-            >
-                ×
-            </button>
+                <button type="button" data-close-modal="equationModal">
+                    ×
+                </button>
 
-        </div>
+            </div>
 
 
-        <label>
-            Equation
-        </label>
+            <label>
+                Equation
+            </label>
 
 
-        <input
-            type="text"
-            id="equationInput"
-            placeholder="Example: V = L(di/dt) + Ri + e"
-        >
+            <input type="text" id="equationInput" placeholder="Example: V = L(di/dt) + Ri + e">
 
 
-        <label>
-            Description
-        </label>
+            <label>
+                Description
+            </label>
 
 
-        <textarea
-            id="equationDescriptionInput"
-            placeholder="Explain what this equation represents."
-        ></textarea>
+            <textarea id="equationDescriptionInput" placeholder="Explain what this equation represents."></textarea>
 
 
-        <input
-            type="hidden"
-            id="editingEquationId"
-        >
+            <input type="hidden" id="editingEquationId">
 
 
-        <div class="modal-actions">
+            <div class="modal-actions">
 
-            <button
-                class="outline-button"
-                type="button"
-                data-close-modal="equationModal"
-            >
-                Cancel
-            </button>
+                <button class="outline-button" type="button" data-close-modal="equationModal">
+                    Cancel
+                </button>
 
 
-            <button
-                class="primary-button"
-                id="saveEquation"
-            >
-                Save Equation
-            </button>
+                <button class="primary-button" id="saveEquation">
+                    Save Equation
+                </button>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
 
-
-<!-- =====================================================
+    <!-- =====================================================
      MODAL: PARAMETER
 ===================================================== -->
 
-<div
-    class="simulation-modal hidden"
-    id="parameterModal"
->
+    <div class="simulation-modal hidden" id="parameterModal">
 
-    <div class="modal-panel">
+        <div class="modal-panel">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2 id="parameterModalTitle">
-                Add Parameter
-            </h2>
+                <h2 id="parameterModalTitle">
+                    Add Parameter
+                </h2>
 
 
-            <button
-                type="button"
-                data-close-modal="parameterModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="modal-grid">
-
-            <div>
-
-                <label>
-                    Parameter Name
-                </label>
-
-
-                <input
-                    type="text"
-                    id="parameterNameInput"
-                    placeholder="Wind Speed"
-                >
+                <button type="button" data-close-modal="parameterModal">
+                    ×
+                </button>
 
             </div>
 
 
-            <div>
+            <div class="modal-grid">
 
-                <label>
-                    Value
-                </label>
+                <div>
+
+                    <label>
+                        Parameter Name
+                    </label>
 
 
-                <input
-                    type="text"
-                    id="parameterValueInput"
-                    placeholder="8"
-                >
+                    <input type="text" id="parameterNameInput" placeholder="Wind Speed">
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Value
+                    </label>
+
+
+                    <input type="text" id="parameterValueInput" placeholder="8">
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Unit
+                    </label>
+
+
+                    <input type="text" id="parameterUnitInput" placeholder="m/s">
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Category
+                    </label>
+
+
+                    <input type="text" id="parameterCategoryInput" placeholder="Input">
+
+                </div>
+
+
+                <div class="full">
+
+                    <label>
+                        Description
+                    </label>
+
+
+                    <textarea id="parameterDescriptionInput"
+                        placeholder="Optional explanation of this parameter."></textarea>
+
+                </div>
 
             </div>
 
 
-            <div>
-
-                <label>
-                    Unit
-                </label>
+            <input type="hidden" id="editingParameterId">
 
 
-                <input
-                    type="text"
-                    id="parameterUnitInput"
-                    placeholder="m/s"
-                >
+            <div class="modal-actions">
 
-            </div>
+                <button class="outline-button" type="button" data-close-modal="parameterModal">
+                    Cancel
+                </button>
 
 
-            <div>
-
-                <label>
-                    Category
-                </label>
-
-
-                <input
-                    type="text"
-                    id="parameterCategoryInput"
-                    placeholder="Input"
-                >
+                <button class="primary-button" id="saveParameter">
+                    Save Parameter
+                </button>
 
             </div>
-
-
-            <div class="full">
-
-                <label>
-                    Description
-                </label>
-
-
-                <textarea
-                    id="parameterDescriptionInput"
-                    placeholder="Optional explanation of this parameter."
-                ></textarea>
-
-            </div>
-
-        </div>
-
-
-        <input
-            type="hidden"
-            id="editingParameterId"
-        >
-
-
-        <div class="modal-actions">
-
-            <button
-                class="outline-button"
-                type="button"
-                data-close-modal="parameterModal"
-            >
-                Cancel
-            </button>
-
-
-            <button
-                class="primary-button"
-                id="saveParameter"
-            >
-                Save Parameter
-            </button>
 
         </div>
 
     </div>
 
-</div>
 
 
-
-<!-- =====================================================
+    <!-- =====================================================
      MODAL: MODEL NOTES
 ===================================================== -->
 
-<div
-    class="simulation-modal hidden"
-    id="modelNotesModal"
->
+    <div class="simulation-modal hidden" id="modelNotesModal">
 
-    <div class="modal-panel">
+        <div class="modal-panel">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2>
-                Simulation Model Notes
-            </h2>
+                <h2>
+                    Simulation Model Notes
+                </h2>
 
 
-            <button
-                type="button"
-                data-close-modal="modelNotesModal"
-            >
-                ×
-            </button>
+                <button type="button" data-close-modal="modelNotesModal">
+                    ×
+                </button>
 
-        </div>
+            </div>
 
 
-        <label>
-            Model Architecture
-        </label>
+            <label>
+                Model Architecture
+            </label>
 
 
-        <textarea
-            id="modelNotesInput"
-            placeholder="Describe the major blocks, signal flow, controller structure, power stage and measurement system."
-        ></textarea>
+            <textarea id="modelNotesInput"
+                placeholder="Describe the major blocks, signal flow, controller structure, power stage and measurement system."></textarea>
 
 
-        <div class="modal-actions">
+            <div class="modal-actions">
 
-            <button
-                class="outline-button"
-                type="button"
-                data-close-modal="modelNotesModal"
-            >
-                Cancel
-            </button>
+                <button class="outline-button" type="button" data-close-modal="modelNotesModal">
+                    Cancel
+                </button>
 
 
-            <button
-                class="primary-button"
-                id="saveModelNotes"
-            >
-                Save
-            </button>
+                <button class="primary-button" id="saveModelNotes">
+                    Save
+                </button>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
 
-
-<!-- =====================================================
+    <!-- =====================================================
      MODAL: OBSERVATIONS
 ===================================================== -->
 
-<div
-    class="simulation-modal hidden"
-    id="resultsModal"
->
+    <div class="simulation-modal hidden" id="resultsModal">
 
-    <div class="modal-panel">
+        <div class="modal-panel">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2>
-                Simulation Observations
-            </h2>
+                <h2>
+                    Simulation Observations
+                </h2>
 
 
-            <button
-                type="button"
-                data-close-modal="resultsModal"
-            >
-                ×
-            </button>
+                <button type="button" data-close-modal="resultsModal">
+                    ×
+                </button>
 
-        </div>
+            </div>
 
 
-        <label>
-            Observations
-        </label>
+            <label>
+                Observations
+            </label>
 
 
-        <textarea
-            id="resultsInput"
-            placeholder="What happened during the simulation? Did the output match the expected theoretical behaviour?"
-        ></textarea>
+            <textarea id="resultsInput"
+                placeholder="What happened during the simulation? Did the output match the expected theoretical behaviour?"></textarea>
 
 
-        <div class="modal-actions">
+            <div class="modal-actions">
 
-            <button
-                class="outline-button"
-                type="button"
-                data-close-modal="resultsModal"
-            >
-                Cancel
-            </button>
+                <button class="outline-button" type="button" data-close-modal="resultsModal">
+                    Cancel
+                </button>
 
 
-            <button
-                class="primary-button"
-                id="saveResults"
-            >
-                Save
-            </button>
+                <button class="primary-button" id="saveResults">
+                    Save
+                </button>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
 
-
-<!-- =====================================================
+    <!-- =====================================================
      MODAL: KEY RESULT
 ===================================================== -->
 
-<div
-    class="simulation-modal hidden"
-    id="resultModal"
->
+    <div class="simulation-modal hidden" id="resultModal">
 
-    <div class="modal-panel">
+        <div class="modal-panel">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2 id="resultModalTitle">
-                Add Result
-            </h2>
+                <h2 id="resultModalTitle">
+                    Add Result
+                </h2>
 
 
-            <button
-                type="button"
-                data-close-modal="resultModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="modal-grid">
-
-            <div>
-
-                <label>
-                    Result Name
-                </label>
-
-
-                <input
-                    type="text"
-                    id="resultNameInput"
-                    placeholder="Output Power"
-                >
+                <button type="button" data-close-modal="resultModal">
+                    ×
+                </button>
 
             </div>
 
 
-            <div>
+            <div class="modal-grid">
 
-                <label>
-                    Value
-                </label>
+                <div>
+
+                    <label>
+                        Result Name
+                    </label>
 
 
-                <input
-                    type="text"
-                    id="resultValueInput"
-                    placeholder="1.2"
-                >
+                    <input type="text" id="resultNameInput" placeholder="Output Power">
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Value
+                    </label>
+
+
+                    <input type="text" id="resultValueInput" placeholder="1.2">
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Unit
+                    </label>
+
+
+                    <input type="text" id="resultUnitInput" placeholder="kW">
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Expected Value
+                    </label>
+
+
+                    <input type="text" id="resultExpectedInput" placeholder="Optional">
+
+                </div>
+
+
+                <div class="full">
+
+                    <label>
+                        Observation
+                    </label>
+
+
+                    <textarea id="resultObservationInput" placeholder="What does this result indicate?"></textarea>
+
+                </div>
 
             </div>
 
 
-            <div>
-
-                <label>
-                    Unit
-                </label>
+            <input type="hidden" id="editingResultId">
 
 
-                <input
-                    type="text"
-                    id="resultUnitInput"
-                    placeholder="kW"
-                >
+            <div class="modal-actions">
 
-            </div>
+                <button class="outline-button" type="button" data-close-modal="resultModal">
+                    Cancel
+                </button>
 
 
-            <div>
-
-                <label>
-                    Expected Value
-                </label>
-
-
-                <input
-                    type="text"
-                    id="resultExpectedInput"
-                    placeholder="Optional"
-                >
+                <button class="primary-button" id="saveResult">
+                    Save Result
+                </button>
 
             </div>
-
-
-            <div class="full">
-
-                <label>
-                    Observation
-                </label>
-
-
-                <textarea
-                    id="resultObservationInput"
-                    placeholder="What does this result indicate?"
-                ></textarea>
-
-            </div>
-
-        </div>
-
-
-        <input
-            type="hidden"
-            id="editingResultId"
-        >
-
-
-        <div class="modal-actions">
-
-            <button
-                class="outline-button"
-                type="button"
-                data-close-modal="resultModal"
-            >
-                Cancel
-            </button>
-
-
-            <button
-                class="primary-button"
-                id="saveResult"
-            >
-                Save Result
-            </button>
 
         </div>
 
     </div>
 
-</div>
 
 
-
-<!-- =====================================================
+    <!-- =====================================================
      MODAL: PROBLEM
 ===================================================== -->
 
-<div
-    class="simulation-modal hidden"
-    id="problemModal"
->
+    <div class="simulation-modal hidden" id="problemModal">
 
-    <div class="modal-panel">
+        <div class="modal-panel">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2 id="problemModalTitle">
-                Add Problem
-            </h2>
+                <h2 id="problemModalTitle">
+                    Add Problem
+                </h2>
 
 
-            <button
-                type="button"
-                data-close-modal="problemModal"
-            >
-                ×
-            </button>
+                <button type="button" data-close-modal="problemModal">
+                    ×
+                </button>
 
-        </div>
+            </div>
 
 
-        <label>
-            Problem
-        </label>
+            <label>
+                Problem
+            </label>
 
 
-        <input
-            type="text"
-            id="problemTitleInput"
-            placeholder="Solver convergence issue"
-        >
+            <input type="text" id="problemTitleInput" placeholder="Solver convergence issue">
 
 
-        <label>
-            Description
-        </label>
+            <label>
+                Description
+            </label>
 
 
-        <textarea
-            id="problemDescriptionInput"
-            placeholder="Describe the error, unexpected behaviour or issue."
-        ></textarea>
+            <textarea id="problemDescriptionInput"
+                placeholder="Describe the error, unexpected behaviour or issue."></textarea>
 
 
-        <label>
-            Status
-        </label>
+            <label>
+                Status
+            </label>
 
 
-        <select
-            id="problemStatusInput"
-        >
+            <select id="problemStatusInput">
 
-            <option value="open">
-                Open
-            </option>
+                <option value="open">
+                    Open
+                </option>
 
-            <option value="investigating">
-                Investigating
-            </option>
+                <option value="investigating">
+                    Investigating
+                </option>
 
-            <option value="resolved">
-                Resolved
-            </option>
+                <option value="resolved">
+                    Resolved
+                </option>
 
-        </select>
+            </select>
 
 
-        <input
-            type="hidden"
-            id="editingProblemId"
-        >
+            <input type="hidden" id="editingProblemId">
 
 
-        <div class="modal-actions">
+            <div class="modal-actions">
 
-            <button
-                class="outline-button"
-                type="button"
-                data-close-modal="problemModal"
-            >
-                Cancel
-            </button>
+                <button class="outline-button" type="button" data-close-modal="problemModal">
+                    Cancel
+                </button>
 
 
-            <button
-                class="primary-button"
-                id="saveProblem"
-            >
-                Save Problem
-            </button>
+                <button class="primary-button" id="saveProblem">
+                    Save Problem
+                </button>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
 
-
-<!-- =====================================================
+    <!-- =====================================================
      MODAL: TIMELINE
 ===================================================== -->
 
-<div
-    class="simulation-modal hidden"
-    id="timelineModal"
->
+    <div class="simulation-modal hidden" id="timelineModal">
 
-    <div class="modal-panel">
+        <div class="modal-panel">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2 id="timelineModalTitle">
-                Add Timeline Entry
-            </h2>
+                <h2 id="timelineModalTitle">
+                    Add Timeline Entry
+                </h2>
 
 
-            <button
-                type="button"
-                data-close-modal="timelineModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="modal-grid">
-
-            <div>
-
-                <label>
-                    Date
-                </label>
-
-
-                <input
-                    type="date"
-                    id="timelineDateInput"
-                >
+                <button type="button" data-close-modal="timelineModal">
+                    ×
+                </button>
 
             </div>
 
 
-            <div>
+            <div class="modal-grid">
 
-                <label>
-                    Status
-                </label>
+                <div>
+
+                    <label>
+                        Date
+                    </label>
 
 
-                <select
-                    id="timelineStatusInput"
-                >
+                    <input type="date" id="timelineDateInput">
 
-                    <option value="planned">
-                        Planned
-                    </option>
+                </div>
 
-                    <option value="ongoing">
-                        Ongoing
-                    </option>
 
-                    <option value="completed">
-                        Completed
-                    </option>
+                <div>
 
-                </select>
+                    <label>
+                        Status
+                    </label>
+
+
+                    <select id="timelineStatusInput">
+
+                        <option value="planned">
+                            Planned
+                        </option>
+
+                        <option value="ongoing">
+                            Ongoing
+                        </option>
+
+                        <option value="completed">
+                            Completed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="full">
+
+                    <label>
+                        Title
+                    </label>
+
+
+                    <input type="text" id="timelineTitleInput" placeholder="Build initial model">
+
+                </div>
+
+
+                <div class="full">
+
+                    <label>
+                        Description
+                    </label>
+
+
+                    <textarea id="timelineDescriptionInput" placeholder="Describe what needs to be done."></textarea>
+
+                </div>
 
             </div>
 
 
-            <div class="full">
-
-                <label>
-                    Title
-                </label>
+            <input type="hidden" id="editingTimelineId">
 
 
-                <input
-                    type="text"
-                    id="timelineTitleInput"
-                    placeholder="Build initial model"
-                >
+            <div class="modal-actions">
 
-            </div>
+                <button class="outline-button" type="button" data-close-modal="timelineModal">
+                    Cancel
+                </button>
 
 
-            <div class="full">
-
-                <label>
-                    Description
-                </label>
-
-
-                <textarea
-                    id="timelineDescriptionInput"
-                    placeholder="Describe what needs to be done."
-                ></textarea>
+                <button class="primary-button" id="saveTimeline">
+                    Save Entry
+                </button>
 
             </div>
-
-        </div>
-
-
-        <input
-            type="hidden"
-            id="editingTimelineId"
-        >
-
-
-        <div class="modal-actions">
-
-            <button
-                class="outline-button"
-                type="button"
-                data-close-modal="timelineModal"
-            >
-                Cancel
-            </button>
-
-
-            <button
-                class="primary-button"
-                id="saveTimeline"
-            >
-                Save Entry
-            </button>
 
         </div>
 
     </div>
 
-</div>
 
 
-
-<!-- =====================================================
+    <!-- =====================================================
      MODAL: FUTURE WORK
 ===================================================== -->
 
-<div
-    class="simulation-modal hidden"
-    id="futureWorkModal"
->
+    <div class="simulation-modal hidden" id="futureWorkModal">
 
-    <div class="modal-panel">
+        <div class="modal-panel">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2 id="futureWorkModalTitle">
-                Add Future Work
-            </h2>
+                <h2 id="futureWorkModalTitle">
+                    Add Future Work
+                </h2>
 
 
-            <button
-                type="button"
-                data-close-modal="futureWorkModal"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <div class="modal-grid">
-
-            <div>
-
-                <label>
-                    Target Date
-                </label>
-
-
-                <input
-                    type="date"
-                    id="futureWorkDateInput"
-                >
+                <button type="button" data-close-modal="futureWorkModal">
+                    ×
+                </button>
 
             </div>
 
 
-            <div>
+            <div class="modal-grid">
 
-                <label>
-                    Priority
-                </label>
+                <div>
+
+                    <label>
+                        Target Date
+                    </label>
 
 
-                <select
-                    id="futureWorkPriorityInput"
-                >
+                    <input type="date" id="futureWorkDateInput">
 
-                    <option value="low">
-                        Low
-                    </option>
+                </div>
 
-                    <option value="medium">
-                        Medium
-                    </option>
 
-                    <option value="high">
-                        High
-                    </option>
+                <div>
 
-                </select>
+                    <label>
+                        Priority
+                    </label>
+
+
+                    <select id="futureWorkPriorityInput">
+
+                        <option value="low">
+                            Low
+                        </option>
+
+                        <option value="medium">
+                            Medium
+                        </option>
+
+                        <option value="high">
+                            High
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="full">
+
+                    <label>
+                        Title
+                    </label>
+
+
+                    <input type="text" id="futureWorkTitleInput" placeholder="Run parameter sweep">
+
+                </div>
+
+
+                <div class="full">
+
+                    <label>
+                        Description
+                    </label>
+
+
+                    <textarea id="futureWorkDescriptionInput"
+                        placeholder="Describe what should be done next."></textarea>
+
+                </div>
 
             </div>
 
 
-            <div class="full">
-
-                <label>
-                    Title
-                </label>
+            <input type="hidden" id="editingFutureWorkId">
 
 
-                <input
-                    type="text"
-                    id="futureWorkTitleInput"
-                    placeholder="Run parameter sweep"
-                >
+            <div class="modal-actions">
 
-            </div>
+                <button class="outline-button" type="button" data-close-modal="futureWorkModal">
+                    Cancel
+                </button>
 
 
-            <div class="full">
-
-                <label>
-                    Description
-                </label>
-
-
-                <textarea
-                    id="futureWorkDescriptionInput"
-                    placeholder="Describe what should be done next."
-                ></textarea>
+                <button class="primary-button" id="saveFutureWork">
+                    Save Future Work
+                </button>
 
             </div>
-
-        </div>
-
-
-        <input
-            type="hidden"
-            id="editingFutureWorkId"
-        >
-
-
-        <div class="modal-actions">
-
-            <button
-                class="outline-button"
-                type="button"
-                data-close-modal="futureWorkModal"
-            >
-                Cancel
-            </button>
-
-
-            <button
-                class="primary-button"
-                id="saveFutureWork"
-            >
-                Save Future Work
-            </button>
 
         </div>
 
     </div>
 
-</div>
 
 
-
-<!-- =====================================================
+    <!-- =====================================================
      MODAL: LINK
 ===================================================== -->
 
-<div
-    class="simulation-modal hidden"
-    id="simulationLinkModal"
->
+    <div class="simulation-modal hidden" id="simulationLinkModal">
 
-    <div class="modal-panel">
+        <div class="modal-panel">
 
-        <div class="modal-header">
+            <div class="modal-header">
 
-            <h2>
-                Add Link
-            </h2>
+                <h2>
+                    Add Link
+                </h2>
 
 
-            <button
-                type="button"
-                data-close-modal="simulationLinkModal"
-            >
-                ×
-            </button>
+                <button type="button" data-close-modal="simulationLinkModal">
+                    ×
+                </button>
 
-        </div>
+            </div>
 
 
-        <label>
-            Link Title
-        </label>
+            <label>
+                Link Title
+            </label>
 
 
-        <input
-            type="text"
-            id="simulationLinkTitleInput"
-            placeholder="MATLAB Documentation"
-        >
+            <input type="text" id="simulationLinkTitleInput" placeholder="MATLAB Documentation">
 
 
-        <label>
-            URL
-        </label>
+            <label>
+                URL
+            </label>
 
 
-        <input
-            type="url"
-            id="simulationLinkUrlInput"
-            placeholder="https://..."
-        >
+            <input type="url" id="simulationLinkUrlInput" placeholder="https://...">
 
 
-        <label>
-            Description
-        </label>
+            <label>
+                Description
+            </label>
 
 
-        <textarea
-            id="simulationLinkDescriptionInput"
-            placeholder="Why is this link useful?"
-        ></textarea>
+            <textarea id="simulationLinkDescriptionInput" placeholder="Why is this link useful?"></textarea>
 
 
-        <div class="modal-actions">
+            <div class="modal-actions">
 
-            <button
-                class="outline-button"
-                type="button"
-                data-close-modal="simulationLinkModal"
-            >
-                Cancel
-            </button>
+                <button class="outline-button" type="button" data-close-modal="simulationLinkModal">
+                    Cancel
+                </button>
 
 
-            <button
-                class="primary-button"
-                id="saveSimulationLink"
-            >
-                Add Link
-            </button>
+                <button class="primary-button" id="saveSimulationLink">
+                    Add Link
+                </button>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
 
 
-
-<!-- =====================================================
+    <!-- =====================================================
      TOAST
 ===================================================== -->
+<div class="completion-overlay" id="completionOverlay">
+    <div class="completion-popup">
+        <div class="completion-icon">✓</div>
 
-<div
-    class="simulation-toast hidden"
-    id="simulationToast"
->
+        <div class="completion-title">
+            Simulation Completed!
+        </div>
+
+        <div class="completion-subtitle">
+            Great work — this simulation is complete.
+        </div>
+    </div>
+
+    <div class="completion-particles" id="completionParticles"></div>
 </div>
+    <div class="simulation-toast hidden" id="simulationToast">
+    </div>
 
 
 
-<!-- =====================================================
+    <!-- =====================================================
      SCRIPTS
 ===================================================== -->
 
-<!-- Supabase JavaScript SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase JavaScript SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- RiGiD Supabase Client -->
-<script src="../../../supabase-client.js"></script>
+    <!-- RiGiD Supabase Client -->
+    <script src="../../../supabase-client.js"></script>
 
-<!-- Simulation Logic -->
-<script src="simulation.js"></script>
+    <script src="../../../google-drive-reconnect.js"></script>
+
+    <!-- Simulation Logic -->
+    <script src="simulation.js"></script>
 
 </body>
 

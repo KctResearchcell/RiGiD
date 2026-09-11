@@ -15,6 +15,20 @@ const SUPABASE_FUNCTIONS_URL =
 
 
 /* =========================================================
+   SAFE HTML HELPER
+========================================================= */
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* =========================================================
    DOM HELPERS
 ========================================================= */
 
@@ -104,12 +118,6 @@ async function initializeDesign() {
 
 
         initializeDesignPage();
-
-
-        console.log(
-            "RiGiD Design loaded:",
-            designData
-        );
 
 
         showTemporaryMessage(
@@ -649,11 +657,11 @@ function convertRigidDataToDesignData(
             {},
 
 
-        changeLog:
+        timeline:
             Array.isArray(
-                design.changeLog
+                design.timeline
             )
-                ? design.changeLog
+                ? design.timeline
                 : []
 
     };
@@ -803,9 +811,9 @@ function convertDesignDataToRigidData(
                 design.review ||
                 {},
 
-            changeLog:
+            timeline:
                 ensureArray(
-                    design.changeLog
+                    design.timeline
                 )
 
         },
@@ -831,7 +839,40 @@ function convertDesignDataToRigidData(
     };
 
 }
+function initializeTimelineActions() {
 
+    const button =
+        getElement(
+            "addTimelineButton"
+        );
+
+    if (!button) {
+        return;
+    }
+
+    if (
+        button.dataset.timelineBound === "true"
+    ) {
+        return;
+    }
+
+    button.dataset.timelineBound =
+        "true";
+
+    button.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            openAddTimelineModal();
+
+        }
+    );
+
+}
 
 /* =========================================================
    INITIALIZE PAGE
@@ -854,6 +895,12 @@ function initializeDesignPage() {
     initializeFileActions();
 
     initializeReferenceActions();
+
+    initializeProgressActions();
+
+    initializeTimelineActions();
+
+    initializeReviewActions();
 
 }
 
@@ -897,7 +944,7 @@ function renderEverything() {
 
     renderReview();
 
-    renderChangeLog();
+    renderTimeline();
 
     updateSummary();
 
@@ -1031,7 +1078,7 @@ function renderRequirements() {
 
     const container =
         getElement(
-            "requirementsList"
+            "requirementList"
         );
 
 
@@ -1069,7 +1116,7 @@ function renderRequirements() {
 
                 const text =
                     typeof requirement ===
-                    "string"
+                        "string"
                         ? requirement
                         : requirement.text ||
                         requirement.title ||
@@ -1100,9 +1147,9 @@ function renderRequirements() {
                     ></span>
 
                     ${createDeleteButton(
-                        "requirements",
-                        index
-                    )}
+                    "requirements",
+                    index
+                )}
 
                 `;
 
@@ -1192,9 +1239,9 @@ function renderObjectives() {
                     <span class="design-item-text"></span>
 
                     ${createDeleteButton(
-                        "objectives",
-                        index
-                    )}
+                            "objectives",
+                            index
+                        )}
 
                 `;
 
@@ -1286,9 +1333,9 @@ function renderConstraints() {
                     <span class="design-item-text"></span>
 
                     ${createDeleteButton(
-                        "constraints",
-                        index
-                    )}
+                    "constraints",
+                    index
+                )}
 
                 `;
 
@@ -1381,9 +1428,9 @@ function renderTools() {
                     <span class="design-item-text"></span>
 
                     ${createDeleteButton(
-                        "tools",
-                        index
-                    )}
+                    "tools",
+                    index
+                )}
 
                 `;
 
@@ -1482,9 +1529,9 @@ function renderSpecifications() {
                     <strong></strong>
 
                     ${createDeleteButton(
-                        "specifications",
-                        index
-                    )}
+                    "specifications",
+                    index
+                )}
 
                 `;
 
@@ -1597,9 +1644,9 @@ function renderMaterials() {
                     </div>
 
                     ${createDeleteButton(
-                        "materials",
-                        index
-                    )}
+                    "materials",
+                    index
+                )}
 
                 `;
 
@@ -1735,9 +1782,9 @@ function renderComponents() {
                     </div>
 
                     ${createDeleteButton(
-                        "components",
-                        index
-                    )}
+                            "components",
+                            index
+                        )}
 
                 `;
 
@@ -1882,9 +1929,9 @@ function renderIterations() {
                     </div>
 
                     ${createDeleteButton(
-                        "iterations",
-                        index
-                    )}
+                    "iterations",
+                    index
+                )}
 
                 `;
 
@@ -2061,9 +2108,9 @@ function renderDecisions() {
                     </div>
 
                     ${createDeleteButton(
-                        "decisions",
-                        index
-                    )}
+                            "decisions",
+                            index
+                        )}
 
                 `;
 
@@ -2174,9 +2221,9 @@ function renderRisks() {
                     <span></span>
 
                     ${createDeleteButton(
-                        "risks",
-                        index
-                    )}
+                    "risks",
+                    index
+                )}
 
                 `;
 
@@ -2227,270 +2274,222 @@ function renderRisks() {
 
 function renderTasks() {
 
-    const container =
-        getElement(
-            "taskList"
-        );
+    const container = getElement("taskList");
 
+    if (!container) return;
 
-    if (!container) {
-        return;
+    container.innerHTML = "";
+
+    if (!Array.isArray(designData.tasks)) {
+        designData.tasks = [];
     }
 
-
-    container.innerHTML =
-        "";
-
-
-    if (
-        !designData.tasks.length
-    ) {
-
-        container.innerHTML =
-            createEmptyState(
-                "No tasks added."
-            );
-
+    if (!designData.tasks.length) {
+        container.innerHTML = createEmptyState("No tasks added.");
         updateTaskSummary();
-
         return;
-
     }
 
-
-    designData.tasks
-        .forEach(
-            (
-                task,
-                index
-            ) => {
-
-                const completed =
-                    isTaskCompleted(
-                        task
-                    );
-
-
-                const item =
-                    document.createElement(
-                        "label"
-                    );
-
-
-                item.className =
-                    `task-item ${completed
-                        ? "completed"
-                        : ""
-                    }`;
-
-
-                const checkbox =
-                    document.createElement(
-                        "input"
-                    );
-
-
-                checkbox.type =
-                    "checkbox";
-
-
-                checkbox.checked =
-                    completed;
-
-
-                checkbox.dataset.taskId =
-                    task.id ||
-                    "";
-
-
-                checkbox.addEventListener(
-                    "change",
-                    async () => {
-
-                        const previous =
-                            task.status;
-
-
-                        task.status =
-                            checkbox.checked
-                                ? "done"
-                                : "todo";
-
-
-                        renderTasks();
-
-                        updateSummary();
-
-
-                        try {
-
-                            await saveDesignData();
-
-                        }
-
-                        catch (error) {
-
-                            task.status =
-                                previous;
-
-
-                            renderTasks();
-
-                            updateSummary();
-
-
-                            showTemporaryMessage(
-                                error.message ||
-                                "Unable to update task."
-                            );
-
-                        }
-
-                    }
-                );
-
-
-                item.appendChild(
-                    checkbox
-                );
-
-
-                const check =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                check.className =
-                    "task-check";
-
-
-                item.appendChild(
-                    check
-                );
-
-
-                const content =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                content.className =
-                    "task-content";
-
-
-                const title =
-                    document.createElement(
-                        "strong"
-                    );
-
-
-                title.textContent =
-                    task.title ||
-                    task.name ||
-                    "Untitled Task";
-
-
-                const category =
-                    document.createElement(
-                        "small"
-                    );
-
-
-                category.textContent =
-                    task.category ||
-                    task.type ||
-                    "";
-
-
-                content.appendChild(
-                    title
-                );
-
-
-                content.appendChild(
-                    category
-                );
-
-
-                item.appendChild(
-                    content
-                );
-
-
-                const state =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                state.className =
-                    "task-state";
-
-
-                state.textContent =
-                    completed
-                        ? "DONE"
-                        : "TODO";
-
-
-                item.appendChild(
-                    state
-                );
-
-
-                /*
-                 * A native <button> lives inside this <label>.
-                 * Clicking it would normally also toggle the
-                 * checkbox (default <label> behavior), so we
-                 * stop that here in addition to the global
-                 * delete handler's preventDefault().
-                 */
-
-                item.insertAdjacentHTML(
-                    "beforeend",
-                    createDeleteButton(
-                        "tasks",
-                        index
-                    )
-                );
-
-
-                item
-                    .querySelector(
-                        ".design-delete-button"
-                    )
-                    .addEventListener(
-                        "click",
-                        event => {
-
-                            /*
-                             * Only preventDefault here — do NOT
-                             * stopPropagation. The global delete
-                             * handler is attached on `document`
-                             * and needs this click to bubble up
-                             * to it in order to actually delete
-                             * the task.
-                             */
-
-                            event.preventDefault();
-
-                        }
-                    );
-
-
-                container.appendChild(
-                    item
-                );
-
+    designData.tasks.forEach((task, index) => {
+        const completed = isTaskCompleted(task);
+        const delayed = isTaskDelayed(task);
+
+        const item = document.createElement("div");
+        item.className = `task-item ${completed ? "completed" : ""} ${delayed ? "delayed" : ""}`;
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = completed;
+        checkbox.dataset.taskId = task.id || "";
+
+        checkbox.addEventListener("change", async () => {
+            const previous = {
+                status: task.status,
+                completed: task.completed,
+                done: task.done,
+                delayUntil: task.delayUntil,
+                delayReason: task.delayReason,
+                delayed: task.delayed
+            };
+
+            const wasCompleted = isTaskCompleted(task);
+
+            if (checkbox.checked) {
+                task.status = "completed";
+                task.completed = true;
+                task.done = true;
+                task.delayed = false;
+                delete task.delayUntil;
+                delete task.delayReason;
+            } else {
+                task.status = "todo";
+                task.completed = false;
+                task.done = false;
             }
-        );
 
+            markDesignChanged();
+            renderEverything();
+
+            try {
+                await saveDesignData();
+                if (!wasCompleted && checkbox.checked) {
+                    showDesignConfetti();
+                    showTemporaryMessage("Task completed!");
+                }
+            } catch (error) {
+                Object.assign(task, previous);
+                renderEverything();
+                showTemporaryMessage(error.message || "Unable to update task.");
+            }
+        });
+
+        item.appendChild(checkbox);
+
+        const check = document.createElement("span");
+        check.className = "task-check";
+        item.appendChild(check);
+
+        const content = document.createElement("span");
+        content.className = "task-content";
+
+        const title = document.createElement("strong");
+        title.textContent = task.title || task.name || "Untitled Task";
+        content.appendChild(title);
+
+        const category = document.createElement("small");
+        category.textContent = task.category || task.type || "";
+        content.appendChild(category);
+
+        if (delayed && task.delayUntil) {
+            const delayInfo = document.createElement("small");
+            delayInfo.className = "task-delay-info";
+            delayInfo.textContent = `Delayed until ${formatDisplayDate(task.delayUntil)}`;
+            content.appendChild(delayInfo);
+        }
+
+        item.appendChild(content);
+
+        const state = document.createElement("span");
+        state.className = "task-state";
+        state.textContent = completed ? "DONE" : delayed ? "DELAYED" : formatTaskStatus(task.status);
+        item.appendChild(state);
+
+
+        item.insertAdjacentHTML("beforeend", createDeleteButton("tasks", index));
+        container.appendChild(item);
+    });
 
     updateTaskSummary();
-
 }
+
+function formatTaskStatus(status) {
+    const value = String(status || "todo").toLowerCase();
+    if (value === "in-progress") return "IN PROGRESS";
+    if (value === "blocked") return "BLOCKED";
+    if (value === "delayed") return "DELAYED";
+    if (value === "completed" || value === "complete" || value === "done") return "DONE";
+    return "TODO";
+}
+
+function isTaskDelayed(task) {
+    return Boolean(
+        task &&
+        (task.delayed === true || String(task.status || "").toLowerCase() === "delayed")
+    );
+}
+
+async function openTaskDelayModal(index) {
+    const task = designData?.tasks?.[index];
+    if (!task) return;
+
+    const existing = getElement("designTaskDelayModal");
+    if (existing) existing.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "designTaskDelayModal";
+    Object.assign(overlay.style, {
+        position: "fixed", inset: "0", zIndex: "10002", display: "flex",
+        alignItems: "center", justifyContent: "center", padding: "20px",
+        background: "rgba(0,0,0,0.68)", overflowY: "auto"
+    });
+
+    const modal = document.createElement("div");
+    Object.assign(modal.style, {
+        width: "min(520px, 100%)", background: "#17151f", border: "1px solid rgba(255,255,255,.12)",
+        borderRadius: "18px", padding: "24px", boxShadow: "0 24px 80px rgba(0,0,0,.45)", color: "#fff"
+    });
+
+    modal.innerHTML = `
+        <h2 style="margin:0 0 8px;font-size:20px">${escapeHtml(task.title || "Task")}</h2>
+        <p style="margin:0 0 20px;color:#aaa4b8;font-size:14px">Set a new date for this task or clear its delay.</p>
+        <form id="taskDelayForm">
+            <label style="display:block;margin-bottom:14px;font-size:13px;color:#c9c4d2">Delayed until
+                <input name="delayUntil" type="date" value="${task.delayUntil ? String(task.delayUntil).slice(0, 10) : ""}" style="display:block;width:100%;margin-top:7px;padding:11px;border-radius:10px;border:1px solid #3a3547;background:#100f15;color:#fff;box-sizing:border-box">
+            </label>
+            <label style="display:block;margin-bottom:18px;font-size:13px;color:#c9c4d2">Reason
+                <textarea name="delayReason" rows="3" placeholder="Why is this task delayed?" style="display:block;width:100%;margin-top:7px;padding:11px;border-radius:10px;border:1px solid #3a3547;background:#100f15;color:#fff;box-sizing:border-box;resize:vertical">${escapeHtml(task.delayReason || "")}</textarea>
+            </label>
+            <div style="display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap">
+                <button type="button" id="clearTaskDelay" style="padding:10px 14px;border-radius:10px;border:1px solid rgba(239,68,68,.35);background:transparent;color:#f87171;cursor:pointer">Clear Delay</button>
+                <button type="button" id="cancelTaskDelay" style="padding:10px 14px;border-radius:10px;border:1px solid #3a3547;background:#24202d;color:#ddd;cursor:pointer">Cancel</button>
+                <button type="submit" style="padding:10px 16px;border-radius:10px;border:0;background:#8b5cf6;color:white;cursor:pointer">Save Delay</button>
+            </div>
+        </form>`;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    const close = () => overlay.remove();
+    modal.querySelector("#cancelTaskDelay").addEventListener("click", close);
+    overlay.addEventListener("click", event => { if (event.target === overlay) close(); });
+
+    modal.querySelector("#clearTaskDelay").addEventListener("click", async () => {
+        const previous = { status: task.status, delayed: task.delayed, delayUntil: task.delayUntil, delayReason: task.delayReason };
+        task.delayed = false;
+        task.status = task.status === "delayed" ? "todo" : task.status;
+        delete task.delayUntil;
+        delete task.delayReason;
+        markDesignChanged();
+        renderEverything();
+        close();
+        try {
+            await saveDesignData();
+            showTemporaryMessage("Task delay cleared.");
+        } catch (error) {
+            Object.assign(task, previous);
+            renderEverything();
+            showTemporaryMessage(error.message || "Unable to clear task delay.");
+        }
+    });
+
+    modal.querySelector("#taskDelayForm").addEventListener("submit", async event => {
+        event.preventDefault();
+        const form = new FormData(event.currentTarget);
+        const delayUntil = String(form.get("delayUntil") || "").trim();
+        const delayReason = String(form.get("delayReason") || "").trim();
+        if (!delayUntil) {
+            showTemporaryMessage("Please select a delay date.");
+            return;
+        }
+        const previous = { status: task.status, delayed: task.delayed, delayUntil: task.delayUntil, delayReason: task.delayReason };
+        task.delayed = true;
+        task.status = "delayed";
+        task.delayUntil = delayUntil;
+        task.delayReason = delayReason;
+        markDesignChanged();
+        renderEverything();
+        close();
+        try {
+            await saveDesignData();
+            showTemporaryMessage("Task delay saved.");
+        } catch (error) {
+            Object.assign(task, previous);
+            renderEverything();
+            showTemporaryMessage(error.message || "Unable to save task delay.");
+        }
+    });
+}
+
 
 
 /* =========================================================
@@ -2685,9 +2684,9 @@ function renderFiles() {
                     </button>
 
                     ${createDeleteButton(
-                        "files",
-                        index
-                    )}
+                    "files",
+                    index
+                )}
 
                 `;
 
@@ -2841,9 +2840,9 @@ function renderReferences() {
                     </span>
 
                     ${createDeleteButton(
-                        "references",
-                        index
-                    )}
+                    "references",
+                    index
+                )}
 
                 `;
 
@@ -2984,9 +2983,9 @@ function renderTests() {
                     </div>
 
                     ${createDeleteButton(
-                        "tests",
-                        index
-                    )}
+                            "tests",
+                            index
+                        )}
 
                 `;
 
@@ -3097,39 +3096,73 @@ function renderReview() {
         designData.review ||
         {};
 
-
     const items =
         document.querySelectorAll(
-            ".review-grid .review-item strong"
+            ".review-grid .review-item"
         );
 
+    items.forEach(
+        item => {
 
-    if (
-        items.length >= 4
-    ) {
+            const field =
+                item.dataset.reviewField;
 
-        items[0].textContent =
-            formatDisplayDate(
-                review.lastReview
-            );
+            const valueElement =
+                item.querySelector("strong");
 
+            if (!valueElement) {
+                return;
+            }
 
-        items[1].textContent =
-            review.reviewer ||
-            "—";
+            let value = "";
 
+            switch (field) {
 
-        items[2].textContent =
-            review.result ||
-            "—";
+                case "lastReview":
 
+                    value =
+                        review.lastReview
+                            ? formatDisplayDate(
+                                review.lastReview
+                            )
+                            : "—";
 
-        items[3].textContent =
-            formatDisplayDate(
-                review.nextReview
-            );
+                    break;
 
-    }
+                case "reviewer":
+
+                    value =
+                        review.reviewer ||
+                        "—";
+
+                    break;
+
+                case "result":
+
+                    value =
+                        review.result ||
+                        "—";
+
+                    break;
+
+                case "nextReview":
+
+                    value =
+                        review.nextReview
+                            ? formatDisplayDate(
+                                review.nextReview
+                            )
+                            : "—";
+
+                    break;
+
+            }
+
+            valueElement.textContent =
+                value;
+
+        }
+    );
 
 
     const note =
@@ -3148,123 +3181,1666 @@ function renderReview() {
 
 }
 
-
 /* =========================================================
-   CHANGE LOG
+   REVIEW ACTIONS
 ========================================================= */
 
-function renderChangeLog() {
+function initializeReviewActions() {
 
-    const container =
-        getElement(
-            "changeLog"
+    const reviewItems =
+        document.querySelectorAll(
+            ".review-grid .review-item"
         );
 
+    reviewItems.forEach(
+        item => {
+
+            if (
+                item.dataset.reviewBound === "true"
+            ) {
+                return;
+            }
+
+            item.dataset.reviewBound =
+                "true";
+
+            item.addEventListener(
+                "click",
+                event => {
+
+                    event.preventDefault();
+
+                    const field =
+                        item.dataset.reviewField;
+
+                    if (!field) {
+                        return;
+                    }
+
+                    openReviewFieldModal(
+                        field
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+/* =========================================================
+   OPEN REVIEW FIELD MODAL
+========================================================= */
+
+function openReviewFieldModal(field) {
+
+    if (!designData) {
+        return;
+    }
+
+    const existing =
+        getElement("designReviewModal");
+
+    if (existing) {
+        existing.remove();
+    }
+
+    const review =
+        designData.review ||
+        {};
+
+    designData.review =
+        review;
+
+    const configuration =
+        getReviewFieldConfiguration(
+            field
+        );
+
+    if (!configuration) {
+        return;
+    }
+
+    const overlay =
+        document.createElement("div");
+
+    overlay.id =
+        "designReviewModal";
+
+    Object.assign(
+        overlay.style,
+        {
+            position: "fixed",
+            inset: "0",
+            zIndex: "10003",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+            background: "rgba(0,0,0,.68)",
+            overflowY: "auto"
+        }
+    );
+
+    const modal =
+        document.createElement("div");
+
+    Object.assign(
+        modal.style,
+        {
+            width: "min(600px,100%)",
+            maxWidth: "600px",
+            padding: "24px",
+            border: "1px solid rgba(139,92,246,.32)",
+            borderRadius: "14px",
+            background: "#11131f",
+            color: "#f5f3ff",
+            boxShadow: "0 25px 80px rgba(0,0,0,.6)"
+        }
+    );
+
+    modal.innerHTML = `
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:20px;
+            margin-bottom:20px;
+        ">
+
+            <div>
+
+                <div style="
+                    font-size:9px;
+                    letter-spacing:2px;
+                    color:#8b5cf6;
+                    margin-bottom:7px;
+                ">
+                    DESIGN REVIEW
+                </div>
+
+                <h3 style="
+                    margin:0;
+                    font-size:20px;
+                ">
+                    ${escapeHtml(
+        configuration.title
+    )}
+                </h3>
+
+                <p style="
+                    margin:7px 0 0;
+                    color:#aaa6b9;
+                    font-size:12px;
+                    line-height:1.5;
+                ">
+                    ${escapeHtml(
+        configuration.description
+    )}
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                id="closeReviewModal"
+                style="
+                    width:32px;
+                    height:32px;
+                    border:1px solid rgba(255,255,255,.12);
+                    border-radius:7px;
+                    background:rgba(255,255,255,.04);
+                    color:#aaa6b9;
+                    cursor:pointer;
+                    font-size:18px;
+                    flex:0 0 auto;
+                "
+            >
+                ×
+            </button>
+
+        </div>
+
+<form id="reviewForm">
+
+    <label style="
+        display:block;
+        margin-bottom:${field === "result" ? "16px" : "20px"};
+    ">
+
+        <span style="
+            display:block;
+            margin-bottom:7px;
+            font-size:11px;
+            font-weight:600;
+            color:#d8d4e5;
+        ">
+            ${escapeHtml(
+        configuration.label
+    )}
+        </span>
+
+        ${createReviewInput(
+        configuration,
+        review[field]
+    )}
+
+    </label>
+
+    ${field === "result"
+            ? `
+                <label style="
+                    display:block;
+                    margin-bottom:20px;
+                ">
+
+                    <span style="
+                        display:block;
+                        margin-bottom:7px;
+                        font-size:11px;
+                        font-weight:600;
+                        color:#d8d4e5;
+                    ">
+                        Comment
+                    </span>
+
+                    <textarea
+                        name="reviewComment"
+                        rows="5"
+                        placeholder="Enter review comment..."
+                        style="
+                            display:block;
+                            width:100%;
+                            box-sizing:border-box;
+                            padding:11px 12px;
+                            border:1px solid rgba(255,255,255,.12);
+                            border-radius:8px;
+                            outline:none;
+                            background:#0b0d15;
+                            color:#f5f3ff;
+                            font-family:inherit;
+                            font-size:12px;
+                            line-height:1.5;
+                            resize:vertical;
+                        "
+                    >${escapeHtml(
+                review.note || ""
+            )}</textarea>
+
+                </label>
+            `
+            : ""
+        }
+
+        <div style="
+            display:flex;
+            justify-content:flex-end;
+            align-items:center;
+            gap:10px;
+            margin-top:4px;
+            padding-top:16px;
+            border-top:1px solid rgba(255,255,255,.08);
+        ">
+            <button
+                type="button"
+                id="cancelReviewModal"
+                style="
+                    display:inline-flex;
+                    align-items:center;
+                    justify-content:center;
+                    min-width:82px;
+                    min-height:38px;
+                    padding:9px 14px;
+                    border:1px solid rgba(255,255,255,.12);
+                    border-radius:8px;
+                    background:rgba(255,255,255,.04);
+                    color:#d8d4e5;
+                    font:inherit;
+                    font-size:12px;
+                    font-weight:600;
+                    cursor:pointer;
+                    box-sizing:border-box;
+                "
+            >
+                Cancel
+            </button>
+
+            <button
+                type="submit"
+                id="saveReviewModal"
+                style="
+                    display:inline-flex;
+                    align-items:center;
+                    justify-content:center;
+                    min-width:110px;
+                    min-height:38px;
+                    padding:9px 16px;
+                    border:1px solid rgba(139,92,246,.55);
+                    border-radius:8px;
+                    background:rgba(139,92,246,.24);
+                    color:#f5f3ff;
+                    font:inherit;
+                    font-size:12px;
+                    font-weight:600;
+                    cursor:pointer;
+                    box-sizing:border-box;
+                "
+            >
+                ${field === "result" ? "Update Result" : "Save Changes"}
+            </button>
+        </div>
+
+    </form>
+    `;
+
+    Object.assign(
+        modal.style,
+        {
+            maxHeight: "calc(100vh - 40px)",
+            overflowY: "auto",
+            boxSizing: "border-box"
+        }
+    );
+
+    overlay.appendChild(
+        modal
+    );
+
+    document.body.appendChild(
+        overlay
+    );
+
+    const close =
+        () => overlay.remove();
+
+    modal.querySelector(
+        "#closeReviewModal"
+    )
+        ?.addEventListener(
+            "click",
+            close
+        );
+
+    modal.querySelector(
+        "#cancelReviewModal"
+    )
+        ?.addEventListener(
+            "click",
+            close
+        );
+
+    overlay.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target === overlay
+            ) {
+
+                close();
+
+            }
+
+        }
+    );
+
+    const form =
+        modal.querySelector(
+            "#reviewForm"
+        );
+
+    form.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+            const input =
+                form.querySelector(
+                    "[name='reviewValue']"
+                );
+
+            if (!input) {
+                return;
+            }
+
+            const value =
+                String(
+                    input.value || ""
+                ).trim();
+
+            const commentInput =
+                form.querySelector(
+                    "[name='reviewComment']"
+                );
+
+            const previousValue =
+                review[field];
+
+            const previousComment =
+                review.note || "";
+
+            review[field] =
+                value;
+
+            if (field === "result" && commentInput) {
+
+                review.note =
+                    String(
+                        commentInput.value || ""
+                    ).trim();
+
+            }
+
+            markDesignChanged();
+
+            renderReview();
+
+            /*
+             * CLOSE IMMEDIATELY.
+             * Do not wait for Supabase.
+             */
+            close();
+
+            try {
+
+                await saveDesignData();
+
+                showTemporaryMessage(
+                    `${configuration.label} saved.`
+                );
+
+            }
+
+            catch (error) {
+
+                review[field] =
+                    previousValue;
+
+                if (field === "result") {
+
+                    review.note =
+                        previousComment;
+
+                }
+
+                renderReview();
+
+                showTemporaryMessage(
+                    error.message ||
+                    `Unable to save ${configuration.label.toLowerCase()}.`
+                );
+
+            }
+
+        }
+    );
+
+    const firstInput =
+        form.querySelector(
+            "input, select, textarea"
+        );
+
+    if (firstInput) {
+
+        setTimeout(
+            () => {
+
+                firstInput.focus();
+
+            },
+            30
+        );
+
+    }
+
+}
+
+/* =========================================================
+   REVIEW FIELD CONFIGURATION
+========================================================= */
+
+function getReviewFieldConfiguration(field) {
+
+    const configurations = {
+
+        lastReview: {
+
+            title:
+                "Update Last Review",
+
+            description:
+                "Record the date when the design was last reviewed.",
+
+            label:
+                "Last Review Date",
+
+            type:
+                "date"
+
+        },
+
+        reviewer: {
+
+            title:
+                "Update Reviewer",
+
+            description:
+                "Enter the person responsible for reviewing this design.",
+
+            label:
+                "Reviewer",
+
+            type:
+                "text",
+
+            placeholder:
+                "Enter reviewer name"
+
+        },
+
+        result: {
+
+            title:
+                "Update Review Result",
+
+            description:
+                "Record the review result and add a comment.",
+
+            label:
+                "Review Result",
+
+            type:
+                "select",
+
+            options:
+                [
+                    "pending",
+                    "in-progress",
+                    "approved",
+                    "approved-with-changes",
+                    "rejected"
+                ]
+
+        },
+
+        nextReview: {
+
+            title:
+                "Update Next Review",
+
+            description:
+                "Set the date for the next design review.",
+
+            label:
+                "Next Review Date",
+
+            type:
+                "date"
+
+        }
+
+    };
+
+    return (
+        configurations[field] ||
+        null
+    );
+
+}
+
+/* =========================================================
+   CREATE REVIEW INPUT
+========================================================= */
+
+function createReviewInput(
+    configuration,
+    value
+) {
+
+    const safeValue =
+        String(
+            value || ""
+        );
+
+    const commonStyle = `
+        display:block;
+        width:100%;
+        box-sizing:border-box;
+        padding:11px 12px;
+        border:1px solid rgba(255,255,255,.12);
+        border-radius:8px;
+        outline:none;
+        background:#0b0d15;
+        color:#f5f3ff;
+        font-family:inherit;
+        font-size:12px;
+    `;
+
+    if (
+        configuration.type === "select"
+    ) {
+
+        return `
+            <select
+                name="reviewValue"
+                style="${commonStyle}"
+            >
+                ${configuration.options
+                .map(
+                    option => `
+                            <option
+                                value="${escapeHtml(option)}"
+                                ${option === safeValue
+                            ? "selected"
+                            : ""
+                        }
+                            >
+                                ${escapeHtml(
+                            formatStatus(option)
+                        )}
+                            </option>
+                        `
+                )
+                .join("")}
+            </select>
+        `;
+
+    }
+
+    return `
+        <input
+            type="${escapeHtml(
+        configuration.type || "text"
+    )}"
+            name="reviewValue"
+            value="${escapeHtml(
+        safeValue
+    )}"
+            placeholder="${escapeHtml(
+        configuration.placeholder || ""
+    )}"
+            ${configuration.type === "date" ? "" : ""}
+            style="${commonStyle}"
+        >
+    `;
+
+}
+/* =========================================================
+   DESIGN TIMELINE
+========================================================= */
+
+function renderTimeline() {
+
+    const container =
+        getElement("designTimeline");
 
     if (!container) {
         return;
     }
 
-
-    container.innerHTML =
-        "";
-
+    container.innerHTML = "";
 
     if (
-        !designData.changeLog.length
+        !Array.isArray(designData.timeline) ||
+        !designData.timeline.length
     ) {
 
         container.innerHTML =
             createEmptyState(
-                "No changes recorded."
+                "No timeline entries added."
             );
 
         return;
-
     }
 
+    const entries =
+        [...designData.timeline].sort(
+            (a, b) =>
+                new Date(b.date || b.createdAt || 0) -
+                new Date(a.date || a.createdAt || 0)
+        );
 
-    designData.changeLog
-        .forEach(
-            entry => {
+    entries.forEach(
+        (entry, sortedIndex) => {
 
-                const item =
-                    document.createElement(
-                        "div"
-                    );
+            const originalIndex =
+                designData.timeline.indexOf(entry);
 
+            const item =
+                document.createElement("article");
 
-                item.className =
-                    "change-entry";
+            item.className =
+                "timeline-entry";
 
+            const status =
+                String(
+                    entry.status || "planned"
+                ).toLowerCase();
 
-                item.innerHTML = `
+            item.innerHTML = `
 
-                    <div class="change-marker"></div>
+                <div class="timeline-marker"></div>
 
-                    <div class="change-content">
+                <div class="timeline-content">
 
-                        <div class="change-top">
+                    <div class="timeline-top">
 
-                            <strong></strong>
+                        <span class="timeline-date"></span>
 
-                            <span></span>
-
-                        </div>
-
-                        <p></p>
-
-                        <small></small>
+                        <span class="timeline-status"></span>
 
                     </div>
 
-                `;
+                    <h4 class="timeline-title"></h4>
 
+                    <p class="timeline-description"></p>
 
-                item
-                    .querySelector(
-                        ".change-top strong"
-                    )
-                    .textContent =
-                    entry.title ||
-                    "Design Updated";
+                    <div class="timeline-actions">
 
+                        <button
+                            type="button"
+                            class="timeline-edit-button"
+                        >
+                            Edit
+                        </button>
 
-                item
-                    .querySelector(
-                        ".change-top span"
-                    )
-                    .textContent =
-                    formatDisplayDate(
-                        entry.date
+                        <button
+                            type="button"
+                            class="timeline-delete-button"
+                        >
+                            Delete
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+
+            item.querySelector(
+                ".timeline-date"
+            ).textContent =
+                formatDisplayDate(
+                    entry.date ||
+                    entry.createdAt
+                );
+
+            item.querySelector(
+                ".timeline-status"
+            ).textContent =
+                formatStatus(status);
+
+            item.querySelector(
+                ".timeline-title"
+            ).textContent =
+                entry.title ||
+                "Untitled Timeline Entry";
+
+            item.querySelector(
+                ".timeline-description"
+            ).textContent =
+                entry.description ||
+                "";
+
+            item.querySelector(
+                ".timeline-edit-button"
+            ).addEventListener(
+                "click",
+                () => {
+
+                    openEditTimelineModal(
+                        originalIndex
                     );
 
+                }
+            );
 
-                item
-                    .querySelector(
-                        "p"
-                    )
-                    .textContent =
-                    entry.description ||
-                    "";
+            item.querySelector(
+                ".timeline-delete-button"
+            ).addEventListener(
+                "click",
+                () => {
+
+                    deleteTimelineEntry(
+                        originalIndex
+                    );
+
+                }
+            );
+
+            container.appendChild(item);
+
+        }
+    );
+}
 
 
-                item
-                    .querySelector(
-                        "small"
-                    )
-                    .textContent =
-                    entry.meta ||
-                    entry.type ||
-                    "";
+/* =========================================================
+   ADD TIMELINE MODAL
+========================================================= */
 
+function openAddTimelineModal() {
 
-                container.appendChild(
-                    item
+    if (!designData) {
+
+        showTemporaryMessage(
+            "Design data is not loaded."
+        );
+
+        return;
+    }
+
+    const existing =
+        getElement("designTimelineModal");
+
+    if (existing) {
+        existing.remove();
+    }
+
+    const overlay =
+        document.createElement("div");
+
+    overlay.id =
+        "designTimelineModal";
+
+    Object.assign(
+        overlay.style,
+        {
+            position: "fixed",
+            inset: "0",
+            zIndex: "10002",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+            background: "rgba(0,0,0,.68)",
+            overflowY: "auto",
+            boxSizing: "border-box"
+        }
+    );
+
+    const modal =
+        document.createElement("div");
+
+    Object.assign(
+        modal.style,
+        {
+            width: "min(600px,100%)",
+            maxHeight: "calc(100vh - 40px)",
+            overflowY: "auto",
+            boxSizing: "border-box",
+            padding: "24px",
+            border: "1px solid rgba(139,92,246,.32)",
+            borderRadius: "14px",
+            background: "#11131f",
+            color: "#f5f3ff",
+            boxShadow: "0 25px 80px rgba(0,0,0,.6)"
+        }
+    );
+
+    modal.innerHTML = `
+
+        <div style="
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+    margin-bottom:20px;
+">
+
+            <div>
+
+                <div style="
+                    font-size:9px;
+                    letter-spacing:2px;
+                    color:#8b5cf6;
+                    margin-bottom:7px;
+                ">
+                    DESIGN TIMELINE
+                </div>
+
+                <h3 style="
+                    margin:0;
+                    font-size:20px;
+                ">
+                    Add Timeline Entry
+                </h3>
+
+            </div>
+
+            <button
+                type="button"
+                id="closeTimelineModal"
+                style="
+                    width:32px;
+                    height:32px;
+                    border:1px solid rgba(255,255,255,.12);
+                    border-radius:7px;
+                    background:rgba(255,255,255,.04);
+                    color:#aaa6b9;
+                    cursor:pointer;
+                    font-size:18px;
+                "
+            >
+                ×
+            </button>
+
+        </div>
+
+        <form id="timelineForm">
+
+            <label style="display:block;margin-bottom:15px;">
+                <span>Date</span>
+
+                <input
+                    name="date"
+                    type="date"
+                    required
+                    value="${new Date()
+            .toISOString()
+            .slice(0, 10)}"
+                    style="
+                        display:block;
+                        width:100%;
+                        margin-top:7px;
+                        box-sizing:border-box;
+                        padding:11px;
+                        border:1px solid rgba(255,255,255,.12);
+                        border-radius:8px;
+                        background:#0b0d15;
+                        color:#fff;
+                    "
+                >
+            </label>
+
+            <label style="display:block;margin-bottom:15px;">
+                <span>Status</span>
+
+                <select
+                    name="status"
+                    style="
+                        display:block;
+                        width:100%;
+                        margin-top:7px;
+                        box-sizing:border-box;
+                        padding:11px;
+                        border:1px solid rgba(255,255,255,.12);
+                        border-radius:8px;
+                        background:#0b0d15;
+                        color:#fff;
+                    "
+                >
+                    <option value="planned">Planned</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                    <option value="delayed">Delayed</option>
+                    <option value="blocked">Blocked</option>
+                </select>
+
+            </label>
+
+            <label style="display:block;margin-bottom:15px;">
+                <span>Title</span>
+
+                <input
+                    name="title"
+                    type="text"
+                    required
+                    placeholder="Example: Initial concept completed"
+                    style="
+                        display:block;
+                        width:100%;
+                        margin-top:7px;
+                        box-sizing:border-box;
+                        padding:11px;
+                        border:1px solid rgba(255,255,255,.12);
+                        border-radius:8px;
+                        background:#0b0d15;
+                        color:#fff;
+                    "
+                >
+            </label>
+
+            <label style="display:block;margin-bottom:20px;">
+                <span>Description</span>
+
+                <textarea
+                    name="description"
+                    rows="4"
+                    placeholder="Describe what happened during this stage..."
+                    style="
+                        display:block;
+                        width:100%;
+                        margin-top:7px;
+                        box-sizing:border-box;
+                        padding:11px;
+                        border:1px solid rgba(255,255,255,.12);
+                        border-radius:8px;
+                        background:#0b0d15;
+                        color:#fff;
+                        resize:vertical;
+                    "
+                ></textarea>
+            </label>
+
+            <div style="
+                display:flex;
+                justify-content:flex-end;
+                gap:10px;
+                padding-top:18px;
+                border-top:1px solid rgba(255,255,255,.08);
+            ">
+<button
+    type="button"
+    id="cancelTimelineModal"
+    class="timeline-modal-cancel"
+    style="
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height:38px;
+        padding:9px 14px;
+        border:1px solid rgba(255,255,255,.12);
+        border-radius:8px;
+        background:rgba(255,255,255,.04);
+        color:#d8d4e5;
+        font:inherit;
+        font-size:12px;
+        cursor:pointer;
+        box-sizing:border-box;
+    "
+>
+    Cancel
+</button>
+
+<button
+    type="submit"
+    class="timeline-modal-submit"
+    style="
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height:38px;
+        padding:9px 16px;
+        border:1px solid rgba(139,92,246,.55);
+        border-radius:8px;
+        background:rgba(139,92,246,.24);
+        color:#f5f3ff;
+        font:inherit;
+        font-size:12px;
+        cursor:pointer;
+        box-sizing:border-box;
+    "
+>
+    Add Timeline Entry
+</button>
+
+            </div>
+
+        </form>
+    `;
+
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+
+    const close =
+        () => overlay.remove();
+
+    modal.querySelector(
+        "#closeTimelineModal"
+    ).addEventListener(
+        "click",
+        close
+    );
+
+    modal.querySelector(
+        "#cancelTimelineModal"
+    ).addEventListener(
+        "click",
+        close
+    );
+
+    overlay.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target === overlay
+            ) {
+                close();
+            }
+
+        }
+    );
+
+    modal.querySelector(
+        "#timelineForm"
+    ).addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+            const form =
+                new FormData(
+                    event.currentTarget
+                );
+
+            const entry = {
+
+                date:
+                    form.get("date"),
+
+                status:
+                    form.get("status"),
+
+                title:
+                    String(
+                        form.get("title") || ""
+                    ).trim(),
+
+                description:
+                    String(
+                        form.get("description") || ""
+                    ).trim(),
+
+                createdAt:
+                    new Date()
+                        .toISOString()
+
+            };
+
+            if (!entry.title) {
+
+                showTemporaryMessage(
+                    "Timeline title is required."
+                );
+
+                return;
+            }
+
+            designData.timeline =
+                Array.isArray(
+                    designData.timeline
+                )
+                    ? designData.timeline
+                    : [];
+
+            designData.timeline.push(
+                entry
+            );
+
+            markDesignChanged();
+
+            renderTimeline();
+
+            close();
+
+            try {
+
+                await saveDesignData();
+
+                showTemporaryMessage(
+                    "Timeline entry added."
+                );
+
+            } catch (error) {
+
+                designData.timeline.pop();
+
+                renderTimeline();
+
+                showTemporaryMessage(
+                    error.message ||
+                    "Unable to save timeline entry."
                 );
 
             }
-        );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   EDIT TIMELINE
+========================================================= */
+
+function openEditTimelineModal(index) {
+
+    if (!designData) {
+        return;
+    }
+
+    const entry =
+        designData?.timeline?.[index];
+
+    if (!entry) {
+        return;
+    }
+
+    const existing =
+        getElement("designTimelineModal");
+
+    if (existing) {
+        existing.remove();
+    }
+    const overlay =
+        document.createElement("div");
+
+    overlay.id =
+        "designTimelineModal";
+
+    Object.assign(
+        overlay.style,
+        {
+            position: "fixed",
+            inset: "0",
+            zIndex: "10002",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+            background: "rgba(0,0,0,.68)",
+            overflowY: "auto"
+        }
+    );
+const modal =
+    document.createElement("div");
+
+Object.assign(
+    modal.style,
+    {
+        width: "min(600px,100%)",
+        maxHeight: "calc(100vh - 40px)",
+        overflowY: "auto",
+        boxSizing: "border-box",
+        padding: "24px",
+        border: "1px solid rgba(139,92,246,.32)",
+        borderRadius: "14px",
+        background: "#11131f",
+        color: "#f5f3ff",
+        boxShadow: "0 25px 80px rgba(0,0,0,.6)"
+    }
+);
+    modal.innerHTML = `
+
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:20px;
+            margin-bottom:20px;
+        ">
+
+            <div>
+
+                <div style="
+                    font-size:9px;
+                    letter-spacing:2px;
+                    color:#8b5cf6;
+                    margin-bottom:7px;
+                ">
+                    DESIGN TIMELINE
+                </div>
+
+                <h3 style="
+                    margin:0;
+                    font-size:20px;
+                ">
+                    Edit Timeline Entry
+                </h3>
+
+            </div>
+
+            <button
+                type="button"
+                id="closeTimelineModal"
+                style="
+                    width:32px;
+                    height:32px;
+                    border:1px solid rgba(255,255,255,.12);
+                    border-radius:7px;
+                    background:rgba(255,255,255,.04);
+                    color:#aaa6b9;
+                    cursor:pointer;
+                    font-size:18px;
+                "
+            >
+                ×
+            </button>
+
+        </div>
+
+        <form id="timelineForm">
+
+            <label style="display:block;margin-bottom:15px;">
+                <span>Date</span>
+
+                <input
+                    name="date"
+                    type="date"
+                    required
+                    value="${escapeHtml(
+        String(
+            entry.date || ""
+        ).slice(0, 10)
+    )}"
+                    style="
+                        display:block;
+                        width:100%;
+                        margin-top:7px;
+                        box-sizing:border-box;
+                        padding:11px;
+                        border:1px solid rgba(255,255,255,.12);
+                        border-radius:8px;
+                        background:#0b0d15;
+                        color:#fff;
+                    "
+                >
+            </label>
+
+            <label style="display:block;margin-bottom:15px;">
+                <span>Status</span>
+
+                <select
+                    name="status"
+                    style="
+                        display:block;
+                        width:100%;
+                        margin-top:7px;
+                        box-sizing:border-box;
+                        padding:11px;
+                        border:1px solid rgba(255,255,255,.12);
+                        border-radius:8px;
+                        background:#0b0d15;
+                        color:#fff;
+                    "
+                >
+
+                    <option
+                        value="planned"
+                        ${entry.status === "planned" ? "selected" : ""}
+                    >
+                        Planned
+                    </option>
+
+                    <option
+                        value="in-progress"
+                        ${entry.status === "in-progress" ? "selected" : ""}
+                    >
+                        In Progress
+                    </option>
+
+                    <option
+                        value="completed"
+                        ${entry.status === "completed" ? "selected" : ""}
+                    >
+                        Completed
+                    </option>
+
+                    <option
+                        value="delayed"
+                        ${entry.status === "delayed" ? "selected" : ""}
+                    >
+                        Delayed
+                    </option>
+
+                    <option
+                        value="blocked"
+                        ${entry.status === "blocked" ? "selected" : ""}
+                    >
+                        Blocked
+                    </option>
+
+                </select>
+
+            </label>
+
+            <label style="display:block;margin-bottom:15px;">
+                <span>Title</span>
+
+                <input
+                    name="title"
+                    type="text"
+                    required
+                    value="${escapeHtml(
+        entry.title || ""
+    )}"
+                    placeholder="Example: Initial concept completed"
+                    style="
+                        display:block;
+                        width:100%;
+                        margin-top:7px;
+                        box-sizing:border-box;
+                        padding:11px;
+                        border:1px solid rgba(255,255,255,.12);
+                        border-radius:8px;
+                        background:#0b0d15;
+                        color:#fff;
+                    "
+                >
+            </label>
+
+            <label style="display:block;margin-bottom:20px;">
+                <span>Description</span>
+
+                <textarea
+                    name="description"
+                    rows="4"
+                    placeholder="Describe what happened during this stage..."
+                    style="
+                        display:block;
+                        width:100%;
+                        margin-top:7px;
+                        box-sizing:border-box;
+                        padding:11px;
+                        border:1px solid rgba(255,255,255,.12);
+                        border-radius:8px;
+                        background:#0b0d15;
+                        color:#fff;
+                        resize:vertical;
+                    "
+                >${escapeHtml(
+        entry.description || ""
+    )}</textarea>
+            </label>
+
+            <div style="
+                display:flex;
+                justify-content:flex-end;
+                gap:10px;
+                padding-top:18px;
+                border-top:1px solid rgba(255,255,255,.08);
+            ">
+
+<button
+    type="button"
+    id="cancelTimelineModal"
+    class="timeline-modal-cancel"
+    style="
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height:38px;
+        padding:9px 14px;
+        border:1px solid rgba(255,255,255,.12);
+        border-radius:8px;
+        background:rgba(255,255,255,.04);
+        color:#d8d4e5;
+        font:inherit;
+        font-size:12px;
+        cursor:pointer;
+        box-sizing:border-box;
+    "
+>
+    Cancel
+</button>
+
+<button
+    type="submit"
+    class="timeline-modal-submit"
+    style="
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        min-height:38px;
+        padding:9px 16px;
+        border:1px solid rgba(139,92,246,.55);
+        border-radius:8px;
+        background:rgba(139,92,246,.24);
+        color:#f5f3ff;
+        font:inherit;
+        font-size:12px;
+        cursor:pointer;
+        box-sizing:border-box;
+    "
+>
+    Save Changes
+</button>
+
+            </div>
+
+        </form>
+    `;
+
+    overlay.appendChild(modal);
+
+    document.body.appendChild(overlay);
+
+    const close =
+        () => overlay.remove();
+
+    modal.querySelector(
+        "#closeTimelineModal"
+    ).addEventListener(
+        "click",
+        close
+    );
+
+    modal.querySelector(
+        "#cancelTimelineModal"
+    ).addEventListener(
+        "click",
+        close
+    );
+
+    overlay.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target === overlay
+            ) {
+                close();
+            }
+
+        }
+    );
+
+    modal.querySelector(
+        "#timelineForm"
+    ).addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+            const form =
+                new FormData(
+                    event.currentTarget
+                );
+
+            const previous = {
+                ...entry
+            };
+
+            entry.date =
+                String(
+                    form.get("date") || ""
+                ).trim();
+
+            entry.status =
+                String(
+                    form.get("status") || "planned"
+                ).trim();
+
+            entry.title =
+                String(
+                    form.get("title") || ""
+                ).trim();
+
+            entry.description =
+                String(
+                    form.get("description") || ""
+                ).trim();
+
+            if (!entry.title) {
+
+                showTemporaryMessage(
+                    "Timeline title is required."
+                );
+
+                return;
+            }
+
+            markDesignChanged();
+
+            renderTimeline();
+
+            /*
+             * CLOSE IMMEDIATELY.
+             * Do not wait for Supabase.
+             */
+            close();
+
+            try {
+
+                await saveDesignData();
+
+                showTemporaryMessage(
+                    "Timeline entry updated."
+                );
+
+            } catch (error) {
+
+                Object.assign(
+                    entry,
+                    previous
+                );
+
+                renderTimeline();
+
+                showTemporaryMessage(
+                    error.message ||
+                    "Unable to update timeline entry."
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   DELETE TIMELINE
+========================================================= */
+
+function deleteTimelineEntry(index) {
+
+    const entry =
+        designData?.timeline?.[index];
+
+    if (!entry) {
+        return;
+    }
+
+    askConfirm(
+        "Delete Timeline Entry",
+        `Delete "${entry.title || "this timeline entry"}"?`,
+        async () => {
+
+            designData.timeline.splice(
+                index,
+                1
+            );
+
+            markDesignChanged();
+
+            renderTimeline();
+
+            try {
+
+                await saveDesignData();
+
+                showTemporaryMessage(
+                    "Timeline entry removed."
+                );
+
+            } catch (error) {
+
+                designData.timeline.splice(
+                    index,
+                    0,
+                    entry
+                );
+
+                renderTimeline();
+
+                showTemporaryMessage(
+                    error.message ||
+                    "Unable to delete timeline entry."
+                );
+
+            }
+
+        }
+    );
 
 }
 
@@ -3451,7 +5027,9 @@ function updateProgress() {
 
             title.textContent =
                 designData.progressTitle ||
-                "In Development";
+                (progress === 100
+                    ? "Completed"
+                    : "In Development");
 
         }
 
@@ -3465,6 +5043,684 @@ function updateProgress() {
         }
 
     }
+
+
+    const editButton =
+        getElement(
+            "editDesignProgressButton"
+        );
+
+
+    if (editButton) {
+
+        editButton.textContent =
+            progress === 100
+                ? "Edit Progress"
+                : "Edit Progress";
+
+        editButton.setAttribute(
+            "aria-label",
+            "Edit design progress"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   PROGRESS EDITOR
+========================================================= */
+
+function getDesignProgressCard() {
+
+    const progressValue =
+        getElement(
+            "progressValue"
+        );
+
+    if (!progressValue) {
+        return null;
+    }
+
+    let node =
+        progressValue;
+
+    while (
+        node &&
+        node !== document.body
+    ) {
+
+        if (
+            node.querySelector &&
+            node.querySelector(
+                "#progressRing"
+            ) &&
+            node.querySelector(
+                "#progressBar"
+            ) &&
+            node.querySelector(
+                ".progress-info"
+            )
+        ) {
+
+            return node;
+
+        }
+
+        node =
+            node.parentElement;
+
+    }
+
+    return progressValue.parentElement;
+
+}
+
+
+function initializeProgressActions() {
+
+    const card =
+        getDesignProgressCard();
+
+    if (!card) {
+        return;
+    }
+
+    let editButton =
+        getElement(
+            "editDesignProgressButton"
+        );
+
+    if (!editButton) {
+
+        editButton =
+            document.createElement(
+                "button"
+            );
+
+        editButton.type =
+            "button";
+
+        editButton.id =
+            "editDesignProgressButton";
+
+        editButton.textContent =
+            "Edit Progress";
+
+        Object.assign(
+            editButton.style,
+            {
+                position: "absolute",
+                top: "18px",
+                right: "18px",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                minHeight: "32px",
+                padding: "7px 11px",
+                border: "1px solid rgba(139,92,246,.35)",
+                borderRadius: "7px",
+                background: "rgba(139,92,246,.08)",
+                color: "#c4b5fd",
+                font: "inherit",
+                fontSize: "10px",
+                fontWeight: "600",
+                cursor: "pointer",
+                zIndex: "2",
+                boxSizing: "border-box"
+            }
+        );
+
+        if (
+            getComputedStyle(card).position ===
+            "static"
+        ) {
+
+            card.style.position =
+                "relative";
+
+        }
+
+        card.appendChild(
+            editButton
+        );
+
+    }
+
+    if (
+        editButton.dataset.progressBound ===
+        "true"
+    ) {
+        return;
+    }
+
+    editButton.dataset.progressBound =
+        "true";
+
+    editButton.addEventListener(
+        "click",
+        event => {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            openDesignProgressModal();
+
+        }
+    );
+
+}
+
+
+function openDesignProgressModal() {
+
+    if (!designData) {
+        return;
+    }
+
+    const existing =
+        getElement(
+            "designProgressModal"
+        );
+
+    if (existing) {
+        existing.remove();
+    }
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+    overlay.id =
+        "designProgressModal";
+
+    Object.assign(
+        overlay.style,
+        {
+            position: "fixed",
+            inset: "0",
+            zIndex: "10004",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "20px",
+            background: "rgba(0,0,0,.68)",
+            overflowY: "auto",
+            boxSizing: "border-box"
+        }
+    );
+
+    const modal =
+        document.createElement(
+            "div"
+        );
+
+    Object.assign(
+        modal.style,
+        {
+            width: "min(520px,100%)",
+            maxHeight: "calc(100vh - 40px)",
+            overflowY: "auto",
+            boxSizing: "border-box",
+            padding: "24px",
+            border: "1px solid rgba(139,92,246,.32)",
+            borderRadius: "14px",
+            background: "#11131f",
+            color: "#f5f3ff",
+            boxShadow: "0 25px 80px rgba(0,0,0,.6)"
+        }
+    );
+
+    const currentProgress =
+        clampPercentage(
+            designData.progress
+        );
+
+    const currentTitle =
+        designData.progressTitle ||
+        (currentProgress === 100
+            ? "Completed"
+            : "In Development");
+
+    const currentDescription =
+        designData.progressDescription ||
+        "";
+
+    const currentStatus =
+        currentProgress === 100
+            ? "completed"
+            : "in-progress";
+
+    modal.innerHTML = `
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:20px;
+            margin-bottom:22px;
+        ">
+            <div>
+                <div style="
+                    font-size:9px;
+                    letter-spacing:2px;
+                    color:#8b5cf6;
+                    margin-bottom:7px;
+                ">
+                    DESIGN PROGRESS
+                </div>
+
+                <h3 style="
+                    margin:0;
+                    font-size:20px;
+                ">
+                    Edit Design Progress
+                </h3>
+
+                <p style="
+                    margin:7px 0 0;
+                    color:#aaa6b9;
+                    font-size:12px;
+                    line-height:1.5;
+                ">
+                    Update the completion percentage. Reaching 100% automatically completes the design.
+                </p>
+            </div>
+
+            <button
+                type="button"
+                id="closeDesignProgressModal"
+                aria-label="Close"
+                style="
+                    width:34px;
+                    height:34px;
+                    border:1px solid rgba(255,255,255,.12);
+                    border-radius:8px;
+                    background:rgba(255,255,255,.04);
+                    color:#aaa6b9;
+                    cursor:pointer;
+                    font-size:18px;
+                    flex:0 0 auto;
+                "
+            >
+                ×
+            </button>
+        </div>
+
+        <form id="designProgressForm">
+            <label style="display:block;margin-bottom:18px;">
+                <span style="display:block;margin-bottom:7px;font-size:11px;font-weight:600;color:#d8d4e5;">
+                    Progress Percentage
+                </span>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <input
+                        type="number"
+                        name="progress"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value="${currentProgress}"
+                        required
+                        style="
+                            display:block;
+                            width:100%;
+                            box-sizing:border-box;
+                            padding:11px 12px;
+                            border:1px solid rgba(255,255,255,.12);
+                            border-radius:8px;
+                            outline:none;
+                            background:#0b0d15;
+                            color:#f5f3ff;
+                            font:inherit;
+                            font-size:13px;
+                        "
+                    >
+                    <span style="font-size:12px;color:#8f8a9e;">%</span>
+                </div>
+            </label>
+
+            <label style="display:block;margin-bottom:18px;">
+                <span style="display:block;margin-bottom:7px;font-size:11px;font-weight:600;color:#d8d4e5;">
+                    Progress Title
+                </span>
+                <input
+                    type="text"
+                    name="progressTitle"
+                    maxlength="80"
+                    value="${escapeHtml(currentTitle)}"
+                    placeholder="In Development"
+                    style="
+                        display:block;
+                        width:100%;
+                        box-sizing:border-box;
+                        padding:11px 12px;
+                        border:1px solid rgba(255,255,255,.12);
+                        border-radius:8px;
+                        outline:none;
+                        background:#0b0d15;
+                        color:#f5f3ff;
+                        font:inherit;
+                        font-size:12px;
+                    "
+                >
+            </label>
+
+            <label style="display:block;margin-bottom:18px;">
+                <span style="display:block;margin-bottom:7px;font-size:11px;font-weight:600;color:#d8d4e5;">
+                    Description
+                </span>
+                <textarea
+                    name="progressDescription"
+                    rows="3"
+                    maxlength="300"
+                    placeholder="Optional progress description..."
+                    style="
+                        display:block;
+                        width:100%;
+                        box-sizing:border-box;
+                        padding:11px 12px;
+                        border:1px solid rgba(255,255,255,.12);
+                        border-radius:8px;
+                        outline:none;
+                        background:#0b0d15;
+                        color:#f5f3ff;
+                        font:inherit;
+                        font-size:12px;
+                        line-height:1.5;
+                        resize:vertical;
+                    "
+                >${escapeHtml(currentDescription)}</textarea>
+            </label>
+
+            <div style="
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:12px;
+                padding:11px 12px;
+                margin-bottom:20px;
+                border:1px solid rgba(255,255,255,.07);
+                border-radius:8px;
+                background:rgba(255,255,255,.025);
+            ">
+                <span style="font-size:11px;color:#aaa6b9;">Design Status</span>
+                <strong id="progressModalStatus" style="font-size:11px;color:#c4b5fd;">
+                    ${formatStatus(currentStatus)}
+                </strong>
+            </div>
+
+            <div style="
+                display:flex;
+                justify-content:flex-end;
+                gap:10px;
+                padding-top:4px;
+            ">
+                <button
+                    type="button"
+                    id="cancelDesignProgressModal"
+                    style="
+                        display:inline-flex;
+                        align-items:center;
+                        justify-content:center;
+                        min-height:38px;
+                        padding:9px 14px;
+                        border:1px solid rgba(255,255,255,.12);
+                        border-radius:8px;
+                        background:rgba(255,255,255,.04);
+                        color:#d8d4e5;
+                        font:inherit;
+                        font-size:12px;
+                        cursor:pointer;
+                    "
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    style="
+                        display:inline-flex;
+                        align-items:center;
+                        justify-content:center;
+                        min-height:38px;
+                        padding:9px 16px;
+                        border:1px solid rgba(139,92,246,.55);
+                        border-radius:8px;
+                        background:rgba(139,92,246,.24);
+                        color:#f5f3ff;
+                        font:inherit;
+                        font-size:12px;
+                        cursor:pointer;
+                    "
+                >
+                    Save Progress
+                </button>
+            </div>
+        </form>
+    `;
+
+    overlay.appendChild(
+        modal
+    );
+
+    document.body.appendChild(
+        overlay
+    );
+
+    const close =
+        () => overlay.remove();
+
+    modal.querySelector(
+        "#closeDesignProgressModal"
+    )?.addEventListener(
+        "click",
+        close
+    );
+
+    modal.querySelector(
+        "#cancelDesignProgressModal"
+    )?.addEventListener(
+        "click",
+        close
+    );
+
+    overlay.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target === overlay
+            ) {
+
+                close();
+
+            }
+
+        }
+    );
+
+    const form =
+        modal.querySelector(
+            "#designProgressForm"
+        );
+
+    const progressInput =
+        form.querySelector(
+            "[name='progress']"
+        );
+
+    const statusLabel =
+        form.querySelector(
+            "#progressModalStatus"
+        );
+
+    const updateModalStatus =
+        () => {
+
+            const value =
+                clampPercentage(
+                    progressInput.value
+                );
+
+            statusLabel.textContent =
+                formatStatus(
+                    value === 100
+                        ? "completed"
+                        : "in-progress"
+                );
+
+        };
+
+    progressInput.addEventListener(
+        "input",
+        updateModalStatus
+    );
+
+    form.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+            const nextProgress =
+                clampPercentage(
+                    progressInput.value
+                );
+
+            const titleInput =
+                form.querySelector(
+                    "[name='progressTitle']"
+                );
+
+            const descriptionInput =
+                form.querySelector(
+                    "[name='progressDescription']"
+                );
+
+            const previous = {
+                progress:
+                    designData.progress,
+                progressTitle:
+                    designData.progressTitle,
+                progressDescription:
+                    designData.progressDescription,
+                status:
+                    designData.status
+            };
+
+            designData.progress =
+                nextProgress;
+
+            designData.progressTitle =
+                String(
+                    titleInput.value ||
+                    ""
+                ).trim() ||
+                (nextProgress === 100
+                    ? "Completed"
+                    : "In Development");
+
+            designData.progressDescription =
+                String(
+                    descriptionInput.value ||
+                    ""
+                ).trim();
+
+            if (
+                nextProgress === 100
+            ) {
+
+                designData.status =
+                    "completed";
+
+            } else if (
+                String(
+                    designData.status ||
+                    ""
+                ).toLowerCase() ===
+                "completed"
+            ) {
+
+                designData.status =
+                    "in-progress";
+
+            }
+
+            markDesignChanged();
+
+            renderDesignInformation();
+
+            updateSummary();
+
+            updateProgress();
+
+            close();
+
+            try {
+
+                await saveDesignData();
+
+                if (
+                    nextProgress === 100 &&
+                    previous.progress !== 100
+                ) {
+
+                    showDesignConfetti();
+
+                    showTemporaryMessage(
+                        "Design completed!"
+                    );
+
+                } else {
+
+                    showTemporaryMessage(
+                        "Design progress saved."
+                    );
+
+                }
+
+            } catch (error) {
+
+                designData.progress =
+                    previous.progress;
+
+                designData.progressTitle =
+                    previous.progressTitle;
+
+                designData.progressDescription =
+                    previous.progressDescription;
+
+                designData.status =
+                    previous.status;
+
+                renderDesignInformation();
+
+                updateSummary();
+
+                updateProgress();
+
+                showTemporaryMessage(
+                    error.message ||
+                    "Unable to save design progress."
+                );
+
+            }
+
+        }
+    );
+
+    setTimeout(
+        () => {
+
+            progressInput.focus();
+
+            progressInput.select();
+
+        },
+        30
+    );
 
 }
 
@@ -3517,6 +5773,16 @@ function initializeSaveSystem() {
             "click",
             async () => {
 
+                /*
+                 * Prevent duplicate clicks while the same save is
+                 * already in progress. This is not a visual delay;
+                 * it only prevents duplicate network requests.
+                 */
+                if (isSaving) {
+                    return;
+                }
+
+
                 try {
 
                     await saveCurrentNotes();
@@ -3537,6 +5803,9 @@ function initializeSaveSystem() {
                 }
 
                 catch (error) {
+
+                    saveButton.disabled =
+                        false;
 
                     showTemporaryMessage(
                         error.message ||
@@ -3565,6 +5834,11 @@ function initializeSaveSystem() {
             ) {
 
                 event.preventDefault();
+
+
+                if (isSaving) {
+                    return;
+                }
 
 
                 try {
@@ -3732,6 +6006,66 @@ async function saveCurrentNotes() {
 
 
 /* =========================================================
+   COMPLETION CONFETTI
+========================================================= */
+
+function showDesignConfetti() {
+
+    const existing = getElement("designConfetti");
+
+    if (existing) {
+        existing.remove();
+    }
+
+    const layer = document.createElement("div");
+    layer.id = "designConfetti";
+    Object.assign(layer.style, {
+        position: "fixed",
+        inset: "0",
+        pointerEvents: "none",
+        zIndex: "20000",
+        overflow: "hidden"
+    });
+
+    for (let i = 0; i < 110; i++) {
+        const piece = document.createElement("span");
+        const size = 5 + Math.random() * 8;
+        const left = Math.random() * 100;
+        const duration = 1.8 + Math.random() * 2.2;
+        const delay = Math.random() * 0.35;
+        const hue = Math.floor(Math.random() * 360);
+
+        Object.assign(piece.style, {
+            position: "absolute",
+            left: `${left}%`,
+            top: "-20px",
+            width: `${size}px`,
+            height: `${size * 1.5}px`,
+            background: `hsl(${hue} 85% 65%)`,
+            borderRadius: "2px",
+            opacity: "0.95",
+            transform: `rotate(${Math.random() * 360}deg)`,
+            animation: `designConfettiFall ${duration}s ease-out ${delay}s forwards`
+        });
+
+        layer.appendChild(piece);
+    }
+
+    const style = document.createElement("style");
+    style.id = "designConfettiStyle";
+    style.textContent = `
+        @keyframes designConfettiFall {
+            0% { transform: translate3d(0, -20px, 0) rotate(0deg); opacity: 1; }
+            100% { transform: translate3d(var(--drift, 0px), 105vh, 0) rotate(720deg); opacity: 0; }
+        }
+    `;
+    layer.appendChild(style);
+    document.body.appendChild(layer);
+
+    setTimeout(() => layer.remove(), 4500);
+}
+
+/* =========================================================
    TASK SYSTEM
 ========================================================= */
 
@@ -3878,11 +6212,14 @@ function initializeButtons() {
 
                         try {
 
+                            showDesignConfetti();
                             await saveDesignData();
 
 
                             completeButton.textContent =
                                 "Completed";
+
+
 
 
                             showTemporaryMessage(
@@ -4424,7 +6761,7 @@ function openDesignAddModal(
 
     form.addEventListener(
         "submit",
-        event => {
+        async event => {
 
             event.preventDefault();
 
@@ -4453,13 +6790,20 @@ function openDesignAddModal(
             }
 
 
-            addDesignSectionItem(
+            /*
+             * IMPORTANT:
+             * Close the modal FIRST.
+             *
+             * addDesignSectionItem() updates the local UI immediately
+             * and then performs the Supabase save asynchronously.
+             * The modal must never wait for the network request.
+             */
+            closeModal();
+
+            void addDesignSectionItem(
                 section,
                 values
             );
-
-
-            closeModal();
 
         }
     );
@@ -5180,8 +7524,44 @@ function getDesignModalConfiguration(
                                 "todo",
                                 "in-progress",
                                 "completed",
-                                "blocked"
+                                "blocked",
+                                "delayed"
                             ]
+
+                    },
+
+                    {
+
+                        name:
+                            "delayUntil",
+
+                        label:
+                            "Delay Until (optional)",
+
+                        type:
+                            "date",
+
+                        required:
+                            false
+
+                    },
+
+                    {
+
+                        name:
+                            "delayReason",
+
+                        label:
+                            "Delay Reason (optional)",
+
+                        type:
+                            "textarea",
+
+                        required:
+                            false,
+
+                        placeholder:
+                            "Why is this task delayed?"
 
                     }
                 ]
@@ -5601,7 +7981,7 @@ function validateDesignModalValues(
    ADD SECTION ITEM
 ========================================================= */
 
-function addDesignSectionItem(
+async function addDesignSectionItem(
     section,
     values
 ) {
@@ -5853,11 +8233,30 @@ function addDesignSectionItem(
                     values.category,
 
                 status:
-                    values.status,
+                    values.delayUntil
+                        ? "delayed"
+                        : values.status,
 
                 completed:
                     values.status ===
                     "completed",
+
+                done:
+                    values.status ===
+                    "completed",
+
+                delayed:
+                    Boolean(values.delayUntil) ||
+                    values.status ===
+                    "delayed",
+
+                delayUntil:
+                    values.delayUntil ||
+                    null,
+
+                delayReason:
+                    values.delayReason ||
+                    "",
 
                 createdAt:
                     now
@@ -5933,25 +8332,23 @@ function addDesignSectionItem(
             return;
 
     }
-
-
-    addDesignChangeLog(
-        section,
-        item
-    );
-
-
     markDesignChanged();
-
-
     renderEverything();
 
-
-    showTemporaryMessage(
-        `${getDesignSectionLabel(
-            section
-        )} added.`
-    );
+    try {
+        await saveDesignData();
+        showTemporaryMessage(
+            `${getDesignSectionLabel(section)} added.`
+        );
+    } catch (error) {
+        const collection = section === "references" ? designData.links : designData[section];
+        if (Array.isArray(collection)) {
+            const position = collection.lastIndexOf(item);
+            if (position >= 0) collection.splice(position, 1);
+        }
+        renderEverything();
+        showTemporaryMessage(error.message || `Unable to add ${getDesignSectionLabel(section).toLowerCase()}.`);
+    }
 
 }
 
@@ -5996,83 +8393,6 @@ function normalizeDesignURL(
 }
 
 
-/* =========================================================
-   CHANGE LOG
-========================================================= */
-
-function addDesignChangeLog(
-    section,
-    item
-) {
-
-    if (
-        !Array.isArray(
-            designData.changeLog
-        )
-    ) {
-
-        designData.changeLog =
-            [];
-
-    }
-
-
-    const label =
-        getDesignSectionLabel(
-            section
-        );
-
-
-    designData.changeLog.unshift(
-        {
-
-            type:
-                "addition",
-
-            title:
-                `${label} added`,
-
-            description:
-                getDesignChangeDescription(
-                    item
-                ),
-
-            date:
-                new Date()
-                    .toISOString()
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   CHANGE DESCRIPTION
-========================================================= */
-
-function getDesignChangeDescription(
-    item
-) {
-
-    if (
-        typeof item ===
-        "string"
-    ) {
-
-        return item;
-
-    }
-
-
-    return (
-        item?.title ||
-        item?.name ||
-        item?.key ||
-        "New item added"
-    );
-
-}
 
 
 /* =========================================================
@@ -6123,7 +8443,10 @@ function getDesignSectionLabel(
             "Reference",
 
         tests:
-            "Test"
+            "Test",
+
+        timeline:
+            "Timeline entry"
 
     };
 
@@ -7438,27 +9761,40 @@ function askConfirm(
 
     confirm.addEventListener(
         "click",
-        async () => {
+        () => {
 
-            confirm.disabled =
-                true;
+            /*
+             * IMPORTANT:
+             * Remove the confirmation modal immediately.
+             * Never wait for the Supabase request before closing it.
+             */
+            overlay.remove();
 
+            /*
+             * Run the actual action asynchronously after the modal
+             * has already disappeared. Any normal errors are handled
+             * by the individual action itself; this catch is only a
+             * safety net for unexpected failures.
+             */
+            Promise.resolve()
+                .then(
+                    () => onConfirm()
+                )
+                .catch(
+                    error => {
 
-            cancel.disabled =
-                true;
+                        console.error(
+                            "Design confirmation action error:",
+                            error
+                        );
 
+                        showTemporaryMessage(
+                            error?.message ||
+                            "Unable to complete the requested action."
+                        );
 
-            try {
-
-                await onConfirm();
-
-            }
-
-            finally {
-
-                overlay.remove();
-
-            }
+                    }
+                );
 
         }
     );
@@ -7574,8 +9910,19 @@ function showSaveFeedback(
     }
 
 
+    /*
+     * Feedback must be visual only.
+     * Do not keep the Save button disabled while waiting for
+     * an artificial timeout. The actual save operation already
+     * controls its own isSaving state.
+     */
     const originalText =
+        button.dataset.originalText ||
         button.textContent;
+
+
+    button.dataset.originalText =
+        originalText;
 
 
     button.textContent =
@@ -7583,22 +9930,7 @@ function showSaveFeedback(
 
 
     button.disabled =
-        true;
-
-
-    setTimeout(
-        () => {
-
-            button.textContent =
-                originalText;
-
-
-            button.disabled =
-                false;
-
-        },
-        1200
-    );
+        false;
 
 }
 
@@ -8286,167 +10618,51 @@ function slugify(
    DELETE DESIGN ITEM
 ========================================================= */
 
-function deleteDesignItem(
-    section,
-    index
-) {
+async function deleteDesignItem(section, index) {
 
-    if (
-        !designData
-    ) {
+    if (!designData) return;
 
-        return;
+    const sectionMap = {
+        requirements: "requirements", objectives: "objectives", constraints: "constraints",
+        tools: "tools", specifications: "specifications", materials: "materials",
+        components: "components", iterations: "iterations", decisions: "decisions",
+        risks: "risks", tasks: "tasks", references: "links", tests: "tests", files: "attachments"
+    };
 
-    }
+    const property = sectionMap[section];
+    if (!property || !Array.isArray(designData[property])) return;
+    if (index < 0 || index >= designData[property].length) return;
 
+    const item = designData[property][index];
+    const label = getDesignSectionLabel(section);
+    const itemName =
+        typeof item === "string"
+            ? item
+            : item?.title ||
+            item?.name ||
+            item?.key ||
+            label;
 
-    const sectionMap =
-        {
-
-            requirements:
-                "requirements",
-
-            objectives:
-                "objectives",
-
-            constraints:
-                "constraints",
-
-            tools:
-                "tools",
-
-            specifications:
-                "specifications",
-
-            materials:
-                "materials",
-
-            components:
-                "components",
-
-            iterations:
-                "iterations",
-
-            decisions:
-                "decisions",
-
-            risks:
-                "risks",
-
-            tasks:
-                "tasks",
-
-            references:
-                "links",
-
-            tests:
-                "tests",
-
-            files:
-                "attachments"
-
-        };
+    askConfirm(
+        `Delete ${label}`,
+        `Are you sure you want to delete ${itemName}? This will also remove it from the saved Design data.`,
+        async () => {
+            designData[property].splice(index, 1);
 
 
-    const property =
-        sectionMap[
-            section
-        ];
+            markDesignChanged();
+            renderEverything();
 
-
-    if (
-        !property ||
-        !Array.isArray(
-            designData[
-                property
-            ]
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    if (
-        index < 0 ||
-        index >=
-        designData[
-            property
-        ].length
-    ) {
-
-        return;
-
-    }
-
-
-    const item =
-        designData[
-            property
-        ][
-            index
-        ];
-
-
-    designData[
-        property
-    ].splice(
-        index,
-        1
-    );
-
-
-    if (
-        !Array.isArray(
-            designData.changeLog
-        )
-    ) {
-
-        designData.changeLog =
-            [];
-
-    }
-
-
-    const label =
-        getDesignSectionLabel(
-            section
-        );
-
-
-    designData.changeLog.unshift(
-        {
-
-            type:
-                "deletion",
-
-            title:
-                `${label} removed`,
-
-            description:
-                getDesignChangeDescription(
-                    item
-                ),
-
-            date:
-                new Date()
-                    .toISOString()
-
+            try {
+                await saveDesignData();
+                showTemporaryMessage(`${label} removed.`);
+            } catch (error) {
+                designData[property].splice(index, 0, item);
+                renderEverything();
+                showTemporaryMessage(error.message || `Unable to remove ${label.toLowerCase()}.`);
+            }
         }
     );
-
-
-    markDesignChanged();
-
-
-    renderEverything();
-
-
-    showTemporaryMessage(
-        `${label} removed.`
-    );
-
 }
 
 /* =========================================================
@@ -8478,8 +10694,3 @@ function createDeleteButton(
 /* =========================================================
    CONSOLE
 ========================================================= */
-
-console.log(
-    "%cRiGiD Design Workspace",
-    "color:#a78bfa;font-weight:bold;font-size:14px;"
-);

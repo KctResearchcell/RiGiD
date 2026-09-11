@@ -30,123 +30,94 @@
 
 <header class="prototype-header">
 
-  
-<div class="prototype-brand">
-
-    <div class="prototype-brand-top">
-
-        <span class="prototype-badge">
-            PROTOTYPE
-        </span>
-
+    <div class="prototype-header-workspace">
 
         <button
-            class="prototype-status"
-            id="prototypeStatus"
+            class="prototype-workspace-button"
+            id="backToWorkspace"
             type="button"
+            aria-label="Return to workspace"
         >
-            ● BUILDING
+            <span class="prototype-workspace-icon">←</span>
+            <span>Workspace</span>
         </button>
 
+    </div>
 
-        <span
-            class="prototype-version"
-            id="prototypeVersion"
+    <div class="prototype-header-divider" aria-hidden="true"></div>
+
+    <div class="prototype-brand">
+
+        <div class="prototype-brand-top">
+
+            <span class="prototype-badge">PROTOTYPE</span>
+
+            <button
+                class="prototype-status"
+                id="prototypeStatus"
+                type="button"
+            >
+                ● BUILDING
+            </button>
+
+            <span
+                class="prototype-version"
+                id="prototypeVersion"
+            >
+                V2
+            </span>
+
+            <div
+                class="prototype-tags"
+                id="prototypeTags"
+                aria-label="Prototype tags"
+            >
+                <span>TAGS</span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+        </div>
+
+        <h1 id="prototypeTitle"></h1>
+
+        <p
+            class="prototype-description"
+            id="prototypeDescription"
         >
-            V2
-        </span>
+            Physical implementation of the proposed system for functional testing and validation.
+        </p>
 
     </div>
 
+    <div class="prototype-live">
 
-    <h1 id="prototypeTitle">
-        
-    </h1>
-
-
-    <p
-        class="prototype-description"
-        id="prototypeDescription"
-    >
-        Physical implementation of the proposed
-        system for functional testing and validation.
-    </p>
-
-
-    <div
-        class="prototype-tags"
-        id="prototypeTags"
-    >
-
-        <span>HARDWARE</span>
-        <span>R&amp;D</span>
-        <span>TESTING</span>
-        <span>ENERGY</span>
-
-    </div>
-
-</div>
-
-
-<div class="prototype-live">
-
-    <div class="prototype-date">
-
-        <span id="prototypeDate">
-            23 AUG 2026
-        </span>
-
-        <strong id="prototypeClock">
-            05:30:00 PM
-        </strong>
-
-    </div>
-
-
-    <div class="prototype-meta">
-
-        <div>
-
-            <label>
-                OWNER
-            </label>
-
-            <strong id="prototypeOwner">
-                You
-            </strong>
-
+        <div class="prototype-date">
+            <span id="prototypeDate">23 AUG 2026</span>
+            <strong id="prototypeClock">05:30:00 PM</strong>
         </div>
 
+        <div class="prototype-meta">
 
-        <div>
+            <div>
+                <label>OWNER</label>
+                <strong id="prototypeOwner">You</strong>
+            </div>
 
-            <label>
-                STARTED
-            </label>
+            <div>
+                <label>STARTED</label>
+                <strong id="prototypeStarted">01 AUG 2026</strong>
+            </div>
 
-            <strong id="prototypeStarted">
-                01 AUG 2026
-            </strong>
-
-        </div>
-
-
-        <div>
-
-            <label>
-                LAST UPDATED
-            </label>
-
-            <strong id="prototypeLastUpdated">
-                23 AUG 2026
-            </strong>
+            <div>
+                <label>LAST UPDATED</label>
+                <strong id="prototypeLastUpdated">23 AUG 2026</strong>
+            </div>
 
         </div>
 
     </div>
-
-</div>
-  
 
 </header>
 
@@ -222,7 +193,32 @@
 
 </nav>
 
-<main class="prototype-container">
+<!-- =====================================================
+     LOADING / ERROR STATE
+     Shown while the initial Supabase fetch is in flight.
+     Hidden automatically once real data loads
+     (see prototype.js showLoadingState/hideLoadingState).
+     NOTE: needs .prototype-loading-state /
+     .prototype-error-state / a generic .hidden { display:none }
+     utility added in the CSS pass — see project notes.
+===================================================== -->
+
+<div
+    id="prototypeLoadingState"
+    class="prototype-loading-state"
+    role="status"
+    aria-live="polite"
+>
+    Loading prototype workspace…
+</div>
+
+<div
+    id="prototypeErrorState"
+    class="prototype-error-state hidden"
+    role="alert"
+></div>
+
+<main class="prototype-container" id="prototypeWorkspace">
 
 <!-- =====================================================
      OVERVIEW
@@ -1844,6 +1840,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeDetailsModal"
 >
 
@@ -1868,6 +1866,7 @@
         <button
             id="closePrototypeDetailsModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -1993,6 +1992,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeProgressModal"
 >
 
@@ -2017,6 +2018,7 @@
         <button
             id="closePrototypeProgressModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -2107,6 +2109,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeVersionModal"
 >
 
@@ -2131,6 +2135,7 @@
         <button
             id="closePrototypeVersionModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -2212,6 +2217,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeNextActionModal"
 >
 
@@ -2236,6 +2243,7 @@
         <button
             id="closePrototypeNextActionModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -2304,6 +2312,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeObjectiveModal"
 >
 
@@ -2328,6 +2338,7 @@
         <button
             id="closePrototypeObjectiveModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -2383,6 +2394,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeDesignModal"
 >
 
@@ -2407,6 +2420,7 @@
         <button
             id="closePrototypeDesignModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -2462,6 +2476,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeSpecificationModal"
 >
 
@@ -2486,6 +2502,7 @@
         <button
             id="closePrototypeSpecificationModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -2555,6 +2572,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeDesignDecisionModal"
 >
 
@@ -2579,6 +2598,7 @@
         <button
             id="closePrototypeDesignDecisionModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -2647,6 +2667,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="buildModal"
 >
 
@@ -2671,6 +2693,7 @@
         <button
             id="closeBuildModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -2766,6 +2789,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeComponentModal"
 >
 
@@ -2790,6 +2815,7 @@
         <button
             id="closePrototypeComponentModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -2896,6 +2922,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeTestModal"
 >
 
@@ -2920,6 +2948,7 @@
         <button
             id="closePrototypeTestModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -3023,6 +3052,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeMeasurementModal"
 >
 
@@ -3047,6 +3078,7 @@
         <button
             id="closePrototypeMeasurementModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -3165,6 +3197,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeIterationModal"
 >
 
@@ -3189,6 +3223,7 @@
         <button
             id="closePrototypeIterationModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -3294,6 +3329,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeFailureModal"
 >
 
@@ -3318,6 +3355,7 @@
         <button
             id="closePrototypeFailureModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -3386,6 +3424,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeModificationModal"
 >
 
@@ -3410,6 +3450,7 @@
         <button
             id="closePrototypeModificationModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -3478,6 +3519,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeImprovementModal"
 >
 
@@ -3502,6 +3545,7 @@
         <button
             id="closePrototypeImprovementModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -3597,6 +3641,8 @@
 
 <div
     class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
     id="prototypeLinkModal"
 >
 
@@ -3621,6 +3667,7 @@
         <button
             id="closePrototypeLinkModal"
             type="button"
+            aria-label="Close"
         >
             ×
         </button>
@@ -3696,6 +3743,52 @@
 
 </div>
 
+
+<!-- =====================================================
+     DELETE CONFIRMATION MODAL
+===================================================== -->
+
+<div
+    class="prototype-modal hidden"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="prototypeConfirmTitle"
+    id="prototypeConfirmModal"
+>
+    <div class="modal-panel prototype-confirm-panel">
+        <div class="modal-header">
+            <div>
+                <span class="section-label">CONFIRMATION</span>
+                <h2 id="prototypeConfirmTitle">Delete item?</h2>
+            </div>
+
+            <button
+                id="closePrototypeConfirmModal"
+                type="button"
+                aria-label="Close"
+            >×</button>
+        </div>
+
+        <p id="prototypeConfirmMessage" class="prototype-confirm-message">
+            Are you sure you want to delete this item?
+        </p>
+
+        <div class="modal-actions">
+            <button
+                class="outline-button"
+                id="cancelPrototypeConfirm"
+                type="button"
+            >Cancel</button>
+
+            <button
+                class="danger-button"
+                id="prototypeConfirmButton"
+                type="button"
+            >Delete</button>
+        </div>
+    </div>
+</div>
+
 <!-- =====================================================
      TOAST
 ===================================================== -->
@@ -3711,6 +3804,10 @@
 
 <!-- RiGiD Supabase Client -->
 <script src="../../../supabase-client.js"></script>
+
+<!-- RiGiD Google Drive Reconnect (automatic — no visible connect button) -->
+<script src="../../../google-drive-reconnect.js"></script>
+
 <script
     src="prototype.js"
 ></script>

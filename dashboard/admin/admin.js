@@ -664,7 +664,7 @@ async function loadWorkItems() {
 
     workItems = data || [];
 
-    console.log("Admin personal_work loaded:", workItems);
+
 }
 
 async function loadSupportReports() {
@@ -688,11 +688,6 @@ async function loadSupportReports() {
     }
 
     supportReports = data || [];
-
-    console.log(
-        "Admin support reports loaded:",
-        supportReports
-    );
 }
 
 function renderSupportReports() {
@@ -774,7 +769,7 @@ function renderSupportReports() {
                 report.status ||
                 "noted"
             )
-            .toLowerCase();
+                .toLowerCase();
 
 
         return `
@@ -804,8 +799,8 @@ function renderSupportReports() {
                 <div class="support-report-message">
 
                     ${escapeHTML(
-                        report.message
-                    )}
+            report.message
+        )}
 
                 </div>
 
@@ -911,12 +906,6 @@ async function updateSupportReportStatus(reportId, newStatus) {
             report.status = newStatus;
         }
 
-        console.log(
-            "Support report status updated:",
-            reportId,
-            newStatus
-        );
-
     } catch (error) {
 
         console.error(
@@ -987,6 +976,44 @@ function populateForumFilter() {
 
 }
 
+/* =========================================================
+   PEN ICON
+========================================================= */
+
+function editIconHTML(
+    type,
+    id
+) {
+
+    return `
+        <button
+            type="button"
+            class="rigid-edit-icon ${type === "team" || type === "domain"
+            ? "rigid-entity-edit-icon"
+            : ""}"
+            title="Edit ${escapeHTML(type)}"
+            data-edit-${type}="${escapeHTML(id)}"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+                <path
+                    d="M12 20h9"
+                ></path>
+
+                <path
+                    d="M16.5 3.5
+                       a2.121 2.121 0 0 1 3 3
+                       L7 19
+                       l-4 1
+                       l1-4
+                       Z"
+                ></path>
+            </svg>
+        </button>
+    `;
+}
 
 /* =========================================================
    GET FORUM
@@ -1350,38 +1377,79 @@ function injectAdminDynamicStyles() {
             color: #c59aff;
         }
 
-        .rigid-task-row {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 15px;
-            padding: 15px;
-            border: 1px solid rgba(255,255,255,.07);
-            border-radius: 12px;
-            margin-bottom: 9px;
-            background: rgba(255,255,255,.02);
-            cursor: pointer;
-        }
+.rigid-task-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 
-        .rigid-task-row:hover {
-            border-color: rgba(155,92,255,.45);
-        }
+    width: 100%;
+    box-sizing: border-box;
 
-        .rigid-task-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 7px;
-            margin-top: 8px;
-            font-size: 11px;
-            opacity: .55;
-        }
+    padding: 8px 12px;
 
-        .rigid-badge {
-            display: inline-flex;
-            padding: 4px 7px;
-            border-radius: 999px;
-            border: 1px solid rgba(255,255,255,.08);
-            font-size: 10px;
-        }
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 10px;
+
+    margin-bottom: 6px;
+
+    background: rgba(255,255,255,.02);
+
+    cursor: pointer;
+
+    min-height: 0;
+}
+
+.rigid-task-row:hover {
+    border-color: rgba(155,92,255,.45);
+    background: rgba(255,255,255,.035);
+}
+
+.rigid-task-row strong {
+    font-size: 13px;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.rigid-task-title {
+    font-size: 13px;
+    line-height: 1.2;
+    opacity: .75;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 80px;
+}
+
+.rigid-task-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    margin: 0;
+
+    font-size: 10px;
+    line-height: 1.2;
+
+    opacity: .55;
+
+    white-space: nowrap;
+}
+
+.rigid-badge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 2px 6px;
+
+    border-radius: 999px;
+
+    border: 1px solid rgba(255,255,255,.08);
+
+    font-size: 9px;
+    line-height: 1.2;
+
+    white-space: nowrap;
+}
 
         .rigid-number-click {
             cursor: pointer;
@@ -1434,14 +1502,26 @@ function injectAdminDynamicStyles() {
         }
 
         @media(max-width:650px) {
-            .rigid-task-row {
-                grid-template-columns: 1fr;
-            }
 
-            .rigid-modal-box {
-                padding: 18px;
-            }
-        }
+    .rigid-task-row {
+        flex-wrap: wrap;
+        gap: 6px 10px;
+    }
+
+    .rigid-task-meta {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .rigid-task-row .rigid-count {
+        margin-left: auto !important;
+    }
+
+    .rigid-modal-box {
+        padding: 18px;
+    }
+
+}
 
     `;
 
@@ -1865,41 +1945,25 @@ async function renderForums() {
 
                 <div class="rigid-forum-members">
 
-                    <span class="rigid-count">
-                        ${memberCount} members
-                    </span>
+    <span class="rigid-count">
+        ${memberCount} members
+    </span>
 
-                    <button
-                        type="button"
-                        class="rigid-member-button"
-                        title="View forum members"
-                        data-forum-members="${forum.id}"
-                    >
-                        👥
-                    </button>
+    <button
+        type="button"
+        class="rigid-member-button"
+        title="View forum members"
+        data-forum-members="${forum.id}"
+    >
+        👥
+    </button>
 
-                </div>
+    ${editIconHTML(
+                "forum",
+                forum.id
+            )}
 
-            </div>
-
-
-            <div class="rigid-admin-actions">
-
-                <button
-                    type="button"
-                    class="rigid-mini-button"
-                    data-edit-forum="${forum.id}"
-                >
-                    Edit Forum
-                </button>
-
-                <button
-                    type="button"
-                    class="rigid-mini-button rigid-delete-button"
-                    data-delete-forum="${forum.id}"
-                >
-                    Delete Forum
-                </button>
+</div>
 
             </div>
 
@@ -2044,11 +2108,16 @@ function renderTeamCard(
 
                 <div class="team-card-top">
 
-                    <span class="team-index">
-                        TEAM
-                    </span>
+    <span class="team-index">
+        TEAM
+    </span>
 
-                </div>
+    ${editIconHTML(
+        "team",
+        team.id
+    )}
+
+</div>
 
                 <h3>
                     ${escapeHTML(
@@ -2110,13 +2179,18 @@ function renderDomainCard(
 
             <div>
 
-                <div class="team-card-top">
+               <div class="team-card-top">
 
-                    <span class="team-index">
-                        DOMAIN
-                    </span>
+    <span class="team-index">
+        DOMAIN
+    </span>
 
-                </div>
+    ${editIconHTML(
+        "domain",
+        domain.id
+    )}
+
+</div>
 
                 <h3>
                     ${escapeHTML(
@@ -2164,6 +2238,51 @@ function attachForumEvents() {
 
     document
         .querySelectorAll(
+            "[data-member-profile-id]"
+        )
+        .forEach(
+            row => {
+
+                row.addEventListener(
+                    "click",
+                    event => {
+
+                        /*
+                         * Do not navigate when the
+                         * admin clicks Remove.
+                         */
+                        if (
+                            event.target.closest(
+                                "[data-remove-member]"
+                            )
+                        ) {
+                            return;
+                        }
+
+
+                        const profileId =
+                            row.dataset
+                                .memberProfileId;
+
+
+                        if (!profileId) {
+                            return;
+                        }
+
+
+                        window.location.href =
+                            `../personal/personal.html?profile=${encodeURIComponent(
+                                profileId
+                            )}`;
+
+                    }
+                );
+
+            }
+        );
+
+    document
+        .querySelectorAll(
             "[data-forum-members]"
         )
         .forEach(
@@ -2185,7 +2304,9 @@ function attachForumEvents() {
 
             }
         );
-
+    /* =====================================================
+FORUM EDIT ICON
+===================================================== */
 
     document
         .querySelectorAll(
@@ -2196,7 +2317,9 @@ function attachForumEvents() {
 
                 button.addEventListener(
                     "click",
-                    () => {
+                    event => {
+
+                        event.stopPropagation();
 
                         const forum =
                             getForum(
@@ -2204,9 +2327,11 @@ function attachForumEvents() {
                             );
 
                         if (forum) {
+
                             openForumForm(
                                 forum
                             );
+
                         }
 
                     }
@@ -2216,20 +2341,35 @@ function attachForumEvents() {
         );
 
 
+    /* =====================================================
+       TEAM EDIT ICON
+    ===================================================== */
+
     document
         .querySelectorAll(
-            "[data-delete-forum]"
+            "[data-edit-team]"
         )
         .forEach(
             button => {
 
                 button.addEventListener(
                     "click",
-                    () => {
+                    event => {
 
-                        deleteForum(
-                            button.dataset.deleteForum
-                        );
+                        event.stopPropagation();
+
+                        const team =
+                            getTeam(
+                                button.dataset.editTeam
+                            );
+
+                        if (team) {
+
+                            openTeamForm(
+                                team
+                            );
+
+                        }
 
                     }
                 );
@@ -2237,6 +2377,42 @@ function attachForumEvents() {
             }
         );
 
+
+    /* =====================================================
+       DOMAIN EDIT ICON
+    ===================================================== */
+
+    document
+        .querySelectorAll(
+            "[data-edit-domain]"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+
+                        const domain =
+                            getDomain(
+                                button.dataset.editDomain
+                            );
+
+                        if (domain) {
+
+                            openDomainForm(
+                                domain
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
 
     document
         .querySelectorAll(
@@ -2293,7 +2469,15 @@ function attachForumEvents() {
 
                 card.addEventListener(
                     "click",
-                    () => {
+                    event => {
+
+                        if (
+                            event.target.closest(
+                                "[data-edit-team]"
+                            )
+                        ) {
+                            return;
+                        }
 
                         openEntityDetails(
                             "team",
@@ -2316,7 +2500,15 @@ function attachForumEvents() {
 
                 card.addEventListener(
                     "click",
-                    () => {
+                    event => {
+
+                        if (
+                            event.target.closest(
+                                "[data-edit-domain]"
+                            )
+                        ) {
+                            return;
+                        }
 
                         openEntityDetails(
                             "domain",
@@ -2330,6 +2522,7 @@ function attachForumEvents() {
         );
 
 }
+
 
 
 /* =========================================================
@@ -2406,24 +2599,162 @@ function openForumForm(
 
             <div class="rigid-modal-actions">
 
-                <button
-                    type="button"
-                    class="rigid-secondary"
-                    data-close-modal="rigidForumFormModal"
-                >
-                    Cancel
-                </button>
+    <button
+        type="button"
+        class="rigid-secondary"
+        data-close-modal="rigidForumFormModal"
+    >
+        Cancel
+    </button>
 
-                <button
-                    type="submit"
-                    class="rigid-primary"
-                >
-                    ${editing
+    <button
+        type="submit"
+        class="rigid-primary"
+    >
+        ${editing
             ? "Save Changes"
             : "Create Forum"}
-                </button>
+    </button>
+
+</div>
+
+
+${editing
+            ? `
+        <div class="rigid-danger-zone">
+
+            <div class="rigid-danger-zone-title">
+                FORUM MANAGEMENT
+            </div>
+
+            <div class="rigid-danger-zone-text">
+                Manage the teams and domains belonging to this forum.
+            </div>
+
+
+            <!-- TEAMS -->
+
+            <div class="column-label">
+                TEAMS
+            </div>
+
+            <div class="rigid-management-list">
+
+                ${getForumTeams(forum.id).length
+                ? getForumTeams(forum.id)
+                    .map(
+                        team => `
+                                    <div
+                                        class="rigid-management-row"
+                                    >
+
+                                        <div>
+                                            <div class="rigid-management-name">
+                                                ${escapeHTML(
+                            team.name
+                        )}
+                                            </div>
+
+                                            <div class="rigid-management-type">
+                                                Team
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            class="rigid-mini-button rigid-delete-button"
+                                            data-forum-delete-team="${escapeHTML(
+                            team.id
+                        )}"
+                                        >
+                                            Delete
+                                        </button>
+
+                                    </div>
+                                `
+                    )
+                    .join("")
+                : `
+                            <div class="rigid-empty">
+                                No teams in this forum.
+                            </div>
+                        `
+            }
 
             </div>
+
+
+            <!-- DOMAINS -->
+
+            <div
+                class="column-label"
+                style="margin-top:18px;"
+            >
+                DOMAINS
+            </div>
+
+            <div class="rigid-management-list">
+
+                ${getForumDomains(forum.id).length
+                ? getForumDomains(forum.id)
+                    .map(
+                        domain => `
+                                    <div
+                                        class="rigid-management-row"
+                                    >
+
+                                        <div>
+                                            <div class="rigid-management-name">
+                                                ${escapeHTML(
+                            domain.name
+                        )}
+                                            </div>
+
+                                            <div class="rigid-management-type">
+                                                Domain
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            class="rigid-mini-button rigid-delete-button"
+                                            data-forum-delete-domain="${escapeHTML(
+                            domain.id
+                        )}"
+                                        >
+                                            Delete
+                                        </button>
+
+                                    </div>
+                                `
+                    )
+                    .join("")
+                : `
+                            <div class="rigid-empty">
+                                No domains in this forum.
+                            </div>
+                        `
+            }
+
+            </div>
+
+
+            <!-- DELETE FORUM -->
+
+            <button
+                type="button"
+                class="rigid-danger-full-button"
+                data-forum-delete="${escapeHTML(
+                forum.id
+            )}"
+            >
+                Delete This Forum
+            </button>
+
+        </div>
+      `
+            : ""
+        }
 
         </form>
 
@@ -2518,6 +2849,115 @@ function openForumForm(
 
             }
         );
+
+    /* =====================================================
+DELETE TEAM FROM FORUM EDITOR
+====================================================== */
+
+    content
+        .querySelectorAll(
+            "[data-forum-delete-team]"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        await deleteTeam(
+                            button.dataset
+                                .forumDeleteTeam
+                        );
+
+                        closeModal(
+                            "rigidForumFormModal"
+                        );
+
+                        await openForumForm(
+                            getForum(
+                                forum.id
+                            )
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       DELETE DOMAIN FROM FORUM EDITOR
+    ====================================================== */
+
+    content
+        .querySelectorAll(
+            "[data-forum-delete-domain]"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        await deleteDomain(
+                            button.dataset
+                                .forumDeleteDomain
+                        );
+
+                        closeModal(
+                            "rigidForumFormModal"
+                        );
+
+                        const updatedForum =
+                            getForum(
+                                forum.id
+                            );
+
+                        if (updatedForum) {
+
+                            openForumForm(
+                                updatedForum
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* =====================================================
+       DELETE FORUM FROM FORUM EDITOR
+    ====================================================== */
+
+    const deleteForumButton =
+        content.querySelector(
+            "[data-forum-delete]"
+        );
+
+    if (deleteForumButton) {
+
+        deleteForumButton.addEventListener(
+            "click",
+            async () => {
+
+                closeModal(
+                    "rigidForumFormModal"
+                );
+
+                await deleteForum(
+                    forum.id
+                );
+
+            }
+        );
+
+    }
 
 }
 
@@ -2635,42 +3075,54 @@ function openTeamForm(
 
             <div class="rigid-form-grid">
 
-                <div class="rigid-form-group">
+                ${editing
+            ? `
+        <input
+            id="rigidTeamForum"
+            type="hidden"
+            value="${escapeHTML(
+                team?.forum_id || ""
+            )}"
+        >
+      `
+            : `
+        <div class="rigid-form-group">
 
-                    <label>
-                        Forum
-                    </label>
+            <label>
+                Forum
+            </label>
 
-                    <select
-                        id="rigidTeamForum"
-                        required
-                    >
+            <select
+                id="rigidTeamForum"
+                required
+            >
 
-                        ${forums.map(
-        forum => `
-                                <option
-                                    value="${forum.id}"
-                                    ${String(
-            team?.forum_id ||
-            defaultForumId
-        ) ===
-                String(
-                    forum.id
-                )
-                ? "selected"
-                : ""
-            }
-                                >
-                                    ${escapeHTML(
-                forum.name
-            )}
-                                </option>
-                            `
-    ).join("")}
+                ${forums.map(
+                forum => `
+                        <option
+                            value="${forum.id}"
+                            ${String(
+                    defaultForumId
+                ) ===
+                        String(
+                            forum.id
+                        )
+                        ? "selected"
+                        : ""
+                    }
+                        >
+                            ${escapeHTML(
+                        forum.name
+                    )}
+                        </option>
+                    `
+            ).join("")}
 
-                    </select>
+            </select>
 
-                </div>
+        </div>
+      `
+        }
 
 
                 <div class="rigid-form-group">
@@ -2682,8 +3134,8 @@ function openTeamForm(
                     <input
                         id="rigidTeamName"
                         value="${escapeHTML(
-        team?.name || ""
-    )}"
+            team?.name || ""
+        )}"
                         required
                     >
 
@@ -2699,8 +3151,8 @@ function openTeamForm(
                     <textarea
                         id="rigidTeamDescription"
                     >${escapeHTML(
-        team?.description || ""
-    )}</textarea>
+            team?.description || ""
+        )}</textarea>
 
                 </div>
 
@@ -2801,14 +3253,6 @@ function openTeamForm(
                             }
                         );
 
-                        console.log("admin_create_team result:", {
-                            data,
-                            error,
-                            forumId,
-                            name,
-                            description
-                        });
-
                         if (error) {
                             console.error("admin_create_team FULL ERROR:", error);
                             throw error;
@@ -2877,42 +3321,54 @@ function openDomainForm(
 
             <div class="rigid-form-grid">
 
-                <div class="rigid-form-group">
+                ${editing
+            ? `
+        <input
+            id="rigidDomainForum"
+            type="hidden"
+            value="${escapeHTML(
+                domain?.forum_id || ""
+            )}"
+        >
+      `
+            : `
+        <div class="rigid-form-group">
 
-                    <label>
-                        Forum
-                    </label>
+            <label>
+                Forum
+            </label>
 
-                    <select
-                        id="rigidDomainForum"
-                        required
-                    >
+            <select
+                id="rigidDomainForum"
+                required
+            >
 
-                        ${forums.map(
-        forum => `
-                                <option
-                                    value="${forum.id}"
-                                    ${String(
-            domain?.forum_id ||
-            defaultForumId
-        ) ===
-                String(
-                    forum.id
-                )
-                ? "selected"
-                : ""
-            }
-                                >
-                                    ${escapeHTML(
-                forum.name
-            )}
-                                </option>
-                            `
-    ).join("")}
+                ${forums.map(
+                forum => `
+                        <option
+                            value="${forum.id}"
+                            ${String(
+                    defaultForumId
+                ) ===
+                        String(
+                            forum.id
+                        )
+                        ? "selected"
+                        : ""
+                    }
+                        >
+                            ${escapeHTML(
+                        forum.name
+                    )}
+                        </option>
+                    `
+            ).join("")}
 
-                    </select>
+            </select>
 
-                </div>
+        </div>
+      `
+        }
 
 
                 <div class="rigid-form-group">
@@ -2924,8 +3380,8 @@ function openDomainForm(
                     <input
                         id="rigidDomainName"
                         value="${escapeHTML(
-        domain?.name || ""
-    )}"
+            domain?.name || ""
+        )}"
                         required
                     >
 
@@ -2941,8 +3397,8 @@ function openDomainForm(
                     <textarea
                         id="rigidDomainDescription"
                     >${escapeHTML(
-        domain?.description || ""
-    )}</textarea>
+            domain?.description || ""
+        )}</textarea>
 
                 </div>
 
@@ -3459,7 +3915,10 @@ function memberRowHTML(
 
     return `
 
-        <div class="rigid-member-row">
+        <div
+            class="rigid-member-row rigid-member-clickable"
+            data-member-profile-id="${escapeHTML(profile.id)}"
+        >
 
             <div class="rigid-member-main">
 
@@ -3472,7 +3931,8 @@ function memberRowHTML(
 
                 <div class="rigid-member-email">
                     ${escapeHTML(
-        profile.email
+        profile.email ||
+        ""
     )}
                 </div>
 
@@ -3482,7 +3942,7 @@ function memberRowHTML(
             <button
                 type="button"
                 class="rigid-mini-button rigid-delete-button"
-                data-remove-member="${profile.id}"
+                data-remove-member="${escapeHTML(profile.id)}"
             >
                 Remove
             </button>
@@ -4039,9 +4499,9 @@ function getFilteredWorkItems() {
 
 function updateOverview() {
 
-    console.log("Updating Admin Overview...");
-    console.log("Total personal_work:", workItems.length);
-    console.log("Selected forum:", selectedForum);
+
+
+
 
     let filteredWorks = workItems;
 
@@ -4055,13 +4515,6 @@ function updateOverview() {
             );
 
     }
-
-
-    console.log(
-        "Filtered personal_work:",
-        filteredWorks
-    );
-
 
     TASK_CATEGORIES.forEach(
         category => {
@@ -4078,8 +4531,8 @@ function updateOverview() {
                                         work.category ||
                                         ""
                                     )
-                                    .toLowerCase()
-                                    .trim();
+                                        .toLowerCase()
+                                        .trim();
 
 
                                 const rawStatus =
@@ -4087,17 +4540,17 @@ function updateOverview() {
                                         work.status ||
                                         ""
                                     )
-                                    .toLowerCase()
-                                    .trim();
+                                        .toLowerCase()
+                                        .trim();
 
 
                                 const workStatus =
                                     (
                                         rawStatus ===
-                                            "in-progress" ||
+                                        "in-progress" ||
 
                                         rawStatus ===
-                                            "in_progress"
+                                        "in_progress"
                                     )
                                         ? "ongoing"
                                         : rawStatus;
@@ -4105,10 +4558,10 @@ function updateOverview() {
 
                                 return (
                                     workCategory ===
-                                        category &&
+                                    category &&
 
                                     workStatus ===
-                                        status
+                                    status
                                 );
 
                             }
@@ -4123,14 +4576,6 @@ function updateOverview() {
 
                     const element =
                         el(id);
-
-
-                    console.log(
-                        `Overview ${id}:`,
-                        count,
-                        element
-                    );
-
 
                     if (element) {
 
@@ -4190,16 +4635,11 @@ function attachOverviewClicks() {
 
             element.style.cursor = "pointer";
 
-            element.onclick = function(event) {
+            element.onclick = function (event) {
 
                 event.preventDefault();
                 event.stopPropagation();
 
-                console.log(
-                    "Overview clicked:",
-                    category,
-                    status
-                );
 
                 openWorkList(
                     category,
@@ -4240,7 +4680,7 @@ function openWorkList(category, status) {
 
         const workStatus =
             rawStatus === "in-progress" ||
-            rawStatus === "in_progress"
+                rawStatus === "in_progress"
                 ? "ongoing"
                 : rawStatus;
 
@@ -4273,151 +4713,76 @@ function openWorkList(category, status) {
 
         <div class="rigid-member-list">
 
-            ${
-                works.length
-                    ? works.map(
-                        work =>
-                            renderWorkPersonRow(work)
-                      ).join("")
-                    : `
+            ${works.length
+            ? works.map(
+                work =>
+                    renderWorkPersonRow(work)
+            ).join("")
+            : `
                         <div class="rigid-empty">
                             No matching work found.
                         </div>
                       `
+        }
+
+        </div>
+
+    `;
+
+    content
+    .querySelectorAll(".rigid-task-row")
+    .forEach(row => {
+
+        row.addEventListener(
+            "click",
+            () => {
+
+                const work =
+                    works.find(
+                        item =>
+                            String(item.id) ===
+                            String(row.dataset.workId)
+                    );
+
+                if (!work) {
+                    return;
+                }
+
+                const targetPage =
+                    {
+                        study:
+                            "../study/study.html",
+
+                        paper:
+                            "../paper/paper.html",
+
+                        simulation:
+                            "../simulation/simulation.html",
+
+                        project:
+                            "../project/project.html",
+
+                        design:
+                            "../design/design.html",
+
+                        prototype:
+                            "../prototype/prototype.html"
+                    }[String(work.category).toLowerCase()];
+
+                if (!targetPage) {
+                    alert(
+                        "No workspace page is configured for this work type."
+                    );
+                    return;
+                }
+
+                window.location.href =
+                    `${targetPage}?work_id=${encodeURIComponent(work.id)}`;
+
             }
-
-        </div>
-
-    `;
-}
-
-function renderWorkPersonRow(work) {
-
-    const profile =
-        profiles.find(
-            profile =>
-                String(profile.id) ===
-                String(work.profile_id)
         );
 
-
-    const forum =
-        getForum(
-            work.forum_id
-        );
-
-
-    const team =
-        getTeam(
-            work.team_id
-        );
-
-
-    const domain =
-        getDomain(
-            work.domain_id
-        );
-
-
-    const memberName =
-        profile?.full_name ||
-        profile?.email ||
-        "Unknown Member";
-
-
-    return `
-
-        <div
-            class="rigid-task-row"
-            style="cursor:default;"
-        >
-
-            <div>
-
-                <strong>
-                    ${escapeHTML(
-                        memberName
-                    )}
-                </strong>
-
-
-                <div
-                    style="
-                        margin-top:6px;
-                        font-size:14px;
-                    "
-                >
-
-                    ${escapeHTML(
-                        work.title ||
-                        "Untitled Work"
-                    )}
-
-                </div>
-
-
-                <div
-                    class="rigid-task-meta"
-                >
-
-                    ${
-                        forum
-                            ? `
-                                <span>
-                                    Forum:
-                                    ${escapeHTML(
-                                        forum.name
-                                    )}
-                                </span>
-                              `
-                            : ""
-                    }
-
-
-                    ${
-                        team
-                            ? `
-                                <span>
-                                    Team:
-                                    ${escapeHTML(
-                                        team.name
-                                    )}
-                                </span>
-                              `
-                            : ""
-                    }
-
-
-                    ${
-                        domain
-                            ? `
-                                <span>
-                                    Domain:
-                                    ${escapeHTML(
-                                        domain.name
-                                    )}
-                                </span>
-                              `
-                            : ""
-                    }
-
-                </div>
-
-            </div>
-
-
-            <div class="rigid-count">
-
-                ${formatDate(
-                    work.created_at
-                )}
-
-            </div>
-
-        </div>
-
-    `;
-
+    });
 }
 
 function renderWorkPersonRow(work) {
@@ -4447,85 +4812,97 @@ function renderWorkPersonRow(work) {
 
     return `
 
-        <div class="rigid-task-row">
+        <div
+    class="rigid-task-row"
+    data-work-id="${escapeHTML(work.id)}"
+>
 
-            <div>
+            <!-- MEMBER -->
 
-                <strong>
-                    ${escapeHTML(personName)}
-                </strong>
+            <strong>
+                ${escapeHTML(personName)}
+            </strong>
 
-                <div
-                    style="
-                        margin-top:5px;
-                        opacity:.75;
-                    "
-                >
+
+            <!-- WORK TITLE -->
+
+            <span class="rigid-task-title">
+                ${escapeHTML(
+                    work.title ||
+                    "Untitled work"
+                )}
+            </span>
+
+
+            <!-- CATEGORY -->
+
+            <div class="rigid-task-meta">
+
+                <span class="rigid-badge">
                     ${escapeHTML(
-                        work.title ||
-                        "Untitled work"
+                        formatCategory(
+                            work.category
+                        )
                     )}
-                </div>
+                </span>
 
 
-                <div class="rigid-task-meta">
+                <!-- FORUM -->
 
-                    <span class="rigid-badge">
-                        ${escapeHTML(
-                            formatCategory(
-                                work.category
-                            )
-                        )}
-                    </span>
-
-
-                    ${
-                        forum
-                            ? `
-                                <span>
-                                    Forum:
-                                    ${escapeHTML(
-                                        forum.name
-                                    )}
-                                </span>
-                              `
-                            : ""
-                    }
+                ${forum
+                    ? `
+                        <span>
+                            Forum:
+                            ${escapeHTML(
+                                forum.name
+                            )}
+                        </span>
+                    `
+                    : ""
+                }
 
 
-                    ${
-                        team
-                            ? `
-                                <span>
-                                    Team:
-                                    ${escapeHTML(
-                                        team.name
-                                    )}
-                                </span>
-                              `
-                            : ""
-                    }
+                <!-- TEAM -->
+
+                ${team
+                    ? `
+                        <span>
+                            Team:
+                            ${escapeHTML(
+                                team.name
+                            )}
+                        </span>
+                    `
+                    : ""
+                }
 
 
-                    ${
-                        domain
-                            ? `
-                                <span>
-                                    Domain:
-                                    ${escapeHTML(
-                                        domain.name
-                                    )}
-                                </span>
-                              `
-                            : ""
-                    }
+                <!-- DOMAIN -->
 
-                </div>
+                ${domain
+                    ? `
+                        <span>
+                            Domain:
+                            ${escapeHTML(
+                                domain.name
+                            )}
+                        </span>
+                    `
+                    : ""
+                }
 
             </div>
 
 
-            <div class="rigid-count">
+            <!-- DATE -->
+
+            <div
+                class="rigid-count"
+                style="
+                    margin-left:auto;
+                    white-space:nowrap;
+                "
+            >
 
                 ${formatDate(
                     work.created_at
@@ -4565,9 +4942,9 @@ function renderWorkRow(work) {
 
                 <strong>
                     ${escapeHTML(
-                        work.title ||
-                        "Untitled"
-                    )}
+        work.title ||
+        "Untitled"
+    )}
                 </strong>
 
 
@@ -4575,74 +4952,74 @@ function renderWorkRow(work) {
 
                     <span class="rigid-badge">
                         ${escapeHTML(
-                            formatCategory(
-                                work.category
-                            )
-                        )}
+        formatCategory(
+            work.category
+        )
+    )}
                     </span>
 
 
                     <span class="rigid-badge">
                         ${escapeHTML(
-                            formatCategory(
-                                work.status
-                            )
-                        )}
+        formatCategory(
+            work.status
+        )
+    )}
                     </span>
 
 
                     ${forum
-                        ? `
+            ? `
                             <span>
                                 Forum:
                                 ${escapeHTML(
-                                    forum.name
-                                )}
+                forum.name
+            )}
                             </span>
                           `
-                        : ""
-                    }
+            : ""
+        }
 
 
                     ${team
-                        ? `
+            ? `
                             <span>
                                 Team:
                                 ${escapeHTML(
-                                    team.name
-                                )}
+                team.name
+            )}
                             </span>
                           `
-                        : ""
-                    }
+            : ""
+        }
 
 
                     ${domain
-                        ? `
+            ? `
                             <span>
                                 Domain:
                                 ${escapeHTML(
-                                    domain.name
-                                )}
+                domain.name
+            )}
                             </span>
                           `
-                        : ""
-                    }
+            : ""
+        }
 
 
                     ${profile
-                        ? `
+            ? `
                             <span>
                                 Member:
                                 ${escapeHTML(
-                                    profile.full_name ||
-                                    profile.email ||
-                                    "Unnamed user"
-                                )}
+                profile.full_name ||
+                profile.email ||
+                "Unnamed user"
+            )}
                             </span>
                           `
-                        : ""
-                    }
+            : ""
+        }
 
                 </div>
 
@@ -4652,8 +5029,8 @@ function renderWorkRow(work) {
             <div class="rigid-count">
 
                 ${formatDate(
-                    work.created_at
-                )}
+            work.created_at
+        )}
 
             </div>
 
@@ -6632,16 +7009,59 @@ function checkTaskAccess() {
 
 }
 
+/* =========================================================
+   MEMBER ROW → PERSONAL PAGE
+========================================================= */
+
+document.addEventListener(
+    "click",
+    event => {
+
+        const row =
+            event.target.closest(
+                "[data-member-profile-id]"
+            );
+
+        if (!row) {
+            return;
+        }
+
+
+        /*
+         * Do nothing when the Remove button
+         * itself is clicked.
+         */
+        if (
+            event.target.closest(
+                "[data-remove-member]"
+            )
+        ) {
+            return;
+        }
+
+
+        const profileId =
+            row.dataset.memberProfileId;
+
+
+        if (!profileId) {
+            return;
+        }
+
+
+        window.location.href =
+            `../personal/personal.html?profile=${encodeURIComponent(
+                profileId
+            )}`;
+
+    }
+);
 
 /* =========================================================
    INITIALIZE
 ========================================================= */
 
 async function initAdmin() {
-
-    console.log(
-        "RiGiD Admin Workspace starting..."
-    );
 
 
     injectAdminDynamicStyles();
@@ -6706,36 +7126,6 @@ async function initAdmin() {
         attachOverviewClicks();
 
         await loadPendingRequests();
-
-
-        console.log(
-            "RiGiD Admin Workspace ready."
-        );
-
-        console.log(
-            "Forums:",
-            forums
-        );
-
-        console.log(
-            "Teams:",
-            teams
-        );
-
-        console.log(
-            "Domains:",
-            domains
-        );
-
-        console.log(
-            "Tasks:",
-            tasks
-        );
-
-        console.log(
-            "Pending:",
-            pendingRequests
-        );
 
     }
 

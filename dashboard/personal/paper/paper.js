@@ -159,7 +159,7 @@ async function loadPaperData() {
 
     paperData = convertRigidDataToPaperData(result.data, result.work);
 
-    console.log("RiGiD Paper loaded:", paperData);
+
 }
 
 
@@ -168,7 +168,11 @@ async function loadPaperData() {
 ========================================================= */
 
 async function savePaperData() {
-    if (isSaving) return;
+    if (isSaving) {
+    while (isSaving) {
+        await new Promise(resolve => setTimeout(resolve, 50));
+    }
+}
 
     if (!currentWorkId) {
         throw new Error("Paper ID is missing.");
@@ -240,8 +244,11 @@ function convertRigidDataToPaperData(data = {}, work = {}) {
         id: workspace.id || work?.id || currentWorkId,
         title: workspace.title || work?.title || "Untitled Paper",
         description: paper.description || "",
-        status: workspace.status || "draft",
-        stage: paper.stage || workspace.status || "draft",
+        // UI status is stored in paper.stage.
+        // workspace.status is the database-level status:
+        // ongoing / completed.
+        status: paper.stage || workspace.status || "not-started",
+        stage: paper.stage || workspace.status || "not-started",
         type: paper.type || "Research Paper",
         source: paper.source || "",
         target: paper.target || "",
@@ -282,14 +289,24 @@ function convertPaperDataToRigidData(paper) {
             id: paper.id || currentWorkId,
             type: "paper",
             title: paper.title || "Untitled Paper",
-            status: paper.status || "draft",
+
+            // Database only accepts:
+            // ongoing / completed
+            status:
+                ["review", "published"].includes(
+                    String(paper.status || "").toLowerCase()
+                )
+                    ? "completed"
+                    : "ongoing",
+
             createdAt: paper.createdAt || now,
             updatedAt: now
         },
 
         paper: {
             description: paper.description || "",
-            stage: paper.stage || paper.status || "draft",
+            // Preserve the actual Paper UI status.
+            stage: paper.status || paper.stage || "not-started",
             type: paper.type || "Research Paper",
             source: paper.source || "",
             target: paper.target || "",
@@ -335,7 +352,7 @@ function normalizePaperData() {
 
     paperData.title = paperData.title || "Untitled Paper";
     paperData.description = paperData.description || "";
-    paperData.status = paperData.status || "draft";
+    paperData.status = paperData.status || "not-started";
     paperData.stage = paperData.stage || paperData.status;
     paperData.type = paperData.type || "Research Paper";
     paperData.methodology = paperData.methodology || "";
@@ -562,8 +579,13 @@ async function savePaperInformation() {
 
     paperData.title = title;
     paperData.description = getInputValue("paperInfoDescription");
-    paperData.status = getInputValue("paperInfoStatus") || paperData.status;
-    paperData.stage = paperData.status;
+    const newStatus =
+        getInputValue("paperInfoStatus") || paperData.status;
+
+    const previousStatus = paperData.status;
+
+    paperData.status = newStatus;
+    paperData.stage = newStatus;
     paperData.type = getInputValue("paperInfoType") || paperData.type;
     paperData.source = getInputValue("paperInfoSource");
     paperData.target = getInputValue("paperInfoTarget");
@@ -573,9 +595,24 @@ async function savePaperInformation() {
     loadPaperInformation();
 
     try {
-        await savePaperData();
         closeModal("#paperInformationModal");
+        showToast("Saving paper information...");
+
+        await savePaperData();
+
         showToast("Paper information saved.");
+        const normalizedNewStatus =
+            String(newStatus || "").trim().toLowerCase();
+
+        const normalizedPreviousStatus =
+            String(previousStatus || "").trim().toLowerCase();
+        if (
+            ["review", "published"].includes(newStatus) &&
+            !["review", "published"].includes(previousStatus)
+        ) {
+            triggerCompletionConfetti(normalizedNewStatus);
+        }
+
     }
     catch (error) {
         Object.assign(paperData, previous);
@@ -641,9 +678,12 @@ async function deleteTag(index) {
     renderTags();
 
     try {
-        await savePaperData();
-        showToast("Tag removed.");
-    }
+    showToast("Saving tag removal...");
+
+    await savePaperData();
+
+    showToast("Tag removed and saved.");
+}
     catch (error) {
         paperData.tags = previous;
         renderTags();
@@ -738,11 +778,14 @@ async function saveLearning() {
     renderLearning();
 
     try {
-        await savePaperData();
-        closeModal("#learningModal");
-        editingLearningIndex = null;
-        showToast("Learning saved.");
-    }
+    closeModal("#learningModal");
+    showToast("Saving learning...");
+
+    await savePaperData();
+
+    editingLearningIndex = null;
+    showToast("Learning added and saved.");
+}
     catch (error) {
         paperData.learning = previous;
         renderLearning();
@@ -760,9 +803,12 @@ async function deleteLearning(index) {
     renderLearning();
 
     try {
-        await savePaperData();
-        showToast("Learning removed.");
-    }
+    showToast("Saving learning removal...");
+
+    await savePaperData();
+
+    showToast("Learning removed and saved.");
+}
     catch (error) {
         paperData.learning = previous;
         renderLearning();
@@ -856,11 +902,14 @@ async function saveFinding() {
     renderFindings();
 
     try {
-        await savePaperData();
-        closeModal("#findingModal");
-        editingFindingId = null;
-        showToast("Finding saved.");
-    }
+    closeModal("#findingModal");
+    showToast("Saving finding...");
+
+    await savePaperData();
+
+    editingFindingId = null;
+    showToast("Finding added and saved.");
+}
     catch (error) {
         paperData.findings = previous;
         renderFindings();
@@ -878,9 +927,12 @@ async function deleteFinding(id) {
     renderFindings();
 
     try {
-        await savePaperData();
-        showToast("Finding removed.");
-    }
+    showToast("Saving finding removal...");
+
+    await savePaperData();
+
+    showToast("Finding removed and saved.");
+}
     catch (error) {
         paperData.findings = previous;
         renderFindings();
@@ -930,10 +982,13 @@ async function saveMethodology() {
     renderMethodology();
 
     try {
-        await savePaperData();
-        closeModal("#methodologyModal");
-        showToast("Methodology saved.");
-    }
+    closeModal("#methodologyModal");
+    showToast("Saving methodology...");
+
+    await savePaperData();
+
+    showToast("Methodology saved.");
+}
     catch (error) {
         paperData.methodology = previous;
         renderMethodology();
@@ -1043,11 +1098,14 @@ async function saveQuestion() {
     renderQuestions();
 
     try {
-        await savePaperData();
-        closeModal("#questionModal");
-        editingQuestionId = null;
-        showToast("Question saved.");
-    }
+    closeModal("#questionModal");
+    showToast("Saving question...");
+
+    await savePaperData();
+
+    editingQuestionId = null;
+    showToast("Question added and saved.");
+}
     catch (error) {
         paperData.questions = previous;
         renderQuestions();
@@ -1069,9 +1127,16 @@ async function toggleQuestionStatus(id) {
     renderQuestions();
 
     try {
-        await savePaperData();
-        showToast(question.status === "resolved" ? "Question resolved." : "Question reopened.");
-    }
+    showToast("Saving question status...");
+
+    await savePaperData();
+
+    showToast(
+        question.status === "resolved"
+            ? "Question resolved and saved."
+            : "Question reopened and saved."
+    );
+}
     catch (error) {
         paperData.questions = previous;
         renderQuestions();
@@ -1089,9 +1154,12 @@ async function deleteQuestion(id) {
     renderQuestions();
 
     try {
-        await savePaperData();
-        showToast("Question removed.");
-    }
+    showToast("Saving question removal...");
+
+    await savePaperData();
+
+    showToast("Question removed and saved.");
+}
     catch (error) {
         paperData.questions = previous;
         renderQuestions();
@@ -1202,6 +1270,7 @@ function setupWritingWorkspace() {
     // New version / draft upload
     $("#newVersion")?.addEventListener("click", createNewVersion);
     $("#newVersionFromWorkspace")?.addEventListener("click", createNewVersion);
+    $("#saveVersion")?.addEventListener("click", saveVersionFromModal);
 
     const draftInput = $("#draftFileInput");
     $("#uploadDraft")?.addEventListener("click", () => draftInput?.click());
@@ -1442,11 +1511,14 @@ async function savePaperSection() {
     renderPaperSections();
 
     try {
-        await savePaperData();
-        closeModal("#paperSectionModal");
-        editingPaperSectionId = null;
-        showToast("Paper section saved.");
-    }
+    closeModal("#paperSectionModal");
+    showToast("Saving paper section...");
+
+    await savePaperData();
+
+    editingPaperSectionId = null;
+    showToast("Paper section added and saved.");
+}
     catch (error) {
         paperData.sections = previous;
         renderPaperSections();
@@ -1457,26 +1529,17 @@ async function savePaperSection() {
 
 function renameActiveSection() {
     const section = paperData.sections.find(item => item.id === activeSectionId);
+
     if (!section) return;
 
-    const newTitle = window.prompt("Rename section:", section.title);
+    editingPaperSectionId = section.id;
 
-    if (newTitle === null) return;
+    setText("paperSectionModalTitle", "Rename Paper Section");
+    setInputValue("paperSectionName", section.title);
+    setInputValue("paperSectionPurpose", section.description || "");
+    setInputValue("paperSectionStatus", section.status || "not-started");
 
-    const trimmed = newTitle.trim();
-    if (!trimmed) {
-        showToast("Section title can't be empty.");
-        return;
-    }
-
-    section.title = trimmed;
-
-    touchPaperData();
-    renderPaperSections();
-
-    savePaperData()
-        .then(() => showToast("Section renamed."))
-        .catch(error => showToast(error.message || "Unable to rename section."));
+    openModal("#paperSectionModal");
 }
 
 
@@ -1531,9 +1594,12 @@ async function deletePaperSection(id) {
     renderPaperSections();
 
     try {
-        await savePaperData();
-        showToast("Paper section deleted.");
-    }
+    showToast("Saving paper section deletion...");
+
+    await savePaperData();
+
+    showToast("Paper section deleted and saved.");
+}
     catch (error) {
         paperData.sections = previous;
 
@@ -1565,8 +1631,12 @@ async function movePaperSection(id, direction) {
     renderPaperSections();
 
     try {
-        await savePaperData();
-    }
+    showToast("Saving section order...");
+
+    await savePaperData();
+
+    showToast("Section order saved.");
+}
     catch (error) {
         paperData.sections = previous;
         renderPaperSections();
@@ -1588,9 +1658,13 @@ async function updateActiveSectionStatus(status) {
     renderPaperSections();
 
     try {
-        await savePaperData();
-        showToast("Section status updated.");
-    }
+    showToast("Saving section status...");
+
+    await savePaperData();
+
+    showToast("Section status updated and saved.");
+}
+
     catch (error) {
         paperData.sections = previous;
         renderPaperSections();
@@ -1618,12 +1692,15 @@ async function saveActiveSectionContent() {
     touchPaperData();
     renderPaperSections();
 
-    try {
-        await savePaperData();
-        setText("editorSaveState", "Saved");
-        showToast("Section content saved.");
-    }
-    catch (error) {
+   try {
+    showToast("Saving section content...");
+
+    await savePaperData();
+
+    setText("editorSaveState", "Saved");
+    showToast("Section content saved.");
+}
+catch (error) {
         section.content = previous;
         renderPaperSections();
         showToast(error.message || "Unable to save section content.");
@@ -1734,10 +1811,13 @@ async function saveReference() {
     renderReferences();
 
     try {
-        await savePaperData();
         closeModal("#referenceModal");
+        showToast("Saving reference...");
+
+        await savePaperData();
+
         editingReferenceId = null;
-        showToast("Reference saved.");
+        showToast("Reference added and saved.");
     }
     catch (error) {
         paperData.references = previous;
@@ -1756,8 +1836,11 @@ async function deleteReference(id) {
     renderReferences();
 
     try {
+        showToast("Saving reference removal...");
+
         await savePaperData();
-        showToast("Reference removed.");
+
+        showToast("Reference removed and saved.");
     }
     catch (error) {
         paperData.references = previous;
@@ -1803,9 +1886,9 @@ function renderVersions() {
                 <strong>${escapeHTML(version.name)}</strong>
                 <small>${escapeHTML(formatRigidDate(version.createdAt))}</small>
                 ${isFile
-                    ? `<p>${escapeHTML(version.mimeType || "File")}${version.size ? ` · ${formatFileSize(version.size)}` : ""}</p>`
-                    : `<p>Snapshot of ${version.snapshot?.length || 0} section(s)</p>`
-                }
+                ? `<p>${escapeHTML(version.mimeType || "File")}${version.size ? ` · ${formatFileSize(version.size)}` : ""}</p>`
+                : `<p>Snapshot of ${version.snapshot?.length || 0} section(s)</p>`
+            }
                 ${isFile && version.url ? `<a href="${escapeAttribute(version.url)}" target="_blank" rel="noopener">Open</a>` : ""}
                 ${isFile && version.downloadUrl ? `<a href="${escapeAttribute(version.downloadUrl)}" target="_blank" rel="noopener">Download</a>` : ""}
             </div>
@@ -1822,37 +1905,64 @@ function renderVersions() {
     });
 }
 
+async function saveVersionFromModal() {
+    const input = document.getElementById("versionNameInput");
 
-async function createNewVersion() {
-    const suggestedName = `Version ${paperData.versions.length + 1}`;
-    const name = window.prompt("Version name:", suggestedName);
+    if (!input) return;
 
-    if (name === null) return;
+    const name = input.value.trim();
 
-    const trimmed = name.trim() || suggestedName;
+    if (!name) {
+        showToast("Please enter a version name.");
+        input.focus();
+        return;
+    }
 
-    const previous = clone(paperData.versions);
-
-    paperData.versions.unshift({
-        id: generateID("version"),
-        name: trimmed,
-        isFile: false,
+    const version = {
+        id: crypto.randomUUID(),
+        name,
         createdAt: new Date().toISOString(),
+        source: "manual",
         snapshot: clone(paperData.sections)
-    });
+    };
+
+    paperData.versions = Array.isArray(paperData.versions)
+        ? paperData.versions
+        : [];
+
+    paperData.versions.unshift(version);
 
     touchPaperData();
     renderVersions();
 
     try {
+        closeModal("#versionModal");
+        input.value = "";
+
+        showToast("Saving version...");
+
         await savePaperData();
-        showToast("Version saved.");
+
+        showToast("Version added and saved.");
     }
     catch (error) {
-        paperData.versions = previous;
-        renderVersions();
+        console.error("Unable to save version:", error);
         showToast(error.message || "Unable to save version.");
     }
+}
+
+function createNewVersion() {
+    const modal = document.querySelector("#versionModal");
+
+    if (!modal) {
+        showToast("Version modal is unavailable.");
+        return;
+    }
+
+    setText("versionModalTitle", "Create New Version");
+    setInputValue("versionNameInput", "");
+
+    openModal("#versionModal");
 }
 
 
@@ -1888,7 +1998,9 @@ async function uploadSingleDraftFile(file) {
     };
 
     paperData.versions.unshift(pendingRecord);
-    renderVersions();
+renderVersions();
+
+showToast(`Uploading "${file.name}"...`);
 
     try {
         const { data: { session }, error: sessionError } =
@@ -1942,11 +2054,13 @@ async function uploadSingleDraftFile(file) {
         }
 
         touchPaperData();
-        renderVersions();
+renderVersions();
 
-        await savePaperData();
+showToast(`Saving "${finalRecord.name}"...`);
 
-        showToast(`"${finalRecord.name}" uploaded.`);
+await savePaperData();
+
+showToast(`"${finalRecord.name}" uploaded and saved.`);
     }
     catch (error) {
         paperData.versions = paperData.versions.filter(item => item.id !== pendingId);
@@ -1965,9 +2079,12 @@ async function deleteVersion(id) {
     renderVersions();
 
     try {
-        await savePaperData();
-        showToast("Version removed.");
-    }
+    showToast("Saving version removal...");
+
+    await savePaperData();
+
+    showToast("Version removed and saved.");
+}
     catch (error) {
         paperData.versions = previous;
         renderVersions();
@@ -2086,11 +2203,14 @@ async function saveTimelineItem() {
     renderTimeline();
 
     try {
-        await savePaperData();
-        closeModal("#paperTimelineModal");
-        editingTimelineId = null;
-        showToast("Timeline saved.");
-    }
+    closeModal("#paperTimelineModal");
+    showToast("Saving timeline...");
+
+    await savePaperData();
+
+    editingTimelineId = null;
+    showToast("Timeline added and saved.");
+}
     catch (error) {
         paperData.timeline = previous;
         renderTimeline();
@@ -2108,9 +2228,12 @@ async function deleteTimelineItem(id) {
     renderTimeline();
 
     try {
-        await savePaperData();
-        showToast("Timeline item removed.");
-    }
+    showToast("Saving timeline removal...");
+
+    await savePaperData();
+
+    showToast("Timeline item removed and saved.");
+}
     catch (error) {
         paperData.timeline = previous;
         renderTimeline();
@@ -2218,10 +2341,13 @@ async function saveFutureWork(futureWorkData) {
     renderFutureWork();
 
     try {
-        await savePaperData();
-        editingFutureWorkId = null;
-        showToast("Future work saved.");
-    }
+    showToast("Saving future work...");
+
+    await savePaperData();
+
+    editingFutureWorkId = null;
+    showToast("Future work added and saved.");
+}
     catch (error) {
         paperData.futureWork = previous;
         renderFutureWork();
@@ -2239,9 +2365,12 @@ async function deleteFutureWork(id) {
     renderFutureWork();
 
     try {
-        await savePaperData();
-        showToast("Future work removed.");
-    }
+    showToast("Saving future work removal...");
+
+    await savePaperData();
+
+    showToast("Future work removed and saved.");
+}
     catch (error) {
         paperData.futureWork = previous;
         renderFutureWork();
@@ -2343,7 +2472,9 @@ async function uploadSingleAttachment(file) {
     };
 
     paperData.attachments.push(pendingRecord);
-    renderAttachments();
+renderAttachments();
+
+showToast(`Uploading "${file.name}"...`);
 
     try {
         const { data: { session }, error: sessionError } =
@@ -2398,11 +2529,13 @@ async function uploadSingleAttachment(file) {
         }
 
         touchPaperData();
-        renderAttachments();
+renderAttachments();
 
-        await savePaperData();
+showToast(`Saving "${finalRecord.name}"...`);
 
-        showToast(`"${finalRecord.name}" uploaded.`);
+await savePaperData();
+
+showToast(`"${finalRecord.name}" uploaded and saved.`);
     }
     catch (error) {
         paperData.attachments = paperData.attachments.filter(item => item.id !== pendingId);
@@ -2452,10 +2585,13 @@ async function saveLink() {
     renderAttachments();
 
     try {
-        await savePaperData();
-        closeModal("#paperLinkModal");
-        showToast("Link saved.");
-    }
+    closeModal("#paperLinkModal");
+    showToast("Saving link...");
+
+    await savePaperData();
+
+    showToast("Link added and saved.");
+}
     catch (error) {
         paperData.attachments = previous;
         renderAttachments();
@@ -2512,9 +2648,9 @@ function renderAttachments() {
                 <strong>${escapeHTML(attachment.name)}</strong>
                 <small>
                     ${isLink
-                        ? "Link"
-                        : `${escapeHTML(attachment.mimeType || attachment.type || "File")}${attachment.size ? ` · ${formatFileSize(attachment.size)}` : ""}`
-                    }
+                ? "Link"
+                : `${escapeHTML(attachment.mimeType || attachment.type || "File")}${attachment.size ? ` · ${formatFileSize(attachment.size)}` : ""}`
+            }
                 </small>
                 ${isUploading ? `<span class="attachment-status">Uploading…</span>` : ""}
                 ${attachment.description ? `<p>${escapeHTML(attachment.description)}</p>` : ""}
@@ -2554,7 +2690,9 @@ async function deleteAttachment(id) {
     renderAttachments();
 
     try {
-        if (attachment.driveFileId) {
+    showToast("Removing attachment...");
+
+    if (attachment.driveFileId) {
             if (!window.sb) {
                 throw new Error("Supabase client is unavailable.");
             }
@@ -2588,8 +2726,11 @@ async function deleteAttachment(id) {
             }
         }
 
+                showToast("Saving attachment removal...");
+
         await savePaperData();
-        showToast("Attachment removed.");
+
+        showToast("Attachment removed and saved.");
     }
     catch (error) {
         paperData.attachments = previous;
@@ -2702,11 +2843,14 @@ async function saveFeedback() {
     renderFeedback();
 
     try {
-        await savePaperData();
-        closeModal("#feedbackModal");
-        editingFeedbackId = null;
-        showToast("Feedback saved.");
-    }
+    closeModal("#feedbackModal");
+    showToast("Saving feedback...");
+
+    await savePaperData();
+
+    editingFeedbackId = null;
+    showToast("Feedback added and saved.");
+}
     catch (error) {
         paperData.feedback = previous;
         renderFeedback();
@@ -2724,9 +2868,12 @@ async function deleteFeedback(id) {
     renderFeedback();
 
     try {
-        await savePaperData();
-        showToast("Feedback removed.");
-    }
+    showToast("Saving feedback removal...");
+
+    await savePaperData();
+
+    showToast("Feedback removed and saved.");
+}
     catch (error) {
         paperData.feedback = previous;
         renderFeedback();
@@ -2768,9 +2915,12 @@ async function saveNextAction() {
     touchPaperData();
 
     try {
-        await savePaperData();
-        showToast("Next action saved.");
-    }
+    showToast("Saving next action...");
+
+    await savePaperData();
+
+    showToast("Next action saved.");
+}
     catch (error) {
         paperData.nextAction = previous;
         loadNextAction();
@@ -2864,6 +3014,7 @@ const MODAL_CLOSE_BUTTONS = {
     referenceModal: ["closeReferenceModal", "cancelReference"],
     paperLinkModal: ["closePaperLinkModal", "cancelPaperLink"],
     paperTimelineModal: ["closePaperTimelineModal", "cancelPaperTimeline"],
+    versionModal: ["closeVersionModal", "cancelVersion"],
     feedbackModal: ["closeFeedbackModal", "cancelFeedback"]
 };
 
@@ -2992,7 +3143,337 @@ function startLiveClock() {
     setInterval(updateClock, 1000);
 }
 
+/* =========================================================
+   COMPLETION CONFETTI
+========================================================= */
 
+/* =========================================================
+   COMPLETION CONFETTI
+========================================================= */
+
+/* =========================================================
+   COMPLETION POPUP + CONFETTI
+========================================================= */
+
+function triggerCompletionConfetti(status) {
+    // Remove an existing popup if one somehow remains
+    document.querySelector(".rigid-completion-overlay")?.remove();
+
+    const normalizedStatus =
+        String(status || "").trim().toLowerCase();
+
+    const isPublished = normalizedStatus === "published";
+
+    const title = isPublished
+        ? "Paper Published!"
+        : "Ready for Review!";
+
+    const message = isPublished
+        ? "Your paper has been published and marked as completed."
+        : "Your paper is ready for review and has been marked as completed.";
+
+    const icon = isPublished ? "🚀" : "🎉";
+    const buttonText = isPublished ? "Great!" : "Continue";
+
+    /* ---------------------------------------------------------
+       OVERLAY
+    --------------------------------------------------------- */
+
+    const overlay = document.createElement("div");
+
+    overlay.className = "rigid-completion-overlay";
+
+    Object.assign(overlay.style, {
+        position: "fixed",
+        inset: "0",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "rgba(0, 0, 0, 0.45)",
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
+        zIndex: "2147483646",
+        opacity: "0",
+        transition: "opacity 220ms ease"
+    });
+
+    /* ---------------------------------------------------------
+       POPUP
+    --------------------------------------------------------- */
+
+    const popup = document.createElement("div");
+
+    Object.assign(popup.style, {
+        width: "min(420px, calc(100vw - 40px))",
+        padding: "32px 28px 26px",
+        borderRadius: "20px",
+        background: "#171027",
+        border: "1px solid rgba(168, 85, 247, 0.65)",
+        boxShadow:
+            "0 25px 80px rgba(0, 0, 0, 0.55), 0 0 40px rgba(168, 85, 247, 0.18)",
+        textAlign: "center",
+        color: "#ffffff",
+        transform: "translateY(25px) scale(0.92)",
+        transition:
+            "transform 600ms cubic-bezier(.17,.89,.32,1.28)"
+    });
+
+    /* ---------------------------------------------------------
+       ICON
+    --------------------------------------------------------- */
+
+    const iconElement = document.createElement("div");
+
+    iconElement.textContent = icon;
+
+    Object.assign(iconElement.style, {
+        fontSize: "54px",
+        lineHeight: "1",
+        marginBottom: "18px",
+        animation: "rigidCompletionIcon 700ms ease forwards"
+    });
+
+    /* ---------------------------------------------------------
+       TITLE
+    --------------------------------------------------------- */
+
+    const titleElement = document.createElement("h2");
+
+    titleElement.textContent = title;
+
+    Object.assign(titleElement.style, {
+        margin: "0 0 10px",
+        fontSize: "25px",
+        fontWeight: "700",
+        letterSpacing: "-0.3px"
+    });
+
+    /* ---------------------------------------------------------
+       MESSAGE
+    --------------------------------------------------------- */
+
+    const messageElement = document.createElement("p");
+
+    messageElement.textContent = message;
+
+    Object.assign(messageElement.style, {
+        margin: "0 auto 24px",
+        maxWidth: "330px",
+        color: "rgba(255, 255, 255, 0.72)",
+        fontSize: "14px",
+        lineHeight: "1.6"
+    });
+
+    /* ---------------------------------------------------------
+       BUTTON
+    --------------------------------------------------------- */
+
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.textContent = buttonText;
+
+    Object.assign(button.style, {
+        minWidth: "120px",
+        padding: "11px 24px",
+        border: "0",
+        borderRadius: "10px",
+        background: "#7c3aed",
+        color: "#ffffff",
+        fontSize: "14px",
+        fontWeight: "600",
+        cursor: "pointer",
+        transition: "transform 160ms ease, opacity 160ms ease"
+    });
+
+    button.addEventListener("mouseenter", () => {
+        button.style.transform = "translateY(-1px)";
+        button.style.opacity = "0.9";
+    });
+
+    button.addEventListener("mouseleave", () => {
+        button.style.transform = "translateY(0)";
+        button.style.opacity = "1";
+    });
+
+    /* ---------------------------------------------------------
+       CLOSE FUNCTION
+    --------------------------------------------------------- */
+
+    function closeCompletionPopup() {
+        overlay.style.opacity = "0";
+        popup.style.transform = "translateY(25px) scale(0.92)";
+
+        setTimeout(() => {
+            overlay.remove();
+        }, 230);
+    }
+
+    button.addEventListener("click", closeCompletionPopup);
+
+    overlay.addEventListener("click", event => {
+        if (event.target === overlay) {
+            closeCompletionPopup();
+        }
+    });
+
+    /* ---------------------------------------------------------
+       ESC KEY
+    --------------------------------------------------------- */
+
+    function handleEscape(event) {
+        if (event.key === "Escape") {
+            closeCompletionPopup();
+            document.removeEventListener("keydown", handleEscape);
+        }
+    }
+
+    document.addEventListener("keydown", handleEscape);
+
+    /* ---------------------------------------------------------
+       BUILD POPUP
+    --------------------------------------------------------- */
+
+    popup.appendChild(iconElement);
+    popup.appendChild(titleElement);
+    popup.appendChild(messageElement);
+    popup.appendChild(button);
+
+    overlay.appendChild(popup);
+    document.body.appendChild(overlay);
+
+    /* ---------------------------------------------------------
+       POPUP ANIMATION
+    --------------------------------------------------------- */
+
+    requestAnimationFrame(() => {
+        overlay.style.opacity = "1";
+        popup.style.transform = "translateY(0) scale(1)";
+    });
+
+    /* ---------------------------------------------------------
+       CONFETTI BEHIND POPUP
+    --------------------------------------------------------- */
+
+    createCompletionConfetti();
+}
+
+
+/* =========================================================
+   CONFETTI BURST
+========================================================= */
+
+function createCompletionConfetti() {
+    const container = document.createElement("div");
+
+    Object.assign(container.style, {
+        position: "fixed",
+        inset: "0",
+        pointerEvents: "none",
+        overflow: "hidden",
+        zIndex: "2147483645"
+    });
+
+    document.body.appendChild(container);
+
+    const colors = [
+        "#ff4d6d",
+        "#ffd166",
+        "#06d6a0",
+        "#4cc9f0",
+        "#a855f7",
+        "#ffffff",
+        "#ff9f1c"
+    ];
+
+    for (let i = 0; i < 100; i++) {
+        const piece = document.createElement("div");
+
+        const size = 5 + Math.random() * 7;
+        const x = Math.random() * window.innerWidth;
+        const drift = (Math.random() - 0.5) * 450;
+        const duration = 1600 + Math.random() * 1800;
+        const delay = Math.random() * 250;
+
+        Object.assign(piece.style, {
+            position: "absolute",
+            left: `${x}px`,
+            top: "-20px",
+            width: `${size}px`,
+            height: `${size * 1.5}px`,
+            background:
+                colors[Math.floor(Math.random() * colors.length)],
+            borderRadius: "2px"
+        });
+
+        container.appendChild(piece);
+
+        piece.animate(
+            [
+                {
+                    transform: "translate3d(0, 0, 0) rotate(0deg)",
+                    opacity: 1
+                },
+                {
+                    transform:
+                        `translate3d(${drift}px, ${window.innerHeight * 0.45}px, 0) rotate(300deg)`,
+                    opacity: 1
+                },
+                {
+                    transform:
+                        `translate3d(${drift * 1.4}px, ${window.innerHeight + 80}px, 0) rotate(700deg)`,
+                    opacity: 0
+                }
+            ],
+            {
+                duration,
+                delay,
+                easing: "cubic-bezier(.2,.7,.3,1)",
+                fill: "forwards"
+            }
+        );
+    }
+
+    setTimeout(() => {
+        container.remove();
+    }, 4200);
+}
+
+
+/* =========================================================
+   POPUP ICON ANIMATION
+========================================================= */
+
+(function addCompletionPopupAnimation() {
+    if (document.getElementById("rigidCompletionPopupStyles")) {
+        return;
+    }
+
+    const style = document.createElement("style");
+
+    style.id = "rigidCompletionPopupStyles";
+
+    style.textContent = `
+        @keyframes rigidCompletionIcon {
+            0% {
+                transform: scale(0.4) rotate(-15deg);
+                opacity: 0;
+            }
+
+            55% {
+                transform: scale(1.15) rotate(5deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+    `;
+
+    document.head.appendChild(style);
+})();
 /* =========================================================
    END OF PAPER.JS
 ========================================================= */

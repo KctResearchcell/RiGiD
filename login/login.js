@@ -17,7 +17,7 @@
    - Google password creation
    - Theme toggle
    - Live clock
-   - Google Drive connection test
+   - Automatic Google Drive connection / reconnect
 
    Database membership model:
 
@@ -38,6 +38,24 @@
 
    Missing profile recovery:
        ensure_my_profile()
+
+   Google Drive:
+
+       Google Login
+            ↓
+       Check Drive connection
+            ↓
+       Connected → continue
+            ↓
+       Not connected → automatic Google Drive OAuth
+            ↓
+       Google authorization
+            ↓
+       connect-google-drive
+            ↓
+       login.html?google_drive=connected
+            ↓
+       Continue normally
 
    ========================================================================= */
 
@@ -61,7 +79,13 @@ const LOGIN_CONFIG = {
     `${window.location.origin}/login/login.html`,
 
   ACCESS_REQUEST_RPC:
-    "submit_access_request"
+    "submit_access_request",
+
+  GOOGLE_DRIVE_FUNCTION_URL:
+    "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/google-drive",
+
+  CONNECT_GOOGLE_DRIVE_FUNCTION_URL:
+    "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/connect-google-drive"
 
 };
 
@@ -416,23 +440,6 @@ async function loadForumData() {
 
     domains =
       domainsResult.data || [];
-
-
-    console.log(
-      "Forums:",
-      forums
-    );
-
-    console.log(
-      "Teams:",
-      teams
-    );
-
-    console.log(
-      "Domains:",
-      domains
-    );
-
 
     populateForumSelect(
       "signupForum"
@@ -981,10 +988,6 @@ function validateSelections(
   domainIds
 ) {
 
-  /* ---------------------------------------------------------
-     Teams must belong to selected forums
-     --------------------------------------------------------- */
-
   for (
     const teamId of teamIds
   ) {
@@ -1024,10 +1027,6 @@ function validateSelections(
 
   }
 
-
-  /* ---------------------------------------------------------
-     Domains must belong to selected forums
-     --------------------------------------------------------- */
 
   for (
     const domainId of domainIds
@@ -1280,10 +1279,6 @@ async function sendVerificationLink() {
 
   try {
 
-    /* -----------------------------------------------------
-       Existing account check
-       ----------------------------------------------------- */
-
     const {
       data: signupStatus,
       error: statusError
@@ -1354,10 +1349,6 @@ async function sendVerificationLink() {
 
     }
 
-
-    /* -----------------------------------------------------
-       Create auth user
-       ----------------------------------------------------- */
 
     const {
       data,
@@ -1831,21 +1822,6 @@ async function submitAccessRequest(
 
   try {
 
-    console.log(
-      "Submitting access request:",
-      {
-        forum_ids:
-          forumIds,
-
-        team_ids:
-          teamIds,
-
-        domain_ids:
-          domainIds
-      }
-    );
-
-
     const {
       data,
       error
@@ -1912,7 +1888,7 @@ async function submitAccessRequest(
 
       error:
         error.message ||
-        "Unable to submit access request."
+        "Unable to submit your access request."
 
     };
 
@@ -2003,10 +1979,6 @@ async function requestAccess(event) {
     }
 
 
-    /* -----------------------------------------------------
-       Check profile
-       ----------------------------------------------------- */
-
     let {
       data: profile,
       error: profileError
@@ -2045,11 +2017,6 @@ async function requestAccess(event) {
 
 
     if (!profile) {
-
-      console.log(
-        "Profile missing. Calling ensure_my_profile()..."
-      );
-
 
       const {
         data: ensuredProfile,
@@ -2129,10 +2096,6 @@ async function requestAccess(event) {
 
     }
 
-
-    /* -----------------------------------------------------
-       Submit
-       ----------------------------------------------------- */
 
     const result =
       await submitAccessRequest(
@@ -2360,10 +2323,6 @@ async function loginUser(event) {
     }
 
 
-    /* -----------------------------------------------------
-       Profile
-       ----------------------------------------------------- */
-
     let {
       data: profile,
       error: profileError
@@ -2403,15 +2362,8 @@ async function loginUser(event) {
     }
 
 
-    /* -----------------------------------------------------
-       Recover missing profile
-       ----------------------------------------------------- */
-
     if (!profile) {
 
-      console.log(
-        "Login profile missing. Calling ensure_my_profile()..."
-      );
 
 
       const {
@@ -2451,10 +2403,6 @@ async function loginUser(event) {
     }
 
 
-    /* -----------------------------------------------------
-       Pending
-       ----------------------------------------------------- */
-
     if (
       profile.status === "pending"
     ) {
@@ -2469,10 +2417,6 @@ async function loginUser(event) {
 
     }
 
-
-    /* -----------------------------------------------------
-       Rejected
-       ----------------------------------------------------- */
 
     if (
       profile.status === "rejected"
@@ -2489,24 +2433,18 @@ async function loginUser(event) {
     }
 
 
-    /* -----------------------------------------------------
-       Approved
-       ----------------------------------------------------- */
-
     if (
+      profile.status === "approved"
+    ) {
+
       routeApprovedUser(
         profile
-      )
-    ) {
+      );
 
       return;
 
     }
 
-
-    /* -----------------------------------------------------
-       Invalid status
-       ----------------------------------------------------- */
 
     await sb.auth.signOut();
 
@@ -2640,12 +2578,6 @@ async function signUpWithGoogle() {
 
     }
 
-
-    console.log(
-      "Google OAuth started:",
-      data
-    );
-
   }
 
   catch (error) {
@@ -2678,6 +2610,527 @@ async function signUpWithGoogle() {
 
 
 /* =========================================================================
+   AUTOMATIC GOOGLE DRIVE RECONNECT
+   ========================================================================= */
+
+async function startAutomaticGoogleDriveReconnect(
+  session
+) {
+
+  if (
+    !session ||
+    !session.access_token
+  ) {
+
+    console.warn(
+      "Cannot reconnect Google Drive: Supabase session is unavailable."
+    );
+
+    return {
+      connected: false,
+      redirected: false
+    };
+
+  }
+
+
+  /*
+   * Check whether we just returned from the Google Drive
+   * OAuth callback.
+   *
+   * connect-google-drive redirects to:
+   *
+   * login.html?google_drive=connected
+   *
+   * We MUST NOT immediately start OAuth again.
+   */
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  const googleDriveStatus =
+    params.get(
+      "google_drive"
+    );
+
+
+  if (
+    googleDriveStatus ===
+    "connected"
+  ) {
+
+ /*
+     * Remove the query parameter from the address bar
+     * without reloading the page.
+     */
+
+    const cleanUrl =
+      window.location.origin +
+      window.location.pathname;
+
+
+    window.history.replaceState(
+      {},
+      document.title,
+      cleanUrl
+    );
+
+
+    /*
+     * Give the callback/database update a moment to
+     * complete before continuing.
+     */
+
+    await new Promise(
+      resolve =>
+        setTimeout(
+          resolve,
+          300
+        )
+    );
+
+
+    return {
+      connected: true,
+      redirected: false,
+      justConnected: true
+    };
+
+  }
+
+
+  /*
+   * If OAuth reported an error, don't create an endless
+   * redirect loop.
+   */
+
+  if (
+    googleDriveStatus ===
+    "error"
+  ) {
+
+    console.error(
+      "Google Drive authorization returned an error."
+    );
+
+
+    const cleanUrl =
+      window.location.origin +
+      window.location.pathname;
+
+
+    window.history.replaceState(
+      {},
+      document.title,
+      cleanUrl
+    );
+
+
+    showMessage(
+      "Google Drive authorization was not completed. Please try signing in again."
+    );
+
+
+    return {
+      connected: false,
+      redirected: false
+    };
+
+  }
+
+
+  /* ---------------------------------------------------------
+     CHECK DATABASE CONNECTION
+     --------------------------------------------------------- */
+
+  try {
+
+    const {
+      data: {
+        user
+      },
+      error: userError
+    } =
+      await sb.auth.getUser();
+
+
+    if (
+      userError ||
+      !user
+    ) {
+
+      console.warn(
+        "Unable to identify current user for Google Drive connection."
+      );
+
+      return {
+        connected: false,
+        redirected: false
+      };
+
+    }
+
+
+    const {
+      data: connection,
+      error: connectionError
+    } =
+      await sb
+        .from(
+          "google_drive_connections"
+        )
+        .select(
+          `
+            user_id,
+            google_refresh_token,
+            root_folder_id
+          `
+        )
+        .eq(
+          "user_id",
+          user.id
+        )
+        .maybeSingle();
+
+
+    if (
+      connectionError
+    ) {
+
+      console.error(
+        "Google Drive connection lookup failed:",
+        connectionError
+      );
+
+      return {
+        connected: false,
+        redirected: false
+      };
+
+    }
+
+
+    /*
+     * A complete permanent connection exists.
+     */
+
+    if (
+      connection &&
+      connection.google_refresh_token &&
+      connection.root_folder_id
+    ) {
+
+      return {
+        connected: true,
+        redirected: false
+      };
+
+    }
+
+
+    /*
+     * No permanent connection exists.
+     *
+     * Start the existing connect-google-drive OAuth flow.
+     */
+
+    const response =
+      await fetch(
+        LOGIN_CONFIG.CONNECT_GOOGLE_DRIVE_FUNCTION_URL,
+        {
+          method:
+            "POST",
+
+          headers: {
+
+            "Authorization":
+              `Bearer ${session.access_token}`,
+
+            "Content-Type":
+              "application/json"
+
+          }
+        }
+      );
+
+
+    let result = null;
+
+
+    try {
+
+      result =
+        await response.json();
+
+    }
+
+    catch {
+
+      result = null;
+
+    }
+
+
+    if (
+      !response.ok ||
+      !result?.success ||
+      !result?.authorization_url
+    ) {
+
+      console.error(
+        "Unable to start Google Drive authorization:",
+        {
+          status:
+            response.status,
+
+          result
+        }
+      );
+
+
+      showMessage(
+        result?.error ||
+        "Unable to reconnect Google Drive automatically."
+      );
+
+
+      return {
+        connected: false,
+        redirected: false
+      };
+
+    }
+
+    window.location.href =
+      result.authorization_url;
+
+
+    return {
+      connected: false,
+      redirected: true
+    };
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Automatic Google Drive reconnect failed:",
+      error
+    );
+
+
+    showMessage(
+      error?.message ||
+      "Unable to reconnect Google Drive."
+    );
+
+
+    return {
+      connected: false,
+      redirected: false
+    };
+
+  }
+
+}
+
+
+/* =========================================================================
+   EXISTING SESSION
+   ========================================================================= */
+
+async function checkExistingSession() {
+
+  try {
+
+    /* =================================================
+       GET CURRENT SESSION
+    ================================================= */
+
+    const {
+      data: {
+        session
+      }
+    } =
+      await sb.auth.getSession();
+
+
+    if (
+      !session
+    ) {
+
+      return;
+
+    }
+
+
+    /* =================================================
+       GET CURRENT USER
+    ================================================= */
+
+    const {
+      data: {
+        user
+      }
+    } =
+      await sb.auth.getUser();
+
+
+    if (
+      !user
+    ) {
+
+      return;
+
+    }
+
+    const provider =
+      user.app_metadata?.provider;
+
+
+    /* =================================================
+       GOOGLE EXISTING SESSION
+    ================================================= */
+
+    if (
+      provider === "google"
+    ) {
+
+      el("tabSignup")
+        ?.click();
+
+      /*
+       * --------------------------------------------------
+       * IMPORTANT:
+       *
+       * Do NOT depend on session.provider_token for the
+       * permanent Google Drive connection.
+       *
+       * The permanent connection is stored in:
+       *
+       * google_drive_connections
+       *
+       * and managed by connect-google-drive.
+       * --------------------------------------------------
+       */
+
+
+      const driveConnection =
+        await startAutomaticGoogleDriveReconnect(
+          session
+        );
+
+
+      /*
+       * If the browser is being redirected to Google,
+       * stop here.
+       */
+
+      if (
+        driveConnection.redirected
+      ) {
+        return;
+
+      }
+
+
+      /*
+       * If we just returned from Google authorization,
+       * continue with the normal Google user setup.
+       */
+
+      if (
+        driveConnection.justConnected
+      ) {
+      }
+
+
+      await setupGoogleUser(
+        user
+      );
+
+
+      return;
+
+    }
+
+
+    /* =================================================
+       EMAIL USER
+    ================================================= */
+
+    if (
+      user.email_confirmed_at
+    ) {
+
+      el("tabSignup")
+        ?.click();
+
+
+      markEmailVerified();
+
+    }
+
+  }
+
+  catch (
+    error
+  ) {
+
+    console.error(
+      "checkExistingSession:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================================
+   SUPABASE AUTH STATE CHANGE
+   ========================================================================= */
+
+function initAuthStateListener() {
+
+  sb.auth.onAuthStateChange(
+    async (
+      event,
+      session
+    ) => {
+
+
+
+      if (
+        event === "SIGNED_IN" &&
+        session?.user
+      ) {
+
+        const provider =
+          session.user
+            .app_metadata
+            ?.provider;
+
+
+        if (
+          provider === "google"
+        ) {
+
+        }
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================================
    GOOGLE USER SETUP
    ========================================================================= */
 
@@ -2690,15 +3143,7 @@ async function setupGoogleUser(
   }
 
 
-  console.log(
-    "Google user:",
-    user
-  );
 
-
-  /* ---------------------------------------------------------
-     PROFILE CHECK
-     --------------------------------------------------------- */
 
   let {
     data: profile,
@@ -2737,16 +3182,7 @@ async function setupGoogleUser(
   }
 
 
-  /* ---------------------------------------------------------
-     PROFILE MISSING
-     --------------------------------------------------------- */
-
   if (!profile) {
-
-    console.log(
-      "Profile missing. Calling ensure_my_profile()..."
-    );
-
 
     const {
       data: ensuredProfile,
@@ -2775,12 +3211,6 @@ async function setupGoogleUser(
       return;
 
     }
-
-
-    console.log(
-      "RiGiD profile created/recovered:",
-      ensuredProfile
-    );
 
 
     profile =
@@ -2830,14 +3260,6 @@ async function setupGoogleUser(
   if (
     profile.status === "pending"
   ) {
-
-    /*
-     * If the user has no memberships yet,
-     * allow them to complete the request.
-     *
-     * If memberships already exist,
-     * show pending state.
-     */
 
     const [
       forumResult,
@@ -2994,10 +3416,6 @@ function showGoogleProfileSetup(
   }
 
 
-  /* ---------------------------------------------------------
-     Hide normal signup
-     --------------------------------------------------------- */
-
   el("emailSignupFields")
     ?.classList.add(
       "hidden"
@@ -3034,10 +3452,6 @@ function showGoogleProfileSetup(
     );
 
 
-  /* ---------------------------------------------------------
-     Reset Google selections
-     --------------------------------------------------------- */
-
   googleSelectedForums.clear();
 
 
@@ -3056,10 +3470,6 @@ function showGoogleProfileSetup(
 
   }
 
-
-  /* ---------------------------------------------------------
-     Password
-     --------------------------------------------------------- */
 
   el("googlePasswordBox")
     ?.classList.remove(
@@ -3235,10 +3645,6 @@ async function submitGoogleAccessRequest() {
   }
 
 
-  /* ---------------------------------------------------------
-     Get current user
-     --------------------------------------------------------- */
-
   const {
     data: {
       user
@@ -3275,10 +3681,6 @@ async function submitGoogleAccessRequest() {
 
   }
 
-
-  /* ---------------------------------------------------------
-     CHECK PROFILE
-     --------------------------------------------------------- */
 
   let {
     data: profile,
@@ -3318,10 +3720,6 @@ async function submitGoogleAccessRequest() {
 
 
   if (!profile) {
-
-    console.log(
-      "Profile missing before Google request. Calling ensure_my_profile()..."
-    );
 
 
     const {
@@ -3372,10 +3770,6 @@ async function submitGoogleAccessRequest() {
   }
 
 
-  /* ---------------------------------------------------------
-     Collect selections
-     --------------------------------------------------------- */
-
   const selections =
     collectSelections(
       googleSelectedForums,
@@ -3408,10 +3802,6 @@ async function submitGoogleAccessRequest() {
 
   }
 
-
-  /* ---------------------------------------------------------
-     Password
-     --------------------------------------------------------- */
 
   const passwordBox =
     el("googlePasswordBox");
@@ -3473,10 +3863,6 @@ async function submitGoogleAccessRequest() {
 
   try {
 
-    /* -----------------------------------------------------
-       Set password
-       ----------------------------------------------------- */
-
     if (settingPassword) {
 
       const password =
@@ -3513,10 +3899,6 @@ async function submitGoogleAccessRequest() {
     }
 
 
-    /* -----------------------------------------------------
-       Submit membership request
-       ----------------------------------------------------- */
-
     const result =
       await submitAccessRequest(
         selections
@@ -3533,10 +3915,6 @@ async function submitGoogleAccessRequest() {
 
     }
 
-
-    /* -----------------------------------------------------
-       Sign out after request
-       ----------------------------------------------------- */
 
     await sb.auth.signOut();
 
@@ -3631,10 +4009,6 @@ async function useDifferentGoogleAccount() {
   }
 
 
-  /* ---------------------------------------------------------
-     Clear selections
-     --------------------------------------------------------- */
-
   googleSelectedForums.clear();
 
 
@@ -3670,10 +4044,6 @@ async function useDifferentGoogleAccount() {
     password2.value = "";
   }
 
-
-  /* ---------------------------------------------------------
-     Restore normal signup
-     --------------------------------------------------------- */
 
   el("emailSignupFields")
     ?.classList.remove(
@@ -3761,473 +4131,6 @@ async function useDifferentGoogleAccount() {
 
 
 /* =========================================================================
-   EXISTING SESSION
-   ========================================================================= */
-/* =========================================================================
-   ENSURE PERMANENT GOOGLE DRIVE CONNECTION
-   ========================================================================= */
-
-async function ensureGoogleDriveConnection(
-  session
-) {
-
-  try {
-
-    const {
-      data: {
-        user
-      }
-    } =
-      await sb.auth.getUser();
-
-
-    if (!user) {
-
-      return {
-        connected: false,
-        redirected: false
-      };
-
-    }
-
-
-    /* -----------------------------------------------------
-       CHECK EXISTING DRIVE CONNECTION
-    ----------------------------------------------------- */
-
-    const {
-      data: connection,
-      error: connectionError
-    } =
-      await sb
-        .from(
-          "google_drive_connections"
-        )
-        .select(
-          `
-          user_id,
-          google_refresh_token,
-          root_folder_id
-          `
-        )
-        .eq(
-          "user_id",
-          user.id
-        )
-        .maybeSingle();
-
-
-    if (
-      connectionError
-    ) {
-
-      console.error(
-        "Google Drive connection check failed:",
-        connectionError
-      );
-
-      return {
-        connected: false,
-        redirected: false
-      };
-
-    }
-
-
-    /* -----------------------------------------------------
-       PERMANENT CONNECTION ALREADY EXISTS
-    ----------------------------------------------------- */
-
-    if (
-      connection &&
-      connection.google_refresh_token &&
-      connection.root_folder_id
-    ) {
-
-      console.log(
-        "Permanent Google Drive connection already exists."
-      );
-
-      return {
-        connected: true,
-        redirected: false
-      };
-
-    }
-
-
-    console.log(
-      "No permanent Google Drive connection. Starting authorization..."
-    );
-
-
-    /* -----------------------------------------------------
-       START PERMANENT DRIVE AUTHORIZATION
-    ----------------------------------------------------- */
-
-    const response =
-      await fetch(
-
-        "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/connect-google-drive",
-
-        {
-
-          method:
-            "POST",
-
-          headers: {
-
-            "Authorization":
-              `Bearer ${session.access_token}`,
-
-            "Content-Type":
-              "application/json"
-
-          }
-
-        }
-
-      );
-
-
-    const result =
-      await response.json();
-
-
-    if (
-
-      !response.ok ||
-
-      !result.success ||
-
-      !result.authorization_url
-
-    ) {
-
-      console.error(
-        "Unable to start permanent Google Drive connection:",
-        result
-      );
-
-      return {
-        connected: false,
-        redirected: false
-      };
-
-    }
-
-
-    /*
-     * Redirect the user immediately.
-     */
-
-    window.location.href =
-      result.authorization_url;
-
-
-    return {
-      connected: false,
-      redirected: true
-    };
-
-  }
-
-  catch (
-  error
-  ) {
-
-    console.error(
-      "ensureGoogleDriveConnection error:",
-      error
-    );
-
-    return {
-      connected: false,
-      redirected: false
-    };
-
-  }
-
-}
-
-async function checkExistingSession() {
-
-  try {
-
-    /* =================================================
-       GET CURRENT SESSION
-    ================================================= */
-
-    const {
-      data: {
-        session
-      }
-    } =
-      await sb.auth.getSession();
-
-
-    if (
-      !session
-    ) {
-
-      return;
-
-    }
-
-
-    /* =================================================
-       GET CURRENT USER
-    ================================================= */
-
-    const {
-      data: {
-        user
-      }
-    } =
-      await sb.auth.getUser();
-
-
-    if (
-      !user
-    ) {
-
-      return;
-
-    }
-
-
-    console.log(
-      "Existing session:",
-      {
-
-        id:
-          user.id,
-
-        email:
-          user.email,
-
-        provider:
-          user.app_metadata?.provider
-
-      }
-    );
-
-
-    const provider =
-      user.app_metadata?.provider;
-
-
-    /* =================================================
-       GOOGLE EXISTING SESSION
-    ================================================= */
-
-    if (
-      provider === "google"
-    ) {
-
-      el("tabSignup")
-        ?.click();
-
-
-      console.log(
-        "Existing Google session provider token:",
-        session.provider_token
-          ? "AVAILABLE"
-          : "NOT AVAILABLE"
-      );
-
-
-      console.log(
-        "Existing Google session refresh token:",
-        session.provider_refresh_token
-          ? "AVAILABLE"
-          : "NOT AVAILABLE"
-      );
-
-
-      if (
-        session.provider_token
-      ) {
-
-        try {
-
-          console.log(
-            "Creating/checking RiGiD Drive..."
-          );
-
-
-          const driveResponse =
-            await fetch(
-
-              "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/google-drive",
-
-              {
-
-                method:
-                  "POST",
-
-                headers: {
-
-                  "Authorization":
-                    `Bearer ${session.access_token}`,
-
-                  "Content-Type":
-                    "application/json"
-
-                },
-
-                body:
-                  JSON.stringify({
-
-                    access_token:
-                      session.provider_token,
-
-                    refresh_token:
-                      session.provider_refresh_token ||
-                      null
-
-                  })
-
-              }
-
-            );
-
-
-          const driveResult =
-            await driveResponse.json();
-
-
-          console.log(
-            "RiGiD Drive result:",
-            driveResult
-          );
-
-
-          if (
-            !driveResponse.ok
-          ) {
-
-            console.error(
-              "Google Drive function returned error:",
-              driveResult
-            );
-
-          }
-
-        }
-
-        catch (
-        driveError
-        ) {
-
-          console.error(
-            "RiGiD Drive request failed:",
-            driveError
-          );
-
-        }
-
-      }
-
-      else {
-
-        console.warn(
-          "Google provider token is not available."
-        );
-
-      }
-
-
-      await setupGoogleUser(
-        user
-      );
-
-
-      return;
-
-    }
-
-
-    /* =================================================
-       EMAIL USER
-    ================================================= */
-
-    if (
-      user.email_confirmed_at
-    ) {
-
-      el("tabSignup")
-        ?.click();
-
-
-      markEmailVerified();
-
-    }
-
-  }
-
-  catch (
-  error
-  ) {
-
-    console.error(
-      "checkExistingSession:",
-      error
-    );
-
-  }
-
-}
-
-
-/* =========================================================================
-   SUPABASE AUTH STATE CHANGE
-   ========================================================================= */
-
-function initAuthStateListener() {
-
-  sb.auth.onAuthStateChange(
-    async (
-      event,
-      session
-    ) => {
-
-      console.log(
-        "Auth event:",
-        event
-      );
-
-
-      if (
-        event === "SIGNED_IN" &&
-        session?.user
-      ) {
-
-        const provider =
-          session.user
-            .app_metadata
-            ?.provider;
-
-
-        if (
-          provider === "google"
-        ) {
-
-          console.log(
-            "Google SIGNED_IN event received."
-          );
-
-        }
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================================
    INITIALIZATION
    ========================================================================= */
 
@@ -4235,9 +4138,6 @@ document.addEventListener(
   "DOMContentLoaded",
   async () => {
 
-    console.log(
-      "RiGiD login initialization..."
-    );
 
 
     /* -----------------------------------------------------
@@ -4337,11 +4237,6 @@ document.addEventListener(
         "click",
         useDifferentGoogleAccount
       );
-
-
-    console.log(
-      "RiGiD login initialized successfully."
-    );
 
   }
 );

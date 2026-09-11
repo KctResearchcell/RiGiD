@@ -1,34 +1,41 @@
 /* =========================================================
-   RiGiD PROTOTYPE WORKSPACE
-   Persistent version - no dummy data, no window.prompt()
-   Uses:
-   GET  /get-rigid-work-data
-   POST /update-rigid-work-data
+   RiGiD — PROTOTYPE WORKSPACE
+   Persistent data • immediate UI • background saving
+   No window.prompt() / window.confirm()
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 "use strict";
 
-const $ = s => document.querySelector(s);
-const $$ = s => [...document.querySelectorAll(s)];
+const $ = selector => document.querySelector(selector);
+const $$ = selector => [...document.querySelectorAll(selector)];
 
 let currentWorkId = getWorkId();
 let prototypeData = null;
-let isSaving = false;
+let saveQueue = Promise.resolve();
+let saveRevision = 0;
 let toastTimer = null;
+let loading = true;
+let rigidDataCache = {};
 
 /* =========================================================
    DATA
 ========================================================= */
 
-function now() { return new Date().toISOString(); }
-function id(prefix) {
-    return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+function now() {
+    return new Date().toISOString();
 }
-function arr(v) { return Array.isArray(v) ? v : []; }
+
+function id(prefix) {
+    return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function arr(value) {
+    return Array.isArray(value) ? value : [];
+}
 
 function emptyData() {
-    const t = now();
+    const timestamp = now();
     return {
         title: "",
         description: "",
@@ -38,8 +45,8 @@ function emptyData() {
         versionDescription: "",
         tags: [],
         owner: "You",
-        startedAt: t,
-        updatedAt: t,
+        startedAt: timestamp,
+        updatedAt: timestamp,
         progress: 0,
         progressPhase: "Planning phase",
         nextAction: { title: "", dueDate: "" },
@@ -60,29 +67,131 @@ function emptyData() {
     };
 }
 
+function clone(value) {
+    return JSON.parse(JSON.stringify(value));
+}
+
+function ensureItemId(item, prefix) {
+    if (!item || typeof item !== "object") return item;
+    if (!item.id) item.id = id(prefix);
+    return item;
+}
+
 function normalizeData(source) {
     const base = emptyData();
     const s = source && typeof source === "object" ? source : {};
-    return {
+    const result = {
         ...base,
         ...s,
-        tags: arr(s.tags),
-        specifications: arr(s.specifications),
-        designDecisions: arr(s.designDecisions),
-        buildLog: arr(s.buildLog),
-        components: arr(s.components),
-        tests: arr(s.tests),
-        measurements: arr(s.measurements),
-        iterations: arr(s.iterations),
-        failures: arr(s.failures),
-        modifications: arr(s.modifications),
-        improvements: arr(s.improvements),
-        resources: arr(s.resources),
+        tags: arr(s.tags).map(String).filter(Boolean),
+        specifications: arr(s.specifications).map(x => ensureItemId({
+            name: x?.name || x?.parameter || "",
+            value: x?.value ?? x?.measured ?? ""
+        }, "spec")),
+        designDecisions: arr(s.designDecisions).map(x => ensureItemId({
+            title: x?.title || "",
+            description: x?.description || ""
+        }, "decision")),
+        buildLog: arr(s.buildLog).map(x => ensureItemId({
+            title: x?.title || "",
+            date: x?.date || todayISO(),
+            progress: Number.isFinite(Number(x?.progress)) ? Number(x.progress) : null,
+            description: x?.description || ""
+        }, "build")),
+        components: arr(s.components).map(x => ensureItemId({
+            name: x?.name || "",
+            quantity: Number(x?.quantity) || 1,
+            status: x?.status || "active",
+            description: x?.description || ""
+        }, "component")),
+        tests: arr(s.tests).map(x => ensureItemId({
+            name: x?.name || "",
+            result: ["passed","failed","pending"].includes(x?.result) ? x.result : "pending",
+            date: x?.date || todayISO(),
+            description: x?.description || ""
+        }, "test")),
+        measurements: arr(s.measurements).map(x => ensureItemId({
+            parameter: x?.parameter || "",
+            expected: x?.expected ?? "",
+            measured: x?.measured ?? "",
+            unit: x?.unit || "",
+            result: ["PASS","CHECK","FAIL"].includes(String(x?.result || "").toUpperCase())
+                ? String(x.result).toUpperCase()
+                : "CHECK"
+        }, "measurement")),
+        iterations: arr(s.iterations).map(x => ensureItemId({
+            version: x?.version || "",
+            title: x?.title || "",
+            date: x?.date || todayISO(),
+            description: x?.description || "",
+            changes: arr(x?.changes).map(String).filter(Boolean)
+        }, "iteration")),
+        failures: arr(s.failures).map(x => ensureItemId({
+            title: x?.title || "",
+            description: x?.description || ""
+        }, "failure")),
+        modifications: arr(s.modifications).map(x => ensureItemId({
+            title: x?.title || "",
+            description: x?.description || ""
+        }, "modification")),
+        improvements: arr(s.improvements).map(x => ensureItemId({
+            priority: x?.priority || "MEDIUM PRIORITY",
+            title: x?.title || "",
+            description: x?.description || ""
+        }, "improvement")),
+        resources: arr(s.resources).map(x => ensureItemId({
+            id: x?.id || "",
+            driveFileId: x?.driveFileId || "",
+            name: x?.name || x?.title || "Resource",
+            kind: x?.kind || "file",
+            type: x?.type || x?.fileType || "FILE",
+            title: x?.title || x?.name || "Resource",
+            url: x?.url || x?.webViewLink || x?.webContentLink || "",
+            webViewLink: x?.webViewLink || "",
+            webContentLink: x?.webContentLink || "",
+            publicUrl: x?.publicUrl || "",
+            downloadUrl: x?.downloadUrl || "",
+            description: x?.description || "",
+            bucket: x?.bucket || "",
+            storagePath: x?.storagePath || "",
+            mimeType: x?.mimeType || "",
+            size: Number(x?.size) || 0,
+            createdAt: x?.createdAt || x?.date || "",
+            status: x?.status || "ready"
+        }, "resource")),
         nextAction: {
             title: s.nextAction?.title || "",
             dueDate: s.nextAction?.dueDate || ""
         }
     };
+
+    /*
+     * Completion is a real Prototype state, not just a visual progress
+     * value. Keep the two fields synchronized whenever 100% is reached.
+     */
+    if (Number(result.progress) >= 100) {
+        result.progress = 100;
+        result.progressPhase = "Completed";
+        result.status = "completed";
+    }
+
+    const numericProgress = Math.max(0, Math.min(100, Number(result.progress) || 0));
+    result.progress = numericProgress;
+    if (numericProgress >= 100) {
+        result.progress = 100;
+        result.progressPhase = "Completed";
+        result.status = "completed";
+    }
+
+    /* The first/newest iteration is always the current iteration. */
+    if (result.iterations.length) {
+        const current = result.iterations[0];
+        if (!result.version) result.version = current.version;
+        if (!result.versionTitle) result.versionTitle = current.title;
+        if (!result.versionDescription) result.versionDescription = current.description || "";
+    }
+
+    return result;
 }
 
 /* =========================================================
@@ -90,8 +199,11 @@ function normalizeData(source) {
 ========================================================= */
 
 function getWorkId() {
-    const p = new URLSearchParams(window.location.search);
-    return p.get("work_id") || p.get("id") || p.get("work") || p.get("prototype");
+    const params = new URLSearchParams(window.location.search);
+    return params.get("work_id") ||
+           params.get("id") ||
+           params.get("work") ||
+           params.get("prototype");
 }
 
 function getSupabaseClient() {
@@ -104,28 +216,37 @@ function getSupabaseClient() {
 async function getSession() {
     const client = getSupabaseClient();
     if (!client) throw new Error("Supabase client is unavailable.");
+
     const { data, error } = await client.auth.getSession();
     if (error) throw error;
     if (!data?.session) throw new Error("Please log in again.");
+
     return data.session;
 }
 
 function getFunctionsURL() {
     if (typeof SUPABASE_FUNCTIONS_URL !== "undefined" && SUPABASE_FUNCTIONS_URL) {
-        return SUPABASE_FUNCTIONS_URL;
+        return String(SUPABASE_FUNCTIONS_URL).replace(/\/$/, "");
     }
-    if (window.SUPABASE_FUNCTIONS_URL) return window.SUPABASE_FUNCTIONS_URL;
+
+    if (window.SUPABASE_FUNCTIONS_URL) {
+        return String(window.SUPABASE_FUNCTIONS_URL).replace(/\/$/, "");
+    }
 
     const client = getSupabaseClient();
     const url = client?.supabaseUrl || client?.rest?.url || "";
+
     if (url) {
-        return url.replace("/rest/v1", "").replace(/\/$/, "") + "/functions/v1";
+        return url.replace(/\/rest\/v1\/?$/, "").replace(/\/$/, "") + "/functions/v1";
     }
+
     throw new Error("Supabase Functions URL is not configured.");
 }
 
 async function loadPrototypeData() {
-    if (!currentWorkId) throw new Error("Work ID is missing from the URL.");
+    if (!currentWorkId) {
+        throw new Error("Work ID is missing from the URL.");
+    }
 
     const session = await getSession();
     const functionsURL = getFunctionsURL();
@@ -139,12 +260,19 @@ async function loadPrototypeData() {
         body: JSON.stringify({ work_id: currentWorkId })
     });
 
-    const result = await response.json();
+    let result = {};
+    try {
+        result = await response.json();
+    } catch {
+        throw new Error("The server returned an invalid response.");
+    }
+
     if (!response.ok || !result.success) {
         throw new Error(result.error || "Unable to load Prototype data.");
     }
 
-    const rigidData = result.data || {};
+    const rigidData = result.data && typeof result.data === "object" ? result.data : {};
+    rigidDataCache = clone(rigidData);
     const workspace = rigidData.workspace || {};
     const prototype =
         rigidData.prototype ||
@@ -155,7 +283,9 @@ async function loadPrototypeData() {
     prototypeData = normalizeData({
         ...prototype,
         title: prototype.title || workspace.title || result.work?.title || "",
+        description: prototype.description || workspace.description || "",
         status: prototype.status || workspace.status || "planning",
+        owner: prototype.owner || workspace.owner || "You",
         startedAt: prototype.startedAt || workspace.createdAt || now(),
         updatedAt: prototype.updatedAt || workspace.updatedAt || now()
     });
@@ -163,54 +293,109 @@ async function loadPrototypeData() {
     renderEverything();
 }
 
-async function savePrototypeData() {
-    if (isSaving) return;
+async function saveSnapshot(snapshot) {
     if (!currentWorkId) throw new Error("Work ID is missing.");
-    if (!prototypeData) throw new Error("Prototype data is not loaded.");
 
-    isSaving = true;
+    const session = await getSession();
+    const functionsURL = getFunctionsURL();
 
+    const workspace = {
+        ...(rigidDataCache.workspace || {}),
+        id: rigidDataCache.workspace?.id || currentWorkId,
+        type: rigidDataCache.workspace?.type || "prototype",
+        title: snapshot.title || rigidDataCache.workspace?.title || "Untitled Prototype",
+        status: snapshot.status || rigidDataCache.workspace?.status || "planning",
+        createdAt: snapshot.startedAt || rigidDataCache.workspace?.createdAt || now(),
+        updatedAt: now()
+    };
+
+    const rigidData = {
+        ...rigidDataCache,
+        version: Number(rigidDataCache.version) || 1,
+        workspace,
+        prototype: snapshot
+    };
+
+    const response = await fetch(`${functionsURL}/update-rigid-work-data`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+            work_id: currentWorkId,
+            data: rigidData
+        })
+    });
+
+    let result = {};
     try {
-        const session = await getSession();
-        const functionsURL = getFunctionsURL();
-
-        prototypeData.updatedAt = now();
-
-        const response = await fetch(`${functionsURL}/update-rigid-work-data`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${session.access_token}`
-            },
-            body: JSON.stringify({
-                work_id: currentWorkId,
-                data: {
-                    prototype: prototypeData
-                }
-            })
-        });
-
-        const result = await response.json();
-        if (!response.ok || !result.success) {
-            throw new Error(result.error || "Unable to save Prototype data.");
-        }
-
-        return result;
-    } finally {
-        isSaving = false;
+        result = await response.json();
+    } catch {
+        throw new Error("The server returned an invalid save response.");
     }
+
+    if (!response.ok || result.success === false) {
+        throw new Error(result.error || result.message || "Unable to save Prototype data.");
+    }
+
+    rigidDataCache = clone(rigidData);
+    return result;
 }
 
-async function commit(message) {
+/*
+ * Every edit is rendered and the relevant modal is closed first.
+ * The network save is queued afterwards. Saves are serialized and
+ * each request contains a complete snapshot, preventing stale
+ * requests from overwriting a newer local edit.
+ */
+function queueSave(message, previousState) {
+    if (!prototypeData) return;
+
+    const revision = ++saveRevision;
+    prototypeData.updatedAt = now();
+
+    const snapshot = clone(prototypeData);
+
+    saveQueue = saveQueue
+        .catch(() => {})
+        .then(async () => {
+            try {
+                await saveSnapshot(snapshot);
+                if (revision === saveRevision && message) showToast(message);
+            } catch (error) {
+                console.error("RiGiD Prototype save error:", error);
+
+                if (revision === saveRevision && previousState) {
+                    prototypeData = normalizeData(previousState);
+                    renderEverything();
+                }
+
+                showToast(error.message || "Unable to save changes.");
+            }
+        });
+
+    return saveQueue;
+}
+
+function mutateAndSave(mutator, message, onDone) {
+    if (!prototypeData) return;
+
+    const previousState = clone(prototypeData);
+
     try {
-        await savePrototypeData();
+        mutator();
+        prototypeData.updatedAt = now();
         renderEverything();
-        if (message) showToast(message);
-        return true;
+
+        if (typeof onDone === "function") onDone();
+
+        queueSave(message, previousState);
     } catch (error) {
+        prototypeData = normalizeData(previousState);
+        renderEverything();
         console.error(error);
-        showToast(error.message || "Unable to save changes.");
-        return false;
+        showToast(error.message || "Unable to update Prototype.");
     }
 }
 
@@ -218,8 +403,8 @@ async function commit(message) {
    HELPERS
 ========================================================= */
 
-function escapeHTML(v) {
-    return String(v ?? "")
+function escapeHTML(value) {
+    return String(value ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
@@ -229,9 +414,17 @@ function escapeHTML(v) {
 
 function formatDate(value, includeYear = true) {
     if (!value) return "—";
-    const d = new Date(`${String(value).slice(0, 10)}T00:00:00`);
-    if (Number.isNaN(d.getTime())) return value;
-    return d.toLocaleDateString("en-GB", {
+
+    const raw = String(value);
+    const date = new Date(
+        /^\d{4}-\d{2}-\d{2}$/.test(raw)
+            ? `${raw}T00:00:00`
+            : raw
+    );
+
+    if (Number.isNaN(date.getTime())) return raw;
+
+    return date.toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
         ...(includeYear ? { year: "numeric" } : {})
@@ -239,27 +432,29 @@ function formatDate(value, includeYear = true) {
 }
 
 function todayISO() {
-    const d = new Date();
-    return new Date(d.getTime() - d.getTimezoneOffset() * 60000)
-        .toISOString().slice(0, 10);
+    const date = new Date();
+    const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 10);
 }
 
-function phaseForProgress(n) {
-    n = Number(n) || 0;
-    if (n >= 100) return "Completed";
-    if (n >= 75) return "Testing phase";
-    if (n >= 45) return "Build phase";
-    if (n >= 20) return "Design phase";
+function phaseForProgress(progress) {
+    const value = Number(progress) || 0;
+    if (value >= 100) return "Completed";
+    if (value >= 75) return "Testing phase";
+    if (value >= 45) return "Build phase";
+    if (value >= 20) return "Design phase";
     return "Planning phase";
 }
 
 function showToast(message) {
-    const el = $("#prototypeToast");
-    if (!el) return;
-    el.textContent = message;
-    el.classList.remove("hidden");
+    const element = $("#prototypeToast");
+    if (!element) return;
+
+    element.textContent = message;
+    element.classList.remove("hidden");
+
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.add("hidden"), 3000);
+    toastTimer = setTimeout(() => element.classList.add("hidden"), 3000);
 }
 
 function openModal(modal) {
@@ -271,73 +466,116 @@ function openModal(modal) {
 function closeModal(modal) {
     if (!modal) return;
     modal.classList.add("hidden");
+
     if (!$$(".prototype-modal:not(.hidden)").length) {
         document.body.style.overflow = "";
     }
 }
 
 function setText(selector, value, fallback = "—") {
-    const el = $(selector);
-    if (el) el.textContent = value || fallback;
+    const element = $(selector);
+    if (element) element.textContent = value || fallback;
 }
 
 function setHTML(selector, html) {
-    const el = $(selector);
-    if (el) el.innerHTML = html;
+    const element = $(selector);
+    if (element) element.innerHTML = html;
 }
 
 function emptyState(text) {
     return `<div class="empty-state">${escapeHTML(text)}</div>`;
 }
 
+function safeStatus(value) {
+    return ["planning","designing","building","testing","completed"].includes(value)
+        ? value
+        : "planning";
+}
+
+function resourceExtension(name) {
+    const match = String(name || "").match(/\.([^.]+)$/);
+    return (match ? match[1] : "FILE").toUpperCase().slice(0, 5);
+}
+
+function formatBytes(bytes) {
+    const size = Number(bytes) || 0;
+    if (size < 1024) return `${size} B`;
+    if (size < 1024 ** 2) return `${(size / 1024).toFixed(1)} KB`;
+    if (size < 1024 ** 3) return `${(size / 1024 ** 2).toFixed(1)} MB`;
+    return `${(size / 1024 ** 3).toFixed(1)} GB`;
+}
+
 /* =========================================================
-   DELETE UI HELPERS
+   DELETE CONFIRMATION MODAL
+========================================================= */
+
+let confirmationResolver = null;
+
+function askConfirmation(title, message, confirmText = "Delete") {
+    const modal = $("#prototypeConfirmModal");
+
+    if (!modal) {
+        return Promise.resolve(false);
+    }
+
+    $("#prototypeConfirmTitle").textContent = title;
+    $("#prototypeConfirmMessage").textContent = message;
+    $("#prototypeConfirmButton").textContent = confirmText;
+
+    openModal(modal);
+
+    return new Promise(resolve => {
+        confirmationResolver = resolve;
+    });
+}
+
+function resolveConfirmation(value) {
+    const modal = $("#prototypeConfirmModal");
+    if (confirmationResolver) {
+        const resolver = confirmationResolver;
+        confirmationResolver = null;
+        resolver(value);
+    }
+    closeModal(modal);
+}
+
+$("#prototypeConfirmButton")?.addEventListener("click", () => resolveConfirmation(true));
+$("#cancelPrototypeConfirm")?.addEventListener("click", () => resolveConfirmation(false));
+$("#closePrototypeConfirmModal")?.addEventListener("click", () => resolveConfirmation(false));
+$("#prototypeConfirmModal")?.addEventListener("click", event => {
+    if (event.target === $("#prototypeConfirmModal")) resolveConfirmation(false);
+});
+
+/* =========================================================
+   DELETE SYSTEM
 ========================================================= */
 
 function deleteButton(section, itemId, label = "Delete") {
-    return `<button type="button" class="prototype-delete-button" data-delete-section="${escapeHTML(section)}" data-delete-id="${escapeHTML(itemId)}" title="${escapeHTML(label)}" aria-label="${escapeHTML(label)}">×</button>`;
+    return `
+        <button
+            type="button"
+            class="prototype-delete-button"
+            data-delete-section="${escapeHTML(section)}"
+            data-delete-id="${escapeHTML(itemId)}"
+            title="${escapeHTML(label)}"
+            aria-label="${escapeHTML(label)}"
+        >×</button>`;
 }
 
-function deleteFieldButton(section, label = "Clear") {
-    return `<button type="button" class="prototype-delete-button prototype-delete-field" data-delete-field="${escapeHTML(section)}" title="${escapeHTML(label)}" aria-label="${escapeHTML(label)}">×</button>`;
-}
-
-function withDeleteStyle() {
-    if (document.getElementById("prototypeDeleteStyle")) return;
-    const style = document.createElement("style");
-    style.id = "prototypeDeleteStyle";
-    style.textContent = `
-        .prototype-delete-button {
-            margin-left: auto;
-            flex: 0 0 auto;
-            width: 22px;
-            height: 22px;
-            min-width: 22px;
-            padding: 0;
-            border: 0;
-            border-radius: 50%;
-            background: transparent;
-            color: inherit;
-            font-size: 17px;
-            line-height: 20px;
-            cursor: pointer;
-            opacity: .55;
-        }
-        .prototype-delete-button:hover { opacity: 1; }
-        .prototype-delete-field { margin-left: 8px; }
-        .prototype-delete-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .prototype-delete-row > :not(.prototype-delete-button) { min-width: 0; }
-    `;
-    document.head.appendChild(style);
+function deleteFieldButton(field, label = "Delete") {
+    return `
+        <button
+            type="button"
+            class="prototype-delete-button prototype-delete-field"
+            data-delete-field="${escapeHTML(field)}"
+            title="${escapeHTML(label)}"
+            aria-label="${escapeHTML(label)}"
+        >×</button>`;
 }
 
 function findPrototypeItem(section, itemId) {
-    const list = arr(prototypeData?.[section]);
-    return list.find(item => String(item?.id) === String(itemId));
+    return arr(prototypeData?.[section])
+        .find(item => String(item?.id) === String(itemId));
 }
 
 async function deletePrototypeItem(section, itemId) {
@@ -346,27 +584,37 @@ async function deletePrototypeItem(section, itemId) {
     const index = section === "tags"
         ? Number(itemId)
         : prototypeData[section].findIndex(item => String(item?.id) === String(itemId));
-    if (index < 0 || index >= prototypeData[section].length) return;
+
+    if (!Number.isInteger(index) || index < 0 || index >= prototypeData[section].length) return;
 
     const item = prototypeData[section][index];
-    const name = typeof item === "string" ? item : (item?.title || item?.name || item?.parameter || item?.version || "this item");
+    const name = typeof item === "string"
+        ? item
+        : item?.title || item?.name || item?.parameter || item?.version || "this item";
 
-    const confirmed = window.confirm(`Delete "${name}"?`);
+    const confirmed = await askConfirmation(
+        "Delete item?",
+        `Are you sure you want to delete "${name}"?`,
+        "Delete"
+    );
     if (!confirmed) return;
 
-    const backup = prototypeData[section].slice();
-    prototypeData[section].splice(index, 1);
+    const previousState = clone(prototypeData);
+    const driveFileId = section === "resources" ? (item?.driveFileId || item?.id) : "";
 
-    /* Remove it from the visible page immediately. */
+    prototypeData[section].splice(index, 1);
+    if (section === "iterations") syncCurrentIteration();
+    prototypeData.updatedAt = now();
     renderEverything();
+    showToast("Removed.");
 
     try {
-        await savePrototypeData();
-        renderEverything();
-        showToast("Item removed.");
+        if (section === "resources" && driveFileId && item?.kind !== "link") {
+            await deleteFileFromDrive(driveFileId);
+        }
+        queueSave("Changes saved.", previousState);
     } catch (error) {
-        /* Restore the item if the backend save failed. */
-        prototypeData[section] = backup;
+        prototypeData = normalizeData(previousState);
         renderEverything();
         console.error("Delete Prototype item error:", error);
         showToast(error.message || "Unable to remove item.");
@@ -374,7 +622,7 @@ async function deletePrototypeItem(section, itemId) {
 }
 
 async function clearPrototypeField(field) {
-    if (!prototypeData) return;
+    if (!prototypeData || !(field in prototypeData)) return;
 
     const labels = {
         objective: "objective",
@@ -384,12 +632,15 @@ async function clearPrototypeField(field) {
         version: "current version"
     };
 
-    if (!(field in prototypeData)) return;
+    const confirmed = await askConfirmation(
+        `Delete ${labels[field] || field}?`,
+        `This will permanently remove the current ${labels[field] || field} from this Prototype.`,
+        "Delete"
+    );
 
-    const confirmed = window.confirm(`Remove the ${labels[field] || field}?`);
     if (!confirmed) return;
 
-    const oldValue = JSON.parse(JSON.stringify(prototypeData[field]));
+    const previousState = clone(prototypeData);
 
     if (field === "nextAction") {
         prototypeData.nextAction = { title: "", dueDate: "" };
@@ -401,26 +652,18 @@ async function clearPrototypeField(field) {
         prototypeData[field] = "";
     }
 
-    /* Update the live page immediately. */
+    prototypeData.updatedAt = now();
     renderEverything();
-
-    try {
-        await savePrototypeData();
-        renderEverything();
-        showToast("Removed.");
-    } catch (error) {
-        prototypeData[field] = oldValue;
-        renderEverything();
-        console.error("Clear Prototype field error:", error);
-        showToast(error.message || "Unable to remove item.");
-    }
+    showToast("Removed.");
+    queueSave("Changes saved.", previousState);
 }
 
 function initializeDeleteSystem() {
-    withDeleteStyle();
-
     document.addEventListener("click", event => {
-        const button = event.target.closest("[data-delete-section], [data-delete-field]");
+        const button = event.target.closest(
+            "[data-delete-section], [data-delete-field]"
+        );
+
         if (!button) return;
 
         event.preventDefault();
@@ -444,6 +687,7 @@ function initializeDeleteSystem() {
 
 function renderEverything() {
     if (!prototypeData) return;
+
     renderHeader();
     renderOverview();
     renderDesign();
@@ -459,238 +703,361 @@ function renderEverything() {
 function renderHeader() {
     setText("#prototypeTitle", prototypeData.title, "Untitled Prototype");
     setText("#prototypeDescription", prototypeData.description, "No description added.");
-    setText("#prototypeStatus", `● ${(prototypeData.status || "planning").toUpperCase()}`);
+
+    const status = safeStatus(prototypeData.status);
+    setText("#prototypeStatus", `● ${status.toUpperCase()}`);
     setText("#prototypeVersion", prototypeData.version, "—");
     setText("#prototypeOwner", prototypeData.owner, "You");
     setText("#prototypeStarted", formatDate(prototypeData.startedAt));
     setText("#prototypeLastUpdated", formatDate(prototypeData.updatedAt));
 
     const tags = $("#prototypeTags");
-    if (tags) {
-        tags.innerHTML = prototypeData.tags.length
-            ? prototypeData.tags.map((x, i) => `<span class="prototype-tag prototype-delete-row"><span>${escapeHTML(x)}</span>${deleteButton("tags", String(i), "Delete tag")}</span>`).join("")
-            : emptyState("No tags added.");
-    }
+    if (!tags) return;
+
+    tags.innerHTML = prototypeData.tags.length
+        ? prototypeData.tags.map((tag, index) => `
+            <span class="prototype-tag prototype-delete-row">
+                <span>${escapeHTML(tag)}</span>
+                ${deleteButton("tags", String(index), "Delete tag")}
+            </span>
+        `).join("")
+        : emptyState("No tags added.");
 }
 
 function renderOverview() {
-    const p = Math.max(0, Math.min(100, Number(prototypeData.progress) || 0));
-    setText("#prototypeProgress", `${p}%`, "0%");
-    const bar = $("#prototypeProgressBar");
-    if (bar) bar.style.width = `${p}%`;
-    setText("#prototypeProgressStatus", prototypeData.progressPhase || phaseForProgress(p));
+    const progress = Math.max(
+        0,
+        Math.min(100, Number(prototypeData.progress) || 0)
+    );
 
-    setText("#buildProgressPercentage", `${p}%`, "0%");
+    setText("#prototypeProgress", `${progress}%`, "0%");
+
+    const progressBar = $("#prototypeProgressBar");
+    if (progressBar) progressBar.style.width = `${progress}%`;
+
+    setText(
+        "#prototypeProgressStatus",
+        prototypeData.progressPhase || phaseForProgress(progress)
+    );
+
+    setText("#buildProgressPercentage", `${progress}%`, "0%");
+
     const buildBar = $("#buildProgressBar");
-    if (buildBar) buildBar.style.width = `${p}%`;
-    setText("#buildProgressLabel", prototypeData.progressPhase || phaseForProgress(p));
+    if (buildBar) buildBar.style.width = `${progress}%`;
+
+    setText(
+        "#buildProgressLabel",
+        prototypeData.progressPhase || phaseForProgress(progress)
+    );
 
     setText("#currentVersion", prototypeData.version, "—");
     setText("#currentVersionTitle", prototypeData.versionTitle, "No version title");
-    setHTML("#currentVersionDescription", prototypeData.version
-        ? `<div class="prototype-delete-row"><span>${escapeHTML(prototypeData.versionDescription || "No version description")}</span>${deleteFieldButton("version", "Delete current version")}</div>`
-        : "No version description");
 
-    setHTML("#prototypeNextActionTitle", prototypeData.nextAction.title
-        ? `<div class="prototype-delete-row"><span>${escapeHTML(prototypeData.nextAction.title)}</span>${deleteFieldButton("nextAction", "Delete next action")}</div>`
-        : emptyState("No next action"));
-    setText("#prototypeNextActionDue",
+    setHTML(
+        "#currentVersionDescription",
+        prototypeData.version
+            ? `<div class="prototype-delete-row">
+                 <span>${escapeHTML(prototypeData.versionDescription || "No version description")}</span>
+                 ${deleteFieldButton("version", "Delete current version")}
+               </div>`
+            : "No version description"
+    );
+
+    setHTML(
+        "#prototypeNextActionTitle",
+        prototypeData.nextAction.title
+            ? `<div class="prototype-delete-row">
+                 <span>${escapeHTML(prototypeData.nextAction.title)}</span>
+                 ${deleteFieldButton("nextAction", "Delete next action")}
+               </div>`
+            : emptyState("No next action")
+    );
+
+    setText(
+        "#prototypeNextActionDue",
         prototypeData.nextAction.dueDate
             ? `Due: ${formatDate(prototypeData.nextAction.dueDate, false)}`
             : "No due date"
     );
 
-    setHTML("#prototypeObjective",
+    setHTML(
+        "#prototypeObjective",
         prototypeData.objective
-            ? `<div class="prototype-delete-row"><p>${escapeHTML(prototypeData.objective)}</p>${deleteFieldButton("objective", "Delete objective")}</div>`
+            ? `<div class="prototype-delete-row">
+                 <p>${escapeHTML(prototypeData.objective)}</p>
+                 ${deleteFieldButton("objective", "Delete objective")}
+               </div>`
             : emptyState("No objective added yet.")
     );
 }
 
 function renderDesign() {
-    setHTML("#designConcept",
+    setHTML(
+        "#designConcept",
         prototypeData.designConcept
-            ? `<div class="prototype-delete-row"><p>${escapeHTML(prototypeData.designConcept)}</p>${deleteFieldButton("designConcept", "Delete design concept")}</div>`
+            ? `<div class="prototype-delete-row">
+                 <p>${escapeHTML(prototypeData.designConcept)}</p>
+                 ${deleteFieldButton("designConcept", "Delete design concept")}
+               </div>`
             : emptyState("No design concept added yet.")
     );
 
-    setHTML("#specificationList",
+    setHTML(
+        "#specificationList",
         prototypeData.specifications.length
-            ? prototypeData.specifications.map(x => `
+            ? prototypeData.specifications.map(item => `
                 <div class="specification-row prototype-delete-row">
-                    <span>${escapeHTML(x.name)}</span>
-                    <strong>${escapeHTML(x.value)}</strong>
-                    ${deleteButton("specifications", x.id, "Delete specification")}
-                </div>`).join("")
+                    <span>${escapeHTML(item.name)}</span>
+                    <strong>${escapeHTML(item.value)}</strong>
+                    ${deleteButton("specifications", item.id, "Delete specification")}
+                </div>
+            `).join("")
             : emptyState("No specifications added yet.")
     );
 
-    setHTML("#designDecisionList",
+    setHTML(
+        "#designDecisionList",
         prototypeData.designDecisions.length
-            ? prototypeData.designDecisions.map(x => `
+            ? prototypeData.designDecisions.map(item => `
                 <div class="design-decision prototype-delete-row">
                     <div>
-                        <strong>${escapeHTML(x.title)}</strong>
-                        <p>${escapeHTML(x.description)}</p>
+                        <strong>${escapeHTML(item.title)}</strong>
+                        <p>${escapeHTML(item.description || "")}</p>
                     </div>
-                    ${deleteButton("designDecisions", x.id, "Delete design decision")}
-                </div>`).join("")
+                    ${deleteButton("designDecisions", item.id, "Delete design decision")}
+                </div>
+            `).join("")
             : emptyState("No design decisions added yet.")
     );
 }
 
 function renderBuild() {
-    setHTML("#buildLogList",
+    setHTML(
+        "#buildLogList",
         prototypeData.buildLog.length
-            ? prototypeData.buildLog.map(x => `
+            ? prototypeData.buildLog.map(item => `
                 <article class="build-log-entry prototype-delete-row">
-                    <div class="build-log-date">${escapeHTML(formatDate(x.date))}</div>
+                    <div class="build-log-date">${escapeHTML(formatDate(item.date))}</div>
                     <div class="build-log-content">
-                        <strong>${escapeHTML(x.title)}</strong>
-                        <p>${escapeHTML(x.description || "")}</p>
+                        <strong>${escapeHTML(item.title)}</strong>
+                        <p>${escapeHTML(item.description || "")}</p>
                     </div>
-                    ${deleteButton("buildLog", x.id, "Delete build entry")}
-                </article>`).join("")
+                    ${deleteButton("buildLog", item.id, "Delete build entry")}
+                </article>
+            `).join("")
             : emptyState("No build activities recorded yet.")
     );
 }
 
 function renderComponents() {
-    setHTML("#prototypeComponentList",
+    setHTML(
+        "#prototypeComponentList",
         prototypeData.components.length
-            ? prototypeData.components.map(x => `
+            ? prototypeData.components.map(item => `
                 <article class="component-card">
                     <div class="component-card-top prototype-delete-row">
-                        <strong>${escapeHTML(x.name)}</strong>
-                        <span>${escapeHTML((x.status || "active").toUpperCase())}</span>
-                        ${deleteButton("components", x.id, "Delete component")}
+                        <strong>${escapeHTML(item.name)}</strong>
+                        <span>${escapeHTML((item.status || "active").toUpperCase())}</span>
+                        ${deleteButton("components", item.id, "Delete component")}
                     </div>
-                    <p>${escapeHTML(x.description || "")}</p>
-                    <small>Quantity: ${escapeHTML(x.quantity || 1)}</small>
-                </article>`).join("")
+                    <p>${escapeHTML(item.description || "")}</p>
+                    <small>Quantity: ${escapeHTML(item.quantity || 1)}</small>
+                </article>
+            `).join("")
             : emptyState("No components added yet.")
     );
 }
 
 function renderTesting() {
     const tests = prototypeData.tests;
-    setText("#prototypeTestTotal", String(tests.length), "0");
-    setText("#prototypeTestPassed", String(tests.filter(x => x.result === "passed").length), "0");
-    setText("#prototypeTestFailed", String(tests.filter(x => x.result === "failed").length), "0");
-    setText("#prototypeTestPending", String(tests.filter(x => x.result === "pending").length), "0");
 
-    setHTML("#prototypeTestList",
+    setText("#prototypeTestTotal", String(tests.length), "0");
+    setText("#prototypeTestPassed", String(
+        tests.filter(item => item.result === "passed").length
+    ), "0");
+    setText("#prototypeTestFailed", String(
+        tests.filter(item => item.result === "failed").length
+    ), "0");
+    setText("#prototypeTestPending", String(
+        tests.filter(item => item.result === "pending").length
+    ), "0");
+
+    setHTML(
+        "#prototypeTestList",
         tests.length
-            ? tests.map(x => `
-                <article class="prototype-test ${escapeHTML(x.result || "pending")}">
-                    <div class="test-result-icon">${x.result === "passed" ? "✓" : x.result === "failed" ? "!" : "•"}</div>
-                    <div class="prototype-test-info">
-                        <strong>${escapeHTML(x.name)}</strong>
-                        <p>${escapeHTML(x.description || "")}</p>
-                    </div>
-                    <span class="test-result-badge ${escapeHTML(x.result || "pending")}">${escapeHTML((x.result || "pending").toUpperCase())}</span>
-                    ${deleteButton("tests", x.id, "Delete test")}
-                </article>`).join("")
+            ? tests.map(item => {
+                const result = ["passed","failed","pending"].includes(item.result)
+                    ? item.result
+                    : "pending";
+
+                return `
+                    <article class="prototype-test ${result}">
+                        <div class="test-result-icon">
+                            ${result === "passed" ? "✓" : result === "failed" ? "!" : "•"}
+                        </div>
+                        <div class="prototype-test-info">
+                            <strong>${escapeHTML(item.name)}</strong>
+                            <p>${escapeHTML(item.description || "")}</p>
+                        </div>
+                        <span class="test-result-badge ${result}">
+                            ${escapeHTML(result.toUpperCase())}
+                        </span>
+                        ${deleteButton("tests", item.id, "Delete test")}
+                    </article>
+                `;
+            }).join("")
             : emptyState("No tests recorded yet.")
     );
 
-    const tbody = $("#measurementTableBody");
-    if (tbody) {
-        tbody.innerHTML = prototypeData.measurements.length
-            ? prototypeData.measurements.map(x => {
-                const result = x.result || "CHECK";
-                const cls = result === "PASS" ? "measurement-pass" :
-                    result === "FAIL" ? "measurement-fail" : "measurement-check";
-                return `<tr>
-                    <td>${escapeHTML(x.parameter)}</td>
-                    <td>${escapeHTML(x.expected || "—")}</td>
-                    <td>${escapeHTML(x.measured || "—")}</td>
-                    <td>${escapeHTML(x.unit || "—")}</td>
-                    <td class="prototype-delete-row"><span class="${cls}">${escapeHTML(result)}</span>${deleteButton("measurements", x.id, "Delete measurement")}</td>
-                </tr>`;
-            }).join("")
-            : `<tr><td colspan="5">${escapeHTML("No measurements recorded yet.")}</td></tr>`;
+    const body = $("#measurementTableBody");
+    if (!body) return;
+
+    body.innerHTML = prototypeData.measurements.length
+        ? prototypeData.measurements.map(item => {
+            const result = ["PASS","CHECK","FAIL"].includes(item.result)
+                ? item.result
+                : "CHECK";
+
+            const className =
+                result === "PASS" ? "measurement-pass" :
+                result === "FAIL" ? "measurement-fail" :
+                "measurement-check";
+
+            return `
+                <tr>
+                    <td>${escapeHTML(item.parameter)}</td>
+                    <td>${escapeHTML(item.expected || "—")}</td>
+                    <td>${escapeHTML(item.measured || "—")}</td>
+                    <td>${escapeHTML(item.unit || "—")}</td>
+                    <td class="prototype-delete-row">
+                        <span class="${className}">${result}</span>
+                        ${deleteButton("measurements", item.id, "Delete measurement")}
+                    </td>
+                </tr>
+            `;
+        }).join("")
+        : `<tr><td colspan="5">${escapeHTML("No measurements recorded yet.")}</td></tr>`;
+}
+
+function syncCurrentIteration() {
+    if (!prototypeData.iterations.length) {
+        prototypeData.version = "";
+        prototypeData.versionTitle = "";
+        prototypeData.versionDescription = "";
+        return;
     }
+
+    const current = prototypeData.iterations[0];
+
+    prototypeData.version = current.version || "";
+    prototypeData.versionTitle = current.title || "";
+    prototypeData.versionDescription = current.description || "";
 }
 
 function renderIterations() {
-    setHTML("#iterationList",
+    setHTML(
+        "#iterationList",
         prototypeData.iterations.length
-            ? prototypeData.iterations.map((x, i) => `
-                <article class="iteration-card ${i === 0 ? "current" : ""}">
-                    <div class="iteration-version">${escapeHTML(x.version)}</div>
+            ? prototypeData.iterations.map((item, index) => `
+                <article class="iteration-card ${index === 0 ? "current" : ""}">
+                    <div class="iteration-version">${escapeHTML(item.version)}</div>
                     <div class="iteration-content">
                         <div class="iteration-top">
-                            <strong>${escapeHTML(x.title)}</strong>
-                            <span>${escapeHTML(formatDate(x.date))}</span>
+                            <strong>${escapeHTML(item.title)}</strong>
+                            <span>${escapeHTML(formatDate(item.date))}</span>
                         </div>
-                        <p>${escapeHTML(x.description || "")}</p>
+                        <p>${escapeHTML(item.description || "")}</p>
                         <div class="iteration-changes">
-                            ${arr(x.changes).map(c => `<span>${escapeHTML(c)}</span>`).join("")}
+                            ${arr(item.changes).map(change =>
+                                `<span>${escapeHTML(change)}</span>`
+                            ).join("")}
                         </div>
                     </div>
-                    ${deleteButton("iterations", x.id, "Delete iteration")}
-                </article>`).join("")
+                    ${deleteButton("iterations", item.id, "Delete iteration")}
+                </article>
+            `).join("")
             : emptyState("No prototype iterations recorded yet.")
     );
 }
 
 function renderFailures() {
-    setHTML("#failureList",
+    setHTML(
+        "#failureList",
         prototypeData.failures.length
-            ? prototypeData.failures.map(x => `
+            ? prototypeData.failures.map(item => `
                 <div class="failure-item prototype-delete-row">
                     <span class="failure-icon">!</span>
-                    <div><strong>${escapeHTML(x.title)}</strong><p>${escapeHTML(x.description || "")}</p></div>
-                    ${deleteButton("failures", x.id, "Delete failure")}
-                </div>`).join("")
+                    <div>
+                        <strong>${escapeHTML(item.title)}</strong>
+                        <p>${escapeHTML(item.description || "")}</p>
+                    </div>
+                    ${deleteButton("failures", item.id, "Delete failure")}
+                </div>
+            `).join("")
             : emptyState("No failures recorded yet.")
     );
 
-    setHTML("#modificationList",
+    setHTML(
+        "#modificationList",
         prototypeData.modifications.length
-            ? prototypeData.modifications.map((x, i) => `
+            ? prototypeData.modifications.map((item, index) => `
                 <div class="modification-item prototype-delete-row">
-                    <span class="modification-number">${String(i + 1).padStart(2, "0")}</span>
-                    <div><strong>${escapeHTML(x.title)}</strong><p>${escapeHTML(x.description || "")}</p></div>
-                    ${deleteButton("modifications", x.id, "Delete modification")}
-                </div>`).join("")
+                    <span class="modification-number">
+                        ${String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div>
+                        <strong>${escapeHTML(item.title)}</strong>
+                        <p>${escapeHTML(item.description || "")}</p>
+                    </div>
+                    ${deleteButton("modifications", item.id, "Delete modification")}
+                </div>
+            `).join("")
             : emptyState("No modifications recorded yet.")
     );
 }
 
 function renderImprovements() {
-    setHTML("#improvementGrid",
+    setHTML(
+        "#improvementGrid",
         prototypeData.improvements.length
-            ? prototypeData.improvements.map(x => `
+            ? prototypeData.improvements.map(item => `
                 <article class="improvement-card">
                     <div class="prototype-delete-row">
-                        <span>${escapeHTML(x.priority || "MEDIUM PRIORITY")}</span>
-                        ${deleteButton("improvements", x.id, "Delete improvement")}
+                        <span>${escapeHTML(item.priority || "MEDIUM PRIORITY")}</span>
+                        ${deleteButton("improvements", item.id, "Delete improvement")}
                     </div>
-                    <h3>${escapeHTML(x.title)}</h3>
-                    <p>${escapeHTML(x.description || "")}</p>
-                </article>`).join("")
+                    <h3>${escapeHTML(item.title)}</h3>
+                    <p>${escapeHTML(item.description || "")}</p>
+                </article>
+            `).join("")
             : emptyState("No future improvements added yet.")
     );
+
     const outcome = $("#prototypeOutcome");
-    if (outcome && document.activeElement !== outcome) outcome.value = prototypeData.outcome || "";
-    const outcomeContainer = outcome?.closest(".outcome-card");
-    if (outcomeContainer) {
-        let button = outcomeContainer.querySelector("[data-delete-field=\"outcome\"]");
-        if (prototypeData.outcome) {
-            if (!button) {
-                button = document.createElement("button");
-                button.type = "button";
-                button.className = "prototype-delete-button";
-                button.dataset.deleteField = "outcome";
-                button.title = "Delete outcome";
-                button.setAttribute("aria-label", "Delete outcome");
-                button.textContent = "×";
-                const footer = outcomeContainer.querySelector(".card-footer");
-                if (footer) footer.prepend(button);
-            }
-        } else if (button) {
+    if (outcome && document.activeElement !== outcome) {
+        outcome.value = prototypeData.outcome || "";
+    }
+
+    const outcomeCard = outcome?.closest(".outcome-card");
+    if (outcomeCard) {
+        let button = outcomeCard.querySelector(
+            '[data-delete-field="outcome"]'
+        );
+
+        if (prototypeData.outcome && !button) {
+            button = document.createElement("button");
+            button.type = "button";
+            button.className = "prototype-delete-button";
+            button.dataset.deleteField = "outcome";
+            button.title = "Delete outcome";
+            button.setAttribute("aria-label", "Delete outcome");
+            button.textContent = "×";
+
+            const footer = outcomeCard.querySelector(".card-footer");
+            footer?.prepend(button);
+        }
+
+        if (!prototypeData.outcome && button) {
             button.remove();
         }
     }
@@ -701,42 +1068,350 @@ function renderResources() {
     const files = $("#prototypeFileList");
     const resources = prototypeData.resources;
 
+    const mediaItems = resources.filter(item =>
+        item.kind === "media" ||
+        String(item.mimeType || "").startsWith("image/") ||
+        String(item.mimeType || "").startsWith("video/")
+    );
+
+    const fileItems = resources.filter(item => !mediaItems.includes(item));
+
     if (media) {
-        const mediaItems = resources.filter(x => x.kind === "media");
         media.innerHTML = mediaItems.length
-            ? mediaItems.map(x => `
-                <article class="prototype-media-card">
-                    <div class="media-placeholder">${escapeHTML(x.type || "MEDIA")}</div>
-                    <div class="media-info">
-                        <strong>${escapeHTML(x.title)}</strong>
-                        <span>${escapeHTML(x.description || "")}</span>
-                    </div>
-                </article>`).join("")
+            ? mediaItems.map(item => {
+                const isVideo = String(item.mimeType || "").startsWith("video/");
+                const isImage = String(item.mimeType || "").startsWith("image/");
+
+                return `
+                    <article class="prototype-media-card">
+                        <div class="media-placeholder ${isVideo ? "video" : ""}">
+                            ${isImage ? "IMAGE" : isVideo ? "VIDEO" : escapeHTML(item.type || "MEDIA")}
+                        </div>
+                        <div class="media-info">
+                            <strong>${escapeHTML(item.title)}</strong>
+                            <span>${escapeHTML(item.description || item.status || "")}</span>
+                        </div>
+                        <div class="prototype-resource-actions">
+                            <button
+                                type="button"
+                                class="text-button"
+                                data-open-resource="${escapeHTML(item.id)}"
+                            >Open</button>
+                            ${deleteButton("resources", item.id, "Delete resource")}
+                        </div>
+                    </article>
+                `;
+            }).join("")
             : "";
     }
 
     if (files) {
-        const fileItems = resources.filter(x => x.kind !== "media");
         files.innerHTML = fileItems.length
-            ? fileItems.map(x => `
+            ? fileItems.map(item => `
                 <article class="prototype-file">
-                    <div class="prototype-file-icon">${escapeHTML(x.type || "FILE")}</div>
-                    <div class="prototype-file-info">
-                        <strong>${escapeHTML(x.title)}</strong>
-                        <span>${escapeHTML(x.description || x.url || "")}</span>
+                    <div class="prototype-file-icon">
+                        ${escapeHTML(item.type || "FILE")}
                     </div>
-                    ${x.url ? `<button type="button" data-open-resource="${escapeHTML(x.id)}">Open</button>` : ""}
-                    ${deleteButton("resources", x.id, "Delete resource")}
-                </article>`).join("")
+                    <div class="prototype-file-info">
+                        <strong>${escapeHTML(item.title)}</strong>
+                        <span>
+                            ${escapeHTML(
+                                item.status === "uploading"
+                                    ? "Uploading…"
+                                    : item.description || (item.size ? formatBytes(item.size) : item.url || "Resource")
+                            )}
+                        </span>
+                    </div>
+                    ${item.url || item.storagePath
+                        ? `<button type="button" data-open-resource="${escapeHTML(item.id)}">Open</button>`
+                        : ""}
+                    ${deleteButton("resources", item.id, "Delete resource")}
+                </article>
+            `).join("")
             : emptyState("No files or links added yet.");
-
-        $$("[data-open-resource]").forEach(btn => {
-            btn.onclick = () => {
-                const item = prototypeData.resources.find(x => x.id === btn.dataset.openResource);
-                if (item?.url) window.open(item.url, "_blank", "noopener,noreferrer");
-            };
-        });
     }
+
+    $$("[data-open-resource]").forEach(button => {
+        button.onclick = () => openResource(button.dataset.openResource);
+    });
+}
+
+/* =========================================================
+   RESOURCE OPEN / GOOGLE DRIVE
+========================================================= */
+
+async function uploadFileToDrive(file) {
+    if (!currentWorkId) throw new Error("Work ID is missing.");
+
+    const session = await getSession();
+    const formData = new FormData();
+    formData.append("work_id", currentWorkId);
+    formData.append("file", file, file.name);
+
+    const response = await fetch(`${getFunctionsURL()}/upload-rigid-file`, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${session.access_token}`
+        },
+        body: formData
+    });
+
+    let result = {};
+    try {
+        result = await response.json();
+    } catch {
+        throw new Error("Invalid response from file upload service.");
+    }
+
+    if (!response.ok || !result.success || !result.file) {
+        throw new Error(result.error || "Unable to upload file.");
+    }
+
+    return result.file;
+}
+
+async function deleteFileFromDrive(driveFileId) {
+    if (!driveFileId) return true;
+
+    const session = await getSession();
+    const response = await fetch(`${getFunctionsURL()}/delete-rigid-file`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({
+            work_id: currentWorkId,
+            drive_file_id: driveFileId
+        })
+    });
+
+    let result = {};
+    try {
+        result = await response.json();
+    } catch {
+        throw new Error("Invalid response from file deletion service.");
+    }
+
+    if (!response.ok || !result.success) {
+        throw new Error(result.error || "Unable to delete file from Google Drive.");
+    }
+
+    return true;
+}
+
+async function openResource(resourceId) {
+    const resource = findPrototypeItem("resources", resourceId);
+    if (!resource) return;
+
+    const url = resource.url || resource.webViewLink || resource.webContentLink || resource.publicUrl || resource.downloadUrl;
+    if (!url) {
+        showToast("This resource does not have an accessible link.");
+        return;
+    }
+
+    window.open(url, "_blank", "noopener,noreferrer");
+}
+
+async function processFiles(files) {
+    if (!prototypeData) return;
+    const selected = [...files].filter(Boolean);
+    if (!selected.length) return;
+
+    for (const file of selected) {
+        const resource = {
+            id: id("resource"),
+            driveFileId: "",
+            kind: String(file.type || "").startsWith("image/") || String(file.type || "").startsWith("video/") ? "media" : "file",
+            type: resourceExtension(file.name),
+            title: file.name,
+            name: file.name,
+            url: "",
+            webViewLink: "",
+            webContentLink: "",
+            description: `${file.type || "File"} · ${formatBytes(file.size)}`,
+            mimeType: file.type || "application/octet-stream",
+            size: file.size,
+            status: "uploading",
+            createdAt: now()
+        };
+
+        const previousState = clone(prototypeData);
+        prototypeData.resources.unshift(resource);
+        renderEverything();
+        showToast(`Uploading ${file.name}…`);
+
+        try {
+            const uploaded = await uploadFileToDrive(file);
+
+            resource.driveFileId = uploaded.id || uploaded.driveFileId || "";
+            resource.id = resource.id;
+            resource.name = uploaded.name || file.name;
+            resource.title = uploaded.name || file.name;
+            resource.mimeType = uploaded.mimeType || file.type || "application/octet-stream";
+            resource.size = Number(uploaded.size || file.size || 0);
+            resource.type = uploaded.fileType || resourceExtension(resource.title);
+            resource.url = uploaded.webViewLink || uploaded.webContentLink || uploaded.url || "";
+            resource.webViewLink = uploaded.webViewLink || "";
+            resource.webContentLink = uploaded.webContentLink || "";
+            resource.publicUrl = uploaded.publicUrl || "";
+            resource.downloadUrl = uploaded.downloadUrl || "";
+            resource.status = "ready";
+
+            prototypeData.updatedAt = now();
+            renderEverything();
+            queueSave("File uploaded and saved.", previousState);
+        } catch (error) {
+            const index = prototypeData.resources.findIndex(item => item.id === resource.id);
+            if (index >= 0) prototypeData.resources.splice(index, 1);
+            renderEverything();
+            console.error("Prototype file upload error:", error);
+            showToast(error.message || "File upload failed.");
+        }
+    }
+}
+
+/* =========================================================
+   COMPLETION CELEBRATION
+========================================================= */
+
+function celebrateCompletion() {
+    /*
+     * Lightweight dependency-free celebration. It is deliberately
+     * created only when the Prototype crosses into 100% completion.
+     */
+    const existing = document.querySelector(".prototype-confetti-layer");
+    existing?.remove();
+
+    const layer = document.createElement("div");
+    layer.className = "prototype-confetti-layer";
+    layer.setAttribute("aria-hidden", "true");
+
+    const pieces = 90;
+
+    for (let i = 0; i < pieces; i += 1) {
+        const piece = document.createElement("span");
+        piece.className = "prototype-confetti-piece";
+
+        const hue = i % 3;
+        const colors = [
+            "var(--prototype-cyan)",
+            "var(--prototype-green)",
+            "var(--prototype-orange)"
+        ];
+
+        piece.style.background = colors[hue];
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.animationDelay = `${Math.random() * 0.35}s`;
+        piece.style.animationDuration = `${1.8 + Math.random() * 1.8}s`;
+        piece.style.transform = `rotate(${Math.random() * 360}deg)`;
+        piece.style.setProperty("--confetti-x", `${(Math.random() - 0.5) * 220}px`);
+        piece.style.setProperty("--confetti-r", `${(Math.random() - 0.5) * 720}deg`);
+
+        layer.appendChild(piece);
+    }
+
+    document.body.appendChild(layer);
+
+    window.setTimeout(() => layer.remove(), 4200);
+}
+
+/* =========================================================
+   HEADER / WORKSPACE NAVIGATION
+========================================================= */
+
+function initializeWorkspaceNavigation() {
+    const button = $("#backToWorkspace");
+
+    if (!button) return;
+
+    button.addEventListener("click", () => {
+
+        const params = new URLSearchParams(window.location.search);
+
+        /*
+         * 1. Explicit return URL, if supplied by the workspace.
+         */
+        const returnUrl =
+            params.get("return") ||
+            params.get("return_url") ||
+            params.get("workspace_url");
+
+        if (returnUrl) {
+            try {
+                const target = new URL(returnUrl, window.location.href);
+
+                if (target.origin === window.location.origin) {
+                    window.location.assign(target.href);
+                    return;
+                }
+            } catch (error) {
+                console.warn(
+                    "Invalid workspace return URL:",
+                    error
+                );
+            }
+        }
+
+        /*
+         * 2. If Prototype was opened from Personal Workspace,
+         * return directly to that exact page.
+         */
+        if (document.referrer) {
+            try {
+                const referrer = new URL(
+                    document.referrer,
+                    window.location.href
+                );
+
+                if (
+                    referrer.origin === window.location.origin &&
+                    /personal\.html$/i.test(referrer.pathname)
+                ) {
+                    window.location.assign(referrer.href);
+                    return;
+                }
+            } catch (error) {
+                console.warn(
+                    "Unable to read workspace referrer:",
+                    error
+                );
+            }
+        }
+
+        /*
+         * 3. Normal browser navigation fallback.
+         */
+        if (window.history.length > 1) {
+            window.history.back();
+            return;
+        }
+
+        /*
+         * 4. Last-resort fallback.
+         *
+         * Prototype is one level below the Personal Workspace
+         * in the RiGiD page structure.
+         */
+        window.location.assign("../personal.html");
+    });
+}
+
+function initializeStatusNavigation() {
+    const statusButton = $("#prototypeStatus");
+    if (!statusButton) return;
+
+    statusButton.addEventListener("click", () => {
+        if (!prototypeData) return;
+
+        $("#prototypeDetailsTitle").value = prototypeData.title || "";
+        $("#prototypeDetailsDescription").value = prototypeData.description || "";
+        $("#prototypeDetailsStatus").value = safeStatus(prototypeData.status);
+        $("#prototypeDetailsVersion").value = prototypeData.version || "";
+        $("#prototypeDetailsTags").value = prototypeData.tags.join(", ");
+
+        openModal($("#prototypeDetailsModal"));
+    });
 }
 
 /* =========================================================
@@ -744,23 +1419,38 @@ function renderResources() {
 ========================================================= */
 
 function updateClock() {
-    const d = new Date();
-    setText("#prototypeDate", d.toLocaleDateString("en-GB", {
-        day: "2-digit", month: "short", year: "numeric"
-    }).toUpperCase());
-    setText("#prototypeClock", d.toLocaleTimeString("en-US", {
-        hour: "2-digit", minute: "2-digit", second: "2-digit"
-    }));
+    const date = new Date();
+
+    setText(
+        "#prototypeDate",
+        date.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        }).toUpperCase()
+    );
+
+    setText(
+        "#prototypeClock",
+        date.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit"
+        })
+    );
 }
+
 updateClock();
 setInterval(updateClock, 1000);
 
-$$(".prototype-nav-item").forEach(btn => {
-    btn.addEventListener("click", () => {
-        $$(".prototype-nav-item").forEach(x => x.classList.remove("active"));
-        btn.classList.add("active");
-        document.getElementById(btn.dataset.section)?.scrollIntoView({
-            behavior: "smooth", block: "start"
+$$(".prototype-nav-item").forEach(button => {
+    button.addEventListener("click", () => {
+        $$(".prototype-nav-item").forEach(item => item.classList.remove("active"));
+        button.classList.add("active");
+
+        document.getElementById(button.dataset.section)?.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
         });
     });
 });
@@ -791,13 +1481,26 @@ const modalPairs = [
 
 modalPairs.forEach(([modalSelector, closeSelector, cancelSelector]) => {
     const modal = $(modalSelector);
+
     $(closeSelector)?.addEventListener("click", () => closeModal(modal));
     $(cancelSelector)?.addEventListener("click", () => closeModal(modal));
-    modal?.addEventListener("click", e => { if (e.target === modal) closeModal(modal); });
+
+    modal?.addEventListener("click", event => {
+        if (event.target === modal) closeModal(modal);
+    });
 });
 
-document.addEventListener("keydown", e => {
-    if (e.key === "Escape") $$(".prototype-modal").forEach(closeModal);
+document.addEventListener("keydown", event => {
+    if (event.key !== "Escape") return;
+
+    if (confirmationResolver) {
+        resolveConfirmation(false);
+        return;
+    }
+
+    const openModals = $$(".prototype-modal:not(.hidden)");
+    const last = openModals[openModals.length - 1];
+    if (last) closeModal(last);
 });
 
 /* =========================================================
@@ -807,57 +1510,118 @@ document.addEventListener("keydown", e => {
 $("#editPrototype")?.addEventListener("click", () => {
     $("#prototypeDetailsTitle").value = prototypeData.title || "";
     $("#prototypeDetailsDescription").value = prototypeData.description || "";
-    $("#prototypeDetailsStatus").value = prototypeData.status || "planning";
+    $("#prototypeDetailsStatus").value = safeStatus(prototypeData.status);
     $("#prototypeDetailsVersion").value = prototypeData.version || "";
     $("#prototypeDetailsTags").value = prototypeData.tags.join(", ");
     openModal($("#prototypeDetailsModal"));
 });
 
-$("#savePrototypeDetails")?.addEventListener("click", async () => {
+$("#savePrototypeDetails")?.addEventListener("click", () => {
     const title = $("#prototypeDetailsTitle").value.trim();
-    if (!title) return showToast("Prototype title is required.");
+    if (!title) {
+        showToast("Prototype title is required.");
+        return;
+    }
 
-    prototypeData.title = title;
-    prototypeData.description = $("#prototypeDetailsDescription").value.trim();
-    prototypeData.status = $("#prototypeDetailsStatus").value;
-    prototypeData.version = $("#prototypeDetailsVersion").value.trim();
-    prototypeData.tags = $("#prototypeDetailsTags").value.split(",").map(x => x.trim()).filter(Boolean);
+    const description = $("#prototypeDetailsDescription").value.trim();
+    const status = safeStatus($("#prototypeDetailsStatus").value);
+    const version = $("#prototypeDetailsVersion").value.trim();
+    const tags = $("#prototypeDetailsTags").value
+        .split(",")
+        .map(value => value.trim())
+        .filter(Boolean);
 
-    if (await commit("Prototype details saved.")) closeModal($("#prototypeDetailsModal"));
+    const wasCompleted = prototypeData.status === "completed" || Number(prototypeData.progress) >= 100;
+
+    mutateAndSave(() => {
+        prototypeData.title = title;
+        prototypeData.description = description;
+        prototypeData.status = status;
+        prototypeData.version = version;
+        prototypeData.tags = tags;
+
+        if (status === "completed") {
+            prototypeData.progress = 100;
+            prototypeData.progressPhase = "Completed";
+        }
+    }, "Prototype details saved.", () => {
+        const isCompleted = prototypeData.status === "completed" || Number(prototypeData.progress) >= 100;
+        if (!wasCompleted && isCompleted) celebrateCompletion();
+    });
+
+    closeModal($("#prototypeDetailsModal"));
 });
 
 function openProgress() {
     $("#prototypeProgressInput").value = prototypeData.progress || 0;
-    $("#prototypeProgressPhase").value = prototypeData.progressPhase || phaseForProgress(prototypeData.progress);
+    $("#prototypeProgressPhase").value =
+        prototypeData.progressPhase || phaseForProgress(prototypeData.progress);
+
     openModal($("#prototypeProgressModal"));
 }
+
 $("#editPrototypeProgress")?.addEventListener("click", openProgress);
 $("#updatePrototypeProgress")?.addEventListener("click", openProgress);
 
-$("#savePrototypeProgress")?.addEventListener("click", async () => {
+$("#savePrototypeProgress")?.addEventListener("click", () => {
     const value = Number($("#prototypeProgressInput").value);
-    if (Number.isNaN(value) || value < 0 || value > 100) {
-        return showToast("Enter progress between 0 and 100.");
+
+    if (!Number.isFinite(value) || value < 0 || value > 100) {
+        showToast("Enter progress between 0 and 100.");
+        return;
     }
-    prototypeData.progress = value;
-    prototypeData.progressPhase = $("#prototypeProgressPhase").value || phaseForProgress(value);
-    if (await commit("Progress updated.")) closeModal($("#prototypeProgressModal"));
+
+    const phase = $("#prototypeProgressPhase").value || phaseForProgress(value);
+    const wasCompleted = prototypeData.status === "completed" || Number(prototypeData.progress) >= 100;
+
+    mutateAndSave(() => {
+        prototypeData.progress = Math.round(value);
+
+        if (value >= 100) {
+            prototypeData.progress = 100;
+            prototypeData.progressPhase = "Completed";
+            prototypeData.status = "completed";
+        } else {
+            prototypeData.progressPhase = phaseForProgress(value);
+            prototypeData.status = safeStatus(
+                prototypeData.status === "completed"
+                    ? "testing"
+                    : prototypeData.status
+            );
+        }
+    }, "Progress updated.", () => {
+        const isCompleted = prototypeData.status === "completed" || Number(prototypeData.progress) >= 100;
+        if (!wasCompleted && isCompleted) celebrateCompletion();
+    });
+
+    closeModal($("#prototypeProgressModal"));
 });
 
 $("#editVersion")?.addEventListener("click", () => {
     $("#prototypeVersionInput").value = prototypeData.version || "";
     $("#prototypeVersionTitleInput").value = prototypeData.versionTitle || "";
-    $("#prototypeVersionDescriptionInput").value = prototypeData.versionDescription || "";
+    $("#prototypeVersionDescriptionInput").value =
+        prototypeData.versionDescription || "";
+
     openModal($("#prototypeVersionModal"));
 });
 
-$("#savePrototypeVersion")?.addEventListener("click", async () => {
+$("#savePrototypeVersion")?.addEventListener("click", () => {
     const version = $("#prototypeVersionInput").value.trim();
-    if (!version) return showToast("Version is required.");
-    prototypeData.version = version;
-    prototypeData.versionTitle = $("#prototypeVersionTitleInput").value.trim();
-    prototypeData.versionDescription = $("#prototypeVersionDescriptionInput").value.trim();
-    if (await commit("Version updated.")) closeModal($("#prototypeVersionModal"));
+
+    if (!version) {
+        showToast("Version is required.");
+        return;
+    }
+
+    mutateAndSave(() => {
+        prototypeData.version = version;
+        prototypeData.versionTitle = $("#prototypeVersionTitleInput").value.trim();
+        prototypeData.versionDescription =
+            $("#prototypeVersionDescriptionInput").value.trim();
+    }, "Version updated.");
+
+    closeModal($("#prototypeVersionModal"));
 });
 
 $("#editPrototypeNext")?.addEventListener("click", () => {
@@ -866,293 +1630,523 @@ $("#editPrototypeNext")?.addEventListener("click", () => {
     openModal($("#prototypeNextActionModal"));
 });
 
-$("#savePrototypeNextAction")?.addEventListener("click", async () => {
+$("#savePrototypeNextAction")?.addEventListener("click", () => {
     const title = $("#prototypeNextActionInput").value.trim();
-    if (!title) return showToast("Next action is required.");
-    prototypeData.nextAction = { title, dueDate: $("#prototypeNextActionDate").value || "" };
-    if (await commit("Next action saved.")) closeModal($("#prototypeNextActionModal"));
+
+    if (!title) {
+        showToast("Next action is required.");
+        return;
+    }
+
+    mutateAndSave(() => {
+        prototypeData.nextAction = {
+            title,
+            dueDate: $("#prototypeNextActionDate").value || ""
+        };
+    }, "Next action saved.");
+
+    closeModal($("#prototypeNextActionModal"));
 });
 
 $("#editObjective")?.addEventListener("click", () => {
     $("#prototypeObjectiveInput").value = prototypeData.objective || "";
     openModal($("#prototypeObjectiveModal"));
 });
-$("#savePrototypeObjective")?.addEventListener("click", async () => {
-    prototypeData.objective = $("#prototypeObjectiveInput").value.trim();
-    if (await commit("Objective saved.")) closeModal($("#prototypeObjectiveModal"));
+
+$("#savePrototypeObjective")?.addEventListener("click", () => {
+    mutateAndSave(() => {
+        prototypeData.objective = $("#prototypeObjectiveInput").value.trim();
+    }, "Objective saved.");
+
+    closeModal($("#prototypeObjectiveModal"));
 });
 
 $("#editDesign")?.addEventListener("click", () => {
-    $("#prototypeDesignConceptInput").value = prototypeData.designConcept || "";
+    $("#prototypeDesignConceptInput").value =
+        prototypeData.designConcept || "";
     openModal($("#prototypeDesignModal"));
 });
-$("#savePrototypeDesign")?.addEventListener("click", async () => {
-    prototypeData.designConcept = $("#prototypeDesignConceptInput").value.trim();
-    if (await commit("Design concept saved.")) closeModal($("#prototypeDesignModal"));
+
+$("#savePrototypeDesign")?.addEventListener("click", () => {
+    mutateAndSave(() => {
+        prototypeData.designConcept =
+            $("#prototypeDesignConceptInput").value.trim();
+    }, "Design concept saved.");
+
+    closeModal($("#prototypeDesignModal"));
 });
 
-function addModal(openButton, modal, fields) {
-    $(openButton)?.addEventListener("click", () => {
-        Object.entries(fields).forEach(([selector, value]) => {
-            const el = $(selector);
-            if (el) el.value = value;
-        });
-        openModal($(modal));
+function resetFields(fields) {
+    Object.entries(fields).forEach(([selector, value]) => {
+        const element = $(selector);
+        if (element) element.value = value;
     });
 }
 
-addModal("#addSpecification", "#prototypeSpecificationModal", {
-    "#prototypeSpecificationName": "", "#prototypeSpecificationValue": ""
-});
-$("#savePrototypeSpecification")?.addEventListener("click", async () => {
-    const name = $("#prototypeSpecificationName").value.trim();
-    const value = $("#prototypeSpecificationValue").value.trim();
-    if (!name) return showToast("Parameter name is required.");
-    prototypeData.specifications.push({ id: id("spec"), name, value });
-    if (await commit("Specification added.")) closeModal($("#prototypeSpecificationModal"));
+function setupAddModal(buttonSelector, modalSelector, fields) {
+    $(buttonSelector)?.addEventListener("click", () => {
+        resetFields(fields);
+        openModal($(modalSelector));
+    });
+}
+
+setupAddModal("#addSpecification", "#prototypeSpecificationModal", {
+    "#prototypeSpecificationName": "",
+    "#prototypeSpecificationValue": ""
 });
 
-addModal("#addDesignDecision", "#prototypeDesignDecisionModal", {
-    "#prototypeDesignDecisionTitle": "", "#prototypeDesignDecisionDescription": ""
+$("#savePrototypeSpecification")?.addEventListener("click", () => {
+    const name = $("#prototypeSpecificationName").value.trim();
+    const value = $("#prototypeSpecificationValue").value.trim();
+
+    if (!name || !value) {
+        showToast("Parameter and value are required.");
+        return;
+    }
+
+    mutateAndSave(() => {
+        prototypeData.specifications.push({
+            id: id("spec"),
+            name,
+            value
+        });
+    }, "Specification added.");
+
+    closeModal($("#prototypeSpecificationModal"));
 });
-$("#savePrototypeDesignDecision")?.addEventListener("click", async () => {
+
+setupAddModal("#addDesignDecision", "#prototypeDesignDecisionModal", {
+    "#prototypeDesignDecisionTitle": "",
+    "#prototypeDesignDecisionDescription": ""
+});
+
+$("#savePrototypeDesignDecision")?.addEventListener("click", () => {
     const title = $("#prototypeDesignDecisionTitle").value.trim();
-    if (!title) return showToast("Design decision is required.");
-    prototypeData.designDecisions.push({
-        id: id("decision"), title,
-        description: $("#prototypeDesignDecisionDescription").value.trim()
-    });
-    if (await commit("Design decision added.")) closeModal($("#prototypeDesignDecisionModal"));
+
+    if (!title) {
+        showToast("Design decision is required.");
+        return;
+    }
+
+    mutateAndSave(() => {
+        prototypeData.designDecisions.push({
+            id: id("decision"),
+            title,
+            description: $("#prototypeDesignDecisionDescription").value.trim()
+        });
+    }, "Design decision added.");
+
+    closeModal($("#prototypeDesignDecisionModal"));
 });
 
 $("#addBuildEntry")?.addEventListener("click", () => {
-    $("#buildEntryTitle").value = "";
-    $("#buildEntryDate").value = todayISO();
-    $("#buildEntryProgress").value = prototypeData.progress || 0;
-    $("#buildEntryDescription").value = "";
+    resetFields({
+        "#buildEntryTitle": "",
+        "#buildEntryDate": todayISO(),
+        "#buildEntryProgress": prototypeData.progress || 0,
+        "#buildEntryDescription": ""
+    });
     openModal($("#buildModal"));
 });
-$("#saveBuildEntry")?.addEventListener("click", async () => {
+
+$("#saveBuildEntry")?.addEventListener("click", () => {
     const title = $("#buildEntryTitle").value.trim();
-    if (!title) return showToast("Build activity is required.");
     const progress = Number($("#buildEntryProgress").value);
-    if (Number.isNaN(progress) || progress < 0 || progress > 100) return showToast("Enter valid progress.");
-    prototypeData.buildLog.unshift({
-        id: id("build"), title,
-        date: $("#buildEntryDate").value || todayISO(),
-        description: $("#buildEntryDescription").value.trim()
-    });
-    prototypeData.progress = progress;
-    prototypeData.progressPhase = phaseForProgress(progress);
-    if (await commit("Build entry added.")) closeModal($("#buildModal"));
+
+    if (!title) {
+        showToast("Build activity is required.");
+        return;
+    }
+
+    if (!Number.isFinite(progress) || progress < 0 || progress > 100) {
+        showToast("Enter valid progress.");
+        return;
+    }
+
+    mutateAndSave(() => {
+        prototypeData.buildLog.unshift({
+            id: id("build"),
+            title,
+            date: $("#buildEntryDate").value || todayISO(),
+            progress: Math.round(progress),
+            description: $("#buildEntryDescription").value.trim()
+        });
+
+        prototypeData.progress = Math.round(progress);
+
+        if (progress >= 100) {
+            prototypeData.progress = 100;
+            prototypeData.progressPhase = "Completed";
+            prototypeData.status = "completed";
+        } else {
+            prototypeData.progressPhase = phaseForProgress(progress);
+        }
+    }, "Build entry added.");
+
+    closeModal($("#buildModal"));
 });
 
 $("#addComponent")?.addEventListener("click", () => {
-    $("#prototypeComponentName").value = "";
-    $("#prototypeComponentQuantity").value = 1;
-    $("#prototypeComponentStatus").value = "active";
-    $("#prototypeComponentDescription").value = "";
+    resetFields({
+        "#prototypeComponentName": "",
+        "#prototypeComponentQuantity": 1,
+        "#prototypeComponentStatus": "active",
+        "#prototypeComponentDescription": ""
+    });
     openModal($("#prototypeComponentModal"));
 });
-$("#savePrototypeComponent")?.addEventListener("click", async () => {
+
+$("#savePrototypeComponent")?.addEventListener("click", () => {
     const name = $("#prototypeComponentName").value.trim();
-    if (!name) return showToast("Component name is required.");
-    prototypeData.components.push({
-        id: id("component"), name,
-        quantity: Number($("#prototypeComponentQuantity").value) || 1,
-        status: $("#prototypeComponentStatus").value,
-        description: $("#prototypeComponentDescription").value.trim()
-    });
-    if (await commit("Component added.")) closeModal($("#prototypeComponentModal"));
+    const quantity = Number($("#prototypeComponentQuantity").value);
+
+    if (!name) {
+        showToast("Component name is required.");
+        return;
+    }
+
+    if (!Number.isFinite(quantity) || quantity < 1) {
+        showToast("Quantity must be at least 1.");
+        return;
+    }
+
+    mutateAndSave(() => {
+        prototypeData.components.push({
+            id: id("component"),
+            name,
+            quantity: Math.round(quantity),
+            status: $("#prototypeComponentStatus").value || "active",
+            description: $("#prototypeComponentDescription").value.trim()
+        });
+    }, "Component added.");
+
+    closeModal($("#prototypeComponentModal"));
 });
 
 $("#addPrototypeTest")?.addEventListener("click", () => {
-    $("#prototypeTestName").value = "";
-    $("#prototypeTestResult").value = "pending";
-    $("#prototypeTestDate").value = todayISO();
-    $("#prototypeTestDescription").value = "";
+    resetFields({
+        "#prototypeTestName": "",
+        "#prototypeTestResult": "pending",
+        "#prototypeTestDate": todayISO(),
+        "#prototypeTestDescription": ""
+    });
     openModal($("#prototypeTestModal"));
 });
-$("#savePrototypeTest")?.addEventListener("click", async () => {
+
+$("#savePrototypeTest")?.addEventListener("click", () => {
     const name = $("#prototypeTestName").value.trim();
-    if (!name) return showToast("Test name is required.");
-    prototypeData.tests.push({
-        id: id("test"), name,
-        result: $("#prototypeTestResult").value,
-        date: $("#prototypeTestDate").value || todayISO(),
-        description: $("#prototypeTestDescription").value.trim()
-    });
-    if (await commit("Test added.")) closeModal($("#prototypeTestModal"));
+
+    if (!name) {
+        showToast("Test name is required.");
+        return;
+    }
+
+    mutateAndSave(() => {
+        prototypeData.tests.push({
+            id: id("test"),
+            name,
+            result: $("#prototypeTestResult").value || "pending",
+            date: $("#prototypeTestDate").value || todayISO(),
+            description: $("#prototypeTestDescription").value.trim()
+        });
+    }, "Test added.");
+
+    closeModal($("#prototypeTestModal"));
 });
 
 $("#addMeasurement")?.addEventListener("click", () => {
-    ["#prototypeMeasurementParameter","#prototypeMeasurementExpected","#prototypeMeasurementMeasured","#prototypeMeasurementUnit"]
-        .forEach(s => $(s).value = "");
-    $("#prototypeMeasurementResult").value = "PASS";
+    resetFields({
+        "#prototypeMeasurementParameter": "",
+        "#prototypeMeasurementExpected": "",
+        "#prototypeMeasurementMeasured": "",
+        "#prototypeMeasurementUnit": "",
+        "#prototypeMeasurementResult": "PASS"
+    });
     openModal($("#prototypeMeasurementModal"));
 });
-$("#savePrototypeMeasurement")?.addEventListener("click", async () => {
+
+$("#savePrototypeMeasurement")?.addEventListener("click", () => {
     const parameter = $("#prototypeMeasurementParameter").value.trim();
-    if (!parameter) return showToast("Measurement parameter is required.");
-    prototypeData.measurements.push({
-        id: id("measurement"), parameter,
-        expected: $("#prototypeMeasurementExpected").value.trim(),
-        measured: $("#prototypeMeasurementMeasured").value.trim(),
-        unit: $("#prototypeMeasurementUnit").value.trim(),
-        result: $("#prototypeMeasurementResult").value
-    });
-    if (await commit("Measurement added.")) closeModal($("#prototypeMeasurementModal"));
+
+    if (!parameter) {
+        showToast("Measurement parameter is required.");
+        return;
+    }
+
+    mutateAndSave(() => {
+        prototypeData.measurements.push({
+            id: id("measurement"),
+            parameter,
+            expected: $("#prototypeMeasurementExpected").value.trim(),
+            measured: $("#prototypeMeasurementMeasured").value.trim(),
+            unit: $("#prototypeMeasurementUnit").value.trim(),
+            result: String($("#prototypeMeasurementResult").value || "CHECK").toUpperCase()
+        });
+    }, "Measurement added.");
+
+    closeModal($("#prototypeMeasurementModal"));
 });
 
 $("#addIteration")?.addEventListener("click", () => {
-    $("#prototypeIterationVersion").value = "";
-    $("#prototypeIterationDate").value = todayISO();
-    $("#prototypeIterationTitle").value = "";
-    $("#prototypeIterationDescription").value = "";
-    $("#prototypeIterationChanges").value = "";
+    resetFields({
+        "#prototypeIterationVersion": "",
+        "#prototypeIterationDate": todayISO(),
+        "#prototypeIterationTitle": "",
+        "#prototypeIterationDescription": "",
+        "#prototypeIterationChanges": ""
+    });
     openModal($("#prototypeIterationModal"));
 });
-$("#savePrototypeIteration")?.addEventListener("click", async () => {
+
+$("#savePrototypeIteration")?.addEventListener("click", () => {
     const version = $("#prototypeIterationVersion").value.trim();
     const title = $("#prototypeIterationTitle").value.trim();
-    if (!version || !title) return showToast("Version and title are required.");
-    const item = {
-        id: id("iteration"), version, title,
+
+    if (!version || !title) {
+        showToast("Version and title are required.");
+        return;
+    }
+
+    const iteration = {
+        id: id("iteration"),
+        version,
+        title,
         date: $("#prototypeIterationDate").value || todayISO(),
         description: $("#prototypeIterationDescription").value.trim(),
-        changes: $("#prototypeIterationChanges").value.split("\n").map(x => x.trim()).filter(Boolean)
+        changes: $("#prototypeIterationChanges").value
+            .split("\n")
+            .map(value => value.trim())
+            .filter(Boolean)
     };
-    prototypeData.iterations.unshift(item);
-    prototypeData.version = version;
-    prototypeData.versionTitle = title;
-    prototypeData.versionDescription = item.description;
-    if (await commit("Iteration added.")) closeModal($("#prototypeIterationModal"));
+
+    mutateAndSave(() => {
+        prototypeData.iterations.unshift(iteration);
+        syncCurrentIteration();
+    }, "Iteration added.");
+
+    closeModal($("#prototypeIterationModal"));
 });
 
 function setupSimpleList(button, modal, save, titleInput, descriptionInput, key, label) {
     $(button)?.addEventListener("click", () => {
-        $(titleInput).value = "";
-        $(descriptionInput).value = "";
+        resetFields({
+            [titleInput]: "",
+            [descriptionInput]: ""
+        });
         openModal($(modal));
     });
-    $(save)?.addEventListener("click", async () => {
+
+    $(save)?.addEventListener("click", () => {
         const title = $(titleInput).value.trim();
-        if (!title) return showToast(`${label} title is required.`);
-        prototypeData[key].push({
-            id: id(key), title,
-            description: $(descriptionInput).value.trim()
-        });
-        if (await commit(`${label} added.`)) closeModal($(modal));
+
+        if (!title) {
+            showToast(`${label} title is required.`);
+            return;
+        }
+
+        mutateAndSave(() => {
+            prototypeData[key].push({
+                id: id(key),
+                title,
+                description: $(descriptionInput).value.trim()
+            });
+        }, `${label} added.`);
+
+        closeModal($(modal));
     });
 }
-setupSimpleList("#addFailure","#prototypeFailureModal","#savePrototypeFailure",
-    "#prototypeFailureTitle","#prototypeFailureDescription","failures","Failure");
-setupSimpleList("#addModification","#prototypeModificationModal","#savePrototypeModification",
-    "#prototypeModificationTitle","#prototypeModificationDescription","modifications","Modification");
+
+setupSimpleList(
+    "#addFailure",
+    "#prototypeFailureModal",
+    "#savePrototypeFailure",
+    "#prototypeFailureTitle",
+    "#prototypeFailureDescription",
+    "failures",
+    "Failure"
+);
+
+setupSimpleList(
+    "#addModification",
+    "#prototypeModificationModal",
+    "#savePrototypeModification",
+    "#prototypeModificationTitle",
+    "#prototypeModificationDescription",
+    "modifications",
+    "Modification"
+);
 
 $("#addImprovement")?.addEventListener("click", () => {
-    $("#prototypeImprovementPriority").value = "MEDIUM PRIORITY";
-    $("#prototypeImprovementTitle").value = "";
-    $("#prototypeImprovementDescription").value = "";
+    resetFields({
+        "#prototypeImprovementPriority": "MEDIUM PRIORITY",
+        "#prototypeImprovementTitle": "",
+        "#prototypeImprovementDescription": ""
+    });
     openModal($("#prototypeImprovementModal"));
 });
-$("#savePrototypeImprovement")?.addEventListener("click", async () => {
+
+$("#savePrototypeImprovement")?.addEventListener("click", () => {
     const title = $("#prototypeImprovementTitle").value.trim();
-    if (!title) return showToast("Improvement title is required.");
-    prototypeData.improvements.push({
-        id: id("improvement"),
-        priority: $("#prototypeImprovementPriority").value,
-        title,
-        description: $("#prototypeImprovementDescription").value.trim()
-    });
-    if (await commit("Improvement added.")) closeModal($("#prototypeImprovementModal"));
+
+    if (!title) {
+        showToast("Improvement title is required.");
+        return;
+    }
+
+    mutateAndSave(() => {
+        prototypeData.improvements.push({
+            id: id("improvement"),
+            priority: $("#prototypeImprovementPriority").value || "MEDIUM PRIORITY",
+            title,
+            description: $("#prototypeImprovementDescription").value.trim()
+        });
+    }, "Improvement added.");
+
+    closeModal($("#prototypeImprovementModal"));
 });
 
-$("#savePrototypeOutcome")?.addEventListener("click", async () => {
-    prototypeData.outcome = $("#prototypeOutcome").value.trim();
-    await commit("Prototype outcome saved.");
+$("#savePrototypeOutcome")?.addEventListener("click", () => {
+    mutateAndSave(() => {
+        prototypeData.outcome = $("#prototypeOutcome").value.trim();
+    }, "Prototype outcome saved.");
 });
 
 /* =========================================================
-   LINKS / FILES
-   Metadata and URL links are persistent. Raw local files
-   cannot survive refresh unless uploaded to storage.
+   LINKS
 ========================================================= */
 
 $("#addPrototypeLink")?.addEventListener("click", () => {
-    $("#prototypeLinkTitle").value = "";
-    $("#prototypeLinkURL").value = "";
-    $("#prototypeLinkDescription").value = "";
+    resetFields({
+        "#prototypeLinkTitle": "",
+        "#prototypeLinkURL": "",
+        "#prototypeLinkDescription": ""
+    });
     openModal($("#prototypeLinkModal"));
 });
 
-$("#savePrototypeLink")?.addEventListener("click", async () => {
+$("#savePrototypeLink")?.addEventListener("click", () => {
     const title = $("#prototypeLinkTitle").value.trim();
     const url = $("#prototypeLinkURL").value.trim();
-    if (!title || !url) return showToast("Title and URL are required.");
-    try { new URL(url); } catch { return showToast("Enter a valid URL."); }
 
-    prototypeData.resources.push({
-        id: id("resource"),
-        kind: "link",
-        type: "LINK",
-        title,
-        url,
-        description: $("#prototypeLinkDescription").value.trim()
-    });
+    if (!title || !url) {
+        showToast("Title and URL are required.");
+        return;
+    }
 
-    if (await commit("Link added.")) closeModal($("#prototypeLinkModal"));
+    try {
+        new URL(url);
+    } catch {
+        showToast("Enter a valid URL.");
+        return;
+    }
+
+    mutateAndSave(() => {
+        prototypeData.resources.unshift({
+            id: id("resource"),
+            kind: "link",
+            type: "LINK",
+            title,
+            url,
+            description: $("#prototypeLinkDescription").value.trim(),
+            status: "ready"
+        });
+    }, "Link added.");
+
+    closeModal($("#prototypeLinkModal"));
 });
+
+/* =========================================================
+   FILE PICKER / DRAG & DROP
+========================================================= */
 
 const fileInput = $("#prototypeFileInput");
+const uploadZone = $("#prototypeUploadZone");
+
 $("#uploadPrototypeFile")?.addEventListener("click", () => fileInput?.click());
-$("#prototypeUploadZone")?.addEventListener("click", () => fileInput?.click());
+uploadZone?.addEventListener("click", () => fileInput?.click());
 
-function addLocalFileMetadata(file) {
-    prototypeData.resources.push({
-        id: id("resource"),
-        kind: "file",
-        type: (file.name.split(".").pop() || "FILE").toUpperCase().slice(0, 5),
-        title: file.name,
-        description: `${file.type || "File"} · ${(file.size / 1024).toFixed(1)} KB`,
-        url: ""
-    });
-}
-
-fileInput?.addEventListener("change", async e => {
-    [...e.target.files].forEach(addLocalFileMetadata);
-    e.target.value = "";
-    await commit("File metadata saved. Configure storage upload to make files downloadable after refresh.");
+fileInput?.addEventListener("change", event => {
+    const files = [...(event.target.files || [])];
+    event.target.value = "";
+    processFiles(files);
 });
 
-const zone = $("#prototypeUploadZone");
-if (zone) {
-    ["dragenter","dragover"].forEach(name => zone.addEventListener(name, e => {
-        e.preventDefault(); zone.classList.add("dragging");
-    }));
-    ["dragleave","drop"].forEach(name => zone.addEventListener(name, e => {
-        e.preventDefault(); zone.classList.remove("dragging");
-    }));
-    zone.addEventListener("drop", async e => {
-        [...e.dataTransfer.files].forEach(addLocalFileMetadata);
-        await commit("File metadata saved. Configure storage upload to persist file contents.");
+if (uploadZone) {
+    ["dragenter","dragover"].forEach(eventName => {
+        uploadZone.addEventListener(eventName, event => {
+            event.preventDefault();
+            event.stopPropagation();
+            uploadZone.classList.add("dragging");
+        });
+    });
+
+    ["dragleave","drop"].forEach(eventName => {
+        uploadZone.addEventListener(eventName, event => {
+            event.preventDefault();
+            event.stopPropagation();
+            uploadZone.classList.remove("dragging");
+        });
+    });
+
+    uploadZone.addEventListener("drop", event => {
+        processFiles([...(event.dataTransfer?.files || [])]);
+    });
+
+    uploadZone.addEventListener("keydown", event => {
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            fileInput?.click();
+        }
     });
 }
-
-initializeDeleteSystem();
 
 /* =========================================================
    INITIAL LOAD
 ========================================================= */
 
+function showLoadingState() {
+    loading = true;
+    $("#prototypeLoadingState")?.classList.remove("hidden");
+    $("#prototypeWorkspace")?.classList.add("prototype-workspace-loading");
+    $("#prototypeErrorState")?.classList.add("hidden");
+}
+
+function hideLoadingState() {
+    loading = false;
+    $("#prototypeLoadingState")?.classList.add("hidden");
+    $("#prototypeWorkspace")?.classList.remove("prototype-workspace-loading");
+}
+
+function showErrorState(message) {
+    const error = $("#prototypeErrorState");
+    if (!error) return;
+
+    error.textContent = message;
+    error.classList.remove("hidden");
+}
+
+initializeDeleteSystem();
+initializeWorkspaceNavigation();
+initializeStatusNavigation();
+showLoadingState();
+
 (async function initialize() {
     try {
         await loadPrototypeData();
-        console.log("RiGiD Prototype loaded:", prototypeData);
+        hideLoadingState();
+
     } catch (error) {
         console.error("RiGiD Prototype initialization error:", error);
-        prototypeData = emptyData();
-        renderEverything();
+
+        /* Hide the loading message, but keep the workspace hidden so
+           the static HTML sample content is never shown as real data. */
+        $("#prototypeLoadingState")?.classList.add("hidden");
+        $("#prototypeWorkspace")?.classList.add("prototype-workspace-loading");
+
+        showErrorState(
+            error.message ||
+            "Unable to load Prototype data. Please try again."
+        );
         showToast(error.message || "Unable to load Prototype.");
     }
 })();

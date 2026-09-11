@@ -140,6 +140,7 @@ function convertStudyDataToRigidData(study) {
 
     return {
         version: 1,
+
         workspace: {
             id: study.id,
             type: "study",
@@ -148,16 +149,20 @@ function convertStudyDataToRigidData(study) {
             createdAt: study.createdAt || now,
             updatedAt: now
         },
+
         study: {
             introduction: study.introduction || "",
             objective: study.objective || "",
             owner: study.owner || "You",
             tags: Array.isArray(study.tags) ? study.tags : [],
             confidence: Number(study.confidence ?? 0),
-            learning: Array.isArray(study.learning) ? study.learning : [],
+            learning: Array.isArray(study.learning)
+                ? study.learning
+                : [],
             nextStudy: study.nextStudy || "",
             reflection: study.reflection || ""
         },
+
         knowledge: study.knowledge || [],
         concepts: study.concepts || [],
         problems: study.problems || [],
@@ -205,6 +210,7 @@ function initializeStudyPage() {
     updateSummary();
 
     setupNavigation();
+    setupStudyStatus();
     setupConfidence();
     setupLearning();
     setupKnowledge();
@@ -259,6 +265,186 @@ function getStatusLabel(status) {
     };
     return labels[status] || "● IN PROGRESS";
 }
+
+/* =========================================================
+   STUDY STATUS
+========================================================= */
+function setupStudyStatus() {
+
+    const statusButton = $("#studyStatus");
+    const statusMenu = $("#studyStatusMenu");
+
+    if (!statusButton || !statusMenu) return;
+
+
+    function renderStatusMenu() {
+
+        statusMenu.innerHTML = "";
+
+        const currentStatus =
+            studyData.status || "in-progress";
+
+
+        /*
+         * Only show the status that can be
+         * selected from the current state.
+         */
+
+        if (currentStatus === "in-progress") {
+
+            const button =
+                document.createElement("button");
+
+            button.type = "button";
+            button.dataset.status = "completed";
+            button.textContent = "✓ COMPLETED";
+
+            statusMenu.appendChild(button);
+
+        }
+
+        else if (currentStatus === "completed") {
+
+            const button =
+                document.createElement("button");
+
+            button.type = "button";
+            button.dataset.status = "in-progress";
+            button.textContent = "↻ IN PROGRESS";
+
+            statusMenu.appendChild(button);
+
+        }
+
+        else {
+
+            const button =
+                document.createElement("button");
+
+            button.type = "button";
+            button.dataset.status = "in-progress";
+            button.textContent = "● IN PROGRESS";
+
+            statusMenu.appendChild(button);
+
+        }
+
+
+        /*
+         * Attach click handler to the option.
+         */
+
+        statusMenu
+            .querySelector("[data-status]")
+            ?.addEventListener(
+                "click",
+                async event => {
+
+                    event.stopPropagation();
+
+                    const newStatus =
+                        event.currentTarget.dataset.status;
+
+                    await updateStudyStatus(newStatus);
+
+                }
+            );
+
+    }
+
+
+    /*
+     * Open dropdown.
+     */
+
+    statusButton.addEventListener("click", event => {
+
+        event.stopPropagation();
+
+        renderStatusMenu();
+
+        statusMenu.classList.toggle("hidden");
+
+    });
+
+
+    /*
+     * Close dropdown when clicking outside.
+     */
+
+    document.addEventListener("click", event => {
+
+        if (
+            !statusButton.contains(event.target) &&
+            !statusMenu.contains(event.target)
+        ) {
+
+            statusMenu.classList.add("hidden");
+
+        }
+
+    });
+
+}
+
+
+/* =========================================================
+   UPDATE STUDY STATUS
+========================================================= */
+
+async function updateStudyStatus(newStatus) {
+
+    const previousStatus =
+        studyData.status || "in-progress";
+
+    if (previousStatus === newStatus) {
+        return;
+    }
+
+    // Update UI immediately
+    studyData.status = newStatus;
+
+    loadStudyInformation();
+    updateDate();
+
+    $("#studyStatusMenu")?.classList.add("hidden");
+
+    // Celebration BEFORE database save
+    if (newStatus === "completed") {
+        showCompletionEffect();
+        showToast("Study completed!");
+    }
+
+    try {
+
+        // Save to:
+        // 1. rigid-data.json
+        // 2. personal_work.status
+        await saveStudyData();
+
+    } catch (error) {
+
+        console.error(
+            "Unable to update study status:",
+            error
+        );
+
+        // Roll back UI if database save fails
+        studyData.status = previousStatus;
+
+        loadStudyInformation();
+
+        showToast(
+            error.message ||
+            "Unable to save study status."
+        );
+    }
+}
+
+
+/* =========================================================
+   CHANGE STUDY STATUS
+========================================================= */
 
 /* =========================================================
    MODALS
@@ -388,18 +574,29 @@ function setupLearning() {
 
 async function saveLearning() {
     const value = $("#learningInput")?.value.trim();
-    if (!value) return showToast("Enter what you learned.");
 
     const previous = clone(studyData.learning);
-    studyData.learning = value.split("\n").map(line => line.trim()).filter(Boolean)
-        .map(line => ({ id: generateID("learning"), title: line, description: "" }));
+
+    studyData.learning = value
+        ? value.split("\n")
+            .map(line => line.trim())
+            .filter(Boolean)
+            .map(line => ({
+                id: generateID("learning"),
+                title: line,
+                description: ""
+            }))
+        : [];
 
     renderLearning();
     updateDate();
 
     try {
-        await saveStudyData();
         closeModal("#learningModal");
+        showToast("Saving learning...");
+
+        await saveStudyData();
+
         showToast("Learning updated and saved.");
     } catch (error) {
         studyData.learning = previous;
@@ -414,8 +611,18 @@ async function saveLearning() {
 
 function setupGeneralControls() {
     $("#editStudy")?.addEventListener("click", () => {
-        setValue("studyTopicInput", studyData.topic);
-        setValue("studyIntroductionInput", studyData.introduction);
+        setValue("studyTitleInput", studyData.topic || "");
+        setValue("studyIntroductionInput", studyData.introduction || "");
+        setValue("studyObjectiveInput", studyData.objective || "");
+        setValue("studyStatusInput", studyData.status || "in-progress");
+        setValue(
+            "studyTagsInput",
+            Array.isArray(studyData.tags)
+                ? studyData.tags.join(", ")
+                : ""
+        );
+        setValue("studyNextStudyInput", studyData.nextStudy || "");
+
         openModal("#studyEditModal");
     });
 
@@ -427,9 +634,9 @@ function setupGeneralControls() {
         $("#objectiveInput")?.focus();
     });
     $("#deleteObjective")?.addEventListener(
-    "click",
-    deleteObjective
-);
+        "click",
+        deleteObjective
+    );
 
     $("#saveObjective")?.addEventListener("click", saveObjective);
 
@@ -437,24 +644,50 @@ function setupGeneralControls() {
 }
 
 async function saveStudyEdit() {
-    const topic = $("#studyTopicInput")?.value.trim();
+    const topic = $("#studyTitleInput")?.value.trim();
     const introduction = $("#studyIntroductionInput")?.value.trim();
+    const objective = $("#studyObjectiveInput")?.value.trim();
+    const status = $("#studyStatusInput")?.value || "in-progress";
+    const tagsValue = $("#studyTagsInput")?.value.trim();
+    const nextStudy = $("#studyNextStudyInput")?.value.trim();
+
+    const tags = tagsValue
+        ? tagsValue
+            .split(",")
+            .map(tag => tag.trim())
+            .filter(Boolean)
+        : [];;
 
     if (!topic) return showToast("Enter a study title.");
 
-    const previous = { topic: studyData.topic, introduction: studyData.introduction };
+    const previous = {
+        topic: studyData.topic,
+        introduction: studyData.introduction,
+        objective: studyData.objective,
+        status: studyData.status,
+        tags: clone(studyData.tags),
+        nextStudy: studyData.nextStudy
+    };
     studyData.topic = topic;
     studyData.introduction = introduction || "";
+    studyData.objective = objective || "";
+    studyData.status = status;
+    studyData.tags = tags;
+    studyData.nextStudy = nextStudy || "";
     loadStudyInformation();
     updateDate();
 
     try {
-        await saveStudyData();
         closeModal("#studyEditModal");
+        showToast("Saving changes...");
+
+        await saveStudyData();
+
         showToast("Study updated and saved.");
     } catch (error) {
         Object.assign(studyData, previous);
         loadStudyInformation();
+
         showToast(error.message || "Unable to save study.");
     }
 }
@@ -469,8 +702,11 @@ async function saveObjective() {
     updateDate();
 
     try {
-        await saveStudyData();
         closeModal("#objectiveModal");
+        showToast("Saving objective...");
+
+        await saveStudyData();
+
         showToast("Objective updated and saved.");
     } catch (error) {
         studyData.objective = previous;
@@ -548,10 +784,10 @@ function renderKnowledge() {
 
                 <p>
                     ${escapeHTML(
-                        item.text ||
-                        item.title ||
-                        ""
-                    )}
+                    item.text ||
+                    item.title ||
+                    ""
+                )}
                 </p>
 
 
@@ -636,9 +872,13 @@ async function saveKnowledge() {
     updateDate();
 
     try {
-        await saveStudyData();
         closeModal("#knowledgeModal");
         setValue("knowledgeInput", "");
+
+        showToast("Saving knowledge...");
+
+        await saveStudyData();
+
         showToast("Knowledge added and saved.");
     } catch (error) {
         studyData.knowledge = previous;
@@ -699,31 +939,31 @@ function renderConcepts() {
 
                 <h3>
                     ${escapeHTML(
-                        concept.title ||
-                        ""
-                    )}
+                    concept.title ||
+                    ""
+                )}
                 </h3>
 
 
                 <p>
                     ${escapeHTML(
-                        concept.description ||
-                        ""
-                    )}
+                    concept.description ||
+                    ""
+                )}
                 </p>
 
 
                 <span
                     class="concept-status ${escapeHTML(
-                        concept.status ||
-                        "learning"
-                    )}"
+                    concept.status ||
+                    "learning"
+                )}"
                 >
                     ${escapeHTML(
-                        getConceptStatus(
-                            concept.status
-                        )
-                    )}
+                    getConceptStatus(
+                        concept.status
+                    )
+                )}
                 </span>
 
 
@@ -731,8 +971,8 @@ function renderConcepts() {
                     type="button"
                     class="delete-item-button"
                     data-delete-concept="${escapeAttribute(
-                        concept.id
-                    )}"
+                    concept.id
+                )}"
                 >
                     Delete
                 </button>
@@ -828,8 +1068,11 @@ async function saveConcept() {
     updateDate();
 
     try {
-        await saveStudyData();
         closeModal("#conceptModal");
+        showToast("Saving concept...");
+
+        await saveStudyData();
+
         showToast("Concept added and saved.");
     } catch (error) {
         studyData.concepts = previous;
@@ -890,17 +1133,17 @@ function renderProblems() {
 
                     <h3>
                         ${escapeHTML(
-                            problem.title ||
-                            "Untitled Problem"
-                        )}
+                    problem.title ||
+                    "Untitled Problem"
+                )}
                     </h3>
 
 
                     <p>
                         ${escapeHTML(
-                            problem.description ||
-                            ""
-                        )}
+                    problem.description ||
+                    ""
+                )}
                     </p>
 
                 </div>
@@ -908,16 +1151,16 @@ function renderProblems() {
 
                 <span
                     class="problem-status ${escapeHTML(
-                        problem.status ||
-                        "open"
-                    )}"
+                    problem.status ||
+                    "open"
+                )}"
                 >
                     ${escapeHTML(
-                        String(
-                            problem.status ||
-                            "open"
-                        ).toUpperCase()
-                    )}
+                    String(
+                        problem.status ||
+                        "open"
+                    ).toUpperCase()
+                )}
                 </span>
 
 
@@ -925,8 +1168,8 @@ function renderProblems() {
                     type="button"
                     class="delete-item-button"
                     data-delete-problem="${escapeAttribute(
-                        problem.id
-                    )}"
+                    problem.id
+                )}"
                 >
                     Delete
                 </button>
@@ -1012,8 +1255,11 @@ async function saveProblem() {
     updateDate();
 
     try {
-        await saveStudyData();
         closeModal("#problemModal");
+        showToast("Saving problem...");
+
+        await saveStudyData();
+
         showToast("Problem added and saved.");
     } catch (error) {
         studyData.problems = previous;
@@ -1067,9 +1313,9 @@ function renderResources() {
                 <div class="resource-icon">
 
                     ${escapeHTML(
-                        resource.type ||
-                        "RESOURCE"
-                    )}
+                    resource.type ||
+                    "RESOURCE"
+                )}
 
                 </div>
 
@@ -1078,40 +1324,39 @@ function renderResources() {
 
                     <h3>
                         ${escapeHTML(
-                            resource.title ||
-                            ""
-                        )}
+                    resource.title ||
+                    ""
+                )}
                     </h3>
 
 
                     <p>
                         ${escapeHTML(
-                            resource.description ||
-                            ""
-                        )}
+                    resource.description ||
+                    ""
+                )}
                     </p>
 
 
                     <span>
                         ${escapeHTML(
-                            resource.type ||
-                            ""
-                        )}
+                    resource.type ||
+                    ""
+                )}
                     </span>
 
                 </div>
 
 
-                ${
-                    resource.url
+                ${resource.url
 
-                        ? `
+                    ? `
 
                             <a
                                 class="resource-open"
                                 href="${escapeAttribute(
-                                    resource.url
-                                )}"
+                        resource.url
+                    )}"
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
@@ -1120,7 +1365,7 @@ function renderResources() {
 
                         `
 
-                        : `
+                    : `
 
                             <span class="resource-open">
                                 Saved
@@ -1134,8 +1379,8 @@ function renderResources() {
                     type="button"
                     class="delete-item-button"
                     data-delete-resource="${escapeAttribute(
-                        resource.id
-                    )}"
+                    resource.id
+                )}"
                 >
                     Delete
                 </button>
@@ -1226,8 +1471,11 @@ async function saveResource() {
     updateDate();
 
     try {
-        await saveStudyData();
         closeModal("#resourceModal");
+        showToast("Saving resource...");
+
+        await saveStudyData();
+
         showToast("Resource added and saved.");
     } catch (error) {
         studyData.resources = previous;
@@ -1272,11 +1520,10 @@ function renderRelatedWork() {
 
 
             card.className =
-                `related-work-card ${
-                    String(
-                        work.type ||
-                        "external"
-                    ).toLowerCase()
+                `related-work-card ${String(
+                    work.type ||
+                    "external"
+                ).toLowerCase()
                 }`;
 
 
@@ -1285,25 +1532,25 @@ function renderRelatedWork() {
 
                 <span>
                     ${escapeHTML(
-                        work.type ||
-                        "RELATED"
-                    )}
+                    work.type ||
+                    "RELATED"
+                )}
                 </span>
 
 
                 <h3>
                     ${escapeHTML(
-                        work.title ||
-                        ""
-                    )}
+                    work.title ||
+                    ""
+                )}
                 </h3>
 
 
                 <p>
                     ${escapeHTML(
-                        work.description ||
-                        ""
-                    )}
+                    work.description ||
+                    ""
+                )}
                 </p>
 
 
@@ -1312,8 +1559,8 @@ function renderRelatedWork() {
                     <button
                         type="button"
                         data-related-work="${escapeAttribute(
-                            work.id
-                        )}"
+                    work.id
+                )}"
                     >
                         Open →
                     </button>
@@ -1323,8 +1570,8 @@ function renderRelatedWork() {
                         type="button"
                         class="delete-item-button"
                         data-delete-related-work="${escapeAttribute(
-                            work.id
-                        )}"
+                    work.id
+                )}"
                     >
                         Delete
                     </button>
@@ -1468,8 +1715,12 @@ async function saveRelatedWork() {
     updateDate();
 
     try {
-        await saveStudyData();
         closeModal("#relatedWorkModal");
+
+        showToast("Saving related work...");
+
+        await saveStudyData();
+
         showToast("Related work added and saved.");
     } catch (error) {
         studyData.relatedWork = previous;
@@ -1594,9 +1845,13 @@ async function saveTimeline() {
     updateDate();
 
     try {
-        await saveStudyData();
         closeModal("#timelineModal");
         editingTimelineId = null;
+
+        showToast("Saving timeline...");
+
+        await saveStudyData();
+
         showToast("Timeline saved.");
     } catch (error) {
         studyData.timeline = previous;
@@ -1688,39 +1943,38 @@ function renderFutureWork() {
 
                     <strong>
                         ${escapeHTML(
-                            item.title ||
-                            ""
-                        )}
+                    item.title ||
+                    ""
+                )}
                     </strong>
 
 
                     <p>
                         ${escapeHTML(
-                            item.description ||
-                            ""
-                        )}
+                    item.description ||
+                    ""
+                )}
                     </p>
 
 
-                    ${
-                        item.date
+                    ${item.date
 
-                            ? `
+                    ? `
 
                                 <span class="future-date">
 
                                     ${escapeHTML(
-                                        formatDate(
-                                            item.date
-                                        )
-                                    )}
+                        formatDate(
+                            item.date
+                        )
+                    )}
 
                                 </span>
 
                             `
 
-                            : ""
-                    }
+                    : ""
+                }
 
                 </div>
 
@@ -1729,8 +1983,8 @@ function renderFutureWork() {
     type="button"
     class="delete-item-button future-delete-button"
     data-delete-future-work="${escapeAttribute(
-        item.id
-    )}"
+                    item.id
+                )}"
 >
     Delete
 </button>
@@ -1902,8 +2156,10 @@ async function deleteFutureWork(
 
 function setupFutureWork() {
     $("#addFutureWork")?.addEventListener("click", () => {
-        setValue("futureWorkTitleInput", "");
-        setValue("futureWorkDescriptionInput", "");
+        setValue("futureWorkDate", "");
+        setValue("futureWorkTitle", "");
+        setValue("futureWorkDescription", "");
+
         openModal("#futureWorkModal");
     });
 
@@ -1911,14 +2167,16 @@ function setupFutureWork() {
 }
 
 async function saveFutureWork() {
-    const title = $("#futureWorkTitleInput")?.value.trim();
-    const description = $("#futureWorkDescriptionInput")?.value.trim();
+    const date = $("#futureWorkDate")?.value;
+    const title = $("#futureWorkTitle")?.value.trim();
+    const description = $("#futureWorkDescription")?.value.trim();
 
     if (!title) return showToast("Enter a future work title.");
 
     const previous = clone(studyData.futureWork);
     studyData.futureWork.push({
         id: generateID("future-work"),
+        date: date || "",
         title,
         description: description || "",
         fromTimeline: false
@@ -1928,8 +2186,11 @@ async function saveFutureWork() {
     updateDate();
 
     try {
-        await saveStudyData();
         closeModal("#futureWorkModal");
+        showToast("Saving future work...");
+
+        await saveStudyData();
+
         showToast("Future work added and saved.");
     } catch (error) {
         studyData.futureWork = previous;
@@ -2212,7 +2473,7 @@ async function uploadFileToGoogleDrive(
         },
 
         error:
-            sessionError
+        sessionError
 
     } =
 
@@ -2647,8 +2908,11 @@ async function saveLink() {
     updateDate();
 
     try {
-        await saveStudyData();
         closeModal("#linkModal");
+        showToast("Saving link...");
+
+        await saveStudyData();
+
         showToast("Link added and saved.");
     } catch (error) {
         studyData.attachments = previous;
@@ -2999,7 +3263,7 @@ async function deleteFileFromGoogleDrive(
         },
 
         error:
-            sessionError
+        sessionError
 
     } =
 
@@ -3276,3 +3540,89 @@ async function deleteStudyArrayItem(
     }
 
 }
+
+/* =========================================================
+   COMPLETION CELEBRATION
+========================================================= */
+
+function showCompletionEffect() {
+
+    const container =
+        document.createElement("div");
+
+    container.className =
+        "completion-effect";
+
+    document.body.appendChild(container);
+
+
+    const colors = [
+        "#ff4d6d",
+        "#ffd166",
+        "#06d6a0",
+        "#4dabf7",
+        "#845ef7",
+        "#f783ac",
+        "#ffffff"
+    ];
+
+
+    const particleCount = 90;
+
+
+    for (let i = 0; i < particleCount; i++) {
+
+        const particle =
+            document.createElement("span");
+
+        particle.className =
+            "completion-particle";
+
+
+        particle.style.left =
+            `${Math.random() * 100}%`;
+
+
+        particle.style.background =
+            colors[
+            Math.floor(
+                Math.random() * colors.length
+            )
+            ];
+
+
+        particle.style.animationDelay =
+            `${Math.random() * 0.4}s`;
+
+
+        particle.style.animationDuration =
+            `${1.8 + Math.random() * 1.5}s`;
+
+
+        particle.style.setProperty(
+            "--particle-x",
+            `${(Math.random() - 0.5) * 300}px`
+        );
+
+
+        particle.style.setProperty(
+            "--particle-rotate",
+            `${Math.random() * 720 - 360}deg`
+        );
+
+
+        container.appendChild(
+            particle
+        );
+
+    }
+
+
+    setTimeout(() => {
+
+        container.remove();
+
+    }, 3500);
+
+}
+

@@ -58,6 +58,19 @@ let extraActivities = [];
 let uploadedFiles = [];
 
 /* =========================================================
+   VIEWED PROFILE
+   Normally this is the logged-in user.
+   When an admin opens ?profile=USER_ID,
+   this becomes the selected member.
+========================================================= */
+
+let viewedProfileId = null;
+
+let loggedInUserId = null;
+
+let viewingOtherProfile = false;
+
+/* =========================================================
    7. CALENDAR STATE
 ========================================================= */
 
@@ -94,12 +107,368 @@ document.addEventListener(
     initializeDashboard
 );
 
+/* =========================================================
+   READ-ONLY MEMBER VIEW
+========================================================= */
+
+function applyReadOnlyMemberView() {
+
+    /*
+     * Normal personal page:
+     * nothing should be disabled.
+     */
+    if (!viewingOtherProfile) {
+        return;
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * PROFILE EDITING
+     * -----------------------------------------------------
+     */
+
+    document
+        .querySelectorAll(
+            ".edit-profile-field"
+        )
+        .forEach(button => {
+
+            button.style.display =
+                "none";
+
+        });
+
+
+    document
+        .querySelectorAll(
+            ".delete-profile-detail"
+        )
+        .forEach(button => {
+
+            button.style.display =
+                "none";
+
+        });
+
+
+    document
+        .querySelectorAll(
+            ".add-profile-detail-btn"
+        )
+        .forEach(button => {
+
+            button.style.display =
+                "none";
+
+        });
+
+
+    /*
+     * -----------------------------------------------------
+     * PROFILE EDIT BUTTON
+     * -----------------------------------------------------
+     */
+
+    const editProfileButton =
+        getElement("editProfileBtn");
+
+
+    if (editProfileButton) {
+
+        editProfileButton.style.display =
+            "none";
+
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * QUICK CREATE
+     * -----------------------------------------------------
+     */
+
+    const quickCreateButton =
+        getElement("quickCreateBtn");
+
+
+    if (quickCreateButton) {
+
+        quickCreateButton.style.display =
+            "none";
+
+    }
+
+
+    const quickCreateMenu =
+        getElement("quickCreateMenuSection");
+
+
+    if (quickCreateMenu) {
+
+        quickCreateMenu.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * JOIN FORUM
+     * -----------------------------------------------------
+     */
+
+    const joinForumButton =
+        getElement("joinForumBtn");
+
+
+    if (joinForumButton) {
+
+        joinForumButton.style.display =
+            "none";
+
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * UPLOAD
+     * -----------------------------------------------------
+     */
+
+    const uploadButton =
+        getElement("uploadMenuBtn");
+
+
+    if (uploadButton) {
+
+        uploadButton.style.display =
+            "none";
+
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * ACCOLADES
+     * -----------------------------------------------------
+     */
+
+
+    /*
+     * -----------------------------------------------------
+     * GOOGLE DRIVE CONNECTION
+     * -----------------------------------------------------
+     */
+
+    const driveButton =
+        getElement(
+            "connectGoogleDriveBtn"
+        );
+
+
+    if (driveButton) {
+
+        driveButton.style.display =
+            "none";
+
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * SETTINGS
+     * -----------------------------------------------------
+     */
+
+    const settingsEditButton =
+        getElement("editProfileBtn");
+
+
+    if (settingsEditButton) {
+
+        settingsEditButton.style.display =
+            "none";
+
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * DAILY BLOG
+     *
+     * Existing member blog can still be READ.
+     * It must not be saved by the admin.
+     * -----------------------------------------------------
+     */
+
+    const blog =
+        getElement("dailyBlog");
+
+
+    const blogSave =
+        getElement("saveBlogBtn");
+
+
+    if (blog) {
+
+        blog.readOnly =
+            true;
+
+    }
+
+
+    if (blogSave) {
+
+        blogSave.style.display =
+            "none";
+
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * REMINDER / LINK CREATE BUTTONS
+     * -----------------------------------------------------
+     */
+
+    document
+        .querySelectorAll(
+            '[data-create="reminder"]'
+        )
+        .forEach(button => {
+
+            button.style.display =
+                "none";
+
+        });
+
+
+    /*
+     * -----------------------------------------------------
+     * PROFILE PHOTO UPLOAD
+     * -----------------------------------------------------
+     */
+
+    const profileUploadButton =
+        getElement("profileUploadBtn");
+
+
+    if (profileUploadButton) {
+
+        profileUploadButton.style.display =
+            "none";
+
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * SOCIAL PROFILE EDITING
+     *
+     * Existing GitHub / LinkedIn links can still
+     * be opened. New links cannot be added.
+     * -----------------------------------------------------
+     */
+
+    document
+        .querySelectorAll(
+            "#githubLink, #linkedinLink"
+        )
+        .forEach(link => {
+
+            /*
+             * Do not disable the link.
+             * Existing social links remain usable.
+             */
+
+            if (
+                link.dataset.hasProfile ===
+                "false"
+            ) {
+
+                link.style.pointerEvents =
+                    "none";
+
+                link.style.opacity =
+                    "0.5";
+
+            }
+
+        });
+
+
+    /*
+     * -----------------------------------------------------
+     * VISUAL INDICATOR
+     * -----------------------------------------------------
+     */
+
+    const profileName =
+        getElement("profileName");
+
+
+    if (profileName) {
+
+        const existing =
+            document.getElementById(
+                "readOnlyMemberBadge"
+            );
+
+
+        if (!existing) {
+
+            const badge =
+                document.createElement("span");
+
+            badge.id =
+                "readOnlyMemberBadge";
+
+            badge.textContent =
+                "VIEW ONLY";
+
+            badge.style.cssText = `
+                display:inline-flex;
+                align-items:center;
+                margin-left:10px;
+                padding:4px 9px;
+                border-radius:999px;
+                font-size:10px;
+                font-weight:700;
+                letter-spacing:.08em;
+                opacity:.65;
+                border:1px solid rgba(255,255,255,.15);
+            `;
+
+
+            profileName.parentElement
+                ?.appendChild(badge);
+
+        }
+
+    }
+
+}
 
 async function initializeDashboard() {
+
+    const profileReady =
+        await initializeViewedProfile();
+
+
+    if (!profileReady) {
+
+        return;
+
+    }
+
 
     await loadPersonalWorkspaceData();
 
     await loadProfile();
+
+    applyReadOnlyMemberView();
 
     initializeClock();
 
@@ -132,6 +501,8 @@ async function initializeDashboard() {
     initializeTheme();
 
     initializeHeader();
+
+    initializePersonalNavigation();
 
     initializeCalendar();
 
@@ -250,6 +621,171 @@ function isValidURL(value) {
 /* =========================================================
    10B. LOAD PERSONAL WORKSPACE DATA
 ========================================================= */
+/* =========================================================
+   DETERMINE VIEWED PROFILE
+========================================================= */
+
+async function initializeViewedProfile() {
+
+    try {
+
+        const {
+            data: {
+                user
+            },
+            error
+        } = await sb.auth.getUser();
+
+
+        if (error || !user) {
+
+            console.error(
+                "Unable to identify logged-in user:",
+                error
+            );
+
+            return false;
+
+        }
+
+
+        loggedInUserId =
+            user.id;
+
+
+        /*
+         * Check whether the URL contains:
+         *
+         * ?profile=MEMBER_ID
+         */
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        const requestedProfileId =
+            params.get("profile");
+
+
+        /*
+         * No profile parameter:
+         * show the logged-in user's own page.
+         */
+
+        if (!requestedProfileId) {
+
+            viewedProfileId =
+                user.id;
+
+            viewingOtherProfile =
+                false;
+
+            return true;
+
+        }
+
+
+        /*
+         * A different profile was requested.
+         *
+         * Only an admin should be allowed
+         * to view another person's workspace.
+         */
+
+        if (
+            requestedProfileId ===
+            user.id
+        ) {
+
+            viewedProfileId =
+                user.id;
+
+            viewingOtherProfile =
+                false;
+
+            return true;
+
+        }
+
+
+        /*
+         * Check the logged-in user's role.
+         */
+
+        const {
+            data: adminProfile,
+            error: adminProfileError
+        } = await sb
+            .from("profiles")
+            .select("id, role")
+            .eq(
+                "id",
+                user.id
+            )
+            .single();
+
+
+        if (
+            adminProfileError ||
+            !adminProfile ||
+            adminProfile.role !== "admin"
+        ) {
+
+            console.warn(
+                "Non-admin attempted to view another profile."
+            );
+
+            viewedProfileId =
+                user.id;
+
+            viewingOtherProfile =
+                false;
+
+            /*
+             * Remove the profile parameter
+             * so the URL returns to normal.
+             */
+
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+
+            return true;
+
+        }
+
+
+        /*
+         * Admin is allowed to view
+         * the requested member.
+         */
+
+        viewedProfileId =
+            requestedProfileId;
+
+        viewingOtherProfile =
+            true;
+
+
+        return true;
+
+    }
+    catch (error) {
+
+        console.error(
+            "Viewed profile initialization error:",
+            error
+        );
+
+        return false;
+
+    }
+
+}
 
 async function loadPersonalWorkspaceData() {
 
@@ -279,6 +815,9 @@ async function loadPersonalWorkspaceData() {
             return false;
 
         }
+
+        const profileId =
+            viewedProfileId || user.id;
 
 
         /* =================================================
@@ -310,7 +849,7 @@ async function loadPersonalWorkspaceData() {
                     created_at,
                     updated_at
                 `)
-                .eq("profile_id", user.id)
+                .eq("profile_id", profileId)
                 .order("created_at", {
                     ascending: false
                 }),
@@ -326,7 +865,7 @@ async function loadPersonalWorkspaceData() {
                     created_at,
                     updated_at
                 `)
-                .eq("profile_id", user.id)
+                .eq("profile_id", profileId)
                 .order("date", {
                     ascending: false
                 }),
@@ -344,7 +883,7 @@ async function loadPersonalWorkspaceData() {
                     description,
                     created_at
                 `)
-                .eq("profile_id", user.id)
+                .eq("profile_id", profileId)
                 .order("date", {
                     ascending: false
                 }),
@@ -361,7 +900,7 @@ async function loadPersonalWorkspaceData() {
                     url,
                     created_at
                 `)
-                .eq("profile_id", user.id)
+                .eq("profile_id", profileId)
                 .order("date", {
                     ascending: false
                 }),
@@ -377,7 +916,7 @@ async function loadPersonalWorkspaceData() {
                     description,
                     created_at
                 `)
-                .eq("profile_id", user.id)
+                .eq("profile_id", profileId)
                 .order("created_at", {
                     ascending: false
                 })
@@ -571,16 +1110,7 @@ async function loadPersonalWorkspaceData() {
         extraActivities = [];
 
 
-        console.log(
-            "Personal workspace loaded:",
-            {
-                workItems,
-                dailyBlogs,
-                reminders,
-                accolades,
-                personalLinks
-            }
-        );
+  
 
 
         return true;
@@ -683,7 +1213,10 @@ async function loadProfile() {
                 bio,
                 avatar_url
             `)
-            .eq("id", user.id)
+            .eq(
+                "id",
+                viewedProfileId || user.id
+            )
             .single();
 
 
@@ -708,13 +1241,11 @@ async function loadProfile() {
 
         personalUser.name =
             profile.full_name ||
-            user.user_metadata?.full_name ||
-            user.email?.split("@")[0] ||
+            profile.email?.split("@")[0] ||
             "User";
 
         personalUser.email =
             profile.email ||
-            user.email ||
             "";
 
         personalUser.role =
@@ -765,7 +1296,10 @@ async function loadProfile() {
                     description
                 )
             `)
-            .eq("profile_id", user.id);
+            .eq(
+                "profile_id",
+                viewedProfileId || user.id
+            );
 
 
         if (forumError) {
@@ -802,7 +1336,10 @@ async function loadProfile() {
                     forum_id
                 )
             `)
-            .eq("profile_id", user.id);
+            .eq(
+                "profile_id",
+                viewedProfileId || user.id
+            );
 
 
         if (teamError) {
@@ -839,7 +1376,10 @@ async function loadProfile() {
                     forum_id
                 )
             `)
-            .eq("profile_id", user.id);
+            .eq(
+                "profile_id",
+                viewedProfileId || user.id
+            );
 
 
         if (domainError) {
@@ -1040,12 +1580,6 @@ async function loadProfile() {
             }
 
         }
-
-
-        console.log(
-            "REAL PROFILE:",
-            personalUser
-        );
 
     }
     catch (error) {
@@ -1257,6 +1791,16 @@ function renderProfileDetails() {
 
 function editProfileDetail(id) {
 
+    if (viewingOtherProfile) {
+
+        showToast(
+            "This member's profile is read-only."
+        );
+
+        return;
+
+    }
+
     const detail =
         personalUser.details.find(
             item => item.id === id
@@ -1310,6 +1854,16 @@ function editProfileDetail(id) {
 ========================================================= */
 
 function deleteProfileDetail(id) {
+
+    if (viewingOtherProfile) {
+
+        showToast(
+            "This member's profile is read-only."
+        );
+
+        return;
+
+    }
 
     const index =
         personalUser.details.findIndex(
@@ -1401,6 +1955,16 @@ function initializeProfileDetails() {
 
 function openAddProfileDetailModal() {
 
+    if (viewingOtherProfile) {
+
+        showToast(
+            "This member's profile is read-only."
+        );
+
+        return;
+
+    }
+
     setInput(
         getElement("newDetailName"),
         ""
@@ -1438,6 +2002,18 @@ function openAddProfileDetailModal() {
 
 
 function saveNewProfileDetail(event) {
+
+    if (viewingOtherProfile) {
+
+        event.preventDefault();
+
+        showToast(
+            "This member's profile is read-only."
+        );
+
+        return;
+
+    }
 
     event.preventDefault();
 
@@ -1568,6 +2144,16 @@ function initializeProfileEditing() {
 
 function openProfileEditModal() {
 
+    if (viewingOtherProfile) {
+
+        showToast(
+            "This member's profile is read-only."
+        );
+
+        return;
+
+    }
+
     setInput(
         getElement("editProfileName"),
         personalUser.name
@@ -1661,6 +2247,17 @@ function getDetailValue(label) {
 
 function saveProfile(event) {
 
+    if (viewingOtherProfile) {
+
+        event.preventDefault();
+
+        showToast(
+            "This member's profile is read-only."
+        );
+
+        return;
+
+    }
     event.preventDefault();
 
 
@@ -1835,6 +2432,17 @@ function initializeProfilePhoto() {
         "change",
         event => {
 
+            if (viewingOtherProfile) {
+
+                showToast(
+                    "This member's profile photo is read-only."
+                );
+
+                input.value = "";
+
+                return;
+
+            }
             const file =
                 event.target.files[0];
 
@@ -2115,6 +2723,27 @@ function handleSocialClick(type) {
 
     }
 
+    /* =================================================
+       ADMIN VIEWING MEMBER
+       Existing link can be opened.
+       Empty link cannot be edited.
+    ================================================== */
+
+    if (viewingOtherProfile) {
+
+        if (url) {
+
+            window.open(
+                url,
+                "_blank",
+                "noopener,noreferrer"
+            );
+
+        }
+
+        return;
+
+    }
 
     /* =================================================
        URL EXISTS
@@ -2244,6 +2873,18 @@ function closeSocialURLModal() {
 
 
 function saveSocialURL(event) {
+
+    if (viewingOtherProfile) {
+
+        event.preventDefault();
+
+        showToast(
+            "This member's profile is read-only."
+        );
+
+        return;
+
+    }
 
     event.preventDefault();
 
@@ -2776,6 +3417,10 @@ function closeWorkListModal() {
 
 function initializeQuickCreate() {
 
+    if (viewingOtherProfile) {
+        return;
+    }
+
     const button =
         getElement("quickCreateBtn");
 
@@ -2843,13 +3488,13 @@ function initializeQuickCreate() {
 
                     if (type === "reminder") {
 
-    showUnderConstruction();
+                        showUnderConstruction();
 
-} else {
+                    } else {
 
-    openCreateModal(type);
+                        openCreateModal(type);
 
-}
+                    }
 
                 }
             );
@@ -2877,6 +3522,10 @@ function initializeQuickCreate() {
 
 
 function openQuickCreate() {
+
+    if (viewingOtherProfile) {
+        return;
+    }
 
     const menu =
         getElement("quickCreateMenuSection");
@@ -3230,12 +3879,6 @@ async function populateCreateForums() {
 
     select.disabled = false;
 
-
-    console.log(
-        "Create modal — joined forums only:",
-        joinedForums
-    );
-
 }
 
 
@@ -3547,14 +4190,6 @@ async function populateCreateTargets() {
     targetSelect.disabled = false;
 
 
-    console.log(
-        "Create targets — joined only:",
-        {
-            forumId,
-            teams: joinedTeams,
-            domains: joinedDomains
-        }
-    );
 
 }
 
@@ -3591,6 +4226,17 @@ function updateCreateTargetState() {
 ========================================================= */
 
 async function openCreateModal(type) {
+
+    if (viewingOtherProfile) {
+
+        showToast(
+            "This member's workspace is read-only."
+        );
+
+        return;
+
+    }
+
 
     currentCreateType =
         type || "";
@@ -3807,6 +4453,18 @@ function updateCreateModalTitle(type) {
 
 async function handleCreateSubmit(event) {
 
+    if (viewingOtherProfile) {
+
+        event.preventDefault();
+
+        showToast(
+            "You cannot create work in another member's workspace."
+        );
+
+        return;
+
+    }
+
     event.preventDefault();
 
 
@@ -3974,76 +4632,76 @@ async function handleCreateSubmit(event) {
 
     if (hasTeam) {
 
-       /* =================================================
-   VERIFY USER BELONGS TO SELECTED TEAM
-================================================= */
+        /* =================================================
+    VERIFY USER BELONGS TO SELECTED TEAM
+ ================================================= */
 
-const {
-    data: teamMembership,
-    error: teamMembershipError
-} = await sb
-    .from("team_members")
-    .select("team_id")
-    .eq("profile_id", user.id)
-    .eq("team_id", teamId)
-    .maybeSingle();
+        const {
+            data: teamMembership,
+            error: teamMembershipError
+        } = await sb
+            .from("team_members")
+            .select("team_id")
+            .eq("profile_id", user.id)
+            .eq("team_id", teamId)
+            .maybeSingle();
 
 
-if (
-    teamMembershipError ||
-    !teamMembership
-) {
+        if (
+            teamMembershipError ||
+            !teamMembership
+        ) {
 
-    console.error(
-        "Team membership validation failed:",
-        teamMembershipError
-    );
+            console.error(
+                "Team membership validation failed:",
+                teamMembershipError
+            );
 
-    showToast(
-        "You are not a member of the selected team."
-    );
+            showToast(
+                "You are not a member of the selected team."
+            );
 
-    return;
+            return;
 
-}
+        }
 
     }
 
 
     if (hasDomain) {
 
-       /* =================================================
-   VERIFY USER BELONGS TO SELECTED DOMAIN
-================================================= */
+        /* =================================================
+    VERIFY USER BELONGS TO SELECTED DOMAIN
+ ================================================= */
 
-const {
-    data: domainMembership,
-    error: domainMembershipError
-} = await sb
-    .from("domain_members")
-    .select("domain_id")
-    .eq("profile_id", user.id)
-    .eq("domain_id", domainId)
-    .maybeSingle();
+        const {
+            data: domainMembership,
+            error: domainMembershipError
+        } = await sb
+            .from("domain_members")
+            .select("domain_id")
+            .eq("profile_id", user.id)
+            .eq("domain_id", domainId)
+            .maybeSingle();
 
 
-if (
-    domainMembershipError ||
-    !domainMembership
-) {
+        if (
+            domainMembershipError ||
+            !domainMembership
+        ) {
 
-    console.error(
-        "Domain membership validation failed:",
-        domainMembershipError
-    );
+            console.error(
+                "Domain membership validation failed:",
+                domainMembershipError
+            );
 
-    showToast(
-        "You are not a member of the selected domain."
-    );
+            showToast(
+                "You are not a member of the selected domain."
+            );
 
-    return;
+            return;
 
-}
+        }
 
     }
 
@@ -4051,10 +4709,7 @@ if (
     /* =================================================
        INSERT INTO SUPABASE
     ================================================= */
-    console.log(
-        "Create work user:",
-        user
-    );
+
 
     const payload = {
 
@@ -4093,11 +4748,6 @@ if (
             endDate || null
 
     };
-    console.log(
-        "Create work payload:",
-        payload
-    );
-
 
     const {
         data,
@@ -4124,118 +4774,113 @@ if (
         return;
 
     }
-/* =================================================
-   CREATE GOOGLE DRIVE WORK FOLDER
-================================================= */
+    /* =================================================
+       CREATE GOOGLE DRIVE WORK FOLDER
+    ================================================= */
 
-try {
+    try {
 
-    const {
-        data: {
-            session
+        const {
+            data: {
+                session
+            }
+        } =
+            await sb.auth.getSession();
+
+
+        if (
+            !session
+        ) {
+
+            throw new Error(
+                "No active session."
+            );
+
         }
-    } =
-        await sb.auth.getSession();
 
 
-    if (
-        !session
-    ) {
+        const driveResponse =
+            await fetch(
 
-        throw new Error(
-            "No active session."
-        );
+                "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/create-rigid-drive-item",
+
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Authorization":
+                            `Bearer ${session.access_token}`,
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+
+                        JSON.stringify({
+
+                            type:
+                                data.category,
+
+                            title:
+                                data.title,
+
+                            work_id:
+                                data.id
+
+                        })
+
+                }
+
+            );
+
+
+        const driveResult =
+            await driveResponse.json();
+
+
+        if (
+            !driveResponse.ok ||
+            !driveResult.success
+        ) {
+
+            console.error(
+                "Google Drive folder creation failed:",
+                driveResult
+            );
+
+
+            showToast(
+                "Work was created, but its Drive folder could not be created."
+            );
+
+        }
+
+        else {
+
+        }
 
     }
 
-
-    const driveResponse =
-        await fetch(
-
-            "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/create-rigid-drive-item",
-
-            {
-
-                method:
-                    "POST",
-
-                headers: {
-
-                    "Authorization":
-                        `Bearer ${session.access_token}`,
-
-                    "Content-Type":
-                        "application/json"
-
-                },
-
-                body:
-
-                    JSON.stringify({
-
-                        type:
-                            data.category,
-
-                        title:
-                            data.title,
-
-                        work_id:
-                            data.id
-
-                    })
-
-            }
-
-        );
-
-
-    const driveResult =
-        await driveResponse.json();
-
-
-    if (
-        !driveResponse.ok ||
-        !driveResult.success
+    catch (
+    driveError
     ) {
 
         console.error(
-            "Google Drive folder creation failed:",
-            driveResult
+            "Drive creation error:",
+            driveError
         );
 
 
         showToast(
-            "Work was created, but its Drive folder could not be created."
+            "Work was created, but Drive folder creation failed."
         );
 
     }
-
-    else {
-
-        console.log(
-            "RiGiD Drive folder created:",
-            driveResult
-        );
-
-    }
-
-}
-
-catch (
-    driveError
-) {
-
-    console.error(
-        "Drive creation error:",
-        driveError
-    );
-
-
-    showToast(
-        "Work was created, but Drive folder creation failed."
-    );
-
-}
 
     /* =================================================
        ADD REAL DATABASE RECORD TO MEMORY
@@ -4582,9 +5227,6 @@ function createWorkCategoryButton(
                 prototype:
                     "prototype/prototype.html",
 
-                design:
-                    "design/design.html",
-
                 remainder:
                     "remainder/remainder.html"
 
@@ -4598,7 +5240,7 @@ function createWorkCategoryButton(
             if (targetPage) {
 
                 window.location.href =
-                    `${targetPage}?work_id=${encodeURIComponent(item.id)}`;
+                    `${targetPage}?work_id=${encodeURIComponent(item.id)}&profile=${encodeURIComponent(viewedProfileId || loggedInUserId)}&readonly=${viewingOtherProfile ? "true" : "false"}`;
 
             }
 
@@ -5515,14 +6157,6 @@ function renderCalendar() {
     }
 
 
-    console.log(
-        "Calendar rendered:",
-        year,
-        month + 1,
-        "dates:",
-        container.children.length
-    );
-
 }
 
 
@@ -5800,6 +6434,16 @@ function loadSelectedDateActivities() {
 
 
 function saveDailyBlog() {
+
+    if (viewingOtherProfile) {
+
+        showToast(
+            "This member's personal workspace is read-only."
+        );
+
+        return;
+
+    }
 
     const textarea =
         getElement("dailyBlog");
@@ -6133,6 +6777,16 @@ function initializeReminderModal() {
 
 function openReminderModal() {
 
+    if (viewingOtherProfile) {
+
+        showToast(
+            "This member's reminders are read-only."
+        );
+
+        return;
+
+    }
+
     setInput(
         getElement("reminderTitle"),
         ""
@@ -6173,6 +6827,18 @@ function openReminderModal() {
 
 
 function saveReminder(event) {
+
+    if (viewingOtherProfile) {
+
+        event.preventDefault();
+
+        showToast(
+            "This member's reminders are read-only."
+        );
+
+        return;
+
+    }
 
     event.preventDefault();
 
@@ -6312,6 +6978,16 @@ function initializeLinkModal() {
 
 function openLinkModal() {
 
+    if (viewingOtherProfile) {
+
+        showToast(
+            "This member's links are read-only."
+        );
+
+        return;
+
+    }
+
     setInput(
         getElement("linkTitle"),
         ""
@@ -6342,6 +7018,18 @@ function openLinkModal() {
 
 
 function saveLink(event) {
+
+    if (viewingOtherProfile) {
+
+        event.preventDefault();
+
+        showToast(
+            "This member's links are read-only."
+        );
+
+        return;
+
+    }
 
     event.preventDefault();
 
@@ -6537,6 +7225,12 @@ function initializeUpload() {
 
 function openFilePicker(type) {
 
+    if (viewingOtherProfile) {
+        showToast(
+            "This member's workspace is read-only."
+        );
+        return;
+    }
     const input =
         getElement("generalUploadInput");
 
@@ -6577,6 +7271,16 @@ function openFilePicker(type) {
 
 
 function handleFileSelection(event) {
+
+    if (viewingOtherProfile) {
+
+        showToast(
+            "This member's workspace is read-only."
+        );
+
+        return;
+
+    }
 
     const files =
         Array.from(
@@ -6837,12 +7541,6 @@ function initializeHeader() {
                 return;
             }
 
-
-            console.log(
-                "Sign out button clicked."
-            );
-
-
             try {
 
                 /*
@@ -6869,12 +7567,6 @@ function initializeHeader() {
                     return;
 
                 }
-
-
-                console.log(
-                    "Supabase sign out successful."
-                );
-
 
                 /*
                  * Go directly to login page
@@ -7529,6 +8221,18 @@ function renderAccolades() {
 
 function addAccolade(event) {
 
+    if (viewingOtherProfile) {
+
+        event.preventDefault();
+
+        showToast(
+            "This member's accolades are read-only."
+        );
+
+        return;
+
+    }
+
     event.preventDefault();
 
 
@@ -7605,6 +8309,16 @@ function addAccolade(event) {
 
 
 function deleteAccolade(id) {
+
+    if (viewingOtherProfile) {
+
+        showToast(
+            "This member's accolades are read-only."
+        );
+
+        return;
+
+    }
 
     const accolade =
         accolades.find(
@@ -7993,6 +8707,16 @@ async function submitFeedback() {
         async event => {
 
             event.preventDefault();
+
+            if (viewingOtherProfile) {
+
+                showToast(
+                    "This member's workspace is read-only."
+                );
+
+                return;
+
+            }
 
             modal.classList.remove(
                 "hidden"
@@ -8573,14 +9297,23 @@ async function submitFeedback() {
     ===================================================== */
 
     joinForm.addEventListener(
-        "submit",
-        async event => {
+    "submit",
+    async event => {
 
-            event.preventDefault();
+        event.preventDefault();
 
+        if (viewingOtherProfile) {
 
-            const forumId =
-                forumSelect.value;
+            showToast(
+                "This member's workspace is read-only."
+            );
+
+            return;
+
+        }
+
+        const forumId =
+            forumSelect.value;  
 
 
             const target =
@@ -8743,172 +9476,172 @@ async function submitFeedback() {
    CHECK EXISTING MEMBERSHIP
 --------------------------------------------- */
 
-if (teamId) {
+            if (teamId) {
 
-    const {
-        data: existingTeam,
-        error: teamCheckError
-    } = await sb
-        .from("team_members")
-        .select("team_id")
-        .eq("profile_id", user.id)
-        .eq("team_id", teamId)
-        .maybeSingle();
-
-
-    if (teamCheckError) {
-
-        console.error(
-            "Team membership check failed:",
-            teamCheckError
-        );
-
-        if (infoBox) {
-
-            infoBox.textContent =
-                "Unable to check your team membership.";
-
-            infoBox.classList.remove(
-                "hidden"
-            );
-
-        }
-
-        return;
-
-    }
+                const {
+                    data: existingTeam,
+                    error: teamCheckError
+                } = await sb
+                    .from("team_members")
+                    .select("team_id")
+                    .eq("profile_id", user.id)
+                    .eq("team_id", teamId)
+                    .maybeSingle();
 
 
-    if (existingTeam) {
+                if (teamCheckError) {
 
-        if (infoBox) {
+                    console.error(
+                        "Team membership check failed:",
+                        teamCheckError
+                    );
 
-            infoBox.textContent =
-                "You already exist in this team.";
+                    if (infoBox) {
 
-            infoBox.classList.remove(
-                "hidden"
-            );
+                        infoBox.textContent =
+                            "Unable to check your team membership.";
 
-        }
+                        infoBox.classList.remove(
+                            "hidden"
+                        );
 
-        return;
+                    }
 
-    }
+                    return;
 
-}
-
-
-if (domainId) {
-
-    const {
-        data: existingDomain,
-        error: domainCheckError
-    } = await sb
-        .from("domain_members")
-        .select("domain_id")
-        .eq("profile_id", user.id)
-        .eq("domain_id", domainId)
-        .maybeSingle();
+                }
 
 
-    if (domainCheckError) {
+                if (existingTeam) {
 
-        console.error(
-            "Domain membership check failed:",
-            domainCheckError
-        );
+                    if (infoBox) {
 
-        if (infoBox) {
+                        infoBox.textContent =
+                            "You already exist in this team.";
 
-            infoBox.textContent =
-                "Unable to check your domain membership.";
+                        infoBox.classList.remove(
+                            "hidden"
+                        );
 
-            infoBox.classList.remove(
-                "hidden"
-            );
+                    }
 
-        }
+                    return;
 
-        return;
+                }
 
-    }
+            }
 
 
-    if (existingDomain) {
+            if (domainId) {
 
-        if (infoBox) {
-
-            infoBox.textContent =
-                "You already exist in this domain.";
-
-            infoBox.classList.remove(
-                "hidden"
-            );
-
-        }
-
-        return;
-
-    }
-
-}
+                const {
+                    data: existingDomain,
+                    error: domainCheckError
+                } = await sb
+                    .from("domain_members")
+                    .select("domain_id")
+                    .eq("profile_id", user.id)
+                    .eq("domain_id", domainId)
+                    .maybeSingle();
 
 
-/* ---------------------------------------------
-   CHECK EXISTING FORUM
---------------------------------------------- */
+                if (domainCheckError) {
 
-const {
-    data: existingForum,
-    error: forumCheckError
-} = await sb
-    .from("forum_members")
-    .select("forum_id")
-    .eq("profile_id", user.id)
-    .eq("forum_id", forumId)
-    .maybeSingle();
+                    console.error(
+                        "Domain membership check failed:",
+                        domainCheckError
+                    );
 
+                    if (infoBox) {
 
-if (forumCheckError) {
+                        infoBox.textContent =
+                            "Unable to check your domain membership.";
 
-    console.error(
-        "Forum membership check failed:",
-        forumCheckError
-    );
+                        infoBox.classList.remove(
+                            "hidden"
+                        );
 
-    if (infoBox) {
+                    }
 
-        infoBox.textContent =
-            "Unable to check your forum membership.";
+                    return;
 
-        infoBox.classList.remove(
-            "hidden"
-        );
-
-    }
-
-    return;
-
-}
+                }
 
 
-if (existingForum) {
+                if (existingDomain) {
 
-    if (infoBox) {
+                    if (infoBox) {
 
-        infoBox.textContent =
-            "You already exist in this forum.";
+                        infoBox.textContent =
+                            "You already exist in this domain.";
 
-        infoBox.classList.remove(
-            "hidden"
-        );
+                        infoBox.classList.remove(
+                            "hidden"
+                        );
 
-    }
+                    }
 
-    return;
+                    return;
 
-}
+                }
+
+            }
+
+
+            /* ---------------------------------------------
+               CHECK EXISTING FORUM
+            --------------------------------------------- */
+
+            const {
+                data: existingForum,
+                error: forumCheckError
+            } = await sb
+                .from("forum_members")
+                .select("forum_id")
+                .eq("profile_id", user.id)
+                .eq("forum_id", forumId)
+                .maybeSingle();
+
+
+            if (forumCheckError) {
+
+                console.error(
+                    "Forum membership check failed:",
+                    forumCheckError
+                );
+
+                if (infoBox) {
+
+                    infoBox.textContent =
+                        "Unable to check your forum membership.";
+
+                    infoBox.classList.remove(
+                        "hidden"
+                    );
+
+                }
+
+                return;
+
+            }
+
+
+            if (existingForum) {
+
+                if (infoBox) {
+
+                    infoBox.textContent =
+                        "You already exist in this forum.";
+
+                    infoBox.classList.remove(
+                        "hidden"
+                    );
+
+                }
+
+                return;
+
+            }
             if (submitBtn) {
 
                 submitBtn.disabled =
@@ -8966,12 +9699,6 @@ if (existingForum) {
                     throw error;
 
                 }
-
-
-                console.log(
-                    "Successfully joined forum:",
-                    data
-                );
 
 
                 /* -----------------------------------------
@@ -9216,7 +9943,7 @@ if (
             }
 
             catch (
-                error
+            error
             ) {
 
                 console.error(
@@ -9247,5 +9974,56 @@ if (
         }
 
     );
+
+}
+
+/* =========================================================
+   HEADER NAVIGATION
+========================================================= */
+
+function initializePersonalNavigation() {
+
+    const navLinks =
+        document.querySelectorAll(".personal-nav-link");
+
+    if (!navLinks.length) {
+        return;
+    }
+
+    navLinks.forEach(link => {
+
+        link.addEventListener("click", () => {
+
+            const targetId =
+                link.dataset.navTarget;
+
+            if (!targetId) {
+                return;
+            }
+
+            const target =
+                document.getElementById(targetId);
+
+            if (!target) {
+                console.warn(
+                    `Navigation target not found: #${targetId}`
+                );
+                return;
+            }
+
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+            navLinks.forEach(item => {
+                item.classList.remove("active");
+            });
+
+            link.classList.add("active");
+
+        });
+
+    });
 
 }

@@ -6207,3 +6207,155 @@ body.light-theme .team-index {
 
     box-shadow: none !important;
 }
+
+/* =========================================================
+   SMALL EDIT / PEN BUTTONS
+========================================================= */
+
+.rigid-edit-icon {
+    width: 36px;
+    height: 36px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 9px;
+
+    background: rgba(255,255,255,.03);
+    color: #8b98aa;
+
+    cursor: pointer;
+
+    transition:
+        border-color .18s ease,
+        background .18s ease,
+        color .18s ease,
+        transform .18s ease;
+}
+
+.rigid-edit-icon:hover {
+    border-color: rgba(155,92,255,.70);
+    background: rgba(155,92,255,.09);
+    color: #bd8dff;
+    transform: translateY(-1px);
+}
+
+.rigid-edit-icon svg {
+    width: 16px;
+    height: 16px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+
+/* Team / Domain card pen */
+
+.rigid-entity-edit-icon {
+    width: 28px;
+    height: 28px;
+
+    border-radius: 7px;
+}
+
+.rigid-entity-edit-icon svg {
+    width: 14px;
+    height: 14px;
+}
+
+
+/* Forum danger area */
+
+.rigid-danger-zone {
+    margin-top: 24px;
+    padding-top: 20px;
+
+    border-top: 1px solid rgba(255,90,90,.16);
+}
+
+.rigid-danger-zone-title {
+    color: #ff8080;
+
+    font-family: "JetBrains Mono", monospace;
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: .14em;
+}
+
+.rigid-danger-zone-text {
+    margin: 7px 0 14px;
+
+    opacity: .55;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* Management rows inside forum edit */
+
+.rigid-management-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.rigid-management-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 10px 12px;
+
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 9px;
+
+    background: rgba(255,255,255,.02);
+}
+
+.rigid-management-name {
+    min-width: 0;
+
+    font-weight: 600;
+}
+
+.rigid-management-type {
+    margin-top: 3px;
+
+    font-size: 10px;
+    opacity: .45;
+}
+
+.rigid-danger-full-button {
+    width: 100%;
+
+    margin-top: 14px;
+
+    padding: 10px 14px;
+
+    border: 1px solid rgba(255,90,90,.28);
+    border-radius: 9px;
+
+    background: rgba(255,70,70,.05);
+    color: #ff7777;
+
+    cursor: pointer;
+
+    font-family: inherit;
+}
+
+.rigid-danger-full-button:hover {
+    border-color: rgba(255,90,90,.60);
+    background: rgba(255,70,70,.10);
+    color: #ff9292;
+}

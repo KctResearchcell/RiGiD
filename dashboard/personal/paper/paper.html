@@ -12,7 +12,7 @@
     content="width=device-width, initial-scale=1.0"
 >
 
-<title>RiGiD — Paper</title>
+<title>Paper | RiGiD</title>
 
 
 <!-- =====================================================
@@ -267,7 +267,7 @@
                         class="paper-type"
                         id="paperType"
                     >
-                        RESEARCH PAPER
+                        PAPER TYPE
                     </span>
 
 
@@ -275,7 +275,7 @@
                         class="paper-status"
                         id="paperStatus"
                     >
-                        IN PROGRESS
+                        STATUS
                     </span>
 
 
@@ -2340,6 +2340,96 @@
 </div>
 
 <!-- =====================================================
+     VERSION MODAL
+===================================================== -->
+
+<div
+    class="paper-modal hidden"
+    id="versionModal"
+>
+
+
+    <div class="paper-modal-box">
+
+
+        <div class="modal-heading">
+
+
+            <div>
+
+                <span>
+                    DOCUMENT HISTORY
+                </span>
+
+                <h3 id="versionModalTitle">
+                    Create New Version
+                </h3>
+
+            </div>
+
+
+            <button
+                class="modal-close"
+                id="closeVersionModal"
+                type="button"
+            >
+                ×
+            </button>
+
+
+        </div>
+
+
+
+        <div class="form-field full">
+
+
+            <label>
+                Version Name
+            </label>
+
+
+            <input
+                id="versionNameInput"
+                type="text"
+                placeholder="Example: First Draft"
+            >
+
+
+        </div>
+
+
+
+        <div class="modal-actions">
+
+
+            <button
+                class="secondary-paper-button"
+                id="cancelVersion"
+                type="button"
+            >
+                Cancel
+            </button>
+
+
+            <button
+                class="primary-paper-button"
+                id="saveVersion"
+                type="button"
+            >
+                Save Version
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+<!-- =====================================================
      DELETE PAPER SECTION MODAL
 ===================================================== -->
 
@@ -3048,6 +3138,8 @@
 
 <!-- RiGiD Supabase Client -->
 <script src="../../../supabase-client.js"></script>
+
+<script src="../../../google-drive-reconnect.js"></script>
 
 <!-- Paper Logic -->
 <script src="paper.js"></script>

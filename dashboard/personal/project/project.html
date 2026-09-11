@@ -30,176 +30,137 @@
 
 <header class="project-header">
 
- 
-<div class="project-brand">
+    <div class="project-header-left">
 
-    <div class="project-brand-left">
-
-        <div class="project-badge">
-            PROJECT
-        </div>
-
-        <div
-            class="project-status"
-            id="projectStatus"
+        <button
+            class="back-button"
+            id="backToWorkspace"
+            type="button"
         >
-            ● LOADING
+            <span class="back-icon">←</span>
+            <span>Workspace</span>
+        </button>
+
+        <div class="project-brand">
+
+            <div class="project-brand-mark">
+                P
+            </div>
+
+            <div class="project-brand-text">
+
+                <div class="project-brand-name">
+                    R<span>i</span>G<span>i</span>D
+                </div>
+
+                <div class="project-brand-section">
+                    PROJECT
+                </div>
+
+            </div>
+
         </div>
 
-        <div
-            class="project-priority"
-            id="projectPriority"
+    </div>
+
+
+    <nav class="project-navigation">
+
+        <button
+            class="project-nav-item active"
+            data-section="projectOverview"
+            type="button"
         >
-            LOADING
+            Overview
+        </button>
+
+        <button
+            class="project-nav-item"
+            data-section="projectTasks"
+            type="button"
+        >
+            Tasks
+        </button>
+
+        <button
+            class="project-nav-item"
+            data-section="projectMilestones"
+            type="button"
+        >
+            Milestones
+        </button>
+
+        <button
+            class="project-nav-item"
+            data-section="projectTimeline"
+            type="button"
+        >
+            Timeline
+        </button>
+
+        <button
+            class="project-nav-item"
+            data-section="projectTesting"
+            type="button"
+        >
+            Testing
+        </button>
+
+        <button
+            class="project-nav-item"
+            data-section="projectFiles"
+            type="button"
+        >
+            Files
+        </button>
+
+        <button
+            class="project-nav-item"
+            data-section="projectHistory"
+            type="button"
+        >
+            History
+        </button>
+
+    </nav>
+
+
+    <div class="project-header-right">
+
+        <div class="project-live-time">
+
+            <span
+                class="live-date"
+                id="liveDate"
+            >
+                DD MMM YYYY
+            </span>
+
+            <span class="live-separator">
+                •
+            </span>
+
+            <span
+                class="live-clock"
+                id="liveClock"
+            >
+                10:10:00 AM
+            </span>
+
         </div>
+
+        <button
+            class="header-icon-button"
+            id="projectSettings"
+            type="button"
+            title="Settings"
+        >
+            ⚙
+        </button>
 
     </div>
-
-
-    <h1 id="projectTitle">
-        Loading Project...
-    </h1>
-
-
-    <p
-        class="project-description"
-        id="projectDescription"
-    >
-        Loading project information...
-    </p>
-
-
-    <div
-        class="project-tags"
-        id="projectTags"
-    ></div>
-
-</div>
-
-
-<div class="project-live">
-
-    <div class="live-date">
-
-        <span id="liveDate"></span>
-
-        <strong id="liveClock"></strong>
-
-    </div>
-
-
-    <div class="project-meta">
-
-        <div>
-
-            <label>
-                OWNER
-            </label>
-
-            <strong id="projectOwner">
-                -
-            </strong>
-
-        </div>
-
-
-        <div>
-
-            <label>
-                STARTED
-            </label>
-
-            <strong id="projectStarted">
-                -
-            </strong>
-
-        </div>
-
-
-        <div>
-
-            <label>
-                TARGET
-            </label>
-
-            <strong id="projectTarget">
-                -
-            </strong>
-
-        </div>
-
-    </div>
-
-</div>
- 
 
 </header>
-
-<!-- =====================================================
-     PROJECT NAVIGATION
-===================================================== -->
-
-<nav class="project-navigation">
-
- 
-<button
-    class="project-nav-item active"
-    data-section="projectOverview"
-    type="button"
->
-    Overview
-</button>
-
-<button
-    class="project-nav-item"
-    data-section="projectTasks"
-    type="button"
->
-    Tasks
-</button>
-
-<button
-    class="project-nav-item"
-    data-section="projectMilestones"
-    type="button"
->
-    Milestones
-</button>
-
-<button
-    class="project-nav-item"
-    data-section="projectTimeline"
-    type="button"
->
-    Timeline
-</button>
-
-<button
-    class="project-nav-item"
-    data-section="projectTesting"
-    type="button"
->
-    Testing
-</button>
-
-<button
-    class="project-nav-item"
-    data-section="projectFiles"
-    type="button"
->
-    Files
-</button>
-
-<button
-    class="project-nav-item"
-    data-section="projectHistory"
-    type="button"
->
-    History
-</button>
- 
-
-</nav>
 
 <main class="project-container">
 
@@ -3054,6 +3015,8 @@
 
 <!-- RiGiD Supabase Client -->
 <script src="../../../supabase-client.js"></script>
+
+<script src="../../../google-drive-reconnect.js"></script>
 
 <!-- Project Page -->
 <script src="project.js"></script>

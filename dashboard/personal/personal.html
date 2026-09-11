@@ -7,7 +7,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>RiGiD | Workspace</title>
+    <title>Workspace | RiGiD</title>
 
     <!-- =====================================================
          FONTS
@@ -53,7 +53,7 @@
         <div class="header-brand">
 
             <div class="brand-symbol">
-                RiG
+                KCT
             </div>
 
             <div>
@@ -75,9 +75,33 @@
              NAVIGATION
         ================================================== -->
 
-        <div class="header-quote">
-           <i> "And Miles to go before We Sleep" </i>
-        </div>
+        <nav class="personal-nav" aria-label="Workspace navigation">
+
+    <button class="personal-nav-link active" type="button" data-nav-target="profileSection">
+        PROFILE
+    </button>
+
+    <button class="personal-nav-link" type="button" data-nav-target="workSection">
+        STATUS
+    </button>
+
+    <button class="personal-nav-link" type="button" data-nav-target="calendarSection">
+        JOURNAL
+    </button>
+
+    <button class="personal-nav-link" type="button" data-nav-target="workCategorySection">
+        CREATIONS
+    </button>
+
+    <button class="personal-nav-link" type="button" data-nav-target="journeySection">
+        JOURNEY
+    </button>
+
+    <button class="personal-nav-link" type="button" data-nav-target="help-desk">
+        HELP
+    </button>
+
+</nav>
 
 
         <!-- =================================================
@@ -1174,7 +1198,7 @@
              ADMIN / ISSUE / SUGGESTION
         ====================================================== -->
 
-        <section class="admin-support-section">
+        <section class="admin-support-section" id="help-desk">
 
             <div class="admin-support-info">
 
@@ -2334,7 +2358,7 @@
                                 Title
                             </label>
 
-                            <input type="text" id="accoladeTitle" placeholder="e.g. Visvesvaraya Award" required>
+                            <input type="text" id="accoladeTitle" placeholder="Add Award Name" required>
 
                         </div>
 
@@ -2371,7 +2395,7 @@
                             <input type="url" id="accoladeUrl" placeholder="https://...">
 
                             <small>
-                                Add a link to the certificate, award, publication, post, or related page.
+                                
                             </small>
 
                         </div>
@@ -2491,6 +2515,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../../supabase-client.js"></script>
+    <script src="../../google-drive-reconnect.js"></script>
     <script src="personal.js"></script>
 
 

@@ -10,7 +10,7 @@
     <meta name="description" content="RiGiD Design Workspace">
 
     <title>
-        RiGiD — Design Workspace
+        Design | RiGiD
     </title>
 
 
@@ -611,7 +611,7 @@
                         </div>
 
 
-                        <div class="specification-grid" id="specificationList"></div>
+                        <div class="specification-grid" id="specificationGrid"></div>
 
 
                     </article>
@@ -688,7 +688,7 @@
                 </div>
 
 
-                <div class="component-grid" id="componentList"></div>
+                <div class="component-grid" id="componentGrid"></div>
 
 
             </section>
@@ -1064,58 +1064,25 @@
 
                     <div class="review-grid">
 
+                        <button type="button" class="review-item" data-review-field="lastReview">
+                            <span>LAST REVIEW</span>
+                            <strong>—</strong>
+                        </button>
 
-                        <div class="review-item">
+                        <button type="button" class="review-item" data-review-field="reviewer">
+                            <span>REVIEWER</span>
+                            <strong>—</strong>
+                        </button>
 
-                            <span>
-                                LAST REVIEW
-                            </span>
+                        <button type="button" class="review-item" data-review-field="result">
+                            <span>RESULT</span>
+                            <strong>—</strong>
+                        </button>
 
-                            <strong>
-                                —
-                            </strong>
-
-                        </div>
-
-
-                        <div class="review-item">
-
-                            <span>
-                                REVIEWER
-                            </span>
-
-                            <strong>
-                                —
-                            </strong>
-
-                        </div>
-
-
-                        <div class="review-item">
-
-                            <span>
-                                RESULT
-                            </span>
-
-                            <strong class="review-pending">
-                                —
-                            </strong>
-
-                        </div>
-
-
-                        <div class="review-item">
-
-                            <span>
-                                NEXT REVIEW
-                            </span>
-
-                            <strong>
-                                —
-                            </strong>
-
-                        </div>
-
+                        <button type="button" class="review-item" data-review-field="nextReview">
+                            <span>NEXT REVIEW</span>
+                            <strong>—</strong>
+                        </button>
 
                     </div>
 
@@ -1236,10 +1203,10 @@
 
 
             <!-- =================================================
-                 CHANGE LOG
+                 DESIGN TIMELINE
             ================================================== -->
 
-            <section class="section-block">
+            <section class="section-block" id="designTimelineSection">
 
 
                 <div class="section-header">
@@ -1247,19 +1214,24 @@
                     <div>
 
                         <span class="section-label">
-                            HISTORY
+                            DEVELOPMENT HISTORY
                         </span>
 
                         <h3>
-                            Change Log
+                            Design Timeline
                         </h3>
 
                     </div>
 
+
+                    <button class="timeline-section-action" type="button" id="addTimelineButton">
+                        + Add Timeline Entry
+                    </button>
+
                 </div>
 
 
-                <div class="change-log" id="changeLog"></div>
+                <div class="design-timeline" id="designTimeline"></div>
 
 
             </section>
@@ -1361,7 +1333,8 @@
 
     <!-- RiGiD Supabase Client -->
     <script src="../../../supabase-client.js"></script>
-    <script src="design.js"></script>
+    <script src="../../../google-drive-reconnect.js"></script>
+    <script src="design.js?v=20260906-timeline"></script>
 
 
 </body>

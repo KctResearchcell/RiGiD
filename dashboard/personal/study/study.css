@@ -2363,3 +2363,127 @@ select:focus-visible {
   .resource-icon { grid-area: icon; }
   .resource-info { grid-area: info; }
 }
+
+body {
+    background: #000000;
+}
+
+/* =========================================================
+   STUDY STATUS DROPDOWN
+========================================================= */
+
+.study-status-wrapper {
+    position: relative;
+    display: inline-flex;
+}
+
+
+.study-status {
+    border: none;
+    background: transparent;
+    padding: 0;
+    font: inherit;
+    font-size: smaller;
+    cursor: pointer;
+}
+
+
+.study-status-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 150px;
+    padding: 5px;
+
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+
+    z-index: 100;
+
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+
+.study-status-menu.hidden {
+    display: none;
+}
+
+
+.study-status-menu button {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: inherit;
+
+    text-align: left;
+
+    padding: 9px 11px;
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+
+.study-status-menu button:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+/* =========================================================
+   COMPLETION CELEBRATION
+========================================================= */
+
+.completion-effect {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 99999;
+}
+
+
+.completion-particle {
+    position: absolute;
+
+    top: -20px;
+
+    width: 9px;
+    height: 15px;
+
+    border-radius: 2px;
+
+    animation-name: completionFall;
+    animation-timing-function: cubic-bezier(.2,.8,.3,1);
+    animation-fill-mode: forwards;
+}
+
+
+@keyframes completionFall {
+
+    0% {
+        transform:
+            translate3d(0, -20px, 0)
+            rotate(0deg);
+
+        opacity: 1;
+    }
+
+
+    70% {
+        opacity: 1;
+    }
+
+
+    100% {
+        transform:
+            translate3d(
+                var(--particle-x),
+                105vh,
+                0
+            )
+            rotate(var(--particle-rotate));
+
+        opacity: 0;
+    }
+
+}

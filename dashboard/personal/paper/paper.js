@@ -2893,14 +2893,7 @@ function loadNextAction() {
 
 function setupPaperControls() {
     $("#backToWorkspace")?.addEventListener("click", () => {
-        // Adjust this if the app has a specific workspace URL —
-        // falling back to browser history keeps this safe by default.
-        if (window.history.length > 1) {
-            window.history.back();
-        }
-        else {
-            window.location.href = "index.html";
-        }
+        window.location.href = "../personal.html";
     });
 
     $("#saveNextAction")?.addEventListener("click", saveNextAction);

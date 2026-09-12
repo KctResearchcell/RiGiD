@@ -24,9 +24,7 @@
       rgba(11, 19, 34, 0.82) 55%,
       rgba(11, 19, 34, 0.93) 100%
     ),
-    url(
-      'https://portal.kct.ac.in/uploads/Alumni/cmsgallery/1/gallery_1_6a34fb2b3c50a2.41963046.jpg'
-    );
+    url('../assets/login-background.jpeg');
 
   background-size: cover;
   background-position: center 30%;

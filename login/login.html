@@ -5,62 +5,43 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Sign In | RiGiD</title>
 
-
+    <link rel="icon" type="image/png" href="../assets/rigid-logo.png">
     <!-- =====================================================
          FONTS
          ===================================================== -->
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap"
-        rel="stylesheet"
-    >
+        rel="stylesheet">
 
 
     <!-- =====================================================
          TAILWIND
          ===================================================== -->
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
 
     <!-- =====================================================
          GLOBAL CSS
          ===================================================== -->
 
-    <link
-        rel="stylesheet"
-        href="../styles.css"
-    >
+    <link rel="stylesheet" href="../styles.css">
 
 
     <!-- =====================================================
          LOGIN CSS
          ===================================================== -->
 
-    <link
-        rel="stylesheet"
-        href="login.css"
-    >
+    <link rel="stylesheet" href="login.css">
 
 
     <!-- =====================================================
@@ -92,9 +73,7 @@
          SUPABASE
          ===================================================== -->
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
 </head>
 
@@ -108,9 +87,7 @@
 
     <header class="header-bar">
 
-        <div
-            class="w-full px-4 sm:px-6 py-4 flex items-center justify-between"
-        >
+        <div class="w-full px-4 sm:px-6 py-4 flex items-center justify-between">
 
             <!-- BRAND -->
 
@@ -123,17 +100,12 @@
 
                 <div>
 
-                    <h1
-                        class="font-display text-lg sm:text-xl font-semibold tracking-tight"
-                    >
+                    <h1 class="font-display text-lg sm:text-xl font-semibold tracking-tight">
                         RiGiD
                     </h1>
 
 
-                    <p
-                        id="liveClock"
-                        class="font-mono text-[11px] uppercase tracking-widest text-soft mt-1"
-                    ></p>
+                    <p id="liveClock" class="font-mono text-[11px] uppercase tracking-widest text-soft mt-1"></p>
 
                 </div>
 
@@ -142,13 +114,8 @@
 
             <!-- THEME -->
 
-            <button
-                id="themeToggle"
-                class="icon-btn"
-                type="button"
-                title="Toggle dark mode"
-                aria-label="Toggle dark mode"
-            >
+            <button id="themeToggle" class="icon-btn" type="button" title="Toggle dark mode"
+                aria-label="Toggle dark mode">
 
                 <span id="themeIcon">
                     ☾
@@ -166,9 +133,7 @@
          MAIN
          ===================================================== -->
 
-    <main
-        class="flex-1 flex flex-col items-center justify-center px-4 py-10"
-    >
+    <main class="flex-1 flex flex-col items-center justify-center px-4 py-10">
 
 
         <!-- =================================================
@@ -205,20 +170,12 @@
 
             <div class="auth-tabs">
 
-                <button
-                    id="tabLogin"
-                    class="auth-tab is-active"
-                    type="button"
-                >
+                <button id="tabLogin" class="auth-tab is-active" type="button">
                     Log In
                 </button>
 
 
-                <button
-                    id="tabSignup"
-                    class="auth-tab"
-                    type="button"
-                >
+                <button id="tabSignup" class="auth-tab" type="button">
                     Sign Up
                 </button>
 
@@ -230,11 +187,7 @@
                  GLOBAL MESSAGE
                  ================================================= -->
 
-            <div
-                id="authMessage"
-                class="auth-message hidden"
-                role="alert"
-            ></div>
+            <div id="authMessage" class="auth-message hidden" role="alert"></div>
 
 
 
@@ -242,32 +195,20 @@
                  LOGIN FORM
                  ================================================= -->
 
-            <form
-                id="loginForm"
-                class="auth-form"
-            >
+            <form id="loginForm" class="auth-form">
 
 
                 <!-- EMAIL -->
 
                 <div>
 
-                    <label
-                        class="field-label"
-                        for="loginEmail"
-                    >
+                    <label class="field-label" for="loginEmail">
                         Username
                     </label>
 
 
-                    <input
-                        id="loginEmail"
-                        type="email"
-                        class="field-input"
-                        placeholder="you@kct.ac.in"
-                        autocomplete="username"
-                        required
-                    >
+                    <input id="loginEmail" type="email" class="field-input" placeholder="example@gmail.com"
+                        autocomplete="username" required>
 
                 </div>
 
@@ -277,21 +218,13 @@
 
                 <div>
 
-                    <label
-                        class="field-label"
-                        for="loginPassword"
-                    >
+                    <label class="field-label" for="loginPassword">
                         Password
                     </label>
 
 
-                    <input
-                        id="loginPassword"
-                        type="password"
-                        class="field-input"
-                        autocomplete="current-password"
-                        required
-                    >
+                    <input id="loginPassword" type="password" class="field-input" autocomplete="current-password"
+                        required>
 
                 </div>
 
@@ -299,10 +232,7 @@
 
                 <!-- LOGIN -->
 
-                <button
-                    type="submit"
-                    class="btn-primary w-full justify-center"
-                >
+                <button type="submit" class="btn-primary w-full justify-center">
                     Log In
                 </button>
 
@@ -314,10 +244,7 @@
                  SIGNUP FORM
                  ================================================= -->
 
-            <form
-                id="signupForm"
-                class="auth-form hidden"
-            >
+            <form id="signupForm" class="auth-form hidden">
 
 
                 <!-- =================================================
@@ -333,22 +260,13 @@
 
                     <div>
 
-                        <label
-                            class="field-label"
-                            for="signupEmail"
-                        >
+                        <label class="field-label" for="signupEmail">
                             KCT Email
                         </label>
 
 
-                        <input
-                            id="signupEmail"
-                            type="email"
-                            class="field-input"
-                            placeholder="you@kct.ac.in"
-                            autocomplete="email"
-                            required
-                        >
+                        <input id="signupEmail" type="email" class="field-input" placeholder="example@gmail.com"
+                            autocomplete="email" required>
 
                     </div>
 
@@ -360,10 +278,7 @@
 
                     <div>
 
-                        <label
-                            class="field-label"
-                            for="signupForum"
-                        >
+                        <label class="field-label" for="signupForum">
                             Forum
                             <span class="required-mark">
                                 *
@@ -371,16 +286,9 @@
                         </label>
 
 
-                        <select
-                            id="signupForum"
-                            class="field-input"
-                        >
+                        <select id="signupForum" class="field-input">
 
-                            <option
-                                value=""
-                                selected
-                                disabled
-                            >
+                            <option value="" selected disabled>
                                 Select your forum
                             </option>
 
@@ -399,10 +307,7 @@
                          SELECTED FORUMS
                          ================================================= -->
 
-                    <div
-                        id="selectedForumsContainer"
-                        class="selected-forums-container"
-                    ></div>
+                    <div id="selectedForumsContainer" class="selected-forums-container"></div>
 
 
 
@@ -412,22 +317,13 @@
 
                     <div>
 
-                        <label
-                            class="field-label"
-                            for="signupPassword"
-                        >
+                        <label class="field-label" for="signupPassword">
                             Create Password
                         </label>
 
 
-                        <input
-                            id="signupPassword"
-                            type="password"
-                            class="field-input"
-                            minlength="8"
-                            autocomplete="new-password"
-                            required
-                        >
+                        <input id="signupPassword" type="password" class="field-input" minlength="8"
+                            autocomplete="new-password" required>
 
                     </div>
 
@@ -439,22 +335,13 @@
 
                     <div>
 
-                        <label
-                            class="field-label"
-                            for="signupPassword2"
-                        >
+                        <label class="field-label" for="signupPassword2">
                             Confirm Password
                         </label>
 
 
-                        <input
-                            id="signupPassword2"
-                            type="password"
-                            class="field-input"
-                            minlength="8"
-                            autocomplete="new-password"
-                            required
-                        >
+                        <input id="signupPassword2" type="password" class="field-input" minlength="8"
+                            autocomplete="new-password" required>
 
                     </div>
 
@@ -464,11 +351,7 @@
                          SEND VERIFICATION
                          ================================================= -->
 
-                    <button
-                        id="sendVerificationBtn"
-                        type="button"
-                        class="btn-secondary w-full justify-center"
-                    >
+                    <button id="sendVerificationBtn" type="button" class="btn-secondary w-full justify-center">
                         Send Verification Link
                     </button>
 
@@ -478,16 +361,9 @@
                          RESEND VERIFICATION
                          ================================================= -->
 
-                    <div
-                        id="resendVerificationBox"
-                        class="resend-verification-box hidden"
-                    >
+                    <div id="resendVerificationBox" class="resend-verification-box hidden">
 
-                        <button
-                            id="resendVerificationBtn"
-                            type="button"
-                            class="resend-link"
-                        >
+                        <button id="resendVerificationBtn" type="button" class="resend-link">
                             Resend verification link
                         </button>
 
@@ -499,10 +375,7 @@
                          VERIFICATION STATUS
                          ================================================= -->
 
-                    <p
-                        id="verificationStatus"
-                        class="field-hint hidden"
-                    ></p>
+                    <p id="verificationStatus" class="field-hint hidden"></p>
 
                 </div>
 
@@ -512,10 +385,7 @@
                      GOOGLE DIVIDER
                      ================================================= -->
 
-                <div
-                    class="auth-divider"
-                    id="googleDivider"
-                >
+                <div class="auth-divider" id="googleDivider">
 
                     <span>
                         OR
@@ -529,11 +399,7 @@
                      GOOGLE SIGNUP BUTTON
                      ================================================= -->
 
-                <button
-                    id="googleSignupBtn"
-                    type="button"
-                    class="google-btn"
-                >
+                <button id="googleSignupBtn" type="button" class="google-btn">
 
                     <span class="google-icon">
                         G
@@ -549,10 +415,7 @@
                      GOOGLE PROFILE SETUP
                      ================================================= -->
 
-                <div
-                    id="googleProfileSetup"
-                    class="google-profile-setup hidden"
-                >
+                <div id="googleProfileSetup" class="google-profile-setup hidden">
 
 
                     <!-- =================================================
@@ -561,16 +424,10 @@
 
                     <div class="google-user-info">
 
-                        <div
-                            id="googleUserName"
-                            class="google-user-name"
-                        ></div>
+                        <div id="googleUserName" class="google-user-name"></div>
 
 
-                        <div
-                            id="googleUserEmail"
-                            class="google-user-email"
-                        ></div>
+                        <div id="googleUserEmail" class="google-user-email"></div>
 
                     </div>
 
@@ -582,10 +439,7 @@
 
                     <div>
 
-                        <label
-                            class="field-label"
-                            for="googleForum"
-                        >
+                        <label class="field-label" for="googleForum">
                             Forum
                             <span class="required-mark">
                                 *
@@ -593,16 +447,9 @@
                         </label>
 
 
-                        <select
-                            id="googleForum"
-                            class="field-input"
-                        >
+                        <select id="googleForum" class="field-input">
 
-                            <option
-                                value=""
-                                selected
-                                disabled
-                            >
+                            <option value="" selected disabled>
                                 Select your forum
                             </option>
 
@@ -621,10 +468,7 @@
                          GOOGLE SELECTED FORUMS
                          ================================================= -->
 
-                    <div
-                        id="googleSelectedForumsContainer"
-                        class="selected-forums-container"
-                    ></div>
+                    <div id="googleSelectedForumsContainer" class="selected-forums-container"></div>
 
 
 
@@ -639,21 +483,13 @@
 
                         <div>
 
-                            <label
-                                class="field-label"
-                                for="googlePassword"
-                            >
+                            <label class="field-label" for="googlePassword">
                                 Create Password
                             </label>
 
 
-                            <input
-                                id="googlePassword"
-                                type="password"
-                                class="field-input"
-                                minlength="8"
-                                autocomplete="new-password"
-                            >
+                            <input id="googlePassword" type="password" class="field-input" minlength="8"
+                                autocomplete="new-password">
 
                         </div>
 
@@ -663,21 +499,13 @@
 
                         <div>
 
-                            <label
-                                class="field-label"
-                                for="googlePassword2"
-                            >
+                            <label class="field-label" for="googlePassword2">
                                 Confirm Password
                             </label>
 
 
-                            <input
-                                id="googlePassword2"
-                                type="password"
-                                class="field-input"
-                                minlength="8"
-                                autocomplete="new-password"
-                            >
+                            <input id="googlePassword2" type="password" class="field-input" minlength="8"
+                                autocomplete="new-password">
 
                         </div>
 
@@ -694,11 +522,7 @@
                          GOOGLE REQUEST ACCESS
                          ================================================= -->
 
-                    <button
-                        id="googleRequestAccessBtn"
-                        type="button"
-                        class="btn-primary w-full justify-center"
-                    >
+                    <button id="googleRequestAccessBtn" type="button" class="btn-primary w-full justify-center">
                         Request Access
                     </button>
 
@@ -710,11 +534,7 @@
 
                     <div class="resend-verification-box">
 
-                        <button
-                            id="googleUseDifferentAccountBtn"
-                            type="button"
-                            class="resend-link"
-                        >
+                        <button id="googleUseDifferentAccountBtn" type="button" class="resend-link">
                             Not you? Use a different Google account
                         </button>
 
@@ -728,12 +548,7 @@
                      NORMAL REQUEST ACCESS
                      ================================================= -->
 
-                <button
-                    id="requestAccessBtn"
-                    type="submit"
-                    class="btn-primary w-full justify-center"
-                    disabled
-                >
+                <button id="requestAccessBtn" type="submit" class="btn-primary w-full justify-center" disabled>
                     Request Access
                 </button>
 
@@ -752,14 +567,16 @@
 
     <footer class="border-t border-token">
 
-        <div
-            class="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-center"
-        >
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-center">
 
-            <p
-                class="font-mono text-[11px] text-soft"
-            >
+            <p class="font-mono text-[11px] text-soft">
                 RiGiD · A Project Manager
+                <span class="mx-1">|</span>
+                <a href="../read-me.html">Read Me</a>
+                <span class="mx-1">|</span>
+                <a href="../terms.html">Terms</a>
+                <span class="mx-1">|</span>
+                <a href="../privacy-policy.html">Privacy</a>
             </p>
 
         </div>
@@ -772,9 +589,7 @@
          SUPABASE CLIENT
          ===================================================== -->
 
-    <script
-        src="../supabase-client.js"
-    ></script>
+    <script src="../supabase-client.js"></script>
 
     <script src="../google-drive-reconnect.js"></script>
 
@@ -782,9 +597,7 @@
          LOGIN LOGIC
          ===================================================== -->
 
-    <script
-        src="login.js"
-    ></script>
+    <script src="login.js"></script>
 
 </body>
 

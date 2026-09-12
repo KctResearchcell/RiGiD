@@ -66,9 +66,8 @@
 
 const LOGIN_CONFIG = {
 
-  ALLOWED_EMAIL_DOMAIN:
-    "@kct.ac.in",
-
+  // No email-domain restriction.
+  // Any valid email address may create an account.
   ADMIN_DASHBOARD_URL:
     "../dashboard/admin/admin.html",
 
@@ -1229,19 +1228,8 @@ async function sendVerificationLink() {
   }
 
 
-  if (
-    !email.endsWith(
-      LOGIN_CONFIG.ALLOWED_EMAIL_DOMAIN
-    )
-  ) {
-
-    showMessage(
-      "Please use your @kct.ac.in email address."
-    );
-
-    return;
-
-  }
+  // Email signup is open to any valid email address.
+  // Google signup is also open to any Google account.
 
 
   if (
@@ -1399,7 +1387,7 @@ async function sendVerificationLink() {
 
 
     setVerificationStatus(
-      "✓ Verification link sent. Check your KCT email.",
+      "✓ Verification link sent. Check your email.",
       "ok"
     );
 
@@ -1479,7 +1467,7 @@ async function resendVerificationLink() {
   if (!email) {
 
     showMessage(
-      "Enter your KCT email address first."
+      "Enter your email address first."
     );
 
     return;

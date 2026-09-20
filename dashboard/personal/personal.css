@@ -157,19 +157,28 @@ a {
 }
 
 .brand-symbol {
-    width: 40px;
+    width: 55px;
     height: 40px;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    white-space: nowrap;
+    flex-shrink: 0;
+
     border-radius: 12px;
-    font-family: "JetBrains Mono",
-        monospace;
+
+    font-family: "JetBrains Mono", monospace;
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.05em;
-    background: linear-gradient(135deg,
-            rgba(77, 166, 255, 0.2),
-            rgba(169, 120, 255, 0.2));
+
+    background: linear-gradient(
+        135deg,
+        rgba(77, 166, 255, 0.2),
+        rgba(169, 120, 255, 0.2)
+    );
+
     border: 1px solid rgba(255, 255, 255, 0.13);
 }
 
@@ -5604,4 +5613,7 @@ html {
 
 .feedback-submit-btn {
     font-size: 10px;
+}
+.orange {
+    color: orange;
 }

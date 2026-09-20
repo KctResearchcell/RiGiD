@@ -6359,3 +6359,33 @@ body.light-theme .team-index {
     background: rgba(255,70,70,.10);
     color: #ff9292;
 }
+
+/* =========================================================
+   GLOBAL FIX — SHOW ALL TEAMS & DOMAINS IN EVERY FORUM
+========================================================= */
+
+.forum-section {
+    height: auto !important;
+    min-height: 350px !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+.forum-content {
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.forum-column {
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.card-grid {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+}
+.orange {
+    color: orange;
+}

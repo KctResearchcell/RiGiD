@@ -2520,9 +2520,20 @@ async function signUpWithGoogle() {
 
       provider: "google",
 
-      options: {
-        redirectTo:
-          LOGIN_CONFIG.LOGIN_REDIRECT_URL
+       options: {
+         redirectTo:
+          LOGIN_CONFIG.LOGIN_REDIRECT_URL,
+
+        // Request only access to files RiGiD creates or opens itself.
+        scopes:
+          "https://www.googleapis.com/auth/drive.file",
+
+        // The existing Edge Function completes the durable, server-side
+        // Drive connection after the Supabase OAuth callback.
+        queryParams: {
+          access_type: "offline",
+          prompt: "consent"
+        }
       }
 
     });
@@ -3352,18 +3363,15 @@ async function checkExistingSession() {
       el("tabSignup")?.click();
 
 
-      /*
-       * Google authentication is handled separately
-       * from Google Drive connection.
-       *
-       * DO NOT automatically start Google Drive OAuth
-       * after Google sign-in.
-       *
-       * Google Drive will be connected explicitly later
-       * through the Connect Google Drive action.
-       */
+      const driveConnection =
+        await startAutomaticGoogleDriveReconnect(session);
 
-      await setupGoogleUser(user);
+      // The existing secure Drive OAuth flow has redirected to Google.
+      if (driveConnection?.redirected) {
+        return;
+      }
+
+      await setupGoogleUser(user, driveConnection);
 
       return;
     }
@@ -3438,7 +3446,8 @@ function initAuthStateListener() {
    ========================================================================= */
 
 async function setupGoogleUser(
-  user
+  user,
+  driveConnection = null
 ) {
 
   if (!user) {
@@ -3563,6 +3572,17 @@ async function setupGoogleUser(
   if (
     profile.status === "pending"
   ) {
+
+    showMessage(
+      driveConnection?.connected
+        ? "Google sign-in and Google Drive authorization are complete. Your account is waiting for admin approval."
+        : "Google sign-in is complete, but Google Drive permission is required for RiGiD file storage. Please try Continue with Google again and approve Drive access."
+    );
+
+    return;
+
+    /* Legacy profile-setup handling below is intentionally unreachable for
+       the simplified Google-only signup. */
 
     const [
       forumResult,
@@ -4453,16 +4473,6 @@ document.addEventListener(
 
     initTabs();
 
-    initForumSelection();
-
-
-    /* -----------------------------------------------------
-       Load database data
-       ----------------------------------------------------- */
-
-    await loadForumData();
-
-
     /* -----------------------------------------------------
        Auth listener
        ----------------------------------------------------- */
@@ -4471,17 +4481,25 @@ document.addEventListener(
 
 
     /* -----------------------------------------------------
-       Existing session
-       ----------------------------------------------------- */
-
-    await checkExistingSession();
-
-
-    /* -----------------------------------------------------
        GOOGLE DRIVE CALLBACK
        ----------------------------------------------------- */
 
+    const googleDriveCallbackStatus =
+      new URLSearchParams(window.location.search)
+        .get("google_drive");
+
     await handleGoogleDriveCallback();
+
+
+    /* -----------------------------------------------------
+       Existing session
+       ----------------------------------------------------- */
+
+    // A declined Drive consent is already explained by the callback. Do not
+    // immediately launch another OAuth redirect in the same page visit.
+    if (googleDriveCallbackStatus !== "error") {
+      await checkExistingSession();
+    }
 
 
     /* -----------------------------------------------------
@@ -4492,35 +4510,6 @@ document.addEventListener(
       ?.addEventListener(
         "submit",
         loginUser
-      );
-
-
-    /* -----------------------------------------------------
-       NORMAL ACCESS REQUEST
-       ----------------------------------------------------- */
-
-    el("signupForm")
-      ?.addEventListener(
-        "submit",
-        requestAccess
-      );
-
-
-    /* -----------------------------------------------------
-       VERIFICATION
-       ----------------------------------------------------- */
-
-    el("sendVerificationBtn")
-      ?.addEventListener(
-        "click",
-        sendVerificationLink
-      );
-
-
-    el("resendVerificationBtn")
-      ?.addEventListener(
-        "click",
-        resendVerificationLink
       );
 
 
@@ -4538,26 +4527,6 @@ if (googleSignupButton) {
 
 }
 
-
-    el("connectGoogleDriveBtn")
-      ?.addEventListener(
-        "click",
-        connectGoogleDrive
-      );
-
-
-    el("googleRequestAccessBtn")
-      ?.addEventListener(
-        "click",
-        submitGoogleAccessRequest
-      );
-
-
-    el("googleUseDifferentAccountBtn")
-      ?.addEventListener(
-        "click",
-        useDifferentGoogleAccount
-      );
 
   }
 );

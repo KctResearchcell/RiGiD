@@ -613,6 +613,18 @@ function installRiGiDFetchInterceptor() {
 
 function handleRiGiDGoogleCallback() {
 
+    /*
+     * login.js owns the signup callback. Leaving it intact lets that page
+     * verify the newly written connection before it evaluates the session.
+     */
+    if (
+        window.location.pathname
+            .toLowerCase()
+            .includes("/login/")
+    ) {
+        return;
+    }
+
     const params =
         new URLSearchParams(
             window.location.search

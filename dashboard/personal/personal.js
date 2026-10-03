@@ -4453,23 +4453,10 @@ function updateCreateModalTitle(type) {
 
 async function handleCreateSubmit(event) {
 
-    if (viewingOtherProfile) {
-
-        event.preventDefault();
-
-        showToast(
-            "You cannot create work in another member's workspace."
-        );
-
-        return;
-
-    }
-
     event.preventDefault();
 
-
     /* =================================================
-       CURRENT USER
+       GET CURRENT USER
     ================================================= */
 
     const {
@@ -4477,14 +4464,10 @@ async function handleCreateSubmit(event) {
         error: authError
     } = await sb.auth.getUser();
 
-
-    if (
-        authError ||
-        !user
-    ) {
+    if (authError || !user) {
 
         showToast(
-            "You must be logged in."
+            "Please log in first."
         );
 
         return;
@@ -4493,60 +4476,42 @@ async function handleCreateSubmit(event) {
 
 
     /* =================================================
-       VALUES
+       READ FORM DATA
     ================================================= */
 
     const type =
         currentCreateType;
 
     const forumId =
-        getInputValue("createForum");
+        getElement("createForum")?.value || "";
 
-    const target =
-        getInputValue("createTarget");
+    const targetValue =
+        getElement("createTarget")?.value || "";
 
     const title =
-        getInputValue("createName");
+        getElement("createName")?.value.trim() || "";
 
     const description =
-        getInputValue("createDescription");
+        getElement("createDescription")?.value.trim() || "";
 
     const startDate =
-        getInputValue("createDate");
+        getElement("createDate")?.value || "";
 
     const endDate =
-        getInputValue("createEndDate");
+        getElement("createEndDate")?.value || "";
 
     const status =
-        getInputValue("createStatus") ||
-        "ongoing";
-    let teamId = null;
-    let domainId = null;
+        getElement("createStatus")?.value || "ongoing";
 
-
-    if (target.startsWith("team:")) {
-
-        teamId =
-            target.substring(5);
-
-    }
-
-
-    if (target.startsWith("domain:")) {
-
-        domainId =
-            target.substring(7);
-
-    }
 
     /* =================================================
-       VALIDATION
+       BASIC VALIDATION
     ================================================= */
 
     if (!type) {
 
         showToast(
-            "Please select what you want to create."
+            "Invalid work type."
         );
 
         return;
@@ -4557,7 +4522,7 @@ async function handleCreateSubmit(event) {
     if (!forumId) {
 
         showToast(
-            "Please select exactly one forum."
+            "Please select a forum."
         );
 
         return;
@@ -4565,23 +4530,10 @@ async function handleCreateSubmit(event) {
     }
 
 
-    const hasTeam =
-        Boolean(teamId);
-
-    const hasDomain =
-        Boolean(domainId);
-
-
-    /*
-     * EXACTLY ONE TARGET
-     */
-
-    if (
-        hasTeam === hasDomain
-    ) {
+    if (!targetValue) {
 
         showToast(
-            "Select exactly one team OR one domain."
+            "Please select a team or domain."
         );
 
         return;
@@ -4592,7 +4544,7 @@ async function handleCreateSubmit(event) {
     if (!title) {
 
         showToast(
-            "Please enter a title."
+            "Please enter a name."
         );
 
         return;
@@ -4611,13 +4563,42 @@ async function handleCreateSubmit(event) {
     }
 
 
+    /* =================================================
+       DETERMINE TEAM / DOMAIN
+    ================================================= */
+
+    let teamId = null;
+    let domainId = null;
+
+
     if (
-        endDate &&
-        endDate < startDate
+        targetValue.startsWith("team:")
     ) {
 
+        teamId =
+            targetValue.replace(
+                "team:",
+                ""
+            );
+
+    }
+    else if (
+        targetValue.startsWith("domain:")
+    ) {
+
+        domainId =
+            targetValue.replace(
+                "domain:",
+                ""
+            );
+
+    }
+
+
+    if (!teamId && !domainId) {
+
         showToast(
-            "End date cannot be before start date."
+            "Please select a valid team or domain."
         );
 
         return;
@@ -4625,335 +4606,403 @@ async function handleCreateSubmit(event) {
     }
 
 
-
     /* =================================================
-       VERIFY TEAM / DOMAIN BELONGS TO FORUM
+       CLOSE MODAL IMMEDIATELY
+       
+       IMPORTANT:
+       Nothing below this point should keep the
+       Create modal open.
     ================================================= */
-
-    if (hasTeam) {
-
-        /* =================================================
-    VERIFY USER BELONGS TO SELECTED TEAM
- ================================================= */
-
-        const {
-            data: teamMembership,
-            error: teamMembershipError
-        } = await sb
-            .from("team_members")
-            .select("team_id")
-            .eq("profile_id", user.id)
-            .eq("team_id", teamId)
-            .maybeSingle();
-
-
-        if (
-            teamMembershipError ||
-            !teamMembership
-        ) {
-
-            console.error(
-                "Team membership validation failed:",
-                teamMembershipError
-            );
-
-            showToast(
-                "You are not a member of the selected team."
-            );
-
-            return;
-
-        }
-
-    }
-
-
-    if (hasDomain) {
-
-        /* =================================================
-    VERIFY USER BELONGS TO SELECTED DOMAIN
- ================================================= */
-
-        const {
-            data: domainMembership,
-            error: domainMembershipError
-        } = await sb
-            .from("domain_members")
-            .select("domain_id")
-            .eq("profile_id", user.id)
-            .eq("domain_id", domainId)
-            .maybeSingle();
-
-
-        if (
-            domainMembershipError ||
-            !domainMembership
-        ) {
-
-            console.error(
-                "Domain membership validation failed:",
-                domainMembershipError
-            );
-
-            showToast(
-                "You are not a member of the selected domain."
-            );
-
-            return;
-
-        }
-
-    }
-
-
-    /* =================================================
-       INSERT INTO SUPABASE
-    ================================================= */
-
-
-    const payload = {
-
-        profile_id:
-            user.id,
-
-        forum_id:
-            forumId,
-
-        team_id:
-            hasTeam
-                ? teamId
-                : null,
-
-        domain_id:
-            hasDomain
-                ? domainId
-                : null,
-
-        title:
-            title,
-
-        description:
-            description || null,
-
-        category:
-            type,
-
-        status:
-            status,
-
-        start_date:
-            startDate,
-
-        end_date:
-            endDate || null
-
-    };
-
-    const {
-        data,
-        error
-    } = await sb
-        .from("personal_work")
-        .insert(payload)
-        .select()
-        .single();
-
-
-    if (error) {
-
-        console.error(
-            "Create work error:",
-            error
-        );
-
-        showToast(
-            error.message ||
-            "Unable to create work."
-        );
-
-        return;
-
-    }
-    /* =================================================
-       CREATE GOOGLE DRIVE WORK FOLDER
-    ================================================= */
-
-    try {
-
-        const {
-            data: {
-                session
-            }
-        } =
-            await sb.auth.getSession();
-
-
-        if (
-            !session
-        ) {
-
-            throw new Error(
-                "No active session."
-            );
-
-        }
-
-
-        const driveResponse =
-            await fetch(
-
-                "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/create-rigid-drive-item",
-
-                {
-
-                    method:
-                        "POST",
-
-                    headers: {
-
-                        "Authorization":
-                            `Bearer ${session.access_token}`,
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:
-
-                        JSON.stringify({
-
-                            type:
-                                data.category,
-
-                            title:
-                                data.title,
-
-                            work_id:
-                                data.id
-
-                        })
-
-                }
-
-            );
-
-
-        const driveResult =
-            await driveResponse.json();
-
-
-        if (
-            !driveResponse.ok ||
-            !driveResult.success
-        ) {
-
-            console.error(
-                "Google Drive folder creation failed:",
-                driveResult
-            );
-
-
-            showToast(
-                "Work was created, but its Drive folder could not be created."
-            );
-
-        }
-
-        else {
-
-        }
-
-    }
-
-    catch (
-    driveError
-    ) {
-
-        console.error(
-            "Drive creation error:",
-            driveError
-        );
-
-
-        showToast(
-            "Work was created, but Drive folder creation failed."
-        );
-
-    }
-
-    /* =================================================
-       ADD REAL DATABASE RECORD TO MEMORY
-    ================================================= */
-
-    workItems.unshift({
-
-        id:
-            data.id,
-
-        type:
-            data.category,
-
-        title:
-            data.title,
-
-        description:
-            data.description || "",
-
-        status:
-            data.status,
-
-        startDate:
-            data.start_date,
-
-        endDate:
-            data.end_date || "",
-
-        updatedDate:
-            data.updated_at
-                ? data.updated_at.slice(0, 10)
-                : data.start_date,
-
-        createdAt:
-            data.created_at,
-
-        forumId:
-            data.forum_id,
-
-        teamId:
-            data.team_id,
-
-        domainId:
-            data.domain_id
-
-    });
-
-
-    /* =================================================
-       REFRESH UI
-    ================================================= */
-
-    renderWorkCategoryColumns();
-
-    renderAllTimelines();
-
-    renderCalendar();
-
-    loadSelectedDateActivities();
-
-    loadStatistics();
-
 
     closeCreateModal();
 
 
     showToast(
-        `${capitalize(type)} created successfully.`
+        `Creating ${capitalize(type)}...`
     );
 
+
+    /* =================================================
+       BACKGROUND CREATION
+    ================================================= */
+
+    try {
+
+        /* ---------------------------------------------
+           VERIFY TEAM MEMBERSHIP
+        --------------------------------------------- */
+
+        if (teamId) {
+
+            const {
+                data: teamMembership,
+                error: teamError
+            } = await sb
+                .from("team_members")
+                .select("id")
+                .eq(
+                    "team_id",
+                    teamId
+                )
+                .eq(
+                    "profile_id",
+                    user.id
+                )
+                .maybeSingle();
+
+
+            if (
+                teamError ||
+                !teamMembership
+            ) {
+
+                console.error(
+                    "Team membership verification failed:",
+                    teamError
+                );
+
+                showToast(
+                    "You are not a member of this team."
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        /* ---------------------------------------------
+           VERIFY DOMAIN MEMBERSHIP
+        --------------------------------------------- */
+
+        if (domainId) {
+
+            const {
+                data: domainMembership,
+                error: domainError
+            } = await sb
+                .from("domain_members")
+                .select("id")
+                .eq(
+                    "domain_id",
+                    domainId
+                )
+                .eq(
+                    "profile_id",
+                    user.id
+                )
+                .maybeSingle();
+
+
+            if (
+                domainError ||
+                !domainMembership
+            ) {
+
+                console.error(
+                    "Domain membership verification failed:",
+                    domainError
+                );
+
+                showToast(
+                    "You are not a member of this domain."
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        /* ---------------------------------------------
+           BUILD DATABASE PAYLOAD
+           
+           Use the same column names used by the
+           rest of this file:
+           profile_id + category
+        --------------------------------------------- */
+
+        const payload = {
+
+            profile_id:
+                user.id,
+
+            forum_id:
+                forumId,
+
+            team_id:
+                teamId,
+
+            domain_id:
+                domainId,
+
+            category:
+                type,
+
+            title:
+                title,
+
+            description:
+                description,
+
+            start_date:
+                startDate,
+
+            end_date:
+                endDate || null,
+
+            status:
+                status
+
+        };
+
+
+        /* ---------------------------------------------
+           INSERT INTO SUPABASE
+        --------------------------------------------- */
+
+        const {
+            data,
+            error
+        } = await sb
+            .from("personal_work")
+            .insert(payload)
+            .select()
+            .single();
+
+
+        if (error) {
+
+            console.error(
+                "Error creating work:",
+                error
+            );
+
+            showToast(
+                "Failed to create work."
+            );
+
+            return;
+
+        }
+
+
+        /* =================================================
+           CONVERT DATABASE ROW → FRONTEND WORK ITEM
+        ================================================= */
+
+        const newWorkItem = {
+
+            id:
+                data.id,
+
+            type:
+                String(
+                    data.category || type
+                ).toLowerCase(),
+
+            title:
+                data.title,
+
+            description:
+                data.description || "",
+
+            status:
+                data.status || "ongoing",
+
+            startDate:
+                data.start_date,
+
+            endDate:
+                data.end_date || "",
+
+            createdAt:
+                data.created_at,
+
+            updatedDate:
+                data.updated_at
+                    ? data.updated_at.slice(0, 10)
+                    : data.start_date,
+
+            forumId:
+                data.forum_id,
+
+            teamId:
+                data.team_id,
+
+            domainId:
+                data.domain_id
+
+        };
+
+
+        /* ---------------------------------------------
+           ADD TO LOCAL DATA
+        --------------------------------------------- */
+
+        workItems.unshift(
+            newWorkItem
+        );
+
+
+        /* ---------------------------------------------
+           UPDATE UI
+        --------------------------------------------- */
+
+        renderWorkCategoryColumns();
+
+        renderAllTimelines();
+
+        renderCalendar();
+
+        loadSelectedDateActivities();
+
+        loadStatistics();
+
+
+        /* ---------------------------------------------
+           SUCCESS
+        --------------------------------------------- */
+
+        showToast(
+            `${capitalize(type)} created successfully.`
+        );
+
+
+        /* =================================================
+           GOOGLE DRIVE
+           
+           Completely independent from the modal.
+           This happens AFTER the work has already
+           been created.
+        ================================================= */
+
+        (async () => {
+
+            try {
+
+                const {
+                    data: sessionData
+                } = await sb.auth.getSession();
+
+
+                const session =
+                    sessionData?.session;
+
+
+                if (
+                    !session?.access_token
+                ) {
+
+                    console.warn(
+                        "No active session for Google Drive creation."
+                    );
+
+                    return;
+
+                }
+
+
+                const driveResponse =
+                    await fetch(
+
+                        "https://mmmsmncmskvuqyhaqcne.supabase.co/functions/v1/create-rigid-drive-item",
+
+                        {
+
+                            method:
+                                "POST",
+
+                            headers: {
+
+                                "Authorization":
+                                    `Bearer ${session.access_token}`,
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    type:
+                                        data.category || type,
+
+                                    title:
+                                        data.title,
+
+                                    work_id:
+                                        data.id
+
+                                })
+
+                        }
+
+                    );
+
+
+                if (
+                    !driveResponse.ok
+                ) {
+
+                    const errorText =
+                        await driveResponse.text();
+
+                    console.error(
+                        "Google Drive folder creation failed:",
+                        driveResponse.status,
+                        errorText
+                    );
+
+                    showToast(
+                        "Work created, but the Google Drive folder could not be created."
+                    );
+
+                    return;
+
+                }
+
+
+                console.log(
+                    "Google Drive folder created successfully."
+                );
+
+            }
+            catch (
+                driveError
+            ) {
+
+                console.error(
+                    "Google Drive creation error:",
+                    driveError
+                );
+
+                showToast(
+                    "Work created, but the Google Drive folder could not be created."
+                );
+
+            }
+
+        })();
+
+    }
+    catch (error) {
+
+        console.error(
+            "Unexpected work creation error:",
+            error
+        );
+
+        showToast(
+            "Something went wrong while creating the work."
+        );
+
+    }
+
 }
-
-
 /* =========================================================
    CLOSE CREATE MODAL
 ========================================================= */

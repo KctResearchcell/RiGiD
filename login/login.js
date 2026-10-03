@@ -43,19 +43,17 @@
 
        Google Login
             ↓
-       Check Drive connection
+       RiGiD profile setup
             ↓
-       Connected → continue
+       User clicks "Connect Google Drive"
             ↓
-       Not connected → automatic Google Drive OAuth
-            ↓
-       Google authorization
+       Google Drive OAuth
             ↓
        connect-google-drive
             ↓
        login.html?google_drive=connected
             ↓
-       Continue normally
+       Drive connected → continue
 
    ========================================================================= */
 
@@ -119,7 +117,8 @@ let googleSelectedForums = new Set();
 let resendCountdownTimer = null;
 let verificationTimer = null;
 
-
+// Prevent Google OAuth from being started more than once
+let googleOAuthInProgress = false;
 /* =========================================================================
    HELPER
    ========================================================================= */
@@ -2479,64 +2478,54 @@ async function loginUser(event) {
 
 async function signUpWithGoogle() {
 
+  // HARD LOCK:
+  // Prevent multiple OAuth requests from being launched.
+  if (googleOAuthInProgress) {
+    console.log("Google OAuth already in progress.");
+    return;
+  }
+
+  googleOAuthInProgress = true;
+
   clearMessage();
 
-
-  const button =
-    el("googleSignupBtn");
-
+  const button = el("googleSignupBtn");
 
   if (!button) {
+    googleOAuthInProgress = false;
 
     showMessage(
       "Google sign-in button was not found."
     );
 
     return;
-
   }
 
+  // Disable immediately before doing anything async
+  button.disabled = true;
 
-  button.disabled =
-    true;
-
-  button.textContent =
-    "Connecting to Google…";
-
+  button.innerHTML = `
+    <span class="google-icon">
+      G
+    </span>
+    Connecting to Google…
+  `;
 
   try {
 
     const {
       data,
       error
-    } =
-      await sb.auth.signInWithOAuth({
+    } = await sb.auth.signInWithOAuth({
 
-        provider:
-          "google",
+      provider: "google",
 
-        options: {
+      options: {
+        redirectTo:
+          LOGIN_CONFIG.LOGIN_REDIRECT_URL
+      }
 
-          redirectTo:
-            LOGIN_CONFIG.LOGIN_REDIRECT_URL,
-
-          scopes:
-            "https://www.googleapis.com/auth/drive.file",
-
-          queryParams: {
-
-            access_type:
-              "offline",
-
-            prompt:
-              "consent"
-
-          }
-
-        }
-
-      });
-
+    });
 
     if (error) {
 
@@ -2545,15 +2534,9 @@ async function signUpWithGoogle() {
         error
       );
 
-      showMessage(
-        error.message ||
-        "Unable to connect to Google."
-      );
+      googleOAuthInProgress = false;
 
-
-      button.disabled =
-        false;
-
+      button.disabled = false;
 
       button.innerHTML = `
         <span class="google-icon">
@@ -2562,9 +2545,22 @@ async function signUpWithGoogle() {
         Continue with Google
       `;
 
-      return;
+      showMessage(
+        error.message ||
+        "Unable to connect to Google."
+      );
 
+      return;
     }
+
+    /*
+     * IMPORTANT:
+     *
+     * If OAuth succeeds, the browser is redirected
+     * away from this page.
+     *
+     * Do NOT reset googleOAuthInProgress here.
+     */
 
   }
 
@@ -2575,15 +2571,9 @@ async function signUpWithGoogle() {
       error
     );
 
-    showMessage(
-      error.message ||
-      "Unable to connect to Google."
-    );
+    googleOAuthInProgress = false;
 
-
-    button.disabled =
-      false;
-
+    button.disabled = false;
 
     button.innerHTML = `
       <span class="google-icon">
@@ -2592,7 +2582,389 @@ async function signUpWithGoogle() {
       Continue with Google
     `;
 
+    showMessage(
+      error.message ||
+      "Unable to connect to Google."
+    );
+
   }
+
+}
+
+
+/* =========================================================================
+   GOOGLE DRIVE CONNECTION UI
+   ========================================================================= */
+
+function setGoogleDriveConnectedUI() {
+
+  const box =
+    el("googleDriveConnectionBox");
+
+  const button =
+    el("connectGoogleDriveBtn");
+
+  if (!box || !button) {
+    return;
+  }
+
+  box.classList.add("google-drive-connected");
+
+  const info =
+    box.querySelector(".google-drive-info");
+
+  if (info) {
+
+    info.innerHTML = `
+      <strong>
+        Google Drive Connected ✓
+      </strong>
+
+      <p>
+        Your Google Drive is connected and RiGiD file storage is ready.
+      </p>
+    `;
+
+  }
+
+  button.disabled = true;
+  button.textContent = "Google Drive Connected ✓";
+
+}
+
+
+function setGoogleDriveDisconnectedUI() {
+
+  const box =
+    el("googleDriveConnectionBox");
+
+  const button =
+    el("connectGoogleDriveBtn");
+
+  if (!box || !button) {
+    return;
+  }
+
+  box.classList.remove("google-drive-connected");
+
+  const info =
+    box.querySelector(".google-drive-info");
+
+  if (info) {
+
+    info.innerHTML = `
+      <strong>
+        Google Drive
+      </strong>
+
+      <p>
+        Connect your Google Drive to enable RiGiD file storage.
+      </p>
+    `;
+
+  }
+
+  button.disabled = false;
+  button.textContent = "Connect Google Drive";
+
+}
+
+
+/* =========================================================================
+   CHECK GOOGLE DRIVE CONNECTION
+   ========================================================================= */
+
+async function checkGoogleDriveConnection() {
+
+  try {
+
+    const {
+      data: {
+        user
+      },
+      error: userError
+    } =
+      await sb.auth.getUser();
+
+    if (userError || !user) {
+      return false;
+    }
+
+    const {
+      data: connection,
+      error: connectionError
+    } =
+      await sb
+        .from("google_drive_connections")
+        .select("user_id, root_folder_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+    if (connectionError) {
+
+      console.error(
+        "Google Drive connection lookup failed:",
+        connectionError
+      );
+
+      return false;
+
+    }
+
+    const connected =
+      Boolean(
+        connection &&
+        connection.root_folder_id
+      );
+
+    if (connected) {
+      setGoogleDriveConnectedUI();
+    } else {
+      setGoogleDriveDisconnectedUI();
+    }
+
+    return connected;
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "checkGoogleDriveConnection:",
+      error
+    );
+
+    return false;
+
+  }
+
+}
+
+
+/* =========================================================================
+   EXPLICIT GOOGLE DRIVE CONNECTION
+   ========================================================================= */
+
+async function connectGoogleDrive() {
+
+  clearMessage();
+
+  const button =
+    el("connectGoogleDriveBtn");
+
+  if (!button) {
+
+    showMessage(
+      "Google Drive connection button was not found."
+    );
+
+    return;
+
+  }
+
+  try {
+
+    const {
+      data: {
+        session
+      },
+      error: sessionError
+    } =
+      await sb.auth.getSession();
+
+    if (
+      sessionError ||
+      !session ||
+      !session.access_token
+    ) {
+
+      showMessage(
+        "Your Google session has expired. Please sign in again."
+      );
+
+      return;
+
+    }
+
+    const alreadyConnected =
+      await checkGoogleDriveConnection();
+
+    if (alreadyConnected) {
+
+      showMessage(
+        "Google Drive is already connected.",
+        "ok"
+      );
+
+      return;
+
+    }
+
+    button.disabled = true;
+    button.textContent = "Connecting…";
+
+    const response =
+      await fetch(
+        LOGIN_CONFIG.CONNECT_GOOGLE_DRIVE_FUNCTION_URL,
+        {
+          method: "POST",
+
+          headers: {
+            "Authorization":
+              `Bearer ${session.access_token}`,
+
+            "Content-Type":
+              "application/json"
+          }
+        }
+      );
+
+    let result = null;
+
+    try {
+      result = await response.json();
+    }
+
+    catch {
+      result = null;
+    }
+
+    if (
+      !response.ok ||
+      !result?.success ||
+      !result?.authorization_url
+    ) {
+
+      console.error(
+        "Unable to start Google Drive authorization:",
+        {
+          status: response.status,
+          result
+        }
+      );
+
+      showMessage(
+        result?.error ||
+        "Unable to connect Google Drive."
+      );
+
+      setGoogleDriveDisconnectedUI();
+
+      return;
+
+    }
+
+    /*
+     * The existing connect-google-drive Edge Function
+     * handles the OAuth state, Google authorization,
+     * token exchange, RiGiD Drive folder creation,
+     * database connection, and callback redirect.
+     */
+    window.location.href =
+      result.authorization_url;
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "connectGoogleDrive:",
+      error
+    );
+
+    showMessage(
+      error?.message ||
+      "Unable to connect Google Drive."
+    );
+
+    setGoogleDriveDisconnectedUI();
+
+  }
+
+}
+
+
+/* =========================================================================
+   GOOGLE DRIVE OAUTH CALLBACK
+   ========================================================================= */
+
+async function handleGoogleDriveCallback() {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const status =
+    params.get("google_drive");
+
+  if (!status) {
+    return false;
+  }
+
+  /*
+   * Remove the callback parameter immediately so a refresh
+   * cannot accidentally process it again.
+   */
+  const cleanUrl =
+    window.location.origin +
+    window.location.pathname;
+
+  window.history.replaceState(
+    {},
+    document.title,
+    cleanUrl
+  );
+
+  if (status === "connected") {
+
+    /*
+     * The Edge Function has already completed the
+     * database connection before redirecting here.
+     */
+    await new Promise(
+      resolve =>
+        setTimeout(
+          resolve,
+          300
+        )
+    );
+
+    const connected =
+      await checkGoogleDriveConnection();
+
+    if (connected) {
+
+      showMessage(
+        "Google Drive connected successfully.",
+        "ok"
+      );
+
+      return true;
+
+    }
+
+    showMessage(
+      "Google Drive authorization completed, but the connection could not be verified."
+    );
+
+    return false;
+
+  }
+
+  if (status === "error") {
+
+    setGoogleDriveDisconnectedUI();
+
+    showMessage(
+      "Google Drive authorization was not completed. You can try again."
+    );
+
+    return false;
+
+  }
+
+  return false;
 
 }
 
@@ -2650,10 +3022,10 @@ async function startAutomaticGoogleDriveReconnect(
     "connected"
   ) {
 
- /*
-     * Remove the query parameter from the address bar
-     * without reloading the page.
-     */
+    /*
+        * Remove the query parameter from the address bar
+        * without reloading the page.
+        */
 
     const cleanUrl =
       window.location.origin +
@@ -2943,16 +3315,11 @@ async function checkExistingSession() {
       data: {
         session
       }
-    } =
-      await sb.auth.getSession();
+    } = await sb.auth.getSession();
 
 
-    if (
-      !session
-    ) {
-
+    if (!session) {
       return;
-
     }
 
 
@@ -2964,17 +3331,13 @@ async function checkExistingSession() {
       data: {
         user
       }
-    } =
-      await sb.auth.getUser();
+    } = await sb.auth.getUser();
 
 
-    if (
-      !user
-    ) {
-
+    if (!user) {
       return;
-
     }
+
 
     const provider =
       user.app_metadata?.provider;
@@ -2984,66 +3347,25 @@ async function checkExistingSession() {
        GOOGLE EXISTING SESSION
     ================================================= */
 
-    if (
-      provider === "google"
-    ) {
+    if (provider === "google") {
 
-      el("tabSignup")
-        ?.click();
-
-      /*
-       * --------------------------------------------------
-       * IMPORTANT:
-       *
-       * Do NOT depend on session.provider_token for the
-       * permanent Google Drive connection.
-       *
-       * The permanent connection is stored in:
-       *
-       * google_drive_connections
-       *
-       * and managed by connect-google-drive.
-       * --------------------------------------------------
-       */
-
-
-      const driveConnection =
-        await startAutomaticGoogleDriveReconnect(
-          session
-        );
+      el("tabSignup")?.click();
 
 
       /*
-       * If the browser is being redirected to Google,
-       * stop here.
+       * Google authentication is handled separately
+       * from Google Drive connection.
+       *
+       * DO NOT automatically start Google Drive OAuth
+       * after Google sign-in.
+       *
+       * Google Drive will be connected explicitly later
+       * through the Connect Google Drive action.
        */
 
-      if (
-        driveConnection.redirected
-      ) {
-        return;
-
-      }
-
-
-      /*
-       * If we just returned from Google authorization,
-       * continue with the normal Google user setup.
-       */
-
-      if (
-        driveConnection.justConnected
-      ) {
-      }
-
-
-      await setupGoogleUser(
-        user
-      );
-
+      await setupGoogleUser(user);
 
       return;
-
     }
 
 
@@ -3051,23 +3373,16 @@ async function checkExistingSession() {
        EMAIL USER
     ================================================= */
 
-    if (
-      user.email_confirmed_at
-    ) {
+    if (user.email_confirmed_at) {
 
-      el("tabSignup")
-        ?.click();
-
+      el("tabSignup")?.click();
 
       markEmailVerified();
-
     }
 
   }
 
-  catch (
-    error
-  ) {
+  catch (error) {
 
     console.error(
       "checkExistingSession:",
@@ -4163,6 +4478,13 @@ document.addEventListener(
 
 
     /* -----------------------------------------------------
+       GOOGLE DRIVE CALLBACK
+       ----------------------------------------------------- */
+
+    await handleGoogleDriveCallback();
+
+
+    /* -----------------------------------------------------
        LOGIN
        ----------------------------------------------------- */
 
@@ -4206,10 +4528,21 @@ document.addEventListener(
        GOOGLE
        ----------------------------------------------------- */
 
-    el("googleSignupBtn")
+    const googleSignupButton = el("googleSignupBtn");
+
+if (googleSignupButton) {
+
+  // Prevent duplicate listeners if initialization
+  // happens more than once.
+  googleSignupButton.onclick = signUpWithGoogle;
+
+}
+
+
+    el("connectGoogleDriveBtn")
       ?.addEventListener(
         "click",
-        signUpWithGoogle
+        connectGoogleDrive
       );
 
 

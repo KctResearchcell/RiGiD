@@ -73,7 +73,7 @@ const LOGIN_CONFIG = {
     "../dashboard/personal/personal.html",
 
   LOGIN_REDIRECT_URL:
-    `${window.location.origin}/login/login.html`,
+    new URL("login.html", window.location.href).href,
 
   ACCESS_REQUEST_RPC:
     "submit_access_request",

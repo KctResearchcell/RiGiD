@@ -1,0 +1,15 @@
+# Local environment and secret configuration
+.env
+.env.*
+!.env.example
+
+# Keys and service credentials
+*.pem*
+*.key*
+*credentials.json*
+*service-account.json*
+*google-credentials*.json
+secrets/
+
+# Supabase local CLI state
+supabase/.temp/
